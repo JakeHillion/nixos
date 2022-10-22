@@ -28,5 +28,16 @@
         }
       ];
     };
+
+    nixosConfigurations."microserver.home.ts.hillion.co.uk" = nixpkgs.lib.nixosSystem {
+      system = "aarch64-linux";
+      specialArgs = inputs;
+      modules = [
+        ./hosts/microserver.home.ts.hillion.co.uk/default.nix
+        {
+          system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
+        }
+      ];
+    };
   };
 }
