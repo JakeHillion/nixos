@@ -50,4 +50,5 @@
     nameservers = [ "1.1.1.1" "8.8.8.8" "100.100.100.100" ];
     networkmanager.dns = "none";
   };
+  networking.firewall.enable = true;
 }

@@ -10,6 +10,7 @@
     ./hardware-configuration.nix
     ../../modules/common/default.nix
     ../../modules/secrets/tailscale/vm.strangervm.ts.hillion.co.uk.nix
+    ../../modules/reverse-proxy/global.nix
   ];
 
   boot.loader.grub = {
