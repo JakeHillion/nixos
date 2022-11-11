@@ -7,10 +7,12 @@
   networking.domain = "strangervm.ts.hillion.co.uk";
  
   imports = [
-    ./hardware-configuration.nix
     ../../modules/common/default.nix
-    ../../modules/secrets/tailscale/vm.strangervm.ts.hillion.co.uk.nix
+    ../../modules/resilio/default.nix
     ../../modules/reverse-proxy/global.nix
+    ../../modules/secrets/resilio/encrypted.nix
+    ../../modules/secrets/tailscale/vm.strangervm.ts.hillion.co.uk.nix
+    ./hardware-configuration.nix
   ];
 
   boot.loader.grub = {
@@ -23,5 +25,10 @@
     prefixLength = 24;
   }];
   networking.defaultGateway = "10.72.164.1";
+
+  ## Resilio Sync (Encrypted)
+  services.resilio.enable = true;
+  services.resilio.deviceName = "vm.strangervm";
+  services.resilio.directoryRoot = "/data/sync";
 }
 

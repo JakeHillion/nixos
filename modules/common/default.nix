@@ -18,6 +18,7 @@
       options = "--delete-older-than 90d";
     };
   };
+  nixpkgs.config.allowUnfree = true;
 
   time.timeZone = "Europe/London";
   i18n.defaultLocale = "en_GB.UTF-8";
