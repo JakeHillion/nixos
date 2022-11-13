@@ -5,7 +5,7 @@
 
   networking.hostName = "microserver";
   networking.domain = "home.ts.hillion.co.uk";
- 
+
   imports = [
     ../../modules/common/default.nix
     ../../modules/secrets/tailscale/microserver.home.ts.hillion.co.uk.nix

@@ -11,7 +11,7 @@
     enable = true;
     version = 4;
   };
- 
+
   imports = [
     ./hardware-configuration.nix
     ../../modules/common/default.nix

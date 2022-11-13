@@ -1,0 +1,16 @@
+---
+kind: pipeline
+type: docker
+name: default
+
+steps:
+  - name: lint
+    image: nixos/nix:2.11.1
+    commands:
+      - nix-env -i nixpkgs-fmt
+      - nixpkgs-fmt --check .
+---
+kind: signature
+hmac: d481135de9de842e2af6d0cc9729577477c8906d5d862c1a54cf1e57f823f134
+
+...

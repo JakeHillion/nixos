@@ -3,7 +3,7 @@
 {
   options.resilioFolders = lib.mkOption {
     type = with lib.types; uniq (listOf attrs);
-    default = [];
+    default = [ ];
   };
 
   config.services.resilio.sharedFolders =
@@ -11,13 +11,14 @@
       mkFolder = name: secret: {
         directory = "${config.services.resilio.directoryRoot}/${name}";
         secret = "${secret}";
-        knownHosts = [];
+        knownHosts = [ ];
         searchLAN = true;
         useDHT = true;
         useRelayServer = true;
         useSyncTrash = false;
         useTracker = true;
       };
-    in builtins.map (folder: mkFolder folder.name folder.secret) config.resilioFolders;
+    in
+    builtins.map (folder: mkFolder folder.name folder.secret) config.resilioFolders;
 }
 

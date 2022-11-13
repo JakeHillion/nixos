@@ -5,7 +5,7 @@
 
   networking.hostName = "vm";
   networking.domain = "strangervm.ts.hillion.co.uk";
- 
+
   imports = [
     ../../modules/common/default.nix
     ../../modules/resilio/default.nix

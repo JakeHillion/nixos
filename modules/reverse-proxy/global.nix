@@ -8,7 +8,7 @@
 
   services.caddy = {
     enable = true;
-  
+
     virtualHosts."ts.hillion.co.uk".extraConfig = ''
       reverse_proxy http://10.48.62.14:8080
     '';
