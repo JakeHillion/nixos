@@ -32,4 +32,8 @@ in
   "resilio/plain/projects.age".publicKeys = users ++ [ gendry_terminals ];
   "resilio/plain/resources.age".publicKeys = users ++ [ gendry_terminals ];
   "resilio/plain/sync.age".publicKeys = users ++ [ gendry_terminals ];
+
+  # Matrix Secrets
+  "matrix/matrix.hillion.co.uk/macaroon_secret_key.age".publicKeys = users ++ [ vm_strangervm ];
+  "matrix/matrix.hillion.co.uk/email.age".publicKeys = users ++ [ vm_strangervm ];
 }

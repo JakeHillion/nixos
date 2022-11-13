@@ -8,6 +8,7 @@
 
   imports = [
     ../../modules/common/default.nix
+    ../../modules/matrix/default.nix
     ../../modules/resilio/default.nix
     ../../modules/reverse-proxy/global.nix
     ./hardware-configuration.nix
@@ -47,4 +48,3 @@
     { name = "sync"; secretFile = config.age.secrets."resilio/encrypted/sync".path; }
   ];
 }
-

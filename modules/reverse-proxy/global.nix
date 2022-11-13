@@ -9,6 +9,9 @@
   services.caddy = {
     enable = true;
 
+    virtualHosts."hillion.co.uk".extraConfig = ''
+      respond /.well-known/matrix/server "{\"m.server\": \"matrix.hillion.co.uk:443\"}" 200
+    '';
     virtualHosts."ts.hillion.co.uk".extraConfig = ''
       reverse_proxy http://10.48.62.14:8080
     '';
@@ -20,6 +23,9 @@
     '';
     virtualHosts."emby.hillion.co.uk".extraConfig = ''
       reverse_proxy http://plex.mediaserver.ts.hillion.co.uk:8096
+    '';
+    virtualHosts."matrix.hillion.co.uk".extraConfig = ''
+      reverse_proxy http://vm.strangervm.ts.hillion.co.uk:8008
     '';
     virtualHosts."unifi.hillion.co.uk".extraConfig = ''
       reverse_proxy https://unifi.unifi.ts.hillion.co.uk:8443 {
