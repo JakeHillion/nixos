@@ -3,13 +3,18 @@ let
   jake-mbp = "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAyFsYYjLZ/wyw8XUbcmkk6OKt2IqLOnWpRE5gEvm3X0V4IeTOL9F4IL79h7FTsPvi2t9zGBL1hxeTMZHSGfrdWaMJkQp94gA1W30MKXvJ47nEVt0HUIOufGqgTTaAn4BHxlFUBUuS7UxaA4igFpFVoPJed7ZMhMqxg+RWUmBAkcgTWDMgzUx44TiNpzkYlG8cYuqcIzpV2dhGn79qsfUzBMpGJgkxjkGdDEHRk66JXgD/EtVasZvqp5/KLNnOpisKjR88UJKJ6/buV7FLVra4/0hA9JtH9e1ecCfxMPbOeluaxlieEuSXV2oJMbQoPP87+/QriNdi/6QuCHkMDEhyGw== jake@jake-mbp";
   users = [ jake-gentoo jake-mbp ];
 
+  gendry_terminals = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPXM5aDvNv4MTITXAvJWSS2yvr/mbxJE31tgwJtcl38c root@gendry";
   vm_strangervm = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINb9mgyD/G3Rt6lvO4c0hoaVOlLE8e3+DUfAoB1RI5cy root@vm";
   microserver_home = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPPOCPqXm5a+vGB6PsJFvjKNgjLhM5MxrwCy6iHGRjXw root@microserver";
   microserver_parents = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL0cjjNQPnJwpu4wcYmvfjB1jlIfZwMxT+3nBusoYQFr root@microserver";
-  systems = [ vm_strangervm microserver_home microserver_parents ];
+  systems = [ gendry_terminals vm_strangervm microserver_home microserver_parents ];
 in
 {
+  # User Passwords
+  "passwords/gendry.jakehillion-terminals.ts.hillion.co.uk/jake.age".publicKeys = users ++ [ gendry_terminals ];
+
   # Tailscale Pre-Auth Keys
+  "tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk.age".publicKeys = users ++ [ gendry_terminals ];
   "tailscale/vm.strangervm.ts.hillion.co.uk.age".publicKeys = users ++ [ vm_strangervm ];
   "tailscale/microserver.home.ts.hillion.co.uk.age".publicKeys = users ++ [ microserver_home ];
   "tailscale/microserver.parents.ts.hillion.co.uk.age".publicKeys = users ++ [ microserver_parents ];

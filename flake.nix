@@ -10,6 +10,18 @@
   description = "Hillion Nix flake";
 
   outputs = { self, nixpkgs, nixpkgs-unstable, agenix }@inputs: {
+    nixosConfigurations."gendry.jakehillion-terminals.ts.hillion.co.uk" = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      specialArgs = inputs;
+      modules = [
+        ./hosts/gendry.jakehillion-terminals.ts.hillion.co.uk/default.nix
+        agenix.nixosModule
+        {
+          system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
+        }
+      ];
+    };
+
     nixosConfigurations."vm.strangervm.ts.hillion.co.uk" = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = inputs;
