@@ -1,3 +1,0 @@
-[submodule "modules/secrets"]
-	path = modules/secrets
-	url = git@ssh.gitea.hillion.co.uk:JakeHillion/nixos-secrets.git

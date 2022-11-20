@@ -40,11 +40,8 @@
       # otherwise authenticate with tailscale
       ${tailscale}/bin/tailscale up \
         --login-server https://ts.hillion.co.uk/ \
-        --authkey ${config.tailscalePreAuth} \
+        --authkey "$(<${config.tailscalePreAuth})" \
         --advertise-routes "${config.tailscaleAdvertiseRoutes}"
     '';
   };
-
 }
-
-

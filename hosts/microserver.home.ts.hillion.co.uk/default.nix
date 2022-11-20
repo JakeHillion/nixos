@@ -1,26 +1,31 @@
 { config, pkgs, lib, ... }:
 
 {
-  system.stateVersion = "22.05";
+  config.system.stateVersion = "22.05";
 
-  networking.hostName = "microserver";
-  networking.domain = "home.ts.hillion.co.uk";
+  config.networking.hostName = "microserver";
+  config.networking.domain = "home.ts.hillion.co.uk";
 
   imports = [
     ../../modules/common/default.nix
-    ../../modules/secrets/tailscale/microserver.home.ts.hillion.co.uk.nix
   ];
 
-  tailscaleAdvertiseRoutes = "10.64.50.0/24,10.239.19.0/24";
+  # Networking
+  ## Tailscale
+  config.tailscaleAdvertiseRoutes = "10.64.50.0/24,10.239.19.0/24";
+  config.age.secrets."tailscale/microserver.home.ts.hillion.co.uk".file = ../../secrets/tailscale/microserver.home.ts.hillion.co.uk.age;
+  config.tailscalePreAuth = config.age.secrets."tailscale/microserver.home.ts.hillion.co.uk".path;
 
-  networking.vlans = {
+  ## Enable IoT VLAN
+  config.networking.vlans = {
     vlan2 = {
       id = 2;
       interface = "eth0";
     };
   };
 
-  boot.kernel.sysctl = {
+  ## Enable IP forwarding for Tailscale
+  config.boot.kernel.sysctl = {
     "net.ipv4.ip_forward" = true;
   };
 }
