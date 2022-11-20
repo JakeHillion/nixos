@@ -1,7 +1,7 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-22.05";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs?rev=b68a6a27adb452879ab66c0eaac0c133e32823b2";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs?rev=52b2ac8ae18bbad4374ff0dd5aeee0fdf1aea739";
   };
 
   description = "Hillion Nix flake";
