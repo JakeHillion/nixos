@@ -8,9 +8,10 @@ steps:
     image: nixos/nix:2.11.1
     commands:
       - nix-env -i nixpkgs-fmt
-      - nixpkgs-fmt --check .
+      - nixpkgs-fmt .
+      - git diff --exit-code
 ---
 kind: signature
-hmac: d481135de9de842e2af6d0cc9729577477c8906d5d862c1a54cf1e57f823f134
+hmac: a178f81ef70146ee3f989c901e10c01455dc972af5fb37b80f3e8bab48f20ef0
 
 ...
