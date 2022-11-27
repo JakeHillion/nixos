@@ -8,6 +8,7 @@
 
   imports = [
     ../../modules/common/default.nix
+    ../../modules/desktop/awesome/default.nix
     ./hardware-configuration.nix
     ./persist.nix
   ];
