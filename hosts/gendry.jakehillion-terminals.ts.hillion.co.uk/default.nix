@@ -24,6 +24,10 @@
 
   config.security.sudo.wheelNeedsPassword = lib.mkForce true;
 
+  ## Enable btrfs compression
+  config.fileSystems."/data".options = [ "compress=zstd" ];
+  config.fileSystems."/nix".options = [ "compress=zstd" ];
+
   ## Persist files (due to tmpfs root)
   ### Set root tmpfs to 0755
   config.fileSystems."/".options = [ "mode=0755" ];
