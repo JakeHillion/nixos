@@ -9,6 +9,8 @@
     default = [ ];
   };
 
+  config.users.users.jake.extraGroups = [ "rslsync" ];
+
   config.services.resilio.sharedFolders =
     let
       mkFolder = name: secretFile: {

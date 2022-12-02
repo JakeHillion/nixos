@@ -33,6 +33,7 @@
   config.services.resilio.enable = true;
   config.services.resilio.deviceName = "vm.strangervm";
   config.services.resilio.directoryRoot = "/data/sync";
+  config.services.resilio.storagePath = "/data/sync/.sync";
 
   config.age.secrets."resilio/encrypted/dad".file = ../../secrets/resilio/encrypted/dad.age;
   config.age.secrets."resilio/encrypted/projects".file = ../../secrets/resilio/encrypted/projects.age;

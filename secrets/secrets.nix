@@ -27,9 +27,9 @@ in
   "resilio/encrypted/sync.age".publicKeys = users ++ [ vm_strangervm ];
 
   ## Read/Write Resilio Sync Secrets
-  "resilio/plain/dad.age".publicKeys = users;
-  "resilio/plain/joseph.age".publicKeys = users;
-  "resilio/plain/projects.age".publicKeys = users;
-  "resilio/plain/resources.age".publicKeys = users;
-  "resilio/plain/sync.age".publicKeys = users;
+  "resilio/plain/dad.age".publicKeys = users ++ [ gendry_terminals ];
+  "resilio/plain/joseph.age".publicKeys = users ++ [ gendry_terminals ];
+  "resilio/plain/projects.age".publicKeys = users ++ [ gendry_terminals ];
+  "resilio/plain/resources.age".publicKeys = users ++ [ gendry_terminals ];
+  "resilio/plain/sync.age".publicKeys = users ++ [ gendry_terminals ];
 }

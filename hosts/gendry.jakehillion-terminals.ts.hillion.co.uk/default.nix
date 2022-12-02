@@ -11,6 +11,7 @@
     ../../modules/desktop/awesome/default.nix
     ./hardware-configuration.nix
     ./persist.nix
+    ./resilio.nix
   ];
 
   config.boot.loader.systemd-boot.enable = true;
