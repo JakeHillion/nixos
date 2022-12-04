@@ -1,7 +1,7 @@
-{ pkgs, lib, config, ... }:
+{ pkgs, lib, config, nixpkgs-unstable, ... }:
 
 {
-  imports = [ ./nixpkgs-pr125803-modules_services_networking_resilio.nix ];
+  imports = [ "${nixpkgs-unstable}/nixos/modules/services/networking/resilio.nix" ];
   disabledModules = [ "services/networking/resilio.nix" ];
 
   options.resilioFolders = lib.mkOption {
