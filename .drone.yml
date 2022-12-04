@@ -10,8 +10,13 @@ steps:
       - nix-env -i nixpkgs-fmt
       - nixpkgs-fmt .
       - git diff --exit-code
+
+  - name: check
+    image: nixos/nix:2.11.1
+    commands:
+      - nix --extra-experimental-features 'nix-command flakes' flake check
 ---
 kind: signature
-hmac: a178f81ef70146ee3f989c901e10c01455dc972af5fb37b80f3e8bab48f20ef0
+hmac: 8da1e50adb1f6026681aa44b9705e3d00ea4dbc7a43cee9860622153a630224f
 
 ...
