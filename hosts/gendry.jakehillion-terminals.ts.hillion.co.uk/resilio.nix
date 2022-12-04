@@ -18,6 +18,7 @@ in
   config.services.resilio.enable = true;
   config.services.resilio.deviceName = "gendry.jakehillion-terminals";
   config.services.resilio.directoryRoot = "/data/sync";
+  config.services.resilio.storagePath = "/data/sync/.sync";
 
   config.age.secrets =
     let
