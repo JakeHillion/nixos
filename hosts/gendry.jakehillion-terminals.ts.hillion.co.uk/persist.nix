@@ -38,4 +38,10 @@
 
   ## Persistent zsh history
   programs.zsh.histFile = lib.mkForce "$HOME/local/.zsh_history";
+
+  ## Tailscale
+  fileSystems."/var/lib/tailscale" = {
+    device = "/data/system/var/lib/tailscale";
+    options = [ "bind" ];
+  };
 }
