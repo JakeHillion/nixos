@@ -28,6 +28,10 @@
     ### Persistent home subdirectories
     "L /root/local - - - - /data/users/root"
     "L /home/jake/local - - - - /data/users/jake"
+
+    ## Persistent SSH keys
+    "L /home/jake/.ssh/id_rsa - - - - /data/users/jake/.ssh/id_rsa"
+    "L /home/jake/.ssh/id_ecdsa - - - - /data/users/jake/.ssh/id_ecdsa"
   ];
 
   ## Persistent /etc/nixos
