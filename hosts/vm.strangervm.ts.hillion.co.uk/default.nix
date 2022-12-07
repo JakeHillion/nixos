@@ -36,10 +36,26 @@
   config.services.resilio.directoryRoot = "/data/sync";
   config.services.resilio.storagePath = "/data/sync/.sync";
 
-  config.age.secrets."resilio/encrypted/dad".file = ../../secrets/resilio/encrypted/dad.age;
-  config.age.secrets."resilio/encrypted/projects".file = ../../secrets/resilio/encrypted/projects.age;
-  config.age.secrets."resilio/encrypted/resources".file = ../../secrets/resilio/encrypted/resources.age;
-  config.age.secrets."resilio/encrypted/sync".file = ../../secrets/resilio/encrypted/sync.age;
+  config.age.secrets."resilio/encrypted/dad" = {
+    file = ../../secrets/resilio/encrypted/dad.age;
+    owner = "rslsync";
+    group = "rslsync";
+  };
+  config.age.secrets."resilio/encrypted/projects" = {
+    file = ../../secrets/resilio/encrypted/projects.age;
+    owner = "rslsync";
+    group = "rslsync";
+  };
+  config.age.secrets."resilio/encrypted/resources" = {
+    file = ../../secrets/resilio/encrypted/resources.age;
+    owner = "rslsync";
+    group = "rslsync";
+  };
+  config.age.secrets."resilio/encrypted/sync" = {
+    file = ../../secrets/resilio/encrypted/sync.age;
+    owner = "rslsync";
+    group = "rslsync";
+  };
 
   config.resilioFolders = [
     { name = "dad"; secretFile = config.age.secrets."resilio/encrypted/dad".path; }
