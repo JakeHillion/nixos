@@ -7,8 +7,7 @@ steps:
   - name: lint
     image: nixos/nix:2.11.1
     commands:
-      - nix-env -i nixpkgs-fmt
-      - nixpkgs-fmt .
+      - nix --extra-experimental-features 'nix-command flakes' fmt
       - git diff --exit-code
 
   - name: check
@@ -17,6 +16,6 @@ steps:
       - nix --extra-experimental-features 'nix-command flakes' flake check
 ---
 kind: signature
-hmac: 8da1e50adb1f6026681aa44b9705e3d00ea4dbc7a43cee9860622153a630224f
+hmac: da929dc55d2e11b17bc29e48293b78ba1e3588df90a87e022e7dc4f1cb40d6e5
 
 ...
