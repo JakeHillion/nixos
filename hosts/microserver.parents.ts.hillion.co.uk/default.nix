@@ -9,13 +9,8 @@
   imports = [
     ./hardware-configuration.nix
     ../../modules/common/default.nix
+    ../../modules/rpi/rpi4.nix
   ];
-
-  config.boot.loader.grub.enable = false;
-  config.boot.loader.raspberryPi = {
-    enable = true;
-    version = 4;
-  };
 
   # Networking
   ## Tailscale
