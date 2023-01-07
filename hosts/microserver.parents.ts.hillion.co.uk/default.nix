@@ -19,7 +19,7 @@
 
   # Networking
   ## Tailscale
-  config.tailscaleAdvertiseRoutes = "10.0.0.0/24";
+  config.tailscaleAdvertiseRoutes = "10.10.0.0/24";
   config.age.secrets."tailscale/microserver.parents.ts.hillion.co.uk".file = ../../secrets/tailscale/microserver.parents.ts.hillion.co.uk.age;
   config.tailscalePreAuth = config.age.secrets."tailscale/microserver.parents.ts.hillion.co.uk".path;
 
