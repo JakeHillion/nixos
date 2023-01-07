@@ -30,5 +30,9 @@
   ## Enable btrfs compression
   config.fileSystems."/data".options = [ "compress=zstd" ];
   config.fileSystems."/nix".options = [ "compress=zstd" ];
+
+  ## Graphics
+  config.boot.initrd.kernelModules = [ "amdgpu" ];
+  config.services.xserver.videoDrivers = [ "amdgpu" ];
 }
 
