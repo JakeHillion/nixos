@@ -1,6 +1,10 @@
 { pkgs, lib, config, ... }:
 
 {
+  imports = [
+    ./www-repo.nix
+  ];
+
   networking.firewall = {
     allowedTCPPorts = [ 80 443 ];
     allowedUDPPorts = [ 443 ];
@@ -10,7 +14,18 @@
     enable = true;
 
     virtualHosts."hillion.co.uk".extraConfig = ''
-      respond /.well-known/matrix/server "{\"m.server\": \"matrix.hillion.co.uk:443\"}" 200
+      handle /.well-known/* {
+        respond /.well-known/matrix/server "{\"m.server\": \"matrix.hillion.co.uk:443\"}" 200
+        respond 404
+      }
+
+      handle {
+        redir https://blog.hillion.co.uk{uri}
+      }
+    '';
+    virtualHosts."blog.hillion.co.uk".extraConfig = ''
+      root * /var/www/blog.hillion.co.uk
+      file_server
     '';
     virtualHosts."ts.hillion.co.uk".extraConfig = ''
       reverse_proxy http://10.48.62.14:8080

@@ -10,7 +10,7 @@
     ../../modules/common/default.nix
     ../../modules/matrix/default.nix
     ../../modules/resilio/default.nix
-    ../../modules/reverse-proxy/global.nix
+    ../../modules/www/global.nix
     ./hardware-configuration.nix
   ];
 
