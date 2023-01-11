@@ -5,11 +5,14 @@
 
     agenix.url = "github:ryantm/agenix";
     agenix.inputs.nixpkgs.follows = "nixpkgs";
+
+    home-manager.url = "github:nix-community/home-manager";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   description = "Hillion Nix flake";
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, agenix }@inputs: {
+  outputs = { self, nixpkgs, nixpkgs-unstable, agenix, home-manager }@inputs: {
     nixosConfigurations =
       let
         fqdns = builtins.attrNames (builtins.readDir ./hosts);
@@ -21,6 +24,7 @@
             modules = [
               ./hosts/${fqdn}/default.nix
               agenix.nixosModule
+              home-manager.nixosModule
               {
                 system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
               }

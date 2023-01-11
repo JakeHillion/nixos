@@ -1,6 +1,8 @@
-{ lib, config, ... }:
+{ pkgs, lib, config, ... }:
 
 {
+  config.users.defaultUserShell = pkgs.zsh;
+
   config.programs.zsh = {
     enable = true;
     histSize = 100000;
@@ -8,12 +10,6 @@
 
     syntaxHighlighting = {
       enable = true;
-    };
-
-    autosuggestions = {
-      enable = true;
-      highlightStyle = "fg=5";
-      strategy = [ "match_prev_cmd" "completion" "history" ];
     };
   };
 }

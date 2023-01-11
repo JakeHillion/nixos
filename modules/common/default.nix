@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ../home/default.nix
     ./shell.nix
     ./ssh.nix
     ./tailscale.nix
@@ -28,7 +29,6 @@
     users."jake" = {
       isNormalUser = true;
       extraGroups = [ "wheel" ]; # enable sudo
-      shell = pkgs.zsh;
     };
   };
 
