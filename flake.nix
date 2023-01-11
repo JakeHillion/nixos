@@ -10,53 +10,24 @@
   description = "Hillion Nix flake";
 
   outputs = { self, nixpkgs, nixpkgs-unstable, agenix }@inputs: {
-    nixosConfigurations."gendry.jakehillion-terminals.ts.hillion.co.uk" = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      specialArgs = inputs;
-      modules = [
-        ./hosts/gendry.jakehillion-terminals.ts.hillion.co.uk/default.nix
-        agenix.nixosModule
-        {
-          system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
-        }
-      ];
-    };
-
-    nixosConfigurations."vm.strangervm.ts.hillion.co.uk" = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      specialArgs = inputs;
-      modules = [
-        ./hosts/vm.strangervm.ts.hillion.co.uk/default.nix
-        agenix.nixosModule
-        {
-          system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
-        }
-      ];
-    };
-
-    nixosConfigurations."microserver.parents.ts.hillion.co.uk" = nixpkgs.lib.nixosSystem {
-      system = "aarch64-linux";
-      specialArgs = inputs;
-      modules = [
-        ./hosts/microserver.parents.ts.hillion.co.uk/default.nix
-        agenix.nixosModule
-        {
-          system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
-        }
-      ];
-    };
-
-    nixosConfigurations."microserver.home.ts.hillion.co.uk" = nixpkgs.lib.nixosSystem {
-      system = "aarch64-linux";
-      specialArgs = inputs;
-      modules = [
-        ./hosts/microserver.home.ts.hillion.co.uk/default.nix
-        agenix.nixosModule
-        {
-          system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
-        }
-      ];
-    };
+    nixosConfigurations =
+      let
+        fqdns = builtins.attrNames (builtins.readDir ./hosts);
+        mkHost = fqdn:
+          let system = builtins.readFile ./hosts/${fqdn}/system; in
+          nixpkgs.lib.nixosSystem {
+            inherit system;
+            specialArgs = inputs;
+            modules = [
+              ./hosts/${fqdn}/default.nix
+              agenix.nixosModule
+              {
+                system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
+              }
+            ];
+          };
+      in
+      nixpkgs.lib.genAttrs fqdns mkHost;
 
     formatter."x86_64-linux" = nixpkgs.legacyPackages."x86_64-linux".nixpkgs-fmt;
     formatter."aarch64-darwin" = nixpkgs.legacyPackages."aarch64-darwin".nixpkgs-fmt;
