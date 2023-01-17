@@ -6,6 +6,7 @@
     ./desktop/awesome/default.nix
     ./locations.nix
     ./resilio.nix
+    ./services/mastodon/default.nix
     ./services/matrix.nix
     ./tailscale.nix
     ./www/global.nix

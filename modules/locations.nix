@@ -14,6 +14,7 @@ in
       default = {
         services = {
           matrix = "vm.strangervm.ts.hillion.co.uk";
+          mastodon = "vm.strangervm.ts.hillion.co.uk";
         };
       };
     };
@@ -21,5 +22,6 @@ in
 
   config = lib.mkIf cfg.autoServe {
     custom.services.matrix.enable = cfg.locations.services.matrix == config.networking.fqdn;
+    custom.services.mastodon.enable = cfg.locations.services.mastodon == config.networking.fqdn;
   };
 }
