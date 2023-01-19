@@ -36,4 +36,10 @@ in
   # Matrix Secrets
   "matrix/matrix.hillion.co.uk/macaroon_secret_key.age".publicKeys = users ++ [ vm_strangervm ];
   "matrix/matrix.hillion.co.uk/email.age".publicKeys = users ++ [ vm_strangervm ];
+
+  # Backblaze Secrets
+  "backblaze/vm-strangervm-backups-matrix.age".publicKeys = users ++ [ vm_strangervm ];
+
+  # Restic Secrets
+  "restic/b2-backups-matrix.age".publicKeys = users ++ [ vm_strangervm ];
 }

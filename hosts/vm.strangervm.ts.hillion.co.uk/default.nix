@@ -63,4 +63,7 @@
     { name = "resources"; secretFile = config.age.secrets."resilio/encrypted/resources".path; }
     { name = "sync"; secretFile = config.age.secrets."resilio/encrypted/sync".path; }
   ];
+
+  ## Backups
+  config.services.postgresqlBackup.location = "/data/backup/postgres";
 }
