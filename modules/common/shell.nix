@@ -11,6 +11,10 @@
     syntaxHighlighting = {
       enable = true;
     };
+
+    shellAliases = {
+      "nixos-rebuild" = "nixos-rebuild --flake \"/etc/nixos#$(hostname -f)\"";
+    };
   };
 }
 
