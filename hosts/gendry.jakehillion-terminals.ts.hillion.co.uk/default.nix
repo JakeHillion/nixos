@@ -18,6 +18,9 @@
   config.boot.loader.systemd-boot.enable = true;
   config.boot.loader.efi.canTouchEfiVariables = true;
 
+  ## Compilation flags
+  config.nix.settings.system-features = [ "gccarch-znver2" ];
+
   ## Tailscale
   config.age.secrets."tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk".file = ../../secrets/tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk.age;
   config.tailscalePreAuth = config.age.secrets."tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk".path;
