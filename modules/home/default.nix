@@ -5,6 +5,7 @@
   home-manager.users.jake.home.stateVersion = "22.11";
 
   imports = [
+    ./git.nix
     ./tmux/default.nix
   ];
 
