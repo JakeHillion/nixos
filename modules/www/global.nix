@@ -16,6 +16,7 @@
     virtualHosts."hillion.co.uk".extraConfig = ''
       handle /.well-known/* {
         respond /.well-known/matrix/server "{\"m.server\": \"matrix.hillion.co.uk:443\"}" 200
+        respond /.well-known/matrix/client "{\"m.homeserver\": {\"base_url\": \"https://matrix.hillion.co.uk\"}}" 200
         respond 404
       }
 
