@@ -20,6 +20,11 @@
 
   ## Compilation flags
   config.nix.settings.system-features = [ "gccarch-znver2" ];
+  config.nixpkgs.hostPlatform = {
+    gcc.arch = "znver2";
+    gcc.tune = "znver2";
+    system = builtins.readFile ./system;
+  };
 
   ## Tailscale
   config.age.secrets."tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk".file = ../../secrets/tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk.age;
