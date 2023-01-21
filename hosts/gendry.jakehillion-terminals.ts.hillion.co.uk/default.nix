@@ -15,6 +15,14 @@
     networking.domain = "jakehillion-terminals.ts.hillion.co.uk";
 
     ## Compilation flags
+    config.nix.settings.system-features = [ "gccarch-znver2" ];
+    config.nixpkgs.hostPlatform = {
+      gcc.arch = "znver2";
+      gcc.tune = "znver2";
+      system = builtins.readFile ./system;
+    };
+
+    ## Compilation flags
     nix.settings.system-features = [ "gccarch-znver2" ];
 
     boot.loader.systemd-boot.enable = true;
