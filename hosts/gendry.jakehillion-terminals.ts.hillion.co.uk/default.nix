@@ -9,6 +9,7 @@
   imports = [
     ../../modules/common/default.nix
     ../../modules/desktop/awesome/default.nix
+    ../../modules/spotify/default.nix
     ./hardware-configuration.nix
     ./persist.nix
     ./resilio.nix
@@ -34,5 +35,13 @@
   ## Graphics
   config.boot.initrd.kernelModules = [ "amdgpu" ];
   config.services.xserver.videoDrivers = [ "amdgpu" ];
-}
 
+  ## Spotify
+  config.home-manager.users.jake.services.spotifyd.settings = {
+    global = {
+      device_name = "Gendry";
+      device_type = "computer";
+      bitrate = 320;
+    };
+  };
+}
