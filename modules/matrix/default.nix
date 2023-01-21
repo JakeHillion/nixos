@@ -100,6 +100,7 @@
         }
       ];
       suppress_key_server_warning = true;
+      dynamic_thumbnails = true;
     };
   };
 }
