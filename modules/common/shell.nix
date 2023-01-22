@@ -3,6 +3,7 @@
 {
   config.users.defaultUserShell = pkgs.zsh;
 
+  config.programs.thefuck.enable = true;
   config.programs.zsh = {
     enable = true;
     histSize = 100000;
