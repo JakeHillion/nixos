@@ -8,7 +8,9 @@
   };
 
   config.hardware.pulseaudio.enable = true;
+
   config.users.users.jake.extraGroups = [ "audio" ];
+  config.users.users.jake.packages = with pkgs; [ spotify-tui ];
 
   config.home-manager.users.jake.services.spotifyd = {
     enable = true;
