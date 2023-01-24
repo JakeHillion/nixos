@@ -1,4 +1,4 @@
-{ pkgs, lib, config, ... }:
+{ pkgs, lib, config, agenix, ... }:
 
 {
   imports = [
@@ -36,6 +36,7 @@
 
   environment = {
     systemPackages = with pkgs; [
+      agenix.defaultPackage."${system}"
       git
       htop
       nix
