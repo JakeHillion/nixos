@@ -34,8 +34,8 @@
     "L /home/jake/.ssh/id_ecdsa - - - - /data/users/jake/.ssh/id_ecdsa"
 
     ### Persistent spotify-tui
-    "d /home/jake/.config/ 0700 jake users 0 -"
-    "d /home/jake/.config/spotify-tui/ 0700 jake users 0 -"
+    "d /home/jake/.config/ 0700 jake users - -"
+    "d /home/jake/.config/spotify-tui/ 0700 jake users - -"
     "L /home/jake/.config/spotify-tui/.spotify_token_cache.json - - - - /data/users/jake/.config/spotify-tui/.spotify_token_cache.json"
     "L /home/jake/.config/spotify-tui/client.yml - - - - /data/users/jake/.config/spotify-tui/client.yml"
   ];
