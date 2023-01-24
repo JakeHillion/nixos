@@ -23,7 +23,7 @@
     ];
   };
 
-  ## Persistent directory symlinks
+  ## Persistent directories and symlinks
   systemd.tmpfiles.rules = [
     ### Persistent home subdirectories
     "L /root/local - - - - /data/users/root"
@@ -52,6 +52,12 @@
   ## Tailscale
   fileSystems."/var/lib/tailscale" = {
     device = "/data/system/var/lib/tailscale";
+    options = [ "bind" ];
+  };
+
+  ## Bluetooth
+  fileSystems."/var/lib/bluetooth" = {
+    device = "/data/system/var/lib/bluetooth";
     options = [ "bind" ];
   };
 }

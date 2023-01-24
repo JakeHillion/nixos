@@ -10,6 +10,7 @@
     ../../modules/common/default.nix
     ../../modules/desktop/awesome/default.nix
     ../../modules/spotify/default.nix
+    ./bluetooth.nix
     ./hardware-configuration.nix
     ./persist.nix
     ./resilio.nix
