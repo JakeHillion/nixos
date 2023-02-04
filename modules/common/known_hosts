@@ -21,7 +21,7 @@ plex.mediaserver.ts.hillion.co.uk ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM1sk3FOsu
 router.alpha.proxmox.ts.hillion.co.uk ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGL5Asl7OhF7R2a/YJNNv+fIE/VPw8ZCr+ABI7wlAdJI
 router.stranger.proxmox.ts.hillion.co.uk ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHq9tITN59FJfGoyOPNgP1QyJ0ohbVQS8OZtRO960Uxk
 stranger.proxmox.ts.hillion.co.uk ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE9d5u/VaeRTQUQfu5JzCRa+zij/DtrPNWOfr+jM4iDp
-unifi.unifi.ts.hillion.co.uk ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH5Y/Y2KSUWeD4Tv3quNRlrQmaFlMXBgiceNc070YUkv
+unifi.unifi.ts.hillion.co.uk ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOeayV2pu0IpZS0OT17c4DqkILCZVRl1Y3s2fu087QkO
 vm.strangervm.ts.hillion.co.uk ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINb9mgyD/G3Rt6lvO4c0hoaVOlLE8e3+DUfAoB1RI5cy
 
 # Deprecated (Internal) hosts
