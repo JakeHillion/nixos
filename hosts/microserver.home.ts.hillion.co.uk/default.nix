@@ -30,5 +30,21 @@
   config.boot.kernel.sysctl = {
     "net.ipv4.ip_forward" = true;
   };
+
+  ## Set up simpleproxy to Zigbee bridge
+  config.systemd.services.zigbee-simpleproxy = {
+    description = "Simple TCP Proxy for Zigbee Bridge";
+
+    wantedBy = [ "multi-user.target" ];
+    after = [ "tailscaled.service" ];
+
+    serviceConfig = {
+      DynamicUser = true;
+      ExecStart = with pkgs; "${simpleproxy}/bin/simpleproxy -L 100.105.131.47:8888 -R 10.239.19.40:8888 -v";
+      Restart = "always";
+      RestartSec = 10;
+    };
+  };
+  config.networking.firewall.interfaces."tailscale0".allowedTCPPorts = [ 8888 ];
 }
 
