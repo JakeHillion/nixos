@@ -49,6 +49,9 @@
         }
       }
     '';
+    virtualHosts."drone.hillion.co.uk".extraConfig = ''
+      reverse_proxy http://vm.strangervm.ts.hillion.co.uk:18733
+    '';
   };
 }
 

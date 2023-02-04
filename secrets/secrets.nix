@@ -61,4 +61,8 @@ in
 
   # Spotify Secrets
   "spotify/11132032266.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ];
+
+  # Drone Secrets
+  "drone/gitea_client_secret.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
+  "drone/rpc_secret.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
 }

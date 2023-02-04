@@ -8,6 +8,7 @@
 
   imports = [
     ../../modules/common/default.nix
+    ../../modules/drone/server.nix
     ../../modules/matrix/default.nix
     ../../modules/resilio/default.nix
     ../../modules/www/global.nix
