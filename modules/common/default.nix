@@ -36,7 +36,7 @@
 
   environment = {
     systemPackages = with pkgs; [
-      agenix.defaultPackage."${system}"
+      agenix.packages."${system}".default
       git
       htop
       nix

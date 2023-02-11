@@ -23,7 +23,7 @@
             specialArgs = inputs;
             modules = [
               ./hosts/${fqdn}/default.nix
-              agenix.nixosModule
+              agenix.nixosModules.default
               home-manager.nixosModule
               {
                 system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
