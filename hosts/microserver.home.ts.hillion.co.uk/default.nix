@@ -46,5 +46,41 @@
     };
   };
   config.networking.firewall.interfaces."tailscale0".allowedTCPPorts = [ 8888 ];
+
+  config.systemd.services.homekit-simpleproxy = {
+    description = "Simple TCP Proxy for HomeKit";
+
+    wantedBy = [ "multi-user.target" ];
+    after = [ "tailscaled.service" ];
+
+    serviceConfig = {
+      DynamicUser = true;
+      ExecStart = with pkgs; "${simpleproxy}/bin/simpleproxy -L 21063 -R 100.85.235.32:21063 -v";
+      Restart = "always";
+      RestartSec = 10;
+    };
+  };
+  config.networking.firewall.interfaces."eth0".allowedTCPPorts = [ 21063 ];
+
+  ## mDNS Entry for HomeKit
+  config.services.avahi = {
+    enable = true;
+    publish = {
+      enable = true;
+    };
+    extraServiceFiles = {
+      hap = ''
+        <?xml version="1.0" standalone='no'?><!--*-nxml-*-->
+        <!DOCTYPE service-group SYSTEM "avahi-service.dtd">
+        <service-group>
+          <name replace-wildcards="yes">%h</name>
+          <service>
+            <type>_hap._tcp</type>
+            <port>21063</port>
+          </service>
+        </service-group>
+      '';
+    };
+  };
 }
 
