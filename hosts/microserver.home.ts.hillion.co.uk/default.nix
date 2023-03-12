@@ -46,5 +46,9 @@
     };
   };
   config.networking.firewall.interfaces."tailscale0".allowedTCPPorts = [ 8888 ];
+
+  ## Run a persistent iperf3 server
+  config.services.iperf3.enable = true;
+  config.services.iperf3.openFirewall = true;
 }
 

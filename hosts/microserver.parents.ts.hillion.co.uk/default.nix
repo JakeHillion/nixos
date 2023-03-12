@@ -22,5 +22,9 @@
   config.boot.kernel.sysctl = {
     "net.ipv4.ip_forward" = true;
   };
+
+  ## Run a persistent iperf3 server
+  config.services.iperf3.enable = true;
+  config.services.iperf3.openFirewall = true;
 }
 
