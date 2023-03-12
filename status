@@ -1,0 +1,15 @@
+#!/usr/bin/env perl
+use File::Basename;
+use JSON::Parse 'parse_json';
+
+opendir(DH, dirname(__FILE__) . "/hosts");
+my @hosts = readdir(DH);
+closedir(DH);
+
+foreach my $host (@hosts) {
+  next if ($host =~ /^\.*$/);
+  print $host . "\n";
+  my $test = parse_json(`ssh $host nixos-version --json`);
+  print $test . "\n";
+}
+
