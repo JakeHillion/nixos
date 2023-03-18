@@ -6,6 +6,7 @@
   config.environment.systemPackages = with pkgs; [
     git
     htop
+    mosh
     nix
     vim
   ];
