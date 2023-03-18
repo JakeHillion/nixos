@@ -90,4 +90,10 @@ in
 
   # Home Automation secrets
   "mqtt/zigbee2mqtt.age".publicKeys = jake_users ++ [ ts.home.microserver ];
+
+  # Wireguard Secrets
+  "wireguard/downloads.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
+
+  # Deluge Secrets
+  "deluge/auth.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
 }

@@ -16,6 +16,8 @@
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
 
+    custom.locations.autoServe = true;
+
     ## Tailscale
     age.secrets."tailscale/tywin.storage.ts.hillion.co.uk".file = ../../secrets/tailscale/tywin.storage.ts.hillion.co.uk.age;
     custom.tailscale = {
@@ -241,6 +243,15 @@
         };
       };
 
+    ## Downloads
+    custom.services.downloads = {
+      metadataPath = "/data/downloads/metadata";
+      downloadCachePath = "/data/downloads/torrents";
+      filmsPath = "/data/media/films";
+      tvPath = "/data/media/tv";
+    };
+
+    ## Firewall
     networking.firewall.interfaces."tailscale0".allowedTCPPorts = [
       80 # Caddy (restic.tywin.storage.ts.)
       14002 # Storj Dashboard (zfs.)
