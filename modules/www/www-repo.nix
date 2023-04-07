@@ -1,40 +1,68 @@
 { pkgs, lib, config, ... }:
 
+let
+  cfg = config.custom.www.www-repo;
+in
 {
-  config.systemd.tmpfiles.rules = [
-    "d /var/www 0755 ${config.services.caddy.user} ${config.services.caddy.group} - -"
-  ];
+  options.custom.www.www-repo = {
+    enable = lib.mkEnableOption "www-repo";
 
-  config.systemd.timers.clone-www-repo = {
-    wantedBy = [ "timers.target" ];
-    timerConfig = {
-      OnBootSec = "5m";
-      OnUnitInactiveSec = "60m";
-      Unit = "clone-www-repo.service";
+    location = lib.mkOption {
+      default = "/var/www";
+      type = lib.types.path;
+      description = "Location of the local www repository.";
+    };
+
+    remote = lib.mkOption {
+      default = "https://gitea.hillion.co.uk/JakeHillion/www.git";
+      type = lib.types.str;
+      description = "Remote to pull from for the www repository.";
+    };
+
+    branch = lib.mkOption {
+      default = "main";
+      type = lib.types.str;
+      description = "Branch to pull from the remote.";
     };
   };
 
-  config.systemd.services.clone-www-repo = {
-    description = "Clone and pull the www repo";
+  config = lib.mkIf cfg.enable {
+    systemd.tmpfiles.rules = [
+      "d /var/www 0755 ${config.services.caddy.user} ${config.services.caddy.group} - -"
+    ];
 
-    after = [ "network-online.target" ];
-    wants = [ "network-online.target" ];
-
-    serviceConfig = {
-      Type = "oneshot";
-      User = "${config.services.caddy.user}";
-      Group = "${config.services.caddy.group}";
+    systemd.timers.clone-www-repo = {
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnBootSec = "5m";
+        OnUnitInactiveSec = "60m";
+        Unit = "clone-www-repo.service";
+      };
     };
 
-    script = with pkgs; ''
-      if [ ! -d "/var/www/.git" ] ; then
-          ${git}/bin/git clone https://gitea.hillion.co.uk/JakeHillion/www.git /var/www
-      else
-          cd /var/www
-          ${git}/bin/git fetch
-          ${git}/bin/git reset --hard origin/main
-      fi
-    '';
+    systemd.services.clone-www-repo = {
+      description = "Clone and pull the www repo";
+
+      after = [ "network-online.target" ];
+      wants = [ "network-online.target" ];
+
+      serviceConfig = {
+        Type = "oneshot";
+        User = "${config.services.caddy.user}";
+        Group = "${config.services.caddy.group}";
+      };
+
+      script = ''
+        if [ ! -d "${cfg.path}/.git" ] ; then
+            ${pkgs.git}/bin/git clone ${cfg.remote} ${cfg.path}
+        else
+            cd ${cfg.path}
+            ${pkgs.git} remote set-url origin ${cfg.remote}
+            ${pkgs.git}/bin/git fetch
+            ${pkgs.git}/bin/git reset --hard origin/${cfg.branch}
+        fi
+      '';
+    };
   };
 }
 

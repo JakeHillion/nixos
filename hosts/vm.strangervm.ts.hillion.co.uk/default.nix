@@ -11,7 +11,6 @@
     ../../modules/drone/server.nix
     ../../modules/matrix/default.nix
     ../../modules/resilio/default.nix
-    ../../modules/www/global.nix
     ./hardware-configuration.nix
   ];
 
@@ -20,12 +19,33 @@
     device = "/dev/sda";
   };
 
-  ## Static Networking
+  ## Custom Services
+  config.custom.www.global.enable = true;
+
+  ## Networking
   config.networking.interfaces.ens18.ipv4.addresses = [{
     address = "10.72.164.3";
     prefixLength = 24;
   }];
   config.networking.defaultGateway = "10.72.164.1";
+
+  config.networking.firewall = {
+    allowedTCPPorts = lib.mkForce [
+      22 # SSH
+    ];
+    allowedUDPPorts = lib.mkForce [ ];
+    interfaces = {
+      ens18 = {
+        allowedTCPPorts = lib.mkForce [
+          80 # HTTP 1-2
+          443 # HTTPS 1-2
+        ];
+        allowedUDPPorts = lib.mkForce [
+          443 # HTTP 3
+        ];
+      };
+    };
+  };
 
   ## Tailscale
   config.age.secrets."tailscale/vm.strangervm.ts.hillion.co.uk".file = ../../secrets/tailscale/vm.strangervm.ts.hillion.co.uk.age;

@@ -28,6 +28,7 @@
             specialArgs = inputs;
             modules = [
               ./hosts/${fqdn}/default.nix
+              ./modules/default.nix
               agenix.nixosModules.default
               home-manager.nixosModules.default
               {
