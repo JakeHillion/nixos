@@ -1,90 +1,81 @@
 { config, pkgs, lib, ... }:
 
 {
-  config.system.stateVersion = "22.05";
-
-  config.networking.hostName = "vm";
-  config.networking.domain = "strangervm.ts.hillion.co.uk";
-
   imports = [
     ../../modules/common/default.nix
     ../../modules/drone/server.nix
     ../../modules/matrix/default.nix
-    ../../modules/resilio/default.nix
     ./hardware-configuration.nix
   ];
 
-  config.boot.loader.grub = {
-    enable = true;
-    device = "/dev/sda";
-  };
+  config = {
+    system.stateVersion = "22.05";
 
-  ## Custom Services
-  config.custom.www.global.enable = true;
+    networking.hostName = "vm";
+    networking.domain = "strangervm.ts.hillion.co.uk";
 
-  ## Networking
-  config.networking.interfaces.ens18.ipv4.addresses = [{
-    address = "10.72.164.3";
-    prefixLength = 24;
-  }];
-  config.networking.defaultGateway = "10.72.164.1";
+    boot.loader.grub = {
+      enable = true;
+      device = "/dev/sda";
+    };
 
-  config.networking.firewall = {
-    allowedTCPPorts = lib.mkForce [
-      22 # SSH
-    ];
-    allowedUDPPorts = lib.mkForce [ ];
-    interfaces = {
-      ens18 = {
-        allowedTCPPorts = lib.mkForce [
-          80 # HTTP 1-2
-          443 # HTTPS 1-2
-        ];
-        allowedUDPPorts = lib.mkForce [
-          443 # HTTP 3
-        ];
+    ## Custom Services
+    custom.www.global.enable = true;
+
+    ## Networking
+    networking.interfaces.ens18.ipv4.addresses = [{
+      address = "10.72.164.3";
+      prefixLength = 24;
+    }];
+    networking.defaultGateway = "10.72.164.1";
+
+    networking.firewall = {
+      allowedTCPPorts = lib.mkForce [
+        22 # SSH
+      ];
+      allowedUDPPorts = lib.mkForce [ ];
+      interfaces = {
+        ens18 = {
+          allowedTCPPorts = lib.mkForce [
+            80 # HTTP 1-2
+            443 # HTTPS 1-2
+          ];
+          allowedUDPPorts = lib.mkForce [
+            443 # HTTP 3
+          ];
+        };
       };
     };
-  };
 
-  ## Tailscale
-  config.age.secrets."tailscale/vm.strangervm.ts.hillion.co.uk".file = ../../secrets/tailscale/vm.strangervm.ts.hillion.co.uk.age;
-  config.tailscalePreAuth = config.age.secrets."tailscale/vm.strangervm.ts.hillion.co.uk".path;
+    ## Tailscale
+    age.secrets."tailscale/vm.strangervm.ts.hillion.co.uk".file = ../../secrets/tailscale/vm.strangervm.ts.hillion.co.uk.age;
+    tailscalePreAuth = config.age.secrets."tailscale/vm.strangervm.ts.hillion.co.uk".path;
 
-  ## Resilio Sync (Encrypted)
-  config.services.resilio.enable = true;
-  config.services.resilio.deviceName = "vm.strangervm";
-  config.services.resilio.directoryRoot = "/data/sync";
-  config.services.resilio.storagePath = "/data/sync/.sync";
+    ## Resilio Sync (Encrypted)
+    custom.resilio.enable = true;
+    services.resilio.deviceName = "vm.strangervm";
+    services.resilio.directoryRoot = "/data/sync";
+    services.resilio.storagePath = "/data/sync/.sync";
 
-  config.age.secrets."resilio/encrypted/dad" = {
-    file = ../../secrets/resilio/encrypted/dad.age;
-    owner = "rslsync";
-    group = "rslsync";
-  };
-  config.age.secrets."resilio/encrypted/projects" = {
-    file = ../../secrets/resilio/encrypted/projects.age;
-    owner = "rslsync";
-    group = "rslsync";
-  };
-  config.age.secrets."resilio/encrypted/resources" = {
-    file = ../../secrets/resilio/encrypted/resources.age;
-    owner = "rslsync";
-    group = "rslsync";
-  };
-  config.age.secrets."resilio/encrypted/sync" = {
-    file = ../../secrets/resilio/encrypted/sync.age;
-    owner = "rslsync";
-    group = "rslsync";
-  };
+    custom.resilio.folders =
+      let
+        folderNames = [
+          "dad"
+          "projects"
+          "resources"
+          "sync"
+        ];
+        mkFolder = name: {
+          name = name;
+          secret = {
+            name = "resilio/encrypted/${name}";
+            file = ../../secrets/resilio/encrypted/${name}.age;
+          };
+        };
+      in
+      builtins.map (mkFolder) folderNames;
 
-  config.resilioFolders = [
-    { name = "dad"; secretFile = config.age.secrets."resilio/encrypted/dad".path; }
-    { name = "projects"; secretFile = config.age.secrets."resilio/encrypted/projects".path; }
-    { name = "resources"; secretFile = config.age.secrets."resilio/encrypted/resources".path; }
-    { name = "sync"; secretFile = config.age.secrets."resilio/encrypted/sync".path; }
-  ];
-
-  ## Backups
-  config.services.postgresqlBackup.location = "/data/backup/postgres";
+    ## Backups
+    services.postgresqlBackup.location = "/data/backup/postgres";
+  };
 }

@@ -1,11 +1,6 @@
 { config, pkgs, lib, ... }:
 
 {
-  config.system.stateVersion = "22.05";
-
-  config.networking.hostName = "gendry";
-  config.networking.domain = "jakehillion-terminals.ts.hillion.co.uk";
-
   imports = [
     ../../modules/common/default.nix
     ../../modules/desktop/awesome/default.nix
@@ -13,36 +8,68 @@
     ./bluetooth.nix
     ./hardware-configuration.nix
     ./persist.nix
-    ./resilio.nix
   ];
 
-  config.boot.loader.systemd-boot.enable = true;
-  config.boot.loader.efi.canTouchEfiVariables = true;
+  config = {
+    system.stateVersion = "22.05";
 
-  ## Tailscale
-  config.age.secrets."tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk".file = ../../secrets/tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk.age;
-  config.tailscalePreAuth = config.age.secrets."tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk".path;
+    networking.hostName = "gendry";
+    networking.domain = "jakehillion-terminals.ts.hillion.co.uk";
 
-  ## Password (for interactive logins)
-  config.age.secrets."passwords/gendry.jakehillion-terminals.ts.hillion.co.uk/jake".file = ../../secrets/passwords/gendry.jakehillion-terminals.ts.hillion.co.uk/jake.age;
-  config.users.users."jake".passwordFile = config.age.secrets."passwords/gendry.jakehillion-terminals.ts.hillion.co.uk/jake".path;
+    boot.loader.systemd-boot.enable = true;
+    boot.loader.efi.canTouchEfiVariables = true;
 
-  config.security.sudo.wheelNeedsPassword = lib.mkForce true;
+    ## Resilio
+    custom.resilio.enable = true;
 
-  ## Enable btrfs compression
-  config.fileSystems."/data".options = [ "compress=zstd" ];
-  config.fileSystems."/nix".options = [ "compress=zstd" ];
+    services.resilio.deviceName = "gendry.jakehillion-terminals";
+    services.resilio.directoryRoot = "/data/sync";
+    services.resilio.storagePath = "/data/sync/.sync";
 
-  ## Graphics
-  config.boot.initrd.kernelModules = [ "amdgpu" ];
-  config.services.xserver.videoDrivers = [ "amdgpu" ];
+    custom.resilio.folders =
+      let
+        folderNames = [
+          "dad"
+          "joseph"
+          "projects"
+          "resources"
+          "sync"
+        ];
+        mkFolder = name: {
+          name = name;
+          secret = {
+            name = "resilio/plain/${name}";
+            file = ../../secrets/resilio/plain/${name}.age;
+          };
+        };
+      in
+      builtins.map (mkFolder) folderNames;
 
-  ## Spotify
-  config.home-manager.users.jake.services.spotifyd.settings = {
-    global = {
-      device_name = "Gendry";
-      device_type = "computer";
-      bitrate = 320;
+    ## Tailscale
+    age.secrets."tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk".file = ../../secrets/tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk.age;
+    tailscalePreAuth = config.age.secrets."tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk".path;
+
+    ## Password (for interactive logins)
+    age.secrets."passwords/gendry.jakehillion-terminals.ts.hillion.co.uk/jake".file = ../../secrets/passwords/gendry.jakehillion-terminals.ts.hillion.co.uk/jake.age;
+    users.users."jake".passwordFile = config.age.secrets."passwords/gendry.jakehillion-terminals.ts.hillion.co.uk/jake".path;
+
+    security.sudo.wheelNeedsPassword = lib.mkForce true;
+
+    ## Enable btrfs compression
+    fileSystems."/data".options = [ "compress=zstd" ];
+    fileSystems."/nix".options = [ "compress=zstd" ];
+
+    ## Graphics
+    boot.initrd.kernelModules = [ "amdgpu" ];
+    services.xserver.videoDrivers = [ "amdgpu" ];
+
+    ## Spotify
+    home-manager.users.jake.services.spotifyd.settings = {
+      global = {
+        device_name = "Gendry";
+        device_type = "computer";
+        bitrate = 320;
+      };
     };
   };
 }
