@@ -3,6 +3,7 @@
 {
   imports = [
     ./resilio.nix
+    ./tailscale.nix
     ./www/global.nix
     ./www/www-repo.nix
   ];

@@ -5,7 +5,6 @@
     ../home/default.nix
     ./shell.nix
     ./ssh.nix
-    ./tailscale.nix
   ];
 
   nix = {

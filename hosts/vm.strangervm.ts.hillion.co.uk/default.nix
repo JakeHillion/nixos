@@ -49,7 +49,10 @@
 
     ## Tailscale
     age.secrets."tailscale/vm.strangervm.ts.hillion.co.uk".file = ../../secrets/tailscale/vm.strangervm.ts.hillion.co.uk.age;
-    tailscalePreAuth = config.age.secrets."tailscale/vm.strangervm.ts.hillion.co.uk".path;
+    custom.tailscale = {
+      enable = true;
+      preAuthKeyFile = config.age.secrets."tailscale/vm.strangervm.ts.hillion.co.uk".path;
+    };
 
     ## Resilio Sync (Encrypted)
     custom.resilio.enable = true;
