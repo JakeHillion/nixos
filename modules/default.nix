@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ./desktop/awesome/default.nix
     ./resilio.nix
     ./tailscale.nix
     ./www/global.nix

@@ -3,7 +3,6 @@
 {
   imports = [
     ../../modules/common/default.nix
-    ../../modules/desktop/awesome/default.nix
     ../../modules/spotify/default.nix
     ./bluetooth.nix
     ./hardware-configuration.nix
@@ -18,6 +17,9 @@
 
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
+
+    ## Desktop
+    custom.desktop.awesome.enable = true;
 
     ## Resilio
     custom.resilio.enable = true;
