@@ -101,6 +101,15 @@
       ];
       suppress_key_server_warning = true;
       dynamic_thumbnails = true;
+      app_service_config_files = [
+        "/var/lib/heisenbridge/registration.yml"
+      ];
     };
+  };
+
+  config.services.heisenbridge = {
+    enable = true;
+    owner = "@jake:hillion.co.uk";
+    homeserver = "https://matrix.hillion.co.uk";
   };
 }
