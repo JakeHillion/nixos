@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ./backups/default.nix
     ./desktop/awesome/default.nix
     ./resilio.nix
     ./tailscale.nix

@@ -1,6 +1,8 @@
 { config, pkgs, lib, ... }:
 
 {
+  config.custom.backups.matrix.enable = true;
+
   ## Matrix (matrix.hillion.co.uk)
   config.age.secrets."matrix/matrix.hillion.co.uk/macaroon_secret_key" = {
     file = ../../secrets/matrix/matrix.hillion.co.uk/macaroon_secret_key.age;
@@ -12,14 +14,6 @@
     owner = "matrix-synapse";
     group = "matrix-synapse";
   };
-  config.age.secrets."backblaze/vm-strangervm-backups-matrix" = {
-    file = ../../secrets/backblaze/vm-strangervm-backups-matrix.age;
-  };
-  config.age.secrets."restic/b2-backups-matrix" = {
-    file = ../../secrets/restic/b2-backups-matrix.age;
-    owner = "postgres";
-    group = "postgres";
-  };
 
   config.services.postgresql = {
     enable = true;
@@ -30,28 +24,6 @@
         LC_COLLATE = "C"
         LC_CTYPE = "C";
     '';
-  };
-  config.services.postgresqlBackup = {
-    enable = true;
-    compression = "none"; # for better diffing
-    databases = [ "matrix-synapse" ];
-  };
-  config.services.restic.backups."matrix" = {
-    user = "postgres";
-    timerConfig = {
-      OnCalendar = "03:00";
-      RandomizedDelaySec = "30m";
-    };
-    repository = "b2:hillion-personal:backups/matrix";
-    pruneOpts = [
-      "--keep-daily 14"
-      "--keep-weekly 5"
-      "--keep-monthly 24"
-      "--keep-yearly 10"
-    ];
-    paths = [ "${config.services.postgresqlBackup.location}/matrix-synapse.sql" ];
-    passwordFile = config.age.secrets."restic/b2-backups-matrix".path;
-    environmentFile = config.age.secrets."backblaze/vm-strangervm-backups-matrix".path;
   };
 
   config.services.matrix-synapse = {
