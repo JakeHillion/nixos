@@ -4,6 +4,7 @@
   imports = [
     ./backups/default.nix
     ./desktop/awesome/default.nix
+    ./locations.nix
     ./resilio.nix
     ./services/matrix.nix
     ./tailscale.nix

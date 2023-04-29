@@ -20,6 +20,7 @@
 
     ## Custom Services
     custom = {
+      locations.autoServe = true;
       www.global.enable = true;
       services.matrix.enable = true;
     };

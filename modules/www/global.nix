@@ -2,6 +2,7 @@
 
 let
   cfg = config.custom.www.global;
+  locations = config.custom.locations.locations;
 in
 {
   options.custom.www.global = {
@@ -39,7 +40,7 @@ in
         reverse_proxy http://plex.mediaserver.ts.hillion.co.uk:8096
       '';
       virtualHosts."matrix.hillion.co.uk".extraConfig = ''
-        reverse_proxy http://vm.strangervm.ts.hillion.co.uk:8008
+        reverse_proxy http://${locations.services.matrix}:8008
       '';
       virtualHosts."unifi.hillion.co.uk".extraConfig = ''
         reverse_proxy https://unifi.unifi.ts.hillion.co.uk:8443 {
