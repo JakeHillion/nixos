@@ -27,9 +27,6 @@ in
         root * /var/www/blog.hillion.co.uk
         file_server
       '';
-      virtualHosts."ts.hillion.co.uk".extraConfig = ''
-        reverse_proxy http://10.48.62.14:8080
-      '';
       virtualHosts."gitea.hillion.co.uk".extraConfig = ''
         reverse_proxy http://gitea.gitea.ts.hillion.co.uk:3000
       '';
