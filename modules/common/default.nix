@@ -48,7 +48,7 @@
   };
 
   networking = rec {
-    nameservers = [ "1.1.1.1" "8.8.8.8" "100.100.100.100" ];
+    nameservers = [ "1.1.1.1" "8.8.8.8" ];
     networkmanager.dns = "none";
   };
   networking.firewall.enable = true;
