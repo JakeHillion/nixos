@@ -4,7 +4,6 @@
   imports = [
     ../../modules/common/default.nix
     ../../modules/drone/server.nix
-    ../../modules/matrix/default.nix
     ./hardware-configuration.nix
   ];
 
@@ -20,7 +19,10 @@
     };
 
     ## Custom Services
-    custom.www.global.enable = true;
+    custom = {
+      www.global.enable = true;
+      services.matrix.enable = true;
+    };
 
     ## Networking
     networking.interfaces.ens18.ipv4.addresses = [{

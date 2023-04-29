@@ -5,6 +5,7 @@
     ./backups/default.nix
     ./desktop/awesome/default.nix
     ./resilio.nix
+    ./services/matrix.nix
     ./tailscale.nix
     ./www/global.nix
     ./www/www-repo.nix
