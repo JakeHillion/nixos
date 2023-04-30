@@ -6,12 +6,15 @@
     ./chia.nix
     ./common/hostinfo.nix
     ./desktop/awesome/default.nix
+    ./filesystems.nix
     ./impermanence.nix
     ./locations.nix
     ./resilio.nix
     ./services/downloads.nix
+    ./services/emby.nix
     ./services/mastodon/default.nix
     ./services/matrix.nix
+    ./services/plex.nix
     ./services/version_tracker.nix
     ./services/zigbee2mqtt.nix
     ./storj.nix

@@ -97,4 +97,8 @@ in
 
   # Deluge Secrets
   "deluge/auth.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
+
+  # Filesystem Secrets
+  "filesystems/films.age".publicKeys = jake_users ++ [ ts.storage.tywin ts.terminals.jakehillion.gendry ];
+  "filesystems/tv.age".publicKeys = jake_users ++ [ ts.storage.tywin ts.terminals.jakehillion.gendry ];
 }

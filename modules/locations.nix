@@ -14,16 +14,22 @@ in
       default = {
         services = {
           downloads = "tywin.storage.ts.hillion.co.uk";
+          emby = "gendry.jakehillion-terminals.ts.hillion.co.uk";
           mastodon = "vm.strangervm.ts.hillion.co.uk";
           matrix = "vm.strangervm.ts.hillion.co.uk";
+          plex = "gendry.jakehillion-terminals.ts.hillion.co.uk";
         };
       };
     };
   };
 
   config = lib.mkIf cfg.autoServe {
-    custom.services.downloads.enable = cfg.locations.services.downloads == config.networking.fqdn;
-    custom.services.mastodon.enable = cfg.locations.services.mastodon == config.networking.fqdn;
-    custom.services.matrix.enable = cfg.locations.services.matrix == config.networking.fqdn;
+    custom.services = {
+      emby.enable = cfg.locations.services.emby == config.networking.fqdn;
+      mastodon.enable = cfg.locations.services.mastodon == config.networking.fqdn;
+      matrix.enable = cfg.locations.services.matrix == config.networking.fqdn;
+      plex.enable = cfg.locations.services.plex == config.networking.fqdn;
+      downloads.enable = cfg.locations.services.downloads == config.networking.fqdn;
+    };
   };
 }
