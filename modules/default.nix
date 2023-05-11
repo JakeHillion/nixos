@@ -3,6 +3,7 @@
 {
   imports = [
     ./backups/default.nix
+    ./chia.nix
     ./desktop/awesome/default.nix
     ./locations.nix
     ./resilio.nix

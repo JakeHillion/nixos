@@ -56,5 +56,19 @@
         };
       in
       builtins.map (mkFolder) folderNames;
+
+    ## Chia
+    age.secrets."chia/farmer.key" = {
+      file = ../../secrets/chia/farmer.key.age;
+      owner = "chia";
+      group = "chia";
+    };
+    custom.chia = {
+      enable = true;
+      path = "/data/chia";
+      keyFile = config.age.secrets."chia/farmer.key".path;
+      targetAddress = "xch1tl87mjd9zpugs7qy2ysc3j4qlftqlyjn037jywq6v2y4kp22g74qahn6sw";
+      plotDirectories = [ ];
+    };
   };
 }
