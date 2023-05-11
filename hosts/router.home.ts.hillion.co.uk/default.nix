@@ -137,6 +137,14 @@
             option domain-name-servers 1.1.1.1, 8.8.8.8;
           }
         '';
+        machines = [
+          {
+            # Zigbee Bridge
+            ethernetAddress = "48:3f:da:2a:86:7a";
+            ipAddress = "10.239.19.40";
+            hostName = "tasmota-2A867A-1658";
+          }
+        ];
       };
     };
 
