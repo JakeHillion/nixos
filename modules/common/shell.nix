@@ -6,8 +6,13 @@
   config.programs.thefuck.enable = true;
   config.programs.zsh = {
     enable = true;
-    histSize = 100000;
+    histSize = 1000000;
     histFile = "$HOME/.zsh_history";
+
+    setOptions = [
+      "INC_APPEND_HISTORY"
+      "SHARE_HISTORY"
+    ];
 
     syntaxHighlighting = {
       enable = true;
