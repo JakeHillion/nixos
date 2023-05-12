@@ -60,4 +60,10 @@
     device = "/data/system/var/lib/bluetooth";
     options = [ "bind" ];
   };
+
+  ## Minecraft
+  fileSystems."/home/jake/.local/share/PrismLauncher" = {
+    device = "/data/users/jake/.local/share/PrismLauncher";
+    options = [ "bind" ];
+  };
 }

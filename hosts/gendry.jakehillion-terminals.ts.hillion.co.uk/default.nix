@@ -54,10 +54,6 @@
       preAuthKeyFile = config.age.secrets."tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk".path;
     };
 
-    ## Password (for interactive logins)
-    age.secrets."passwords/gendry.jakehillion-terminals.ts.hillion.co.uk/jake".file = ../../secrets/passwords/gendry.jakehillion-terminals.ts.hillion.co.uk/jake.age;
-    users.users."jake".passwordFile = config.age.secrets."passwords/gendry.jakehillion-terminals.ts.hillion.co.uk/jake".path;
-
     security.sudo.wheelNeedsPassword = lib.mkForce true;
 
     ## Enable btrfs compression
@@ -75,6 +71,17 @@
         device_type = "computer";
         bitrate = 320;
       };
+    };
+
+    ## Password (for interactive logins)
+    age.secrets."passwords/gendry.jakehillion-terminals.ts.hillion.co.uk/jake".file = ../../secrets/passwords/gendry.jakehillion-terminals.ts.hillion.co.uk/jake.age;
+
+    users.users."${config.custom.user}" = {
+      passwordFile = config.age.secrets."passwords/gendry.jakehillion-terminals.ts.hillion.co.uk/jake".path;
+
+      packages = with pkgs; [
+        prismlauncher
+      ];
     };
   };
 }
