@@ -19,6 +19,7 @@ microserver.parents.ts.hillion.co.uk ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL0cjjN
 pbs.proxmox.ts.hillion.co.uk ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGGY6ky2sQjg/bLRUWOUERmAOqboAjy+9PkE8sU+angx
 plex.mediaserver.ts.hillion.co.uk ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM1sk3FOsuf4ZPrhGBYprQF/oVk7jITaAaVmBO6xwbdg
 router.alpha.proxmox.ts.hillion.co.uk ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGL5Asl7OhF7R2a/YJNNv+fIE/VPw8ZCr+ABI7wlAdJI
+router.home.ts.hillion.co.uk ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAlCj/i2xprN6h0Ik2tthOJQy6Qwq3Ony73+yfbHYTFu
 router.stranger.proxmox.ts.hillion.co.uk ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHq9tITN59FJfGoyOPNgP1QyJ0ohbVQS8OZtRO960Uxk
 stranger.proxmox.ts.hillion.co.uk ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE9d5u/VaeRTQUQfu5JzCRa+zij/DtrPNWOfr+jM4iDp
 unifi.unifi.ts.hillion.co.uk ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOeayV2pu0IpZS0OT17c4DqkILCZVRl1Y3s2fu087QkO
