@@ -19,6 +19,7 @@ let
             parents = { microserver = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL0cjjNQPnJwpu4wcYmvfjB1jlIfZwMxT+3nBusoYQFr root@microserver"; };
             strangervm = { vm = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINb9mgyD/G3Rt6lvO4c0hoaVOlLE8e3+DUfAoB1RI5cy root@vm"; };
             terminals = { jakehillion = { gendry = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPXM5aDvNv4MTITXAvJWSS2yvr/mbxJE31tgwJtcl38c root@gendry"; }; };
+            storage = { tywin = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGATsjWO0qZNFp2BhfgDuWi+e/ScMkFxp79N2OZoed1k root@tywin"; };
           };
         };
       };
@@ -38,6 +39,7 @@ in
   "tailscale/microserver.parents.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.parents.microserver ];
   "tailscale/router.home.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.home.router ];
   "tailscale/vm.strangervm.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
+  "tailscale/tywin.storage.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
 
   # Resilio Sync Secrets
   ## Encrypted Resilio Sync Secrets
