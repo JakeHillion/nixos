@@ -11,6 +11,7 @@
 
     networking.hostName = "tywin";
     networking.domain = "storage.ts.hillion.co.uk";
+    networking.hostId = "2a9b6df5";
 
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
@@ -22,7 +23,12 @@
       preAuthKeyFile = config.age.secrets."tailscale/tywin.storage.ts.hillion.co.uk".path;
     };
 
-    ## Enable btrfs compression
+    ## Filesystems
     fileSystems."/".options = [ "compress=zstd" ];
+    boot.supportedFilesystems = [ "zfs" ];
+    boot.zfs = {
+      forceImportRoot = false;
+      extraPools = [ "data" ];
+    };
   };
 }
