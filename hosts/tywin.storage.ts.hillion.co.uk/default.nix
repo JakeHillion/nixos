@@ -30,5 +30,31 @@
       forceImportRoot = false;
       extraPools = [ "data" ];
     };
+
+    ## Resilio
+    custom.resilio.enable = true;
+
+    services.resilio.deviceName = "gendry.jakehillion-terminals";
+    services.resilio.directoryRoot = "/data/users/jake/sync";
+    services.resilio.storagePath = "/data/users/jake/sync/.sync";
+
+    custom.resilio.folders =
+      let
+        folderNames = [
+          "dad"
+          "joseph"
+          "projects"
+          "resources"
+          "sync"
+        ];
+        mkFolder = name: {
+          name = name;
+          secret = {
+            name = "resilio/plain/${name}";
+            file = ../../secrets/resilio/plain/${name}.age;
+          };
+        };
+      in
+      builtins.map (mkFolder) folderNames;
   };
 }

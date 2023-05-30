@@ -49,11 +49,11 @@ in
   "resilio/encrypted/sync.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
 
   ## Read/Write Resilio Sync Secrets
-  "resilio/plain/dad.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ];
-  "resilio/plain/joseph.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ];
-  "resilio/plain/projects.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ];
-  "resilio/plain/resources.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ];
-  "resilio/plain/sync.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ];
+  "resilio/plain/dad.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ts.storage.tywin ];
+  "resilio/plain/joseph.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ts.storage.tywin ];
+  "resilio/plain/projects.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ts.storage.tywin ];
+  "resilio/plain/resources.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ts.storage.tywin ];
+  "resilio/plain/sync.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ts.storage.tywin ];
 
   # Matrix Secrets
   "matrix/matrix.hillion.co.uk/macaroon_secret_key.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
