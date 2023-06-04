@@ -95,12 +95,15 @@
                 "eth1",
                 "eth2",
               } ct state established,related counter accept comment "Allow established back to LANs"
+
+              ip daddr 10.64.50.20 tcp dport 8444 counter accept comment "Chia"
             }
           }
 
           table ip nat {
             chain prerouting {
-              type nat hook output priority filter; policy accept;
+              type nat hook prerouting priority filter; policy accept;
+              iifname eth0 tcp dport 8444 counter dnat to 10.64.50.20
             }
 
             chain postrouting {
@@ -143,6 +146,12 @@
             ethernetAddress = "48:3f:da:2a:86:7a";
             ipAddress = "10.239.19.40";
             hostName = "tasmota-2A867A-1658";
+          }
+          {
+            # tywin.storage.ts.hillion.co.uk
+            ethernetAddress = "c8:7f:54:6d:e1:03";
+            ipAddress = "10.64.50.20";
+            hostName = "tywin";
           }
         ];
       };

@@ -23,6 +23,10 @@ in
       type = with lib.types; nullOr (listOf str);
       default = null;
     };
+    openFirewall = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -75,6 +79,10 @@ in
         IOSchedulingClass = "best-effort";
         IOSchedulingPriority = 7;
       };
+    };
+
+    networking.firewall = lib.mkIf cfg.openFirewall {
+      allowedTCPPorts = [ 8444 ];
     };
   };
 }
