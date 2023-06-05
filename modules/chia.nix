@@ -1,7 +1,8 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, nixpkgs-chia, ... }:
 
 let
   cfg = config.custom.chia;
+  chia = nixpkgs-chia.legacyPackages.x86_64-linux.chia;
 in
 {
   options.custom.chia = {
@@ -30,7 +31,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [ chia ];
+    environment.systemPackages = [ chia ];
 
     users.groups.chia = { };
     users.users.chia = {
@@ -44,8 +45,8 @@ in
       description = "Chia daemon.";
       wantedBy = [ "multi-user.target" ];
 
-      preStart = with pkgs; lib.strings.concatStringsSep "\n" ([ "${pkgs.chia}/bin/chia init" ]
-        ++ (if cfg.keyFile == null then [ ] else [ "${pkgs.chia}/bin/chia keys add -f ${cfg.keyFile}" ])
+      preStart = lib.strings.concatStringsSep "\n" ([ "${chia}/bin/chia init" ]
+        ++ (if cfg.keyFile == null then [ ] else [ "${chia}/bin/chia keys add -f ${cfg.keyFile}" ])
         ++ (if cfg.targetAddress == null then [ ] else [
         ''
           ${pkgs.yq-go}/bin/yq e \
@@ -59,8 +60,8 @@ in
               -i ${cfg.path}/.chia/mainnet/config/config.yaml
         ''
       ]));
-      script = with pkgs; "${pkgs.chia}/bin/chia start farmer";
-      preStop = with pkgs; "${pkgs.chia}/bin/chia stop -d farmer";
+      script = "${chia}/bin/chia start farmer";
+      preStop = "${chia}/bin/chia stop -d farmer";
 
       serviceConfig = {
         Type = "forking";

@@ -2,6 +2,7 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-22.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs-chia.url = "github:nixos/nixpkgs?rev=0305391fb65b5bdaa8af3c48275ec0df1cdcc34e";
 
     darwin.url = "github:lnl7/nix-darwin/master";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
@@ -15,7 +16,7 @@
 
   description = "Hillion Nix flake";
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, agenix, home-manager, darwin, ... }@inputs: {
+  outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-chia, agenix, home-manager, darwin, ... }@inputs: {
     nixosConfigurations =
       let
         fqdns = builtins.attrNames (builtins.readDir ./hosts);
