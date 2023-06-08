@@ -34,7 +34,7 @@
     ## Resilio
     custom.resilio.enable = true;
 
-    services.resilio.deviceName = "gendry.jakehillion-terminals";
+    services.resilio.deviceName = "tywin.storage";
     services.resilio.directoryRoot = "/data/users/jake/sync";
     services.resilio.storagePath = "/data/users/jake/sync/.sync";
 
