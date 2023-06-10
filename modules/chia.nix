@@ -16,6 +16,10 @@ in
       type = with lib.types; nullOr str;
       default = null;
     };
+    keyLabel = lib.mkOption {
+      type = lib.types.str;
+      default = "default";
+    };
     targetAddress = lib.mkOption {
       type = with lib.types; nullOr str;
       default = null;
@@ -46,7 +50,7 @@ in
       wantedBy = [ "multi-user.target" ];
 
       preStart = lib.strings.concatStringsSep "\n" ([ "${chia}/bin/chia init" ]
-        ++ (if cfg.keyFile == null then [ ] else [ "${chia}/bin/chia keys add -f ${cfg.keyFile}" ])
+        ++ (if cfg.keyFile == null then [ ] else [ "${chia}/bin/chia keys add -f ${cfg.keyFile} -l '${cfg.keyLabel}'" ])
         ++ (if cfg.targetAddress == null then [ ] else [
         ''
           ${pkgs.yq-go}/bin/yq e \
@@ -87,4 +91,5 @@ in
     };
   };
 }
+
 

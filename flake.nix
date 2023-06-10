@@ -2,7 +2,7 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-22.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-chia.url = "github:nixos/nixpkgs?rev=0305391fb65b5bdaa8af3c48275ec0df1cdcc34e";
+    nixpkgs-chia.url = "github:lourkeur/nixpkgs?rev=e2b683787475d344892bddea9ab413dc611b894e";
 
     darwin.url = "github:lnl7/nix-darwin/master";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
