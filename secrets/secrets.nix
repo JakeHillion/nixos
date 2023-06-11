@@ -80,4 +80,7 @@ in
 
   # Chia Secrets
   "chia/farmer.key.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
+
+  # Storj Secrets
+  "storj/tywin/zfs_auth.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
 }

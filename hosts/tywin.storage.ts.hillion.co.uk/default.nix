@@ -71,5 +71,28 @@
       targetAddress = "xch1tl87mjd9zpugs7qy2ysc3j4qlftqlyjn037jywq6v2y4kp22g74qahn6sw";
       plotDirectories = [ ];
     };
+
+    ## Storj
+    age.secrets."storj/zfs_auth" = {
+      file = ../../secrets/storj/tywin/zfs_auth.age;
+      owner = "storj";
+      group = "storj";
+    };
+    custom.storj = {
+      enable = true;
+      openFirewall = true;
+      email = "jake+storj@hillion.co.uk";
+      wallet = "0x03cebe2608945D51f0bcE6c5ef70b4948fCEcfEe";
+    };
+    custom.storj.instances.zfs = {
+      configDir = "/data/storj/config";
+      identityDir = "/data/storj/identity";
+      storage = "500GB";
+      consoleAddress = "100.115.31.91:14002";
+      serverPort = 28967;
+      externalAddress = "zfs.tywin.storj.hillion.co.uk:28967";
+      authorizationTokenFile = config.age.secrets."storj/zfs_auth".path;
+    };
+    networking.firewall.interfaces."tailscale0".allowedTCPPorts = [ 14002 ];
   };
 }

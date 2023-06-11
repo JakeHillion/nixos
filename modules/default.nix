@@ -9,6 +9,7 @@
     ./resilio.nix
     ./services/mastodon/default.nix
     ./services/matrix.nix
+    ./storj.nix
     ./tailscale.nix
     ./www/global.nix
     ./www/www-repo.nix
