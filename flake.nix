@@ -21,6 +21,11 @@
       let
         fqdns = builtins.attrNames (builtins.readDir ./hosts);
         isNixos = fqdn: !builtins.pathExists ./hosts/${fqdn}/darwin;
+        getSystemOverlays = system: nixpkgsConfig: [
+          (final: prev: {
+            "storj" = final.callPackage ./pkgs/storj.nix { };
+          })
+        ];
         mkHost = fqdn:
           let system = builtins.readFile ./hosts/${fqdn}/system;
           in
@@ -32,9 +37,10 @@
               ./modules/default.nix
               agenix.nixosModules.default
               home-manager.nixosModules.default
-              {
+              ({ config, ... }: {
                 system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
-              }
+                nixpkgs.overlays = getSystemOverlays config.nixpkgs.hostPlatform.system config.nixpkgs.config;
+              })
             ];
           };
       in
