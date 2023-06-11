@@ -38,6 +38,7 @@
               agenix.nixosModules.default
               home-manager.nixosModules.default
               ({ config, ... }: {
+                nix.registry.nixpkgs.flake = nixpkgs; # pin `nix shell` nixpkgs
                 system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
                 nixpkgs.overlays = getSystemOverlays config.nixpkgs.hostPlatform.system config.nixpkgs.config;
               })
