@@ -25,11 +25,13 @@
 
     ## Filesystems
     fileSystems."/".options = [ "compress=zstd" ];
+
     boot.supportedFilesystems = [ "zfs" ];
     boot.zfs = {
       forceImportRoot = false;
       extraPools = [ "data" ];
     };
+    boot.kernelParams = [ "zfs.zfs_arc_max=25769803776" ];
 
     fileSystems."/mnt/d0".options = [ "x-systemd.mount-timeout=3m" ];
 
