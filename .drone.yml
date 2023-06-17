@@ -1,21 +1,26 @@
 ---
 kind: pipeline
 type: docker
-name: default
+name: check
 
 steps:
   - name: lint
-    image: nixos/nix:2.11.1
+    image: nixos/nix:2.16.1
     commands:
       - nix --extra-experimental-features 'nix-command flakes' fmt
       - git diff --exit-code
 
   - name: check
-    image: nixos/nix:2.11.1
+    image: nixos/nix:2.16.1
     commands:
       - nix --extra-experimental-features 'nix-command flakes' flake check
+
+trigger:
+  event:
+    exclude:
+    - tag
 ---
 kind: signature
-hmac: da929dc55d2e11b17bc29e48293b78ba1e3588df90a87e022e7dc4f1cb40d6e5
+hmac: 27c93405b251bb8bc80c82d7271702f80753ff63a0422678e62bbe2c4a025840
 
 ...

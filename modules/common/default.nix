@@ -52,4 +52,6 @@
     networkmanager.dns = "none";
   };
   networking.firewall.enable = true;
+
+  custom.hostinfo.enable = true;
 }
