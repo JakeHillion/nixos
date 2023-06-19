@@ -65,9 +65,15 @@
       enable = true;
       listeners = [
         {
-          users.zigbee2mqtt = {
-            acl = [ "readwrite #" ];
-            hashedPassword = "$7$101$ZrD6C+b7Xo/fUoGw$Cf/6Xm52Syv2G+5+BqpUWRs+zrTrTvBL9EFzks9q/Q6ZggXVcp+Bi3ZpmQT5Du9+42G30Y7G3hWpYbA8j1ooWg==";
+          users = {
+            zigbee2mqtt = {
+              acl = [ "readwrite #" ];
+              hashedPassword = "$7$101$ZrD6C+b7Xo/fUoGw$Cf/6Xm52Syv2G+5+BqpUWRs+zrTrTvBL9EFzks9q/Q6ZggXVcp+Bi3ZpmQT5Du9+42G30Y7G3hWpYbA8j1ooWg==";
+            };
+            homeassistant = {
+              acl = [ "readwrite #" ];
+              hashedPassword = "$7$101$Uah+//t9m3pt6PXx$q1F410A+k38tp+ICQjRQy2fB/Gb15sodqYHgC7NUCVChMQo4Ib9eq3zpstdMbu1j//h8/zRl/ZegxDH6kjT6Dw==";
+            };
           };
         }
       ];
@@ -85,6 +91,7 @@
           port = "/dev/ttyUSB0";
         };
         frontend = true;
+        homeassistant = true;
         advanced = {
           channel = 15;
         };
