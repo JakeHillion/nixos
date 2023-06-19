@@ -50,11 +50,52 @@
         RestartSec = 10;
       };
     };
-    networking.firewall.interfaces."tailscale0".allowedTCPPorts = [ 8888 ];
 
     ## Run a persistent iperf3 server
     services.iperf3.enable = true;
     services.iperf3.openFirewall = true;
+
+    ## Home automation
+    age.secrets."mqtt/zigbee2mqtt.yaml" = {
+      file = ../../secrets/mqtt/zigbee2mqtt.age;
+      owner = "zigbee2mqtt";
+    };
+
+    services.mosquitto = {
+      enable = true;
+      listeners = [
+        {
+          users.zigbee2mqtt = {
+            acl = [ "readwrite #" ];
+            hashedPassword = "$7$101$ZrD6C+b7Xo/fUoGw$Cf/6Xm52Syv2G+5+BqpUWRs+zrTrTvBL9EFzks9q/Q6ZggXVcp+Bi3ZpmQT5Du9+42G30Y7G3hWpYbA8j1ooWg==";
+          };
+        }
+      ];
+    };
+    services.zigbee2mqtt = {
+      enable = true;
+      settings = {
+        permit_join = false;
+        mqtt = {
+          server = "mqtt://microserver.home.ts.hillion.co.uk:1883";
+          user = "zigbee2mqtt";
+          password = "!${config.age.secrets."mqtt/zigbee2mqtt.yaml".path} password";
+        };
+        serial = {
+          port = "/dev/ttyUSB0";
+        };
+        frontend = true;
+        advanced = {
+          channel = 15;
+        };
+      };
+    };
+
+    networking.firewall.interfaces."tailscale0".allowedTCPPorts = [
+      1883 # MQTT server
+      8080 # Zigbee2MQTT frontend
+      8888 # Zigbee bridge simple proxy
+    ];
   };
 }
 

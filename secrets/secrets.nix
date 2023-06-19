@@ -86,4 +86,7 @@ in
 
   # Version tracker secrets
   "version_tracker/ssh.key.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
+
+  # Home Automation secrets
+  "mqtt/zigbee2mqtt.age".publicKeys = jake_users ++ [ ts.home.microserver ];
 }
