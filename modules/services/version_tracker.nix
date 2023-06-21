@@ -52,13 +52,26 @@ in
             hostname=''${path##*/}
             if test -f "hosts/$hostname/darwin"; then continue; fi
 
-            if rev=$(${curl}/bin/curl -s --connect-timeout 15 http://$hostname:30653/nixos/system/configurationRevision); then
-                echo "$hostname: $rev"
-                if ! ${git}/bin/git tag -f "live/$hostname" $rev; then
+            if rev=$(${curl}/bin/curl -s --connect-timeout 15 http://$hostname:30653/current/nixos/system/configurationRevision); then
+                echo "$hostname: $rev (current)"
+                if ${git}/bin/git tag -f "current/$hostname" "$rev"; then
+                    ${git}/bin/git push -f origin "current/$hostname"
+                else
                     echo "WARNING: $hostname points to invalid ref!"
-                    continue
                 fi
-                ${git}/bin/git push -f origin "live/$hostname"
+                
+            else
+                echo "$hostname: failed to reach"
+            fi
+
+            if rev=$(${curl}/bin/curl -s --connect-timeout 15 http://$hostname:30653/booted/nixos/system/configurationRevision); then
+                echo "$hostname: $rev (booted)"
+                if ${git}/bin/git tag -f "booted/$hostname" "$rev"; then
+                    ${git}/bin/git push -f origin "booted/$hostname"
+                else
+                    echo "WARNING: $hostname points to invalid ref!"
+                fi
+                
             else
                 echo "$hostname: failed to reach"
             fi

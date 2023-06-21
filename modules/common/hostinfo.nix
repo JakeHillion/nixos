@@ -9,13 +9,58 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    services.caddy = {
-      enable = true;
+    systemd.services.hostinfo = {
+      description = "Expose hostinfo over HTTP.";
 
-      virtualHosts.":30653".extraConfig = ''
-        respond /nixos/system/configurationRevision ${config.system.configurationRevision} 200
-        respond 404
-      '';
+      wantedBy = [ "multi-user.target" ];
+
+      script = "${pkgs.writers.writePerl "hostinfo" {
+        libraries = with pkgs; [
+          perl536Packages.HTTPDaemon
+        ];
+      } ''
+        use v5.10;
+        use warnings;
+        use strict;
+
+        use HTTP::Daemon;
+        use HTTP::Status;
+
+        my $d = HTTP::Daemon->new(LocalPort => 30653) || die;
+        while (my $c = $d->accept) {
+          while (my $r = $c->get_request) {
+            if ($r->method eq 'GET') {
+              given ($r->uri->path) {
+                when ('/current/nixos/system/configurationRevision') {
+                  $c->send_file_response("/nix/var/nix/gcroots/current-system/etc/flake-version");
+                }
+                when ('/booted/nixos/system/configurationRevision') {
+                  $c->send_file_response("/nix/var/nix/gcroots/booted-system/etc/flake-version");
+                }
+                default {
+                  $c->send_error(404);
+                }
+              }
+            } else {
+              $c->send_error(RC_FORBIDDEN);
+            }
+          }
+          $c->close;
+          undef($c);
+        }
+      ''}";
+
+      serviceConfig = {
+        DynamicUser = true;
+        Restart = "always";
+      };
+    };
+
+    environment.etc = {
+      flake-version = {
+        source = builtins.toFile "flake-version" "${config.system.configurationRevision}";
+        mode = "0444";
+      };
     };
 
     networking.firewall.interfaces."tailscale0".allowedTCPPorts = [ 30653 ];
