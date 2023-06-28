@@ -99,6 +99,8 @@
               ip daddr 10.64.50.20 tcp dport 8444 counter accept comment "Chia"
               ip daddr 10.64.50.20 tcp dport 28967 counter accept comment "zfs.tywin.storj"
               ip daddr 10.64.50.20 udp dport 28967 counter accept comment "zfs.tywin.storj"
+              ip daddr 10.64.50.20 tcp dport 28968 counter accept comment "d0.tywin.storj"
+              ip daddr 10.64.50.20 udp dport 28968 counter accept comment "d0.tywin.storj"
             }
           }
 
@@ -108,6 +110,8 @@
               iifname eth0 tcp dport 8444 counter dnat to 10.64.50.20
               iifname eth0 tcp dport 28967 counter dnat to 10.64.50.20
               iifname eth0 udp dport 28967 counter dnat to 10.64.50.20
+              iifname eth0 tcp dport 28968 counter dnat to 10.64.50.20
+              iifname eth0 udp dport 28968 counter dnat to 10.64.50.20
             }
 
             chain postrouting {

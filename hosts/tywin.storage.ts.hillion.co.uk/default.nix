@@ -90,15 +90,36 @@
       email = "jake+storj@hillion.co.uk";
       wallet = "0x03cebe2608945D51f0bcE6c5ef70b4948fCEcfEe";
     };
-    custom.storj.instances.zfs = {
-      configDir = "/data/storj/config";
-      identityDir = "/data/storj/identity";
-      storage = "500GB";
-      consoleAddress = "100.115.31.91:14002";
-      serverPort = 28967;
-      externalAddress = "zfs.tywin.storj.hillion.co.uk:28967";
-      authorizationTokenFile = config.age.secrets."storj/zfs_auth".path;
-    };
-    networking.firewall.interfaces."tailscale0".allowedTCPPorts = [ 14002 ];
+
+    custom.storj.instances =
+      let
+        mkStorj = index: {
+          name = "d${toString index}";
+          value = {
+            configDir = "/mnt/d${toString index}/storj/config";
+            identityDir = "/mnt/d${toString index}/storj/identity";
+
+            serverPort = 28967 + 1 + index;
+            externalAddress = "d${toString index}.tywin.storj.hillion.co.uk:${toString (28967 + 1 + index)}";
+            consoleAddress = "100.115.31.91:${toString (14002 + 1 + index)}";
+
+            storage = "1000GB";
+          };
+        };
+        instances = builtins.genList (x: x) 1;
+      in
+      builtins.listToAttrs (builtins.map mkStorj instances) // {
+        zfs = {
+          configDir = "/data/storj/config";
+          identityDir = "/data/storj/identity";
+          storage = "500GB";
+          consoleAddress = "100.115.31.91:14002";
+          serverPort = 28967;
+          externalAddress = "zfs.tywin.storj.hillion.co.uk:28967";
+          authorizationTokenFile = config.age.secrets."storj/zfs_auth".path;
+        };
+      };
+
+    networking.firewall.interfaces."tailscale0".allowedTCPPorts = [ 14002 14003 ];
   };
 }

@@ -78,13 +78,14 @@ in
                   "--operator.wallet '${cfg.wallet}'"
                   "--console.address '${value.consoleAddress}'"
                   "--server.address ':${toString value.serverPort}'"
+                  "--server.private-address ':0'"
                   "--storage.allocated-disk-space '${value.storage}'"
                 ] ++ (if value.externalAddress == null then [ ] else [
                   "--contact.external-address '${value.externalAddress}'"
                 ]));
               in
               with pkgs;
-              if value.authorizationTokenFile == null then "" else with pkgs; ''
+              (if value.authorizationTokenFile == null then "" else ''
                 if ! grep -c BEGIN ${value.identityDir}/ca.cert; then
                   rm -rf ${value.identityDir}/storagenode
                   ${storj}/bin/identity create storagenode \
@@ -96,8 +97,8 @@ in
                   mv ${value.identityDir}/storagenode/* ${value.identityDir}
                   rm -d ${value.identityDir}/storagenode
                 fi
-              '' + ''
-                if ! test -d ${value.configDir}/storage/blobs; then
+              '') + ''
+                if ! test -f ${value.configDir}/config.yaml; then
                   ${storj}/bin/storagenode setup ${args}
                 fi
                 ${storj}/bin/storagenode run ${args}
@@ -125,6 +126,3 @@ in
     };
   };
 }
-
-
-
