@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchFromGitea, buildGoModule, ... }:
+{ stdenv, lib, fetchFromGitea, buildGoModule, buildNpmPackage, ... }:
 
 let
   version = "1.82.1";
@@ -21,6 +21,14 @@ let
       githubId = 5712856;
     }];
   };
+
+  web = buildNpmPackage rec {
+    pname = "storagenode-web";
+    inherit version meta;
+    src = "${src}/web/storagenode";
+
+    vendorHash = "sha256-Sz/aM1mYpYnnVc6PTfldaiHQPT8TZCPfB6vQpzM2GDo=";
+  };
 in
 buildGoModule rec {
   pname = "storagenode";
@@ -30,4 +38,8 @@ buildGoModule rec {
     "cmd/storagenode"
     "cmd/identity"
   ];
+
+  preFixup = ''
+    cp -r ${web} web/storagenode/dist
+  '';
 }
