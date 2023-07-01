@@ -21,6 +21,8 @@
     custom.tailscale = {
       enable = true;
       preAuthKeyFile = config.age.secrets."tailscale/tywin.storage.ts.hillion.co.uk".path;
+      ipv4Addr = "100.115.31.91";
+      ipv6Addr = "fd7a:115c:a1e0:ab12:4843:cd96:6273:1f5b";
     };
 
     ## Filesystems
@@ -66,6 +68,68 @@
         };
       in
       builtins.map (mkFolder) folderNames;
+
+    ## Restic
+    age.secrets."restic/128G.key" = {
+      file = ../../secrets/restic/128G.age;
+      owner = "restic";
+      group = "restic";
+    };
+    age.secrets."restic/1.6T.key" = {
+      file = ../../secrets/restic/1.6T.age;
+      owner = "restic";
+      group = "restic";
+    };
+
+    services.restic.server = {
+      enable = true;
+      appendOnly = true;
+      extraFlags = [ "--no-auth" ];
+      dataDir = "/data/backups/restic";
+      listenAddress = "127.0.0.1:8000"; # TODO: can this be a Unix socket?
+    };
+    services.caddy = {
+      enable = true;
+      virtualHosts."http://restic.tywin.storage.ts.hillion.co.uk".extraConfig = ''
+        bind ${config.custom.tailscale.ipv4Addr} ${config.custom.tailscale.ipv6Addr}
+        reverse_proxy http://localhost:8000
+      '';
+    };
+    services.restic.backups."prune-128G" = {
+      repository = "/data/backups/restic/128G";
+      user = "restic";
+      passwordFile = config.age.secrets."restic/128G.key".path;
+
+      timerConfig = {
+        Persistent = true;
+        OnCalendar = "02:30";
+        RandomizedDelaySec = "1h";
+      };
+
+      pruneOpts = [
+        "--keep-within-hourly 7d"
+        "--keep-within-daily 1m"
+        "--keep-within-weekly 6m"
+        "--keep-within-monthly 24m"
+      ];
+    };
+    services.restic.backups."prune-1.6T" = {
+      repository = "/data/backups/restic/1.6T";
+      user = "restic";
+      passwordFile = config.age.secrets."restic/1.6T.key".path;
+
+      timerConfig = {
+        Persistent = true;
+        OnCalendar = "Wed, 02:30";
+        RandomizedDelaySec = "4h";
+      };
+
+      pruneOpts = [
+        "--keep-within-daily 14d"
+        "--keep-within-weekly 2m"
+        "--keep-within-monthly 18m"
+      ];
+    };
 
     ## Chia
     age.secrets."chia/farmer.key" = {
@@ -135,6 +199,10 @@
         };
       };
 
-    networking.firewall.interfaces."tailscale0".allowedTCPPorts = [ 14002 14003 ];
+    networking.firewall.interfaces."tailscale0".allowedTCPPorts = [
+      80 # Caddy (restic.tywin.storage.ts.)
+      14002 # Storj Dashboard (zfs.)
+      14003 # Storj Dashboard (d0.)
+    ];
   };
 }

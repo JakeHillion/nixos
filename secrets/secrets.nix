@@ -64,6 +64,8 @@ in
 
   # Restic Secrets
   "restic/b2-backups-matrix.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
+  "restic/128G.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
+  "restic/1.6T.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
 
   # Spotify Secrets
   "spotify/11132032266.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ];

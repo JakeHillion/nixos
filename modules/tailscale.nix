@@ -20,6 +20,9 @@ in
       type = lib.types.bool;
       default = false;
     };
+
+    ipv4Addr = lib.mkOption { type = lib.types.str; };
+    ipv6Addr = lib.mkOption { type = lib.types.str; };
   };
 
   config = lib.mkIf cfg.enable {
