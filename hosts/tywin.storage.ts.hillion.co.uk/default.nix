@@ -37,6 +37,7 @@
       enable = true;
       interval = "Tue, 02:00";
     };
+    services.sanoid.enable = true;
 
     fileSystems."/mnt/d0".options = [ "x-systemd.mount-timeout=3m" ];
 
@@ -81,6 +82,15 @@
       plotDirectories = [
         "/mnt/d0/plots/contract-k32"
       ];
+    };
+    services.sanoid.datasets."data/chia" = {
+      autosnap = true;
+      autoprune = true;
+
+      hourly = 0;
+      daily = 7;
+      weekly = 12;
+      monthly = 6;
     };
 
     ## Storj
