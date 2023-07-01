@@ -33,6 +33,11 @@
     };
     boot.kernelParams = [ "zfs.zfs_arc_max=25769803776" ];
 
+    services.zfs.autoScrub = {
+      enable = true;
+      interval = "Tue, 02:00";
+    };
+
     fileSystems."/mnt/d0".options = [ "x-systemd.mount-timeout=3m" ];
 
     ## Resilio
