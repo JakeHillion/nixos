@@ -43,6 +43,17 @@
 
     fileSystems."/mnt/d0".options = [ "x-systemd.mount-timeout=3m" ];
 
+    ## Backups
+    ### Git
+    age.secrets."git/git_backups_ecdsa".file = ../../secrets/git/git_backups_ecdsa.age;
+    age.secrets."git/git_backups_remotes".file = ../../secrets/git/git_backups_remotes.age;
+    custom.backups.git = {
+      enable = true;
+      sshKey = config.age.secrets."git/git_backups_ecdsa".path;
+      reposFile = config.age.secrets."git/git_backups_remotes".path;
+      repos = [ "https://gitea.hillion.co.uk/JakeHillion/nixos.git" ];
+    };
+
     ## Resilio
     custom.resilio.enable = true;
 
@@ -107,6 +118,7 @@
       };
 
       pruneOpts = [
+        "--keep-last 48"
         "--keep-within-hourly 7d"
         "--keep-within-daily 1m"
         "--keep-within-weekly 6m"
