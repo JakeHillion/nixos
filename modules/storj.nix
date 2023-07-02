@@ -110,6 +110,10 @@ in
 
               Restart = "always";
               RestartSec = 10;
+
+              Nice = 1;
+              IOSchedulingClass = "best-effort";
+              IOSchedulingPriority = 5;
             };
 
             unitConfig = {
