@@ -9,14 +9,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    age.secrets = {
-      "backblaze/vm-strangervm-backups-matrix" = {
-        file = ../../secrets/backblaze/vm-strangervm-backups-matrix.age;
-      };
-      "restic/b2-backups-matrix" = {
-        file = ../../secrets/restic/b2-backups-matrix.age;
-      };
-    };
+    age.secrets."backups/matrix/restic/128G".file = ../../secrets/restic/128G.age;
 
     services = {
       postgresqlBackup = {
@@ -29,17 +22,10 @@ in
         user = "root";
         timerConfig = {
           OnCalendar = "03:00";
-          RandomizedDelaySec = "30m";
+          RandomizedDelaySec = "60m";
         };
-        repository = "b2:hillion-personal:backups/matrix";
-        pruneOpts = [
-          "--keep-daily 14"
-          "--keep-weekly 5"
-          "--keep-monthly 24"
-          "--keep-yearly 10"
-        ];
-        passwordFile = config.age.secrets."restic/b2-backups-matrix".path;
-        environmentFile = config.age.secrets."backblaze/vm-strangervm-backups-matrix".path;
+        repository = "rest:http://restic.tywin.storage.ts.hillion.co.uk/128G";
+        passwordFile = config.age.secrets."backups/matrix/restic/128G".path;
         paths = [
           "${config.services.postgresqlBackup.location}/matrix-synapse.sql"
           config.services.matrix-synapse.dataDir

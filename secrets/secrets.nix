@@ -59,12 +59,8 @@ in
   "matrix/matrix.hillion.co.uk/macaroon_secret_key.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
   "matrix/matrix.hillion.co.uk/email.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
 
-  # Backblaze Secrets
-  "backblaze/vm-strangervm-backups-matrix.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
-
   # Backups Secrets
-  "restic/b2-backups-matrix.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
-  "restic/128G.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
+  "restic/128G.age".publicKeys = jake_users ++ [ ts.storage.tywin ts.strangervm.vm ];
   "restic/1.6T.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
 
   "git/git_backups_ecdsa.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
