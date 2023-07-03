@@ -6,45 +6,35 @@ in
 {
   options.custom.services.version_tracker = {
     enable = lib.mkEnableOption "version_tracker";
-
-    path = lib.mkOption {
-      type = lib.types.str;
-      default = "/var/cache/version_tracker";
-    };
   };
 
   config = lib.mkIf cfg.enable {
-    users.groups.version_tracker = { };
-    users.users.version_tracker = {
-      home = cfg.path;
-      createHome = true;
-      isSystemUser = true;
-      group = "version_tracker";
-    };
-
-    age.secrets."version_tracker/ssh.key" = {
-      file = ../../secrets/version_tracker/ssh.key.age;
-      owner = "version_tracker";
-      group = "version_tracker";
-    };
+    age.secrets."version_tracker/ssh.key".file = ../../secrets/version_tracker/ssh.key.age;
 
     systemd.services.version_tracker = {
       description = "NixOS version tracker.";
 
-      environment = {
-        GIT_SSH_COMMAND = "${pkgs.openssh}/bin/ssh -i ${config.age.secrets."version_tracker/ssh.key".path}";
+      serviceConfig = {
+        DynamicUser = true;
+
+        CacheDirectory = "version_tracker";
+        WorkingDirectory = "%C/version_tracker";
+
+        LoadCredential = "id_ecdsa:${config.age.secrets."version_tracker/ssh.key".path}";
       };
 
-      preStart = with pkgs; ''
+      environment = {
+        GIT_SSH_COMMAND = "${pkgs.openssh}/bin/ssh -i %d/id_ecdsa";
+      };
+
+      script = with pkgs; ''
+        PORT=30653
+
         if ! test -d repo/.git; then
             ${git}/bin/git clone git@ssh.gitea.hillion.co.uk:JakeHillion/nixos.git repo
         fi
         cd repo
         ${git}/bin/git fetch
-      '';
-      script = with pkgs; ''
-        PORT=30653
-        cd repo
 
         code=0
         for path in hosts/*
@@ -59,7 +49,6 @@ in
                 else
                     echo "WARNING: $hostname points to invalid ref!"
                 fi
-                
             else
                 echo "$hostname: failed to reach"
             fi
@@ -77,13 +66,6 @@ in
             fi
         done
       '';
-
-      serviceConfig = {
-        User = "version_tracker";
-        Group = "version_tracker";
-
-        WorkingDirectory = cfg.path;
-      };
     };
     systemd.timers.version_tracker = {
       wantedBy = [ "timers.target" ];
