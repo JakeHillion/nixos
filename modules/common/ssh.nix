@@ -6,6 +6,7 @@
   programs.mosh.enable = true;
   services.openssh = {
     enable = true;
+    openFirewall = true;
     permitRootLogin = "no";
     passwordAuthentication = false;
   };
