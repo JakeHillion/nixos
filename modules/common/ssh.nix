@@ -7,8 +7,11 @@
   services.openssh = {
     enable = true;
     openFirewall = true;
-    permitRootLogin = "no";
-    passwordAuthentication = false;
+
+    settings = {
+      PermitRootLogin = "no";
+      PasswordAuthentication = false;
+    };
   };
 
   programs.ssh.knownHostsFiles = [

@@ -106,6 +106,8 @@
         reverse_proxy http://localhost:8000
       '';
     };
+    systemd.services.caddy.requires = [ "tailscaled.service" ];
+
     services.restic.backups."prune-128G" = {
       repository = "/data/backups/restic/128G";
       user = "restic";

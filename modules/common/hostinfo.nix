@@ -2,6 +2,7 @@
 
 let
   cfg = config.custom.hostinfo;
+  rev = config.system.configurationRevision;
 in
 {
   options.custom.hostinfo = {
@@ -58,7 +59,7 @@ in
 
     environment.etc = {
       flake-version = {
-        source = builtins.toFile "flake-version" "${config.system.configurationRevision}";
+        source = builtins.toFile "flake-version" "${if rev == null then "dirty" else rev}";
         mode = "0444";
       };
     };

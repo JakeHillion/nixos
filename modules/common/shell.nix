@@ -19,7 +19,7 @@
     };
 
     shellAliases = {
-      "nixos-rebuild" = "nixos-rebuild --flake \"/etc/nixos#$(hostname -f)\"";
+      "nixos-rebuild" = "nixos-rebuild --flake \"/etc/nixos#${config.networking.fqdn}\"";
     };
   };
 }
