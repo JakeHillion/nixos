@@ -80,6 +80,35 @@
       in
       builtins.map (mkFolder) folderNames;
 
+    age.secrets."resilio/restic/128G.key" = {
+      file = ../../secrets/restic/128G.age;
+      owner = "rslsync";
+      group = "rslsync";
+    };
+    services.restic.backups."sync" = {
+      repository = "rest:http://restic.tywin.storage.ts.hillion.co.uk/128G";
+      user = "rslsync";
+      passwordFile = config.age.secrets."resilio/restic/128G.key".path;
+
+      timerConfig = {
+        Persistent = true;
+        OnUnitInactiveSec = "15m";
+        RandomizedDelaySec = "5m";
+      };
+
+      paths = [ "/data/users/jake/sync" ];
+      exclude = [
+        "/data/users/jake/sync/.sync"
+        "/data/users/jake/sync/*/.sync"
+
+        "/data/users/jake/sync/resources/media/films"
+        "/data/users/jake/sync/resources/media/iso"
+        "/data/users/jake/sync/resources/media/tv"
+
+        "/data/users/jake/sync/dad/media"
+      ];
+    };
+
     ## Restic
     age.secrets."restic/128G.key" = {
       file = ../../secrets/restic/128G.age;
