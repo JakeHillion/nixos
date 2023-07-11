@@ -101,6 +101,10 @@
               ip daddr 10.64.50.20 udp dport 28967 counter accept comment "zfs.tywin.storj"
               ip daddr 10.64.50.20 tcp dport 28968 counter accept comment "d0.tywin.storj"
               ip daddr 10.64.50.20 udp dport 28968 counter accept comment "d0.tywin.storj"
+              ip daddr 10.64.50.22 tcp dport 28969 counter accept comment "a.storj"
+              ip daddr 10.64.50.22 udp dport 28969 counter accept comment "a.storj"
+              ip daddr 10.64.50.22 tcp dport 28970 counter accept comment "b.storj"
+              ip daddr 10.64.50.22 udp dport 28970 counter accept comment "b.storj"
             }
           }
 
@@ -112,6 +116,10 @@
               iifname eth0 udp dport 28967 counter dnat to 10.64.50.20
               iifname eth0 tcp dport 28968 counter dnat to 10.64.50.20
               iifname eth0 udp dport 28968 counter dnat to 10.64.50.20
+              iifname eth0 tcp dport 28969 counter dnat to 10.64.50.22
+              iifname eth0 udp dport 28969 counter dnat to 10.64.50.22
+              iifname eth0 tcp dport 28970 counter dnat to 10.64.50.22
+              iifname eth0 udp dport 28970 counter dnat to 10.64.50.22
             }
 
             chain postrouting {
@@ -160,6 +168,12 @@
             ethernetAddress = "c8:7f:54:6d:e1:03";
             ipAddress = "10.64.50.20";
             hostName = "tywin";
+          }
+          {
+            # syncbox
+            ethernetAddress = "00:1e:06:49:06:1e";
+            ipAddress = "10.64.50.22";
+            hostName = "syncbox";
           }
         ];
       };
