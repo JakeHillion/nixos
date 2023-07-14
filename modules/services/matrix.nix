@@ -108,5 +108,12 @@ in
         homeserver = "https://matrix.hillion.co.uk";
       };
     };
+
+    systemd.services.heisenbridge = lib.mkIf cfg.heisenbridge {
+      serviceConfig = {
+        Restart = "on-failure";
+        RestartSec = 15;
+      };
+    };
   };
 }
