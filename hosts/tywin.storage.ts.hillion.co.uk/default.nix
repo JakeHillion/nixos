@@ -42,6 +42,7 @@
     services.sanoid.enable = true;
 
     fileSystems."/mnt/d0".options = [ "x-systemd.mount-timeout=3m" ];
+    fileSystems."/mnt/d1".options = [ "x-systemd.mount-timeout=3m" ];
 
     ## Backups
     ### Git
@@ -186,9 +187,7 @@
       path = "/data/chia";
       keyFile = config.age.secrets."chia/farmer.key".path;
       targetAddress = "xch1tl87mjd9zpugs7qy2ysc3j4qlftqlyjn037jywq6v2y4kp22g74qahn6sw";
-      plotDirectories = [
-        "/mnt/d0/plots/contract-k32"
-      ];
+      plotDirectories = builtins.genList (i: "/mnt/d${toString i}/plots/contract-k32") 2;
     };
     services.sanoid.datasets."data/chia" = {
       autosnap = true;
