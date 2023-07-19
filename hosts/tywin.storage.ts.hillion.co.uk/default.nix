@@ -227,7 +227,7 @@
             storage = "1000GB";
           };
         };
-        instances = builtins.genList (x: x) 1;
+        instances = builtins.genList (x: x) 2;
       in
       builtins.listToAttrs (builtins.map mkStorj instances) // {
         zfs = {
