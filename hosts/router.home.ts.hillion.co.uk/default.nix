@@ -96,6 +96,8 @@
                 "eth2",
               } ct state established,related counter accept comment "Allow established back to LANs"
 
+              ip daddr 10.64.50.20 tcp dport 32400 counter accept comment "Plex"
+
               ip daddr 10.64.50.20 tcp dport 8444 counter accept comment "Chia"
               ip daddr 10.64.50.20 tcp dport 28967 counter accept comment "zfs.tywin.storj"
               ip daddr 10.64.50.20 udp dport 28967 counter accept comment "zfs.tywin.storj"
@@ -111,6 +113,9 @@
           table ip nat {
             chain prerouting {
               type nat hook prerouting priority filter; policy accept;
+
+              iifname eth0 tcp dport 32400 counter dnat to 10.64.50.20
+
               iifname eth0 tcp dport 8444 counter dnat to 10.64.50.20
               iifname eth0 tcp dport 28967 counter dnat to 10.64.50.20
               iifname eth0 udp dport 28967 counter dnat to 10.64.50.20

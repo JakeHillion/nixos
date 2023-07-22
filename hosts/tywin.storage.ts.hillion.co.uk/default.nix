@@ -251,6 +251,13 @@
       tvPath = "/data/media/tv";
     };
 
+    ## Plex
+    users.users.plex.extraGroups = [ "mediaaccess" ];
+    services.plex = {
+      enable = true;
+      openFirewall = true;
+    };
+
     ## Firewall
     networking.firewall.interfaces."tailscale0".allowedTCPPorts = [
       80 # Caddy (restic.tywin.storage.ts.)
