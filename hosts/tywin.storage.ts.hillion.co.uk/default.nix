@@ -256,6 +256,7 @@
       80 # Caddy (restic.tywin.storage.ts.)
       14002 # Storj Dashboard (zfs.)
       14003 # Storj Dashboard (d0.)
+      14004 # Storj Dashboard (d1.)
     ];
   };
 }
