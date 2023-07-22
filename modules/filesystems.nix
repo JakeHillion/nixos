@@ -5,10 +5,41 @@ let
 in
 {
   options.custom.filesystems = {
+    autoServe = lib.mkEnableOption "serve owned network shares";
+
+    fs = lib.mkOption {
+      default = {
+        films = {
+          enable = false;
+          path = "/media/films";
+        };
+        tv = {
+          enable = false;
+          path = "/media/tv";
+        };
+      };
+    };
+
+    locs = lib.mkOption {
+      readOnly = true;
+
+      default = {
+        films = {
+          localPath = "/data/media/films";
+          remotePath = {
+            type = "cifs";
+            share = "films";
+            user = "films";
+            credentials = config.age.secrets."filesystems/films".path;
+          };
+        };
+      };
+    };
+
     films = {
       enable = lib.mkEnableOption "mounting films";
       host = lib.mkOption {
-        default = "archnas.storage.ts.hillion.co.uk";
+        default = "tywin.storage.ts.hillion.co.uk";
       };
       path = lib.mkOption {
         type = lib.types.str;
@@ -30,7 +61,7 @@ in
     tv = {
       enable = lib.mkEnableOption "mounting tv";
       host = lib.mkOption {
-        default = "archnas.storage.ts.hillion.co.uk";
+        default = "tywin.storage.ts.hillion.co.uk";
       };
       localPath = lib.mkOption {
         default = "/data/media/tv";
@@ -52,8 +83,7 @@ in
 
   config = {
     age.secrets = {
-      "filesystems/films" = lib.mkIf cfg.tv.enable { file = ../secrets/filesystems/films.age; };
-      "filesystems/tv" = lib.mkIf cfg.tv.enable { file = ../secrets/filesystems/tv.age; };
+      "filesystems/plex" = lib.mkIf (cfg.tv.enable || cfg.films.enable) { file = ../secrets/filesystems/plex.age; };
     };
     fileSystems = {
       "${cfg.films.path}" = lib.mkIf cfg.films.enable (if cfg.films.host == config.networking.fqdn then {

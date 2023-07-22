@@ -47,6 +47,27 @@
     fileSystems."/mnt/d1".options = [ "x-systemd.mount-timeout=3m" ];
     fileSystems."/mnt/d2".options = [ "x-systemd.mount-timeout=3m" ];
 
+    ## Network Shares
+    custom.filesystems.autoserve = true;
+    users.groups.plex.gid = config.ids.gids.plex;
+    users.users.plex = {
+      group = "plex";
+      uid = config.ids.uids.plex;
+      extraGroups = "mediaaccess";
+    };
+
+    services.samba = {
+      enable = true;
+
+      shares = {
+        tv = { };
+        films = { };
+      };
+    };
+    system.activationScripts.smb = with pkgs; ''
+      cat | ${samba}/bin/smbpasswd -a plex -s
+    '';
+
     ## Backups
     ### Git
     age.secrets."git/git_backups_ecdsa".file = ../../secrets/git/git_backups_ecdsa.age;
@@ -262,6 +283,7 @@
     ## Firewall
     networking.firewall.interfaces."tailscale0".allowedTCPPorts = [
       80 # Caddy (restic.tywin.storage.ts.)
+      445 # SMB
       14002 # Storj Dashboard (zfs.)
       14003 # Storj Dashboard (d0.)
       14004 # Storj Dashboard (d1.)

@@ -14,7 +14,6 @@ in
       default = {
         services = {
           downloads = "tywin.storage.ts.hillion.co.uk";
-          emby = "gendry.jakehillion-terminals.ts.hillion.co.uk";
           mastodon = "vm.strangervm.ts.hillion.co.uk";
           matrix = "vm.strangervm.ts.hillion.co.uk";
           plex = "gendry.jakehillion-terminals.ts.hillion.co.uk";
@@ -25,7 +24,6 @@ in
 
   config = lib.mkIf cfg.autoServe {
     custom.services = {
-      emby.enable = cfg.locations.services.emby == config.networking.fqdn;
       mastodon.enable = cfg.locations.services.mastodon == config.networking.fqdn;
       matrix.enable = cfg.locations.services.matrix == config.networking.fqdn;
       plex.enable = cfg.locations.services.plex == config.networking.fqdn;

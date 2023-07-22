@@ -11,7 +11,6 @@
     ./locations.nix
     ./resilio.nix
     ./services/downloads.nix
-    ./services/emby.nix
     ./services/mastodon/default.nix
     ./services/matrix.nix
     ./services/plex.nix

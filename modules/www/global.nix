@@ -35,9 +35,6 @@ in
       virtualHosts."homeassistant.hillion.co.uk".extraConfig = ''
         reverse_proxy http://homeassistant.homeassistant.ts.hillion.co.uk:8123
       '';
-      virtualHosts."emby.hillion.co.uk".extraConfig = ''
-        reverse_proxy http://plex.mediaserver.ts.hillion.co.uk:8096
-      '';
       virtualHosts."matrix.hillion.co.uk".extraConfig = ''
         reverse_proxy http://${locations.services.matrix}:8008
       '';
