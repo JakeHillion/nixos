@@ -101,7 +101,10 @@ in
                 if ! test -f ${value.configDir}/config.yaml; then
                   ${storj}/bin/storagenode setup ${args}
                 fi
-                ${storj}/bin/storagenode run ${args}
+
+                ${storj}/bin/storagenode run \
+                  --log.level error \
+                  ${args}
               '';
 
             serviceConfig = {
