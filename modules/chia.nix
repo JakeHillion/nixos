@@ -3,6 +3,16 @@
 let
   cfg = config.custom.chia;
   chia = nixpkgs-chia.legacyPackages.x86_64-linux.chia;
+
+  ctl = pkgs.writeScriptBin "chiactl" ''
+    #! ${pkgs.runtimeShell}
+    sudo=exec
+    if [[ "$USER" != chia ]]; then
+      sudo='exec /run/wrappers/bin/sudo -u chia'
+    fi
+
+    $sudo ${chia}/bin/chia "$@"
+  '';
 in
 {
   options.custom.chia = {
@@ -35,7 +45,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = [ chia ];
+    environment.systemPackages = [ ctl ];
 
     users.groups.chia = { };
     users.users.chia = {
