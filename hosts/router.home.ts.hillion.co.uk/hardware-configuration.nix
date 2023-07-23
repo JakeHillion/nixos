@@ -18,6 +18,7 @@
     {
       device = "tmpfs";
       fsType = "tmpfs";
+      options = [ "mode=0755" "size=4G" ];
     };
 
   fileSystems."/boot" =

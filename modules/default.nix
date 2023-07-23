@@ -6,6 +6,7 @@
     ./chia.nix
     ./common/hostinfo.nix
     ./desktop/awesome/default.nix
+    ./impermanence.nix
     ./locations.nix
     ./resilio.nix
     ./services/downloads.nix

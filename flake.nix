@@ -12,11 +12,13 @@
 
     home-manager.url = "github:nix-community/home-manager/release-23.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    impermanence.url = "github:nix-community/impermanence/master";
   };
 
   description = "Hillion Nix flake";
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-chia, agenix, home-manager, darwin, ... }@inputs: {
+  outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-chia, agenix, home-manager, impermanence, darwin, ... }@inputs: {
     nixosConfigurations =
       let
         fqdns = builtins.attrNames (builtins.readDir ./hosts);
@@ -35,8 +37,17 @@
             modules = [
               ./hosts/${fqdn}/default.nix
               ./modules/default.nix
+
               agenix.nixosModules.default
+              impermanence.nixosModules.impermanence
+
               home-manager.nixosModules.default
+              {
+                home-manager.sharedModules = [
+                  impermanence.nixosModules.home-manager.impermanence
+                ];
+              }
+
               ({ config, ... }: {
                 nix.registry.nixpkgs.flake = nixpkgs; # pin `nix shell` nixpkgs
                 system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;

@@ -4,7 +4,6 @@
   imports = [
     ../../modules/common/default.nix
     ./hardware-configuration.nix
-    ./persist.nix
   ];
 
   config = {
@@ -19,6 +18,9 @@
     boot.kernel.sysctl = {
       "net.ipv4.conf.all.forwarding" = true;
     };
+
+    ## Impermanence
+    custom.impermanence.enable = true;
 
     ## Networking
     networking = {
