@@ -32,7 +32,8 @@ in
 
       directories = [
         "/etc/nixos"
-      ] ++ (listIf config.custom.tailscale.enable [ "/var/lib/tailscale" ]);
+      ] ++ (listIf config.custom.tailscale.enable [ "/var/lib/tailscale" ]) ++
+      (listIf config.services.zigbee2mqtt.enable [ config.services.zigbee2mqtt.dataDir ]);
     };
 
     home-manager.users =

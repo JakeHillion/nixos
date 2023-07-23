@@ -36,72 +36,12 @@
       "net.ipv4.ip_forward" = true;
     };
 
-    ## Set up simpleproxy to Zigbee bridge
-    systemd.services.zigbee-simpleproxy = {
-      description = "Simple TCP Proxy for Zigbee Bridge";
-
-      wantedBy = [ "multi-user.target" ];
-      after = [ "tailscaled.service" ];
-
-      serviceConfig = {
-        DynamicUser = true;
-        ExecStart = with pkgs; "${simpleproxy}/bin/simpleproxy -L 100.105.131.47:8888 -R 10.239.19.40:8888 -v";
-        Restart = "always";
-        RestartSec = 10;
-      };
-    };
-
     ## Run a persistent iperf3 server
     services.iperf3.enable = true;
     services.iperf3.openFirewall = true;
 
-    ## Home automation
-    age.secrets."mqtt/zigbee2mqtt.yaml" = {
-      file = ../../secrets/mqtt/zigbee2mqtt.age;
-      owner = "zigbee2mqtt";
-    };
-
-    services.mosquitto = {
-      enable = true;
-      listeners = [
-        {
-          users = {
-            zigbee2mqtt = {
-              acl = [ "readwrite #" ];
-              hashedPassword = "$7$101$ZrD6C+b7Xo/fUoGw$Cf/6Xm52Syv2G+5+BqpUWRs+zrTrTvBL9EFzks9q/Q6ZggXVcp+Bi3ZpmQT5Du9+42G30Y7G3hWpYbA8j1ooWg==";
-            };
-            homeassistant = {
-              acl = [ "readwrite #" ];
-              hashedPassword = "$7$101$Uah+//t9m3pt6PXx$q1F410A+k38tp+ICQjRQy2fB/Gb15sodqYHgC7NUCVChMQo4Ib9eq3zpstdMbu1j//h8/zRl/ZegxDH6kjT6Dw==";
-            };
-          };
-        }
-      ];
-    };
-    services.zigbee2mqtt = {
-      enable = true;
-      settings = {
-        permit_join = false;
-        mqtt = {
-          server = "mqtt://microserver.home.ts.hillion.co.uk:1883";
-          user = "zigbee2mqtt";
-          password = "!${config.age.secrets."mqtt/zigbee2mqtt.yaml".path} password";
-        };
-        serial = {
-          port = "/dev/ttyUSB0";
-        };
-        frontend = true;
-        homeassistant = true;
-        advanced = {
-          channel = 15;
-        };
-      };
-    };
-
     networking.firewall.interfaces."tailscale0".allowedTCPPorts = [
       1883 # MQTT server
-      8080 # Zigbee2MQTT frontend
-      8888 # Zigbee bridge simple proxy
     ];
   };
 }

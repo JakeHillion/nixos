@@ -61,7 +61,7 @@ in
 
   # Backups Secrets
   "restic/128G.age".publicKeys = jake_users ++ [ ts.storage.tywin ts.strangervm.vm ];
-  "restic/1.6T.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
+  "restic/1.6T.age".publicKeys = jake_users ++ [ ts.storage.tywin ts.home.router ];
 
   "git/git_backups_ecdsa.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
   "git/git_backups_remotes.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
@@ -89,7 +89,8 @@ in
   "version_tracker/ssh.key.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
 
   # Home Automation secrets
-  "mqtt/zigbee2mqtt.age".publicKeys = jake_users ++ [ ts.home.microserver ];
+  "mqtt/zigbee2mqtt.age".publicKeys = jake_users ++ [ ts.home.router ];
+  "mqtt/homeassistant.age".publicKeys = jake_users ++ [ ];
 
   # Wireguard Secrets
   "wireguard/downloads.age".publicKeys = jake_users ++ [ ts.storage.tywin ];

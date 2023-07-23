@@ -13,6 +13,7 @@
     ./services/mastodon/default.nix
     ./services/matrix.nix
     ./services/version_tracker.nix
+    ./services/zigbee2mqtt.nix
     ./storj.nix
     ./tailscale.nix
     ./users.nix

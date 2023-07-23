@@ -70,6 +70,7 @@
 
               # Allow trusted networks to access the router
               iifname {
+                "lo",
                 "eth1",
                 "eth2",
                 "tailscale0",
@@ -165,12 +166,6 @@
         '';
         machines = [
           {
-            # Zigbee Bridge
-            ethernetAddress = "48:3f:da:2a:86:7a";
-            ipAddress = "10.239.19.40";
-            hostName = "tasmota-2A867A-1658";
-          }
-          {
             # tywin.storage.ts.hillion.co.uk
             ethernetAddress = "c8:7f:54:6d:e1:03";
             ipAddress = "10.64.50.20";
@@ -191,6 +186,8 @@
     custom.tailscale = {
       enable = true;
       preAuthKeyFile = config.age.secrets."tailscale/router.home.ts.hillion.co.uk".path;
+      ipv4Addr = "100.105.71.48";
+      ipv6Addr = "fd7a:115c:a1e0:ab12:4843:cd96:6269:4730";
     };
 
     ## Enable btrfs compression
@@ -199,5 +196,8 @@
 
     ## Run a persistent iperf3 server
     services.iperf3.enable = true;
+
+    ## Zigbee2Mqtt
+    custom.services.zigbee2mqtt.enable = true;
   };
 }
