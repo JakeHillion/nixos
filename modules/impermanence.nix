@@ -17,6 +17,15 @@ in
       type = with lib.types; listOf str;
       default = [ "root" config.custom.user ];
     };
+
+    userExtraFiles = lib.mkOption {
+      type = with lib.types; attrsOf (listOf str);
+      default = { };
+    };
+    userExtraDirs = lib.mkOption {
+      type = with lib.types; attrsOf (listOf str);
+      default = { };
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -33,7 +42,8 @@ in
       directories = [
         "/etc/nixos"
       ] ++ (listIf config.custom.tailscale.enable [ "/var/lib/tailscale" ]) ++
-      (listIf config.services.zigbee2mqtt.enable [ config.services.zigbee2mqtt.dataDir ]);
+      (listIf config.services.zigbee2mqtt.enable [ config.services.zigbee2mqtt.dataDir ]) ++
+      (listIf config.hardware.bluetooth.enable [ "/var/lib/bluetooth" ]);
     };
 
     home-manager.users =
@@ -44,13 +54,18 @@ in
             home.persistence."/data/users/${x}" = {
               files = [
                 ".zsh_history"
-              ];
+              ] ++ cfg.userExtraFiles.${x} or [ ];
+
+              directories = cfg.userExtraDirs.${x} or [ ];
             };
           };
         });
       in
       builtins.listToAttrs (builtins.map mkUser cfg.users);
 
-    systemd.tmpfiles.rules = builtins.map (x: "L ${config.users.users.${x}.home}/local - - - - /data/users/${x}") cfg.users;
+    systemd.tmpfiles.rules = builtins.map
+      (user:
+        let details = config.users.users.${user}; in "L ${details.home}/local - ${user} ${details.group} - /data/users/${user}")
+      cfg.users;
   };
 }

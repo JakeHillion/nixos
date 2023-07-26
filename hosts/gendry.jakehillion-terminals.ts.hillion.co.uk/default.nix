@@ -6,7 +6,6 @@
     ../../modules/spotify/default.nix
     ./bluetooth.nix
     ./hardware-configuration.nix
-    ./persist.nix
   ];
 
   config = {
@@ -17,6 +16,18 @@
 
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
+
+    ## Impermanence
+    custom.impermanence = {
+      enable = true;
+      userExtraFiles.jake = [
+        ".ssh/id_rsa"
+        ".ssh/id_ecdsa"
+      ];
+      userExtraDirs.jake = [
+        ".local/share/PrismLauncher"
+      ];
+    };
 
     ## Desktop
     custom.desktop.awesome.enable = true;
