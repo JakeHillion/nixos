@@ -108,8 +108,8 @@
               ip daddr 10.64.50.20 udp dport 28968 counter accept comment "d0.tywin.storj"
               ip daddr 10.64.50.20 tcp dport 28969 counter accept comment "d1.tywin.storj"
               ip daddr 10.64.50.20 udp dport 28969 counter accept comment "d1.tywin.storj"
-              ip daddr 10.64.50.22 tcp dport 28970 counter accept comment "b.storj"
-              ip daddr 10.64.50.22 udp dport 28970 counter accept comment "b.storj"
+              ip daddr 10.64.50.20 tcp dport 28970 counter accept comment "d2.tywin.storj"
+              ip daddr 10.64.50.20 udp dport 28970 counter accept comment "d2.tywin.storj"
             }
           }
 
@@ -126,8 +126,8 @@
               iifname eth0 udp dport 28968 counter dnat to 10.64.50.20
               iifname eth0 tcp dport 28969 counter dnat to 10.64.50.20
               iifname eth0 udp dport 28969 counter dnat to 10.64.50.20
-              iifname eth0 tcp dport 28970 counter dnat to 10.64.50.22
-              iifname eth0 udp dport 28970 counter dnat to 10.64.50.22
+              iifname eth0 tcp dport 28970 counter dnat to 10.64.50.20
+              iifname eth0 udp dport 28970 counter dnat to 10.64.50.20
             }
 
             chain postrouting {

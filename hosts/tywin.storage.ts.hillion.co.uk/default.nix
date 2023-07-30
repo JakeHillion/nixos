@@ -203,8 +203,8 @@
     };
 
     ## Storj
-    age.secrets."storj/zfs_auth" = {
-      file = ../../secrets/storj/tywin/zfs_auth.age;
+    age.secrets."storj/auth" = {
+      file = ../../secrets/storj/auth.age;
       owner = "storj";
       group = "storj";
     };
@@ -222,6 +222,7 @@
           value = {
             configDir = "/mnt/d${toString index}/storj/config";
             identityDir = "/mnt/d${toString index}/storj/identity";
+            authorizationTokenFile = config.age.secrets."storj/auth".path;
 
             serverPort = 28967 + 1 + index;
             externalAddress = "d${toString index}.tywin.storj.hillion.co.uk:${toString (28967 + 1 + index)}";
@@ -230,7 +231,7 @@
             storage = "1000GB";
           };
         };
-        instances = builtins.genList (x: x) 2;
+        instances = builtins.genList (x: x) 3;
       in
       builtins.listToAttrs (builtins.map mkStorj instances) // {
         zfs = {
@@ -240,7 +241,6 @@
           consoleAddress = "100.115.31.91:14002";
           serverPort = 28967;
           externalAddress = "zfs.tywin.storj.hillion.co.uk:28967";
-          authorizationTokenFile = config.age.secrets."storj/zfs_auth".path;
         };
       };
 
@@ -265,6 +265,7 @@
       14002 # Storj Dashboard (zfs.)
       14003 # Storj Dashboard (d0.)
       14004 # Storj Dashboard (d1.)
+      14005 # Storj Dashboard (d1.)
     ];
   };
 }

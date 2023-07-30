@@ -7,7 +7,7 @@ let
     owner = "JakeHillion";
     repo = "storj";
     rev = "f75ec5ba34b2ccce005ebdb6fae697e0224998d9";
-    hash = "sha256-DPWSQv4TKdOYfwsXokev42UfoxJLmC/OWLk48JnThUU=";
+    hash = "sha256-zUpzkdiAbE10fq1KDXEarPURqByD8JV0NkQ9iNxPlWI=";
   };
   meta = with lib; {
     description = "Storj is building a distributed cloud storage network.";

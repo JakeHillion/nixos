@@ -83,7 +83,7 @@ in
   "chia/farmer.key.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
 
   # Storj Secrets
-  "storj/tywin/zfs_auth.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
+  "storj/auth.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
 
   # Version tracker secrets
   "version_tracker/ssh.key.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
