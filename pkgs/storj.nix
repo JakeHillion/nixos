@@ -1,11 +1,12 @@
-{ stdenv, lib, fetchFromGitHub, buildGoModule, ... }:
+{ stdenv, lib, fetchFromGitea, buildGoModule, ... }:
 
 let
   version = "1.82.1";
-  src = fetchFromGitHub {
-    owner = "storj";
+  src = fetchFromGitea {
+    domain = "gitea.hillion.co.uk";
+    owner = "JakeHillion";
     repo = "storj";
-    rev = "v${version}";
+    rev = "f75ec5ba34b2ccce005ebdb6fae697e0224998d9";
     hash = "sha256-DPWSQv4TKdOYfwsXokev42UfoxJLmC/OWLk48JnThUU=";
   };
   meta = with lib; {
