@@ -217,5 +217,11 @@
         extraConfig = "reverse_proxy unix///run/netdata/netdata.sock";
       };
     };
+
+    ### HACK: caddy needs tailscale to be up so allow it to restart on failure
+    systemd.services.caddy.serviceConfig = {
+      Restart = lib.mkForce "on-failure";
+      RestartSec = 15;
+    };
   };
 }
