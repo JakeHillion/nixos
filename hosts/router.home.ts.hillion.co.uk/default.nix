@@ -199,5 +199,23 @@
 
     ## Zigbee2Mqtt
     custom.services.zigbee2mqtt.enable = true;
+
+    ## Netdata
+    services.netdata = {
+      enable = true;
+      group = "caddy";
+      config = {
+        web = {
+          "bind to" = "unix:/run/netdata/netdata.sock";
+        };
+      };
+    };
+    services.caddy = {
+      enable = true;
+      virtualHosts."http://graphs.router.home.ts.hillion.co.uk" = {
+        listenAddresses = [ config.custom.tailscale.ipv4Addr config.custom.tailscale.ipv6Addr ];
+        extraConfig = "reverse_proxy unix///run/netdata/netdata.sock";
+      };
+    };
   };
 }
