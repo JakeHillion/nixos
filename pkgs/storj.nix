@@ -1,13 +1,13 @@
 { stdenv, lib, fetchFromGitea, buildGoModule, ... }:
 
 let
-  version = "1.82.1";
+  version = "1.84.2";
   src = fetchFromGitea {
     domain = "gitea.hillion.co.uk";
     owner = "JakeHillion";
     repo = "storj";
-    rev = "f75ec5ba34b2ccce005ebdb6fae697e0224998d9";
-    hash = "sha256-zUpzkdiAbE10fq1KDXEarPURqByD8JV0NkQ9iNxPlWI=";
+    rev = "977a27dde2affe6801840b827dde387551b15126";
+    hash = "sha256-DHDVrYGWGK91uMMa9rF3RVpFA9IVhtvqHJtLUXyuL5E=";
   };
   meta = with lib; {
     description = "Storj is building a distributed cloud storage network.";
@@ -25,7 +25,7 @@ in
 buildGoModule rec {
   pname = "storagenode";
   inherit version src meta;
-  vendorHash = "sha256-Q9+uwFmPrffvQGT9dHxf0ilCcDeVhUxrJETsngwZUXA=";
+  vendorHash = "sha256-iZEEADI1JxdsL1j4kJpkV3owfO8DnUcCNSKJMyPgYhE=";
   subPackages = [
     "cmd/storagenode"
     "cmd/identity"
