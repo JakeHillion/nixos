@@ -1,8 +1,8 @@
-{ config, pkgs, lib, nixpkgs-chia, ... }:
+{ config, pkgs, lib, chia, ... }:
 
 let
   cfg = config.custom.chia;
-  chia = nixpkgs-chia.legacyPackages.x86_64-linux.chia;
+  chiaPkg = chia.legacyPackages.x86_64-linux.chia;
 
   ctl = pkgs.writeScriptBin "chiactl" ''
     #! ${pkgs.runtimeShell}
@@ -11,7 +11,7 @@ let
       sudo='exec /run/wrappers/bin/sudo -u chia'
     fi
 
-    $sudo ${chia}/bin/chia "$@"
+    $sudo ${chiaPkg}/bin/chia "$@"
   '';
 in
 {
@@ -59,8 +59,8 @@ in
       description = "Chia daemon.";
       wantedBy = [ "multi-user.target" ];
 
-      preStart = lib.strings.concatStringsSep "\n" ([ "${chia}/bin/chia init" ]
-        ++ (if cfg.keyFile == null then [ ] else [ "${chia}/bin/chia keys add -f ${cfg.keyFile} -l '${cfg.keyLabel}'" ])
+      preStart = lib.strings.concatStringsSep "\n" ([ "${chiaPkg}/bin/chia init" ]
+        ++ (if cfg.keyFile == null then [ ] else [ "${chiaPkg}/bin/chia keys add -f ${cfg.keyFile} -l '${cfg.keyLabel}'" ])
         ++ (if cfg.targetAddress == null then [ ] else [
         ''
           ${pkgs.yq-go}/bin/yq e \
@@ -74,8 +74,8 @@ in
               -i ${cfg.path}/.chia/mainnet/config/config.yaml
         ''
       ]));
-      script = "${chia}/bin/chia start farmer";
-      preStop = "${chia}/bin/chia stop -d farmer";
+      script = "${chiaPkg}/bin/chia start farmer";
+      preStop = "${chiaPkg}/bin/chia stop -d farmer";
 
       serviceConfig = {
         Type = "forking";

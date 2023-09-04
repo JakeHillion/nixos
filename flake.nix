@@ -2,7 +2,6 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-chia.url = "github:lourkeur/nixpkgs?rev=e2b683787475d344892bddea9ab413dc611b894e";
 
     darwin.url = "github:lnl7/nix-darwin/master";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
@@ -14,11 +13,13 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     impermanence.url = "github:nix-community/impermanence/master";
+
+    chia.url = "github:lourkeur/chia.nix/chia2";
   };
 
   description = "Hillion Nix flake";
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-chia, agenix, home-manager, impermanence, darwin, ... }@inputs: {
+  outputs = { self, nixpkgs, nixpkgs-unstable, agenix, home-manager, impermanence, chia, darwin, ... }@inputs: {
     nixosConfigurations =
       let
         fqdns = builtins.attrNames (builtins.readDir ./hosts);
