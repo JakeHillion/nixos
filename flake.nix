@@ -20,66 +20,81 @@
 
   description = "Hillion Nix flake";
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-chia, flake-utils, agenix, home-manager, impermanence, darwin, ... }@inputs: {
-    nixosConfigurations =
-      let
-        fqdns = builtins.attrNames (builtins.readDir ./hosts);
-        isNixos = fqdn: !builtins.pathExists ./hosts/${fqdn}/darwin;
-        getSystemOverlays = system: nixpkgsConfig: [
-          (final: prev: {
-            "storj" = final.callPackage ./pkgs/storj.nix { };
-          })
-        ];
-        mkHost = fqdn:
-          let system = builtins.readFile ./hosts/${fqdn}/system;
-          in
-          nixpkgs.lib.nixosSystem {
-            inherit system;
-            specialArgs = inputs;
-            modules = [
-              ./hosts/${fqdn}/default.nix
-              ./modules/default.nix
+  outputs =
+    { self, nixpkgs, nixpkgs-unstable, nixpkgs-chia, flake-utils, agenix, home-manager, impermanence, darwin, ... }@inputs:
+    let
+      fqdns = builtins.attrNames (builtins.readDir ./hosts);
+      isDarwin = host: builtins.pathExists ./hosts/${host}/darwin;
+      isNixos = fqdn: !isDarwin fqdn;
+      needsImage = fqdn: builtins.pathExists ./hosts/${fqdn}/image;
+    in
+    rec {
+      nixosConfigurations =
+        let
+          getSystemOverlays = system: nixpkgsConfig: [
+            (final: prev: {
+              "storj" = final.callPackage ./pkgs/storj.nix { };
+            })
+          ];
+          mkHost = fqdn:
+            let system = builtins.readFile ./hosts/${fqdn}/system;
+            in
+            nixpkgs.lib.nixosSystem {
+              inherit system;
+              specialArgs = inputs;
+              modules = (if needsImage then [ ] else [ "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-raspberrypi.nix" ]) ++ [
+                ./hosts/${fqdn}/default.nix
+                ./modules/default.nix
 
-              agenix.nixosModules.default
-              impermanence.nixosModules.impermanence
+                agenix.nixosModules.default
+                impermanence.nixosModules.impermanence
 
-              home-manager.nixosModules.default
-              {
-                home-manager.sharedModules = [
-                  impermanence.nixosModules.home-manager.impermanence
-                ];
-              }
+                home-manager.nixosModules.default
+                {
+                  home-manager.sharedModules = [
+                    impermanence.nixosModules.home-manager.impermanence
+                  ];
+                }
 
-              ({ config, ... }: {
-                nix.registry.nixpkgs.flake = nixpkgs; # pin `nix shell` nixpkgs
-                system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
-                nixpkgs.overlays = getSystemOverlays config.nixpkgs.hostPlatform.system config.nixpkgs.config;
-              })
-            ];
-          };
-      in
-      nixpkgs.lib.genAttrs (builtins.filter isNixos fqdns) mkHost;
+                ({ config, ... }: {
+                  nix.registry.nixpkgs.flake = nixpkgs; # pin `nix shell` nixpkgs
+                  system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
+                  nixpkgs.overlays = getSystemOverlays config.nixpkgs.hostPlatform.system config.nixpkgs.config;
+                })
+              ];
+            };
+        in
+        nixpkgs.lib.genAttrs (builtins.filter isNixos fqdns) mkHost;
 
-    darwinConfigurations =
-      let
-        hosts = builtins.attrNames (builtins.readDir ./hosts);
-        isDarwin = host: builtins.pathExists ./hosts/${host}/darwin;
-        mkHost = host:
-          let system = builtins.readFile ./hosts/${host}/system;
-          in
-          darwin.lib.darwinSystem {
-            inherit system;
-            inherit inputs;
-            modules = [
-              ./hosts/${host}/default.nix
-              agenix.darwinModules.default
-              home-manager.darwinModules.default
-            ];
-          };
-      in
-      nixpkgs.lib.genAttrs (builtins.filter isDarwin hosts) mkHost;
+      # images =
+      #   let
+      #     mkImage = fqdn: nixosConfigurations.${fqdn}.config.system.build.sdImage;
+      #   in
+      #   nixpkgs.lib.genAttrs (builtins.filter needsImage fqdns) mkImage;
+      
+      images = {
+        "microserver" = nixosConfigurations."microserver.home.ts.hillion.co.uk".config.system.build.sdImage;
+      };
 
-  } // flake-utils.lib.eachDefaultSystem (system: {
-    formatter = nixpkgs.legacyPackages.${system}.nixpkgs-fmt;
-  });
+      darwinConfigurations =
+        let
+          hosts = builtins.attrNames (builtins.readDir ./hosts);
+          isDarwin = host: builtins.pathExists ./hosts/${host}/darwin;
+          mkHost = host:
+            let system = builtins.readFile ./hosts/${host}/system;
+            in
+            darwin.lib.darwinSystem {
+              inherit system;
+              inherit inputs;
+              modules = [
+                ./hosts/${host}/default.nix
+                agenix.darwinModules.default
+                home-manager.darwinModules.default
+              ];
+            };
+        in
+        nixpkgs.lib.genAttrs (builtins.filter isDarwin hosts) mkHost;
+    } // flake-utils.lib.eachDefaultSystem (system: {
+      formatter = nixpkgs.legacyPackages.${system}.nixpkgs-fmt;
+    });
 }
