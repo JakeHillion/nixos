@@ -46,6 +46,7 @@
     fileSystems."/mnt/d0".options = [ "x-systemd.mount-timeout=3m" ];
     fileSystems."/mnt/d1".options = [ "x-systemd.mount-timeout=3m" ];
     fileSystems."/mnt/d2".options = [ "x-systemd.mount-timeout=3m" ];
+    fileSystems."/mnt/d3".options = [ "x-systemd.mount-timeout=3m" ];
 
     ## Backups
     ### Git
@@ -224,25 +225,16 @@
             identityDir = "/mnt/d${toString index}/storj/identity";
             authorizationTokenFile = config.age.secrets."storj/auth".path;
 
-            serverPort = 28967 + 1 + index;
-            externalAddress = "d${toString index}.tywin.storj.hillion.co.uk:${toString (28967 + 1 + index)}";
-            consoleAddress = "100.115.31.91:${toString (14002 + 1 + index)}";
+            serverPort = 28967 + index;
+            externalAddress = "d${toString index}.tywin.storj.hillion.co.uk:${toString (28967 + index)}";
+            consoleAddress = "100.115.31.91:${toString (14002 + index)}";
 
             storage = "1000GB";
           };
         };
-        instances = builtins.genList (x: x) 3;
+        instances = builtins.genList (x: x) 4;
       in
-      builtins.listToAttrs (builtins.map mkStorj instances) // {
-        zfs = {
-          configDir = "/data/storj/config";
-          identityDir = "/data/storj/identity";
-          storage = "500GB";
-          consoleAddress = "100.115.31.91:14002";
-          serverPort = 28967;
-          externalAddress = "zfs.tywin.storj.hillion.co.uk:28967";
-        };
-      };
+      builtins.listToAttrs (builtins.map mkStorj instances);
 
     ## Downloads
     custom.services.downloads = {
@@ -262,10 +254,10 @@
     ## Firewall
     networking.firewall.interfaces."tailscale0".allowedTCPPorts = [
       80 # Caddy (restic.tywin.storage.ts.)
-      14002 # Storj Dashboard (zfs.)
-      14003 # Storj Dashboard (d0.)
-      14004 # Storj Dashboard (d1.)
-      14005 # Storj Dashboard (d1.)
+      14002 # Storj Dashboard (d0.)
+      14003 # Storj Dashboard (d1.)
+      14004 # Storj Dashboard (d2.)
+      14005 # Storj Dashboard (d3.)
     ];
   };
 }
