@@ -4,6 +4,8 @@
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-chia.url = "github:lourkeur/nixpkgs?rev=e2b683787475d344892bddea9ab413dc611b894e";
 
+    flake-utils.url = "github:numtide/flake-utils";
+
     darwin.url = "github:lnl7/nix-darwin/master";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -18,7 +20,7 @@
 
   description = "Hillion Nix flake";
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-chia, agenix, home-manager, impermanence, darwin, ... }@inputs: {
+  outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-chia, flake-utils, agenix, home-manager, impermanence, darwin, ... }@inputs: {
     nixosConfigurations =
       let
         fqdns = builtins.attrNames (builtins.readDir ./hosts);
@@ -77,7 +79,7 @@
       in
       nixpkgs.lib.genAttrs (builtins.filter isDarwin hosts) mkHost;
 
-    formatter."x86_64-linux" = nixpkgs.legacyPackages."x86_64-linux".nixpkgs-fmt;
-    formatter."aarch64-darwin" = nixpkgs.legacyPackages."aarch64-darwin".nixpkgs-fmt;
-  };
+  } // flake-utils.lib.eachDefaultSystem (system: {
+    formatter = nixpkgs.legacyPackages.${system}.nixpkgs-fmt;
+  });
 }
