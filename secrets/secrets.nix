@@ -12,6 +12,7 @@ let
       co = {
         hillion = {
           ts = {
+            cx = { jorah = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILA9Hp37ljgVRZwjXnTh+XqRuQWk23alOqe7ptwSr2A5 root@jorah"; };
             home = {
               microserver = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPPOCPqXm5a+vGB6PsJFvjKNgjLhM5MxrwCy6iHGRjXw root@microserver";
               router = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAlCj/i2xprN6h0Ik2tthOJQy6Qwq3Ony73+yfbHYTFu root@router";
@@ -35,11 +36,12 @@ in
 
   # Tailscale Pre-Auth Keys
   "tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ];
+  "tailscale/jorah.cx.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.cx.jorah ];
   "tailscale/microserver.home.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.home.microserver ];
   "tailscale/microserver.parents.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.parents.microserver ];
   "tailscale/router.home.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.home.router ];
-  "tailscale/vm.strangervm.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
   "tailscale/tywin.storage.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
+  "tailscale/vm.strangervm.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
 
   # Resilio Sync Secrets
   ## Encrypted Resilio Sync Secrets
