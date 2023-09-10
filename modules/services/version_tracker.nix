@@ -35,6 +35,7 @@ in
         fi
         cd repo
         ${git}/bin/git fetch
+        ${git}/bin/git switch --detach origin/main
 
         code=0
         for path in hosts/*
