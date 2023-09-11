@@ -15,6 +15,9 @@
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
 
+    ## Impermanence
+    custom.impermanence.enable = true;
+
     ## Custom Services
     custom.locations.autoServe = true;
 

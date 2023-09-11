@@ -16,8 +16,23 @@
 
   fileSystems."/" =
     {
-      device = "/dev/nvme0n1p2";
+      device = "tmpfs";
+      fsType = "tmpfs";
+      options = [ "mode=0755" ];
+    };
+
+  fileSystems."/nix" =
+    {
+      device = "/dev/disk/by-id/nvme-KXG60ZNV512G_TOSHIBA_106S10VHT9LM_1-part2";
       fsType = "btrfs";
+      options = [ "subvol=nix" ];
+    };
+
+  fileSystems."/data" =
+    {
+      device = "/dev/disk/by-id/nvme-KXG60ZNV512G_TOSHIBA_106S10VHT9LM_1-part2";
+      fsType = "btrfs";
+      options = [ "subvol=data" ];
     };
 
   fileSystems."/boot" =
