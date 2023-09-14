@@ -19,7 +19,10 @@
     custom.impermanence.enable = true;
 
     ## Custom Services
-    custom.locations.autoServe = true;
+    custom = {
+      locations.autoServe = true;
+      services.version_tracker.enable = true;
+    };
 
     ## Networking
     systemd.network = {
