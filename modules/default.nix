@@ -14,6 +14,7 @@
     ./storj.nix
     ./tailscale.nix
     ./users.nix
+    ./vms.nix
     ./www/global.nix
     ./www/www-repo.nix
   ];
