@@ -23,7 +23,6 @@
       locations.autoServe = true;
       www.global.enable = true;
       services.matrix.enable = true;
-      services.version_tracker.enable = true;
     };
 
     ## Networking
