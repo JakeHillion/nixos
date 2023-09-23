@@ -46,6 +46,8 @@
     fileSystems."/mnt/d1".options = [ "x-systemd.mount-timeout=3m" ];
     fileSystems."/mnt/d2".options = [ "x-systemd.mount-timeout=3m" ];
     fileSystems."/mnt/d3".options = [ "x-systemd.mount-timeout=3m" ];
+    fileSystems."/mnt/d4".options = [ "x-systemd.mount-timeout=3m" ];
+    fileSystems."/mnt/d5".options = [ "x-systemd.mount-timeout=3m" ];
 
     ## Backups
     ### Git
@@ -189,7 +191,7 @@
       openFirewall = true;
       keyFile = config.age.secrets."chia/farmer.key".path;
       targetAddress = "xch1tl87mjd9zpugs7qy2ysc3j4qlftqlyjn037jywq6v2y4kp22g74qahn6sw";
-      plotDirectories = builtins.genList (i: "/mnt/d${toString i}/plots/contract-k32") 4;
+      plotDirectories = builtins.genList (i: "/mnt/d${toString i}/plots/contract-k32") 6;
     };
 
     ## Storj
