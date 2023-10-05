@@ -6,8 +6,8 @@ let
     domain = "gitea.hillion.co.uk";
     owner = "JakeHillion";
     repo = "storj";
-    rev = "977a27dde2affe6801840b827dde387551b15126";
-    hash = "sha256-DHDVrYGWGK91uMMa9rF3RVpFA9IVhtvqHJtLUXyuL5E=";
+    rev = "540c9cb64738d8f1562b706807a9788361d5087e";
+    hash = "sha256-gCrxbwqGfQeeFxkG96N1bTtME30nD74yhNMXVhujSfI=";
   };
   meta = with lib; {
     description = "Storj is building a distributed cloud storage network.";
@@ -25,7 +25,7 @@ in
 buildGoModule rec {
   pname = "storagenode";
   inherit version src meta;
-  vendorHash = "sha256-iZEEADI1JxdsL1j4kJpkV3owfO8DnUcCNSKJMyPgYhE=";
+  vendorHash = "sha256-6BE3/jNCnPBUqSAhAE9p9kKJQRJyWetPBMwTYhMffpw=";
   subPackages = [
     "cmd/storagenode"
     "cmd/identity"
