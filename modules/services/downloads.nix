@@ -94,6 +94,8 @@ in
     containers."downloads" = {
       autoStart = true;
       ephemeral = true;
+
+      additionalCapabilities = [ "CAP_NET_ADMIN" ];
       extraFlags = [ "--network-namespace-path=/run/netns/downloads" ];
 
       bindMounts = {
@@ -123,9 +125,10 @@ in
 
           systemd.services.setup-loopback = {
             description = "Setup container loopback adapter.";
-
-            after = [ "network-pre.target" ];
             before = [ "network.target" ];
+
+            serviceConfig.Type = "oneshot";
+            serviceConfig.RemainAfterExit = true;
 
             script = with pkgs; "${iproute2}/bin/ip link set up lo";
           };
