@@ -35,6 +35,12 @@ in
         owner = "matrix-synapse";
         group = "matrix-synapse";
       };
+
+      "matrix/matrix.hillion.co.uk/registration_shared_secret" = {
+        file = ../../secrets/matrix/matrix.hillion.co.uk/registration_shared_secret.age;
+        owner = "matrix-synapse";
+        group = "matrix-synapse";
+      };
     };
 
     services = {
@@ -58,6 +64,8 @@ in
         ];
 
         settings = {
+          registration_shared_secret_path = config.age.secrets."matrix/matrix.hillion.co.uk/registration_shared_secret".path;
+
           server_name = "hillion.co.uk";
           public_baseurl = "https://matrix.hillion.co.uk/";
           listeners = [

@@ -60,6 +60,7 @@ in
   # Matrix Secrets
   "matrix/matrix.hillion.co.uk/macaroon_secret_key.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
   "matrix/matrix.hillion.co.uk/email.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
+  "matrix/matrix.hillion.co.uk/registration_shared_secret.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
 
   # Backups Secrets
   "restic/128G.age".publicKeys = jake_users ++ [ ts.storage.tywin ts.strangervm.vm ];
