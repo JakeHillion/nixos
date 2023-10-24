@@ -24,6 +24,14 @@
       services.version_tracker.enable = true;
     };
 
+    ## Filesystems
+    services.btrfs.autoScrub = {
+      enable = true;
+      interval = "Tue, 02:00";
+      # By default both /data and /nix would be scrubbed. They are the same filesystem so this is wasteful.
+      fileSystems = [ "/data" ];
+    };
+
     ## Networking
     systemd.network = {
       enable = true;
