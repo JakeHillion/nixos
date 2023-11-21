@@ -177,6 +177,18 @@
             ipAddress = "10.64.50.22";
             hostName = "syncbox";
           }
+          {
+            # bedroom-everything-presence-one
+            ethernetAddress = "40:22:d8:e0:1d:50";
+            ipAddress = "10.239.19.2";
+            hostName = "bedroom-everything-presence-one";
+          }
+          {
+            # living-room-everything-presence-one
+            ethernetAddress = "40:22:d8:e0:0f:78";
+            ipAddress = "10.239.19.3";
+            hostName = "living-room-everything-presence-one";
+          }
         ];
       };
     };
