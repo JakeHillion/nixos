@@ -22,6 +22,7 @@
     custom = {
       locations.autoServe = true;
       services.version_tracker.enable = true;
+      www.global.enable = true;
     };
 
     ## Filesystems
@@ -52,8 +53,11 @@
       interfaces = {
         enp5s0 = {
           allowedTCPPorts = lib.mkForce [
+            80 # HTTP 1-2
+            443 # HTTPS 1-2
           ];
           allowedUDPPorts = lib.mkForce [
+            443 # HTTP 3
           ];
         };
       };
@@ -64,6 +68,8 @@
     custom.tailscale = {
       enable = true;
       preAuthKeyFile = config.age.secrets."tailscale/jorah.cx.ts.hillion.co.uk".path;
+      ipv4Addr = "100.96.143.138";
+      ipv6Addr = "fd7a:115c:a1e0:ab12:4843:cd96:6260:8f8a";
     };
   };
 }

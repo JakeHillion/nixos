@@ -53,10 +53,10 @@ in
       };
 
       script = ''
-        if [ ! -d "${cfg.path}/.git" ] ; then
-            ${pkgs.git}/bin/git clone ${cfg.remote} ${cfg.path}
+        if [ ! -d "${cfg.location}/.git" ] ; then
+            ${pkgs.git}/bin/git clone ${cfg.remote} ${cfg.location}
         else
-            cd ${cfg.path}
+            cd ${cfg.location}
             ${pkgs.git} remote set-url origin ${cfg.remote}
             ${pkgs.git}/bin/git fetch
             ${pkgs.git}/bin/git reset --hard origin/${cfg.branch}

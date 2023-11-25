@@ -74,7 +74,11 @@ in
               tls = false;
               type = "http";
               x_forwarded = true;
-              bind_addresses = [ "::1" ];
+              bind_addresses = [
+                "::1"
+                config.custom.tailscale.ipv4Addr
+                config.custom.tailscale.ipv6Addr
+              ];
               resources = [
                 {
                   names = [ "client" "federation" ];
@@ -117,10 +121,12 @@ in
       };
     };
 
-    systemd.services.heisenbridge = lib.mkIf cfg.heisenbridge {
-      serviceConfig = {
-        Restart = "on-failure";
-        RestartSec = 15;
+    systemd.services = {
+      heisenbridge = lib.mkIf cfg.heisenbridge {
+        serviceConfig = {
+          Restart = "on-failure";
+          RestartSec = 15;
+        };
       };
     };
   };

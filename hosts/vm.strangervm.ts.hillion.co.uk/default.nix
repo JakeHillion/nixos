@@ -21,7 +21,6 @@
     ## Custom Services
     custom = {
       locations.autoServe = true;
-      www.global.enable = true;
       services.matrix.enable = true;
     };
 
@@ -37,6 +36,10 @@
         22 # SSH
       ];
       allowedUDPPorts = lib.mkForce [ ];
+      trustedInterfaces = lib.mkForce [
+        "lo"
+        "tailscale0"
+      ];
       interfaces = {
         ens18 = {
           allowedTCPPorts = lib.mkForce [
@@ -55,6 +58,8 @@
     custom.tailscale = {
       enable = true;
       preAuthKeyFile = config.age.secrets."tailscale/vm.strangervm.ts.hillion.co.uk".path;
+      ipv4Addr = "100.110.89.111";
+      ipv6Addr = "fd7a:115c:a1e0:ab12:4843:cd96:626e:596f";
     };
 
     ## Resilio Sync (Encrypted)
