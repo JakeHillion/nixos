@@ -21,7 +21,6 @@
     ## Custom Services
     custom = {
       locations.autoServe = true;
-      services.matrix.enable = true;
     };
 
     ## Networking

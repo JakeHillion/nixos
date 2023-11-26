@@ -31,10 +31,13 @@ in
   config = lib.mkIf cfg.enable {
     fileSystems.${cfg.base}.neededForBoot = true;
 
-    services.openssh.hostKeys = [
-      { path = "/data/system/etc/ssh/ssh_host_ed25519_key"; type = "ed25519"; }
-      { path = "/data/system/etc/ssh/ssh_host_rsa_key"; type = "rsa"; bits = 4096; }
-    ];
+    services = {
+      openssh.hostKeys = [
+        { path = "/data/system/etc/ssh/ssh_host_ed25519_key"; type = "ed25519"; }
+        { path = "/data/system/etc/ssh/ssh_host_rsa_key"; type = "rsa"; bits = 4096; }
+      ];
+      matrix-synapse.dataDir = "${cfg.base}/system/var/lib/matrix-synapse";
+    };
 
     environment.persistence."${cfg.base}/system" = {
       hideMounts = true;
@@ -43,6 +46,7 @@ in
         "/etc/nixos"
       ] ++ (listIf config.custom.tailscale.enable [ "/var/lib/tailscale" ]) ++
       (listIf config.services.zigbee2mqtt.enable [ config.services.zigbee2mqtt.dataDir ]) ++
+      (listIf config.services.postgresql.enable [ config.services.postgresql.dataDir ]) ++
       (listIf config.hardware.bluetooth.enable [ "/var/lib/bluetooth" ]);
     };
 

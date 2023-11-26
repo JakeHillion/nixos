@@ -15,7 +15,7 @@ in
         services = {
           downloads = "tywin.storage.ts.hillion.co.uk";
           mastodon = "vm.strangervm.ts.hillion.co.uk";
-          matrix = "vm.strangervm.ts.hillion.co.uk";
+          matrix = "jorah.cx.ts.hillion.co.uk";
         };
       };
     };

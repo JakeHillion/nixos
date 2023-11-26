@@ -20,7 +20,12 @@ in
       virtualHosts = {
         "hillion.co.uk".extraConfig = ''
           handle /.well-known/* {
+            header /.well-known/matrix/* Content-Type application/json
+            header /.well-known/matrix/* Access-Control-Allow-Origin *
+
             respond /.well-known/matrix/server "{\"m.server\": \"matrix.hillion.co.uk:443\"}" 200
+            respond /.well-known/matrix/client `{"m.homeserver":{"base_url":"https://matrix.hillion.co.uk"}}`
+
             respond 404
           }
 
@@ -42,7 +47,8 @@ in
           reverse_proxy http://plex.mediaserver.ts.hillion.co.uk:8096
         '';
         "matrix.hillion.co.uk".extraConfig = ''
-          reverse_proxy http://${locations.services.matrix}:8008
+          reverse_proxy /_matrix/* http://${locations.services.matrix}:8008
+          reverse_proxy /_synapse/client/* http://${locations.services.matrix}:8008
         '';
         "unifi.hillion.co.uk".extraConfig = ''
           reverse_proxy https://unifi.unifi.ts.hillion.co.uk:8443 {

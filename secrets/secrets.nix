@@ -58,9 +58,9 @@ in
   "resilio/plain/sync.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ts.storage.tywin ];
 
   # Matrix Secrets
-  "matrix/matrix.hillion.co.uk/macaroon_secret_key.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
-  "matrix/matrix.hillion.co.uk/email.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
-  "matrix/matrix.hillion.co.uk/registration_shared_secret.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
+  "matrix/matrix.hillion.co.uk/macaroon_secret_key.age".publicKeys = jake_users ++ [ ts.cx.jorah ];
+  "matrix/matrix.hillion.co.uk/email.age".publicKeys = jake_users ++ [ ts.cx.jorah ];
+  "matrix/matrix.hillion.co.uk/registration_shared_secret.age".publicKeys = jake_users ++ [ ts.cx.jorah ];
 
   # Backups Secrets
   "restic/128G.age".publicKeys = jake_users ++ [ ts.storage.tywin ts.strangervm.vm ];
