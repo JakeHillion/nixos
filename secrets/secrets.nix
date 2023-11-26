@@ -63,7 +63,7 @@ in
   "matrix/matrix.hillion.co.uk/registration_shared_secret.age".publicKeys = jake_users ++ [ ts.cx.jorah ];
 
   # Backups Secrets
-  "restic/128G.age".publicKeys = jake_users ++ [ ts.storage.tywin ts.strangervm.vm ];
+  "restic/128G.age".publicKeys = jake_users ++ [ ts.storage.tywin ts.cx.jorah ];
   "restic/1.6T.age".publicKeys = jake_users ++ [ ts.storage.tywin ts.home.router ];
 
   "git/git_backups_ecdsa.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
