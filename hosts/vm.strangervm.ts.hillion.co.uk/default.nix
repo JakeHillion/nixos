@@ -62,30 +62,6 @@
       ipv6Addr = "fd7a:115c:a1e0:ab12:4843:cd96:626e:596f";
     };
 
-    ## Resilio Sync (Encrypted)
-    custom.resilio.enable = true;
-    services.resilio.deviceName = "vm.strangervm";
-    services.resilio.directoryRoot = "/data/sync";
-    services.resilio.storagePath = "/data/sync/.sync";
-
-    custom.resilio.folders =
-      let
-        folderNames = [
-          "dad"
-          "projects"
-          "resources"
-          "sync"
-        ];
-        mkFolder = name: {
-          name = name;
-          secret = {
-            name = "resilio/encrypted/${name}";
-            file = ../../secrets/resilio/encrypted/${name}.age;
-          };
-        };
-      in
-      builtins.map (mkFolder) folderNames;
-
     ## Backups
     services.postgresqlBackup.location = "/data/backup/postgres";
   };
