@@ -221,7 +221,7 @@
             externalAddress = "d${toString index}.tywin.storj.hillion.co.uk:${toString (28967 + index)}";
             consoleAddress = "100.115.31.91:${toString (14002 + index)}";
 
-            storage = "1250GB";
+            storage = "1500GB";
           };
         };
         instances = builtins.genList (x: x) 4;
