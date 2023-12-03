@@ -50,13 +50,6 @@ in
           reverse_proxy /_matrix/* http://${locations.services.matrix}:8008
           reverse_proxy /_synapse/client/* http://${locations.services.matrix}:8008
         '';
-        "unifi.hillion.co.uk".extraConfig = ''
-          reverse_proxy https://unifi.unifi.ts.hillion.co.uk:8443 {
-            transport http {
-              tls_insecure_skip_verify
-            }
-          }
-        '';
         "drone.hillion.co.uk".extraConfig = ''
           reverse_proxy http://vm.strangervm.ts.hillion.co.uk:18733
         '';
