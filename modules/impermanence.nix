@@ -47,7 +47,8 @@ in
       ] ++ (listIf config.custom.tailscale.enable [ "/var/lib/tailscale" ]) ++
       (listIf config.services.zigbee2mqtt.enable [ config.services.zigbee2mqtt.dataDir ]) ++
       (listIf config.services.postgresql.enable [ config.services.postgresql.dataDir ]) ++
-      (listIf config.hardware.bluetooth.enable [ "/var/lib/bluetooth" ]);
+      (listIf config.hardware.bluetooth.enable [ "/var/lib/bluetooth" ]) ++
+      (listIf config.custom.services.unifi.enable [ "/var/lib/unifi" ]);
     };
 
     home-manager.users =

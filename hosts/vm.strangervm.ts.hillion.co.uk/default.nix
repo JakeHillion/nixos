@@ -61,20 +61,6 @@
       ipv6Addr = "fd7a:115c:a1e0:ab12:4843:cd96:626e:596f";
     };
 
-    ## Caddy
-    services.caddy = {
-      enable = true;
-      virtualHosts = {
-        "unifi.hillion.co.uk".extraConfig = ''
-          reverse_proxy https://unifi.unifi.ts.hillion.co.uk:8443 {
-            transport http {
-              tls_insecure_skip_verify
-            }
-          }
-        '';
-      };
-    };
-
     ## Backups
     services.postgresqlBackup.location = "/data/backup/postgres";
   };
