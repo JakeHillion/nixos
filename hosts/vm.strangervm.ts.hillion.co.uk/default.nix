@@ -3,7 +3,6 @@
 {
   imports = [
     ../../modules/common/default.nix
-    ../../modules/drone/server.nix
     ./hardware-configuration.nix
   ];
 
@@ -21,6 +20,7 @@
     ## Custom Services
     custom = {
       locations.autoServe = true;
+      drone.server.path = "/data/drone";
     };
 
     ## Networking

@@ -17,6 +17,9 @@ in
           mastodon = "vm.strangervm.ts.hillion.co.uk";
           matrix = "jorah.cx.ts.hillion.co.uk";
         };
+        drone = {
+          server = "vm.strangervm.ts.hillion.co.uk";
+        };
       };
     };
   };
@@ -25,5 +28,7 @@ in
     custom.services.downloads.enable = cfg.locations.services.downloads == config.networking.fqdn;
     custom.services.mastodon.enable = cfg.locations.services.mastodon == config.networking.fqdn;
     custom.services.matrix.enable = cfg.locations.services.matrix == config.networking.fqdn;
+
+    custom.drone.server.enable = cfg.locations.drone.server == config.networking.fqdn;
   };
 }
