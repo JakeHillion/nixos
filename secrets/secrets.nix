@@ -67,7 +67,7 @@ in
   "matrix/matrix.hillion.co.uk/registration_shared_secret.age".publicKeys = jake_users ++ [ ts.cx.jorah ];
 
   # Backups Secrets
-  "restic/128G.age".publicKeys = jake_users ++ [ ts.storage.tywin ts.cx.jorah ];
+  "restic/128G.age".publicKeys = jake_users ++ [ ts.storage.tywin ts.cx.jorah ts.home.microserver ];
   "restic/1.6T.age".publicKeys = jake_users ++ [ ts.storage.tywin ts.home.router ];
 
   "git/git_backups_ecdsa.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
@@ -111,4 +111,7 @@ in
   "gitea/oauth_jwt_secret.age".publicKeys = jake_users ++ [ ts.cx.jorah ];
   "gitea/security_secret_key.age".publicKeys = jake_users ++ [ ts.cx.jorah ];
   "gitea/security_internal_token.age".publicKeys = jake_users ++ [ ts.cx.jorah ];
+
+  # HomeAssistant Secrets
+  "homeassistant/secrets.yaml.age".publicKeys = jake_users ++ [ ts.home.microserver ];
 }

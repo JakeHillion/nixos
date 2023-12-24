@@ -38,7 +38,7 @@ in
           file_server
         '';
         "homeassistant.hillion.co.uk".extraConfig = ''
-          reverse_proxy http://homeassistant.homeassistant.ts.hillion.co.uk:8123
+          reverse_proxy http://${locations.services.homeassistant}:8123
         '';
         "gitea.hillion.co.uk".extraConfig = ''
           reverse_proxy http://${locations.services.gitea}:3000

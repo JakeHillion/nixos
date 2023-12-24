@@ -13,6 +13,9 @@
     networking.hostName = "microserver";
     networking.domain = "home.ts.hillion.co.uk";
 
+    ## Custom Services
+    custom.locations.autoServe = true;
+
     # Networking
     ## Tailscale
     age.secrets."tailscale/microserver.home.ts.hillion.co.uk".file = ../../secrets/tailscale/microserver.home.ts.hillion.co.uk.age;
@@ -40,9 +43,16 @@
     services.iperf3.enable = true;
     services.iperf3.openFirewall = true;
 
-    networking.firewall.interfaces."tailscale0".allowedTCPPorts = [
-      1883 # MQTT server
-    ];
+    networking.firewall.interfaces = {
+      "eth0" = {
+        allowedUDPPorts = [
+          5353 # HomeKit
+        ];
+        allowedTCPPorts = [
+          21063 # HomeKit
+        ];
+      };
+    };
   };
 }
 
