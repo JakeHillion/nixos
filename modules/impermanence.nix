@@ -37,6 +37,7 @@ in
         { path = "/data/system/etc/ssh/ssh_host_rsa_key"; type = "rsa"; bits = 4096; }
       ];
       matrix-synapse.dataDir = "${cfg.base}/system/var/lib/matrix-synapse";
+      gitea.stateDir = "${cfg.base}/system/var/lib/gitea";
     };
 
     environment.persistence."${cfg.base}/system" = {

@@ -37,14 +37,14 @@ in
           root * /var/www/blog.hillion.co.uk
           file_server
         '';
-        "gitea.hillion.co.uk".extraConfig = ''
-          reverse_proxy http://gitea.gitea.ts.hillion.co.uk:3000
-        '';
         "homeassistant.hillion.co.uk".extraConfig = ''
           reverse_proxy http://homeassistant.homeassistant.ts.hillion.co.uk:8123
         '';
         "emby.hillion.co.uk".extraConfig = ''
           reverse_proxy http://plex.mediaserver.ts.hillion.co.uk:8096
+        '';
+        "gitea.hillion.co.uk".extraConfig = ''
+          reverse_proxy http://${locations.services.gitea}:3000
         '';
         "matrix.hillion.co.uk".extraConfig = ''
           reverse_proxy /_matrix/* http://${locations.services.matrix}:8008

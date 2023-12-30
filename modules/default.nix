@@ -11,6 +11,7 @@
     ./locations.nix
     ./resilio.nix
     ./services/downloads.nix
+    ./services/gitea.nix
     ./services/mastodon/default.nix
     ./services/matrix.nix
     ./services/unifi.nix
