@@ -40,7 +40,7 @@ in
 
     virtualisation.oci-containers.containers = {
       "unifi" = {
-        image = "lscr.io/linuxserver/unifi-controller:8.0.7-ls218";
+        image = "lscr.io/linuxserver/unifi-controller:8.0.24-ls221";
         environment = {
           PUID = toString config.ids.uids.unifi;
           PGID = toString config.ids.gids.unifi;
