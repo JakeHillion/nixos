@@ -42,7 +42,7 @@
       interval = "Tue, 02:00";
     };
 
-    fileSystems."/mnt/d0".options = [ "x-systemd.mount-timeout=3m" ];
+    # fileSystems."/mnt/d0".options = [ "x-systemd.mount-timeout=3m" ];
     fileSystems."/mnt/d1".options = [ "x-systemd.mount-timeout=3m" ];
     fileSystems."/mnt/d2".options = [ "x-systemd.mount-timeout=3m" ];
     fileSystems."/mnt/d3".options = [ "x-systemd.mount-timeout=3m" ];
@@ -224,7 +224,7 @@
             storage = "1500GB";
           };
         };
-        instances = builtins.genList (x: x) 4;
+        instances = [ 1 2 3 ];
       in
       builtins.listToAttrs (builtins.map mkStorj instances);
 
