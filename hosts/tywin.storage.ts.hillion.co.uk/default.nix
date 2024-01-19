@@ -42,14 +42,6 @@
       interval = "Tue, 02:00";
     };
 
-    # fileSystems."/mnt/d0".options = [ "x-systemd.mount-timeout=3m" ];
-    fileSystems."/mnt/d1".options = [ "x-systemd.mount-timeout=3m" ];
-    fileSystems."/mnt/d2".options = [ "x-systemd.mount-timeout=3m" ];
-    fileSystems."/mnt/d3".options = [ "x-systemd.mount-timeout=3m" ];
-    fileSystems."/mnt/d4".options = [ "x-systemd.mount-timeout=3m" ];
-    fileSystems."/mnt/d5".options = [ "x-systemd.mount-timeout=3m" ];
-    fileSystems."/mnt/d6".options = [ "x-systemd.mount-timeout=3m" ];
-
     ## Backups
     ### Git
     age.secrets."git/git_backups_ecdsa".file = ../../secrets/git/git_backups_ecdsa.age;
@@ -194,39 +186,6 @@
       targetAddress = "xch1tl87mjd9zpugs7qy2ysc3j4qlftqlyjn037jywq6v2y4kp22g74qahn6sw";
       plotDirectories = builtins.genList (i: "/mnt/d${toString i}/plots/contract-k32") 7;
     };
-
-    ## Storj
-    age.secrets."storj/auth" = {
-      file = ../../secrets/storj/auth.age;
-      owner = "storj";
-      group = "storj";
-    };
-    custom.storj = {
-      enable = true;
-      openFirewall = true;
-      email = "jake+storj@hillion.co.uk";
-      wallet = "0x03cebe2608945D51f0bcE6c5ef70b4948fCEcfEe";
-    };
-
-    custom.storj.instances =
-      let
-        mkStorj = index: {
-          name = "d${toString index}";
-          value = {
-            configDir = "/mnt/d${toString index}/storj/config";
-            identityDir = "/mnt/d${toString index}/storj/identity";
-            authorizationTokenFile = config.age.secrets."storj/auth".path;
-
-            serverPort = 28967 + index;
-            externalAddress = "d${toString index}.tywin.storj.hillion.co.uk:${toString (28967 + index)}";
-            consoleAddress = "100.115.31.91:${toString (14002 + index)}";
-
-            storage = "1500GB";
-          };
-        };
-        instances = [ 1 2 3 ];
-      in
-      builtins.listToAttrs (builtins.map mkStorj instances);
 
     ## Downloads
     custom.services.downloads = {
