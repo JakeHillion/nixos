@@ -5,13 +5,13 @@ name: check
 
 steps:
   - name: lint
-    image: nixos/nix:2.16.1
+    image: nixos/nix:2.20.1
     commands:
       - nix --extra-experimental-features 'nix-command flakes' fmt
       - git diff --exit-code
 
   - name: check
-    image: nixos/nix:2.16.1
+    image: nixos/nix:2.20.1
     commands:
       - nix --extra-experimental-features 'nix-command flakes' flake check
 
@@ -21,6 +21,6 @@ trigger:
     - tag
 ---
 kind: signature
-hmac: 27c93405b251bb8bc80c82d7271702f80753ff63a0422678e62bbe2c4a025840
+hmac: 871e14a3fb13285ac771b1c875bc3aca8f4e20939e6046a4fd7b355d492c7888
 
 ...
