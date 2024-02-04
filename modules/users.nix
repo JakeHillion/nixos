@@ -16,6 +16,6 @@ in
 
   config = lib.mkIf cfg.jake.password {
     age.secrets."passwords/jake".file = ../secrets/passwords/jake.age;
-    users.users.jake.passwordFile = config.age.secrets."passwords/jake".path;
+    users.users.jake.hashedPasswordFile = config.age.secrets."passwords/jake".path;
   };
 }

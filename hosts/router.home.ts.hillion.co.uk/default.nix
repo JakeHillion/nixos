@@ -254,7 +254,6 @@
     ## Netdata
     services.netdata = {
       enable = true;
-      group = "caddy";
       config = {
         web = {
           "bind to" = "unix:/run/netdata/netdata.sock";
@@ -268,11 +267,17 @@
         extraConfig = "reverse_proxy unix///run/netdata/netdata.sock";
       };
     };
-
-    ### HACK: caddy needs tailscale to be up so allow it to restart on failure
-    systemd.services.caddy.serviceConfig = {
-      Restart = lib.mkForce "on-failure";
-      RestartSec = 15;
+    users.users.caddy.extraGroups = [ "netdata" ];
+    ### HACK: Allow Caddy to restart if it fails. This happens because Tailscale
+    ### is too late at starting. Upstream nixos caddy does restart on failure
+    ### but it's prevented on exit code 1. Set the exit code to 0 (non-failure)
+    ### to override this.
+    systemd.services.caddy = {
+      requires = [ "tailscaled.service" ];
+      after = [ "tailscaled.service" ];
+      serviceConfig = {
+        RestartPreventExitStatus = lib.mkForce 0;
+      };
     };
   };
 }

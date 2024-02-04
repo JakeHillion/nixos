@@ -54,6 +54,8 @@ in
         extraConfig = {
           EMAIL_DOMAIN_WHITELIST = "hillion.co.uk";
         };
+
+        streamingProcesses = 9;
       };
 
       caddy = {

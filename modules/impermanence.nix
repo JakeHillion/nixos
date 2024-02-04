@@ -59,6 +59,8 @@ in
           name = x;
           value = {
             home.persistence."/data/users/${x}" = {
+              allowOther = false;
+
               files = [
                 ".zsh_history"
               ] ++ cfg.userExtraFiles.${x} or [ ];

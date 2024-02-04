@@ -17,7 +17,7 @@ in
 
       script = "${pkgs.writers.writePerl "hostinfo" {
         libraries = with pkgs; [
-          perl536Packages.HTTPDaemon
+          perlPackages.HTTPDaemon
         ];
       } ''
         use v5.10;
