@@ -49,7 +49,8 @@ in
       (listIf config.services.zigbee2mqtt.enable [ config.services.zigbee2mqtt.dataDir ]) ++
       (listIf config.services.postgresql.enable [ config.services.postgresql.dataDir ]) ++
       (listIf config.hardware.bluetooth.enable [ "/var/lib/bluetooth" ]) ++
-      (listIf config.custom.services.unifi.enable [ "/var/lib/unifi" ]);
+      (listIf config.custom.services.unifi.enable [ "/var/lib/unifi" ]) ++
+      (listIf (config.virtualisation.oci-containers.containers != { }) [ "/var/lib/containers" ]);
     };
 
     home-manager.users =
