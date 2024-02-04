@@ -36,9 +36,11 @@
   environment = {
     systemPackages = with pkgs; [
       agenix.packages."${system}".default
+      gh
       git
       htop
       nix
+      sapling
       vim
     ];
     variables.EDITOR = "vim";
