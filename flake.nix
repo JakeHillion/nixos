@@ -28,6 +28,7 @@
         getSystemOverlays = system: nixpkgsConfig: [
           (final: prev: {
             "storj" = final.callPackage ./pkgs/storj.nix { };
+            "renovate" = final.callPackage ./pkgs/renovate.nix { };
           })
         ];
         mkHost = fqdn:
