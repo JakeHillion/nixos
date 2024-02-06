@@ -6,9 +6,6 @@
 
     flake-utils.url = "github:numtide/flake-utils";
 
-    darwin.url = "github:lnl7/nix-darwin/master";
-    darwin.inputs.nixpkgs.follows = "nixpkgs";
-
     agenix.url = "github:ryantm/agenix";
     agenix.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -20,11 +17,10 @@
 
   description = "Hillion Nix flake";
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-chia, flake-utils, agenix, home-manager, impermanence, darwin, ... }@inputs: {
+  outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-chia, flake-utils, agenix, home-manager, impermanence, ... }@inputs: {
     nixosConfigurations =
       let
         fqdns = builtins.attrNames (builtins.readDir ./hosts);
-        isNixos = fqdn: !builtins.pathExists ./hosts/${fqdn}/darwin;
         getSystemOverlays = system: nixpkgsConfig: [
           (final: prev: {
             "storj" = final.callPackage ./pkgs/storj.nix { };
@@ -58,27 +54,7 @@
             ];
           };
       in
-      nixpkgs.lib.genAttrs (builtins.filter isNixos fqdns) mkHost;
-
-    darwinConfigurations =
-      let
-        hosts = builtins.attrNames (builtins.readDir ./hosts);
-        isDarwin = host: builtins.pathExists ./hosts/${host}/darwin;
-        mkHost = host:
-          let system = builtins.readFile ./hosts/${host}/system;
-          in
-          darwin.lib.darwinSystem {
-            inherit system;
-            inherit inputs;
-            modules = [
-              ./hosts/${host}/default.nix
-              agenix.darwinModules.default
-              home-manager.darwinModules.default
-            ];
-          };
-      in
-      nixpkgs.lib.genAttrs (builtins.filter isDarwin hosts) mkHost;
-
+      nixpkgs.lib.genAttrs fqdns mkHost;
   } // flake-utils.lib.eachDefaultSystem (system: {
     formatter = nixpkgs.legacyPackages.${system}.nixpkgs-fmt;
   });

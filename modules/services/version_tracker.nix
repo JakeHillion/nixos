@@ -41,7 +41,6 @@ in
         for path in hosts/*
         do
             hostname=''${path##*/}
-            if test -f "hosts/$hostname/darwin"; then continue; fi
 
             if rev=$(${curl}/bin/curl -s --connect-timeout 15 http://$hostname:30653/current/nixos/system/configurationRevision); then
                 echo "$hostname: $rev (current)"
