@@ -19,6 +19,9 @@
       "net.ipv4.conf.all.forwarding" = true;
     };
 
+    ## Interactive password
+    custom.users.jake.password = true;
+
     ## Impermanence
     custom.impermanence.enable = true;
 

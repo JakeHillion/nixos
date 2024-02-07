@@ -7,6 +7,7 @@
     ./common/hostinfo.nix
     ./desktop/awesome/default.nix
     ./drone/default.nix
+    ./ids.nix
     ./impermanence.nix
     ./locations.nix
     ./resilio.nix

@@ -30,6 +30,7 @@
     };
 
     ## Desktop
+    custom.users.jake.password = true;
     custom.desktop.awesome.enable = true;
 
     ## Resilio
@@ -84,12 +85,7 @@
       };
     };
 
-    ## Password (for interactive logins)
-    age.secrets."passwords/gendry.jakehillion-terminals.ts.hillion.co.uk/jake".file = ../../secrets/passwords/gendry.jakehillion-terminals.ts.hillion.co.uk/jake.age;
-
     users.users."${config.custom.user}" = {
-      passwordFile = config.age.secrets."passwords/gendry.jakehillion-terminals.ts.hillion.co.uk/jake".path;
-
       packages = with pkgs; [
         prismlauncher
       ];

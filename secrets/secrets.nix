@@ -32,7 +32,7 @@ let
 in
 {
   # User Passwords
-  "passwords/gendry.jakehillion-terminals.ts.hillion.co.uk/jake.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ];
+  "passwords/jake.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ts.home.router ];
 
   # Tailscale Pre-Auth Keys
   "tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ];

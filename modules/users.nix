@@ -1,21 +1,21 @@
 { config, pkgs, lib, ... }:
 
+let
+  cfg = config.custom.users;
+in
 {
-  config = {
-    ids.uids = {
-      ## Defined System Users (see https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/misc/ids.nix)
-      unifi = 183;
-
-      ## Consistent People
-      jake = 1000;
-      joseph = 1001;
+  options.custom.users = {
+    jake = {
+      password = lib.mkOption {
+        description = "Enable an interactive password.";
+        type = lib.types.bool;
+        default = false;
+      };
     };
-    ids.gids = {
-      ## Defined System Groups (see https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/misc/ids.nix)
-      unifi = 183;
+  };
 
-      ## Consistent Groups
-      mediaaccess = 1200;
-    };
+  config = lib.mkIf cfg.jake.password {
+    age.secrets."passwords/jake".file = ../secrets/passwords/jake.age;
+    users.users.jake.passwordFile = config.age.secrets."passwords/jake".path;
   };
 }
