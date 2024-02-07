@@ -143,56 +143,92 @@
     };
 
     services = {
-      dhcpd4 = {
-        enable = true;
-        interfaces = [ "eth1" "eth2" ];
-        extraConfig = ''
-          subnet 10.64.50.0 netmask 255.255.255.0 {
-            interface eth1;
+      kea = {
+        dhcp4 = {
+          enable = true;
 
-            option broadcast-address 10.64.50.255;
-            option routers 10.64.50.1;
-            range 10.64.50.64 10.64.50.254;
-
-            option domain-name-servers 1.1.1.1, 8.8.8.8;
-          }
-
-          subnet 10.239.19.0 netmask 255.255.255.0 {
-            interface eth2;
-
-            option broadcast-address 10.239.19.255;
-            option routers 10.239.19.1;
-            range 10.239.19.64 10.239.19.254;
-
-            option domain-name-servers 1.1.1.1, 8.8.8.8;
-          }
-        '';
-        machines = [
-          {
-            # tywin.storage.ts.hillion.co.uk
-            ethernetAddress = "c8:7f:54:6d:e1:03";
-            ipAddress = "10.64.50.20";
-            hostName = "tywin";
-          }
-          {
-            # syncbox
-            ethernetAddress = "00:1e:06:49:06:1e";
-            ipAddress = "10.64.50.22";
-            hostName = "syncbox";
-          }
-          {
-            # bedroom-everything-presence-one
-            ethernetAddress = "40:22:d8:e0:1d:50";
-            ipAddress = "10.239.19.2";
-            hostName = "bedroom-everything-presence-one";
-          }
-          {
-            # living-room-everything-presence-one
-            ethernetAddress = "40:22:d8:e0:0f:78";
-            ipAddress = "10.239.19.3";
-            hostName = "living-room-everything-presence-one";
-          }
-        ];
+          settings = {
+            interfaces-config = {
+              interfaces = [ "eth1" "eth2" ];
+            };
+            lease-database = {
+              type = "memfile";
+              persist = false;
+            };
+            subnet4 = [
+              {
+                subnet = "10.64.50.0/24";
+                interface = "eth1";
+                pools = [{
+                  pool = "10.64.50.64 - 10.64.50.254";
+                }];
+                option-data = [
+                  {
+                    name = "routers";
+                    data = "10.64.50.1";
+                  }
+                  {
+                    name = "broadcast-address";
+                    data = "10.64.50.255";
+                  }
+                  {
+                    name = "domain-name-servers";
+                    data = "1.1.1.1, 8.8.8.8";
+                  }
+                ];
+                reservations = [
+                  {
+                    # tywin.storage.ts.hillion.co.uk
+                    hw-address = "c8:7f:54:6d:e1:03";
+                    ip-address = "10.64.50.20";
+                    hostname = "tywin";
+                  }
+                  {
+                    # syncbox
+                    hw-address = "00:1e:06:49:06:1e";
+                    ip-address = "10.64.50.22";
+                    hostname = "syncbox";
+                  }
+                ];
+              }
+              {
+                subnet = "10.239.19.0/24";
+                interface = "eth2";
+                pools = [{
+                  pool = "10.239.19.64 - 10.239.19.254";
+                }];
+                option-data = [
+                  {
+                    name = "routers";
+                    data = "10.239.19.1";
+                  }
+                  {
+                    name = "broadcast-address";
+                    data = "10.239.19.255";
+                  }
+                  {
+                    name = "domain-name-servers";
+                    data = "1.1.1.1, 8.8.8.8";
+                  }
+                ];
+                reservations = [
+                  {
+                    # bedroom-everything-presence-one
+                    hw-address = "40:22:d8:e0:1d:50";
+                    ip-address = "10.239.19.2";
+                    hostname = "bedroom-everything-presence-one";
+                  }
+                  {
+                    # living-room-everything-presence-one
+                    hw-address = "40:22:d8:e0:0f:78";
+                    ip-address = "10.239.19.3";
+                    hostname = "living-room-everything-presence-one";
+                  }
+                ];
+              }
+            ];
+          };
+        };
       };
     };
 
