@@ -137,22 +137,6 @@
         "type": "github"
       }
     },
-    "nixpkgs-chia": {
-      "locked": {
-        "lastModified": 1685960109,
-        "narHash": "sha256-uTuKV5ua048dIGdaC+lexSUK/9A/X4la4BEJXODZm9U=",
-        "owner": "lourkeur",
-        "repo": "nixpkgs",
-        "rev": "e2b683787475d344892bddea9ab413dc611b894e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "lourkeur",
-        "repo": "nixpkgs",
-        "rev": "e2b683787475d344892bddea9ab413dc611b894e",
-        "type": "github"
-      }
-    },
     "nixpkgs-unstable": {
       "locked": {
         "lastModified": 1705316053,
@@ -176,7 +160,6 @@
         "home-manager": "home-manager_2",
         "impermanence": "impermanence",
         "nixpkgs": "nixpkgs",
-        "nixpkgs-chia": "nixpkgs-chia",
         "nixpkgs-unstable": "nixpkgs-unstable"
       }
     },
