@@ -99,11 +99,9 @@
 
     ## Tailscale
     age.secrets."tailscale/boron.cx.ts.hillion.co.uk".file = ../../secrets/tailscale/boron.cx.ts.hillion.co.uk.age;
-    custom.tailscale = {
+    services.tailscale = {
       enable = true;
-      preAuthKeyFile = config.age.secrets."tailscale/boron.cx.ts.hillion.co.uk".path;
-      ipv4Addr = "100.112.54.25";
-      ipv6Addr = "fd7a:115c:a1e0::2a01:3619";
+      authKeyFile = config.age.secrets."tailscale/boron.cx.ts.hillion.co.uk".path;
     };
   };
 }

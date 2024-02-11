@@ -41,11 +41,9 @@
 
     ## Tailscale
     age.secrets."tailscale/theon.storage.ts.hillion.co.uk".file = ../../secrets/tailscale/theon.storage.ts.hillion.co.uk.age;
-    custom.tailscale = {
+    services.tailscale = {
       enable = true;
-      preAuthKeyFile = config.age.secrets."tailscale/theon.storage.ts.hillion.co.uk".path;
-      ipv4Addr = "100.104.142.22";
-      ipv6Addr = "fd7a:115c:a1e0::4aa8:8e16";
+      authKeyFile = config.age.secrets."tailscale/theon.storage.ts.hillion.co.uk".path;
     };
 
     ## Packages

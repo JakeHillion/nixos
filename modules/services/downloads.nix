@@ -31,7 +31,7 @@ in
         (x: {
           name = "http://${x}.downloads.ts.hillion.co.uk";
           value = {
-            listenAddresses = [ config.custom.tailscale.ipv4Addr config.custom.tailscale.ipv6Addr ];
+            listenAddresses = [ config.custom.dns.tailscale.ipv4 config.custom.dns.tailscale.ipv6 ];
             extraConfig = "reverse_proxy unix//${cfg.metadataPath}/caddy/caddy.sock";
           };
         }) [ "prowlarr" "sonarr" "radarr" "deluge" ]);

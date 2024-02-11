@@ -54,6 +54,7 @@
     networking.firewall.enable = true;
 
     # Delegation
+    custom.dns.enable = true;
     custom.home.defaults = true;
     custom.hostinfo.enable = true;
     custom.shell.enable = true;

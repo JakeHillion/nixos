@@ -62,9 +62,9 @@
 
     ## Tailscale
     age.secrets."tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk".file = ../../secrets/tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk.age;
-    custom.tailscale = {
+    services.tailscale = {
       enable = true;
-      preAuthKeyFile = config.age.secrets."tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk".path;
+      authKeyFile = config.age.secrets."tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk".path;
     };
 
     security.sudo.wheelNeedsPassword = lib.mkForce true;

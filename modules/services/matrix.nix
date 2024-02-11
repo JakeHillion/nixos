@@ -76,8 +76,8 @@ in
               x_forwarded = true;
               bind_addresses = [
                 "::1"
-                config.custom.tailscale.ipv4Addr
-                config.custom.tailscale.ipv6Addr
+                config.custom.dns.tailscale.ipv4
+                config.custom.dns.tailscale.ipv6
               ];
               resources = [
                 {

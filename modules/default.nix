@@ -6,6 +6,7 @@
     ./chia.nix
     ./defaults.nix
     ./desktop/awesome/default.nix
+    ./dns.nix
     ./home/default.nix
     ./hostinfo.nix
     ./ids.nix
@@ -16,7 +17,6 @@
     ./shell/default.nix
     ./ssh/default.nix
     ./storj.nix
-    ./tailscale.nix
     ./users.nix
     ./www/global.nix
     ./www/www-repo.nix

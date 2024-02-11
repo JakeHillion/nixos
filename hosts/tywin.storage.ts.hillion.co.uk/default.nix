@@ -20,11 +20,9 @@
 
     ## Tailscale
     age.secrets."tailscale/tywin.storage.ts.hillion.co.uk".file = ../../secrets/tailscale/tywin.storage.ts.hillion.co.uk.age;
-    custom.tailscale = {
+    services.tailscale = {
       enable = true;
-      preAuthKeyFile = config.age.secrets."tailscale/tywin.storage.ts.hillion.co.uk".path;
-      ipv4Addr = "100.115.31.91";
-      ipv6Addr = "fd7a:115c:a1e0:ab12:4843:cd96:6273:1f5b";
+      authKeyFile = config.age.secrets."tailscale/tywin.storage.ts.hillion.co.uk".path;
     };
 
     ## Filesystems
@@ -130,7 +128,7 @@
     services.caddy = {
       enable = true;
       virtualHosts."http://restic.tywin.storage.ts.hillion.co.uk".extraConfig = ''
-        bind ${config.custom.tailscale.ipv4Addr} ${config.custom.tailscale.ipv6Addr}
+        bind ${config.custom.dns.tailscale.ipv4} ${config.custom.dns.tailscale.ipv6}
         reverse_proxy http://localhost:8000
       '';
     };
@@ -215,10 +213,6 @@
     networking.nameservers = lib.mkForce [ ]; # Trust the DHCP nameservers
     networking.firewall.interfaces."tailscale0".allowedTCPPorts = [
       80 # Caddy (restic.tywin.storage.ts.)
-      14002 # Storj Dashboard (d0.)
-      14003 # Storj Dashboard (d1.)
-      14004 # Storj Dashboard (d2.)
-      14005 # Storj Dashboard (d3.)
     ];
   };
 }

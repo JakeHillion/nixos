@@ -259,11 +259,9 @@
 
     ## Tailscale
     age.secrets."tailscale/router.home.ts.hillion.co.uk".file = ../../secrets/tailscale/router.home.ts.hillion.co.uk.age;
-    custom.tailscale = {
+    services.tailscale = {
       enable = true;
-      preAuthKeyFile = config.age.secrets."tailscale/router.home.ts.hillion.co.uk".path;
-      ipv4Addr = "100.105.71.48";
-      ipv6Addr = "fd7a:115c:a1e0:ab12:4843:cd96:6269:4730";
+      authKeyFile = config.age.secrets."tailscale/router.home.ts.hillion.co.uk".path;
     };
 
     ## Enable btrfs compression
@@ -288,7 +286,7 @@
     services.caddy = {
       enable = true;
       virtualHosts."http://graphs.router.home.ts.hillion.co.uk" = {
-        listenAddresses = [ config.custom.tailscale.ipv4Addr config.custom.tailscale.ipv6Addr ];
+        listenAddresses = [ config.custom.dns.tailscale.ipv4 config.custom.dns.tailscale.ipv6 ];
         extraConfig = "reverse_proxy unix///run/netdata/netdata.sock";
       };
     };

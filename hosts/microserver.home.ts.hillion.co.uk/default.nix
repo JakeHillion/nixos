@@ -20,11 +20,15 @@
     # Networking
     ## Tailscale
     age.secrets."tailscale/microserver.home.ts.hillion.co.uk".file = ../../secrets/tailscale/microserver.home.ts.hillion.co.uk.age;
-    custom.tailscale = {
+    services.tailscale = {
       enable = true;
-      preAuthKeyFile = config.age.secrets."tailscale/microserver.home.ts.hillion.co.uk".path;
-      advertiseRoutes = [ "10.64.50.0/24" "10.239.19.0/24" ];
-      advertiseExitNode = true;
+      authKeyFile = config.age.secrets."tailscale/microserver.home.ts.hillion.co.uk".path;
+      useRoutingFeatures = "server";
+      extraUpFlags = [
+        "--advertise-routes"
+        "10.64.50.0/24,10.239.19.0/24"
+        "--advertise-exit-node"
+      ];
     };
 
     ## Enable IoT VLAN

@@ -101,11 +101,9 @@
 
     ## Tailscale
     age.secrets."tailscale/jorah.cx.ts.hillion.co.uk".file = ../../secrets/tailscale/jorah.cx.ts.hillion.co.uk.age;
-    custom.tailscale = {
+    services.tailscale = {
       enable = true;
-      preAuthKeyFile = config.age.secrets."tailscale/jorah.cx.ts.hillion.co.uk".path;
-      ipv4Addr = "100.96.143.138";
-      ipv6Addr = "fd7a:115c:a1e0:ab12:4843:cd96:6260:8f8a";
+      authKeyFile = config.age.secrets."tailscale/jorah.cx.ts.hillion.co.uk".path;
     };
   };
 }
