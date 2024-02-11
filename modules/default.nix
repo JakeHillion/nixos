@@ -6,6 +6,7 @@
     ./chia.nix
     ./common/hostinfo.nix
     ./desktop/awesome/default.nix
+    ./dns.nix
     ./drone/default.nix
     ./ids.nix
     ./impermanence.nix
@@ -19,7 +20,6 @@
     ./services/version_tracker.nix
     ./services/zigbee2mqtt.nix
     ./storj.nix
-    ./tailscale.nix
     ./users.nix
     ./www/global.nix
     ./www/www-repo.nix

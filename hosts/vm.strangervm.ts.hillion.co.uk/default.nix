@@ -54,11 +54,9 @@
 
     ## Tailscale
     age.secrets."tailscale/vm.strangervm.ts.hillion.co.uk".file = ../../secrets/tailscale/vm.strangervm.ts.hillion.co.uk.age;
-    custom.tailscale = {
+    services.tailscale = {
       enable = true;
-      preAuthKeyFile = config.age.secrets."tailscale/vm.strangervm.ts.hillion.co.uk".path;
-      ipv4Addr = "100.110.89.111";
-      ipv6Addr = "fd7a:115c:a1e0:ab12:4843:cd96:626e:596f";
+      authKeyFile = config.age.secrets."tailscale/vm.strangervm.ts.hillion.co.uk".path;
     };
 
     ## Backups
