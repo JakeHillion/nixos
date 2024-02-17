@@ -230,6 +230,10 @@
           };
         };
       };
+
+      freeradius = {
+        enable = true;
+      };
     };
 
     ## Tailscale
