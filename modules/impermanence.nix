@@ -58,23 +58,28 @@ in
         mkUser = (x: {
           name = x;
           value = {
-            home.persistence."/data/users/${x}" = {
-              allowOther = false;
+            home = {
+              persistence."/data/users/${x}" = {
+                allowOther = false;
 
-              files = [
-                ".zsh_history"
-              ] ++ cfg.userExtraFiles.${x} or [ ];
-
-              directories = cfg.userExtraDirs.${x} or [ ];
+                files = cfg.userExtraFiles.${x} or [ ];
+                directories = cfg.userExtraDirs.${x} or [ ];
+              };
+              file.".zshrc".text = lib.mkForce ''
+                HISTFILE=/data/users/${x}/.zsh_history
+              '';
             };
           };
         });
       in
       builtins.listToAttrs (builtins.map mkUser cfg.users);
 
-    systemd.tmpfiles.rules = builtins.map
+    systemd.tmpfiles.rules = lib.lists.flatten (builtins.map
       (user:
-        let details = config.users.users.${user}; in "L ${details.home}/local - ${user} ${details.group} - /data/users/${user}")
-      cfg.users;
+        let details = config.users.users.${user}; in [
+          "d /data/users/${user} 0700 ${user} ${details.group} - -"
+          "L ${details.home}/local - ${user} ${details.group} - /data/users/${user}"
+        ])
+      cfg.users);
   };
 }
