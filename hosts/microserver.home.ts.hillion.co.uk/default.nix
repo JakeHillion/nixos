@@ -34,6 +34,10 @@
       };
     };
 
+    hardware = {
+      bluetooth.enable = true;
+    };
+
     ## Enable IP forwarding for Tailscale
     boot.kernel.sysctl = {
       "net.ipv4.ip_forward" = true;

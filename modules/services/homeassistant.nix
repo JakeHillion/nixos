@@ -51,6 +51,7 @@ in
           "mqtt"
           "otp"
           "sun"
+          "switchbot"
         ];
 
         config = {
