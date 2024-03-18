@@ -41,6 +41,7 @@ in
           psycopg2 # postgresql support
         ];
         extraComponents = [
+          "bluetooth"
           "default_config"
           "esphome"
           "flux"
@@ -51,6 +52,7 @@ in
           "mqtt"
           "otp"
           "sun"
+          "switchbot"
         ];
 
         config = {
@@ -71,12 +73,17 @@ in
               client_email = "!secret google_assistant_service_account_client_email";
               private_key = "!secret google_assistant_service_account_private_key";
             };
+            report_state = true;
+            expose_by_default = true;
+            exposed_domains = [ "light" ];
           };
           homekit = [{
             filter = {
               include_domains = [ "light" ];
             };
           }];
+
+          bluetooth = { };
 
           switch = [
             {
@@ -95,6 +102,23 @@ in
                 "light.living_room_light"
                 "light.wardrobe_light"
               ];
+            }
+          ];
+
+          light = [
+            {
+              platform = "template";
+              lights = {
+                bathroom_light = {
+                  unique_id = "87a4cbb5-e5a7-44fd-9f28-fec2d6a62538";
+                  value_template = "on";
+                  turn_on = { service = "script.noop"; };
+                  turn_off = {
+                    service = "switch.turn_on";
+                    entity_id = "switch.bathroom_light";
+                  };
+                };
+              };
             }
           ];
 
