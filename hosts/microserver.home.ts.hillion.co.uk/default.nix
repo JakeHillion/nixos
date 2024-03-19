@@ -24,6 +24,8 @@
       preAuthKeyFile = config.age.secrets."tailscale/microserver.home.ts.hillion.co.uk".path;
       advertiseRoutes = [ "10.64.50.0/24" "10.239.19.0/24" ];
       advertiseExitNode = true;
+      ipv4Addr = "100.105.131.47";
+      ipv6Addr = "fd7a:115c:a1e0:ab12:4843:cd96:6269:832f";
     };
 
     ## Enable IoT VLAN
@@ -47,14 +49,17 @@
     services.iperf3.enable = true;
     services.iperf3.openFirewall = true;
 
-    networking.firewall.interfaces = {
-      "eth0" = {
-        allowedUDPPorts = [
-          5353 # HomeKit
-        ];
-        allowedTCPPorts = [
-          21063 # HomeKit
-        ];
+    networking.firewall = {
+      trustedInterfaces = [ "tailscale0" ];
+      interfaces = {
+        "eth0" = {
+          allowedUDPPorts = [
+            5353 # HomeKit
+          ];
+          allowedTCPPorts = [
+            21063 # HomeKit
+          ];
+        };
       };
     };
   };

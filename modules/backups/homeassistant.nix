@@ -26,6 +26,7 @@ in
         passwordFile = config.age.secrets."backups/homeassistant/restic/128G".path;
         paths = [
           config.services.home-assistant.configDir
+          config.services.node-red.userDir
         ];
       };
     };

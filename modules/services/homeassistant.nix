@@ -34,6 +34,17 @@ in
         '';
       };
 
+      node-red = {
+        enable = true;
+      };
+      caddy = {
+        enable = true;
+        virtualHosts."http://nodered.home.ts.hillion.co.uk" = {
+          listenAddresses = [ config.custom.tailscale.ipv4Addr config.custom.tailscale.ipv6Addr ];
+          extraConfig = "reverse_proxy http://localhost:1880";
+        };
+      };
+
       home-assistant = {
         enable = true;
 
@@ -152,5 +163,18 @@ in
         };
       };
     };
+
+    ### HACK: Allow Caddy to restart if it fails. This happens because Tailscale
+    ### is too late at starting. Upstream nixos caddy does restart on failure
+    ### but it's prevented on exit code 1. Set the exit code to 0 (non-failure)
+    ### to override this.
+    systemd.services.caddy = {
+      requires = [ "tailscaled.service" ];
+      after = [ "tailscaled.service" ];
+      serviceConfig = {
+        RestartPreventExitStatus = lib.mkForce 0;
+      };
+    };
+
   };
 }
