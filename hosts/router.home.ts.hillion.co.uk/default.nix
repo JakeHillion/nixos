@@ -31,6 +31,16 @@
       nat.enable = lib.mkForce false;
 
       useDHCP = false;
+
+      sits = {
+        hurricane = {
+          dev = "eth0";
+          remote = "216.66.88.98";
+          local = "45.133.127.98";
+          ttl = 255;
+        };
+      };
+
       interfaces = {
         enp1s0 = {
           name = "eth0";
@@ -58,6 +68,17 @@
         enp4s0 = { name = "eth3"; };
         enp5s0 = { name = "eth4"; };
         enp6s0 = { name = "eth5"; };
+
+        hurricane.ipv6 = {
+          routes = [{
+            address = "::";
+            prefixLength = 0;
+          }];
+          addresses = [{
+            address = "2001:470:1f1c:90f::2";
+            prefixLength = 64;
+          }];
+        };
       };
 
       nftables = {
