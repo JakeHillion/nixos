@@ -149,6 +149,7 @@ in
             deluge = {
               enable = true;
               web.enable = true;
+              group = "mediaaccess";
 
               dataDir = "/var/lib/deluge";
               authFile = "/run/agenix/deluge/auth";
@@ -157,11 +158,18 @@ in
               config = {
                 download_location = "/media/downloads";
                 max_connections_global = 1024;
+
                 max_upload_speed = 12500;
                 max_download_speed = 25000;
+
+                max_active_seeding = 192;
+                max_active_downloading = 64;
+                max_active_limit = 256;
                 dont_count_slow_torrents = true;
+
+                stop_seed_at_ratio = true;
                 stop_seed_ratio = 2;
-                share_ratio_limit = 2;
+
                 enabled_plugins = [ "Label" ];
               };
             };
