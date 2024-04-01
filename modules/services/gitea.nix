@@ -79,7 +79,7 @@ in
 
         mailer = {
           ENABLED = true;
-          HOST = "smtp.mailgun.org:587";
+          SMTP_ADDR = "smtp.mailgun.org:587";
           FROM = "gitea@mg.hillion.co.uk";
           USER = "gitea@mg.hillion.co.uk";
         };
@@ -89,7 +89,7 @@ in
         service = {
           REGISTER_EMAIL_CONFIRM = true;
           ENABLE_NOTIFY_MAIL = true;
-          EMAIL_DOMAIN_WHITELIST = "hillion.co.uk,cam.ac.uk,cl.cam.ac.uk";
+          EMAIL_DOMAIN_ALLOWLIST = "hillion.co.uk,cam.ac.uk,cl.cam.ac.uk";
         };
         session = {
           PROVIDER = "file";
