@@ -21,6 +21,32 @@ trigger:
     - tag
     - pull_request
 ---
+kind: pipeline
+type: docker
+name: update
+
+steps:
+  - name: update inputs
+    image: nixos/nix:2.20.1
+    environment:
+      GIT_AUTHOR_NAME: Drone
+      GIT_AUTHOR_EMAIL: drone@mg.hillion.co.uk
+      GITEA_SERVER_TOKEN:
+        from_secret: GITEA_TOKEN
+    commands:
+      - mkdir -p ~/.config/nix
+      - echo 'experimental-features = nix-command flakes' > ~/.config/nix/nix.conf
+      - git config credential.helper '!f() { sleep 1; echo "username=drone"; echo "password=${GITEA_SERVER_TOKEN}"; }; f'
+      - scripts/update_inputs.sh
+
+trigger:
+  branch:
+    # - main
+  event:
+    - cron
+    - push
+
+---
 kind: signature
 hmac: 5af72ec77460d7d914f9177c78febed763ea1a33dc0f0e39e7599bbf8f4ad987
 
