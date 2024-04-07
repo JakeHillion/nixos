@@ -25,7 +25,7 @@ let
     fi
 
     if ! ${pkgs.nixos-rebuild}/bin/nixos-rebuild --flake "/etc/nixos#${config.networking.fqdn}" test; then
-      echo "WARNING: `nixos-rebuild test` failed!"
+      echo "WARNING: `nixos-rebuild test' failed!"
     fi
 
     while true; do
