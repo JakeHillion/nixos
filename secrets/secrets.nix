@@ -18,7 +18,6 @@ let
               router = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAlCj/i2xprN6h0Ik2tthOJQy6Qwq3Ony73+yfbHYTFu root@router";
             };
             parents = { microserver = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL0cjjNQPnJwpu4wcYmvfjB1jlIfZwMxT+3nBusoYQFr root@microserver"; };
-            strangervm = { vm = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINb9mgyD/G3Rt6lvO4c0hoaVOlLE8e3+DUfAoB1RI5cy root@vm"; };
             terminals = { jakehillion = { gendry = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPXM5aDvNv4MTITXAvJWSS2yvr/mbxJE31tgwJtcl38c root@gendry"; }; };
             storage = {
               tywin = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGATsjWO0qZNFp2BhfgDuWi+e/ScMkFxp79N2OZoed1k root@tywin";
@@ -45,14 +44,13 @@ in
   "tailscale/router.home.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.home.router ];
   "tailscale/theon.storage.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.storage.theon ];
   "tailscale/tywin.storage.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
-  "tailscale/vm.strangervm.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
 
   # Resilio Sync Secrets
   ## Encrypted Resilio Sync Secrets
-  "resilio/encrypted/dad.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
-  "resilio/encrypted/projects.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
-  "resilio/encrypted/resources.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
-  "resilio/encrypted/sync.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
+  "resilio/encrypted/dad.age".publicKeys = jake_users ++ [ ];
+  "resilio/encrypted/projects.age".publicKeys = jake_users ++ [ ];
+  "resilio/encrypted/resources.age".publicKeys = jake_users ++ [ ];
+  "resilio/encrypted/sync.age".publicKeys = jake_users ++ [ ];
 
   ## Read/Write Resilio Sync Secrets
   "resilio/plain/dad.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ts.storage.tywin ];
@@ -77,10 +75,10 @@ in
   "spotify/11132032266.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ];
 
   # Mastodon Secrets
-  "mastodon/social.hillion.co.uk/otp_secret_file.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
-  "mastodon/social.hillion.co.uk/secret_key_base.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
-  "mastodon/social.hillion.co.uk/vapid_private_key.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
-  "mastodon/social.hillion.co.uk/mastodon_at_social.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.strangervm.vm ];
+  "mastodon/social.hillion.co.uk/otp_secret_file.age".publicKeys = jake_users ++ [ ];
+  "mastodon/social.hillion.co.uk/secret_key_base.age".publicKeys = jake_users ++ [ ];
+  "mastodon/social.hillion.co.uk/vapid_private_key.age".publicKeys = jake_users ++ [ ];
+  "mastodon/social.hillion.co.uk/mastodon_at_social.hillion.co.uk.age".publicKeys = jake_users ++ [ ];
 
   # Chia Secrets
   "chia/farmer.key.age".publicKeys = jake_users ++ [ ts.storage.tywin ];

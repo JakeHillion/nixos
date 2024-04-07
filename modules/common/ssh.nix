@@ -37,7 +37,6 @@
     "router.stranger.proxmox.ts.hillion.co.uk".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHq9tITN59FJfGoyOPNgP1QyJ0ohbVQS8OZtRO960Uxk";
     "stranger.proxmox.ts.hillion.co.uk".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE9d5u/VaeRTQUQfu5JzCRa+zij/DtrPNWOfr+jM4iDp";
     "tywin.storage.ts.hillion.co.uk".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGATsjWO0qZNFp2BhfgDuWi+e/ScMkFxp79N2OZoed1k";
-    "vm.strangervm.ts.hillion.co.uk".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINb9mgyD/G3Rt6lvO4c0hoaVOlLE8e3+DUfAoB1RI5cy";
   };
   programs.ssh.knownHostsFiles = [ ./github_known_hosts ];
 }
