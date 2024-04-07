@@ -12,8 +12,6 @@ in
   config = lib.mkIf cfg.enable {
     custom.www.www-repo.enable = true;
 
-    users.users.caddy.extraGroups = [ "mastodon" ];
-
     services.caddy = {
       enable = true;
 

@@ -32,6 +32,8 @@ in
       };
     };
 
+    users.users.caddy.extraGroups = [ "mastodon" ];
+
     services = {
       mastodon = {
         enable = true;
