@@ -47,9 +47,6 @@ in
           reverse_proxy /_matrix/* http://${locations.services.matrix}:8008
           reverse_proxy /_synapse/client/* http://${locations.services.matrix}:8008
         '';
-        "drone.hillion.co.uk".extraConfig = ''
-          reverse_proxy http://${locations.drone.server}:18733
-        '';
         "links.hillion.co.uk".extraConfig = ''
           redir https://matrix.to/#/@jake:hillion.co.uk
         '';

@@ -20,9 +20,6 @@ in
           matrix = "jorah.cx.ts.hillion.co.uk";
           unifi = "jorah.cx.ts.hillion.co.uk";
         };
-        drone = {
-          server = "vm.strangervm.ts.hillion.co.uk";
-        };
       };
     };
   };
@@ -34,7 +31,5 @@ in
     custom.services.mastodon.enable = cfg.locations.services.mastodon == config.networking.fqdn;
     custom.services.matrix.enable = cfg.locations.services.matrix == config.networking.fqdn;
     custom.services.unifi.enable = cfg.locations.services.unifi == config.networking.fqdn;
-
-    custom.drone.server.enable = cfg.locations.drone.server == config.networking.fqdn;
   };
 }

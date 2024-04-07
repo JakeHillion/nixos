@@ -20,7 +20,6 @@
     ## Custom Services
     custom = {
       locations.autoServe = true;
-      drone.server.path = "/data/drone";
     };
 
     ## Networking
