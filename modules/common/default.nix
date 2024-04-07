@@ -5,6 +5,7 @@
     ../home/default.nix
     ./shell.nix
     ./ssh.nix
+    ./update_scripts.nix
   ];
 
   nix = {
