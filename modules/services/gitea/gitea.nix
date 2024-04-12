@@ -20,30 +20,30 @@ in
   config = lib.mkIf cfg.enable {
     age.secrets = {
       "gitea/mailer_password" = {
-        file = ../../secrets/gitea/mailer_password.age;
+        file = ../../../secrets/gitea/mailer_password.age;
         owner = config.services.gitea.user;
         group = config.services.gitea.group;
       };
       "gitea/oauth_jwt_secret" = {
-        file = ../../secrets/gitea/oauth_jwt_secret.age;
+        file = ../../../secrets/gitea/oauth_jwt_secret.age;
         owner = config.services.gitea.user;
         group = config.services.gitea.group;
         path = "${config.services.gitea.customDir}/conf/oauth2_jwt_secret";
       };
       "gitea/lfs_jwt_secret" = {
-        file = ../../secrets/gitea/lfs_jwt_secret.age;
+        file = ../../../secrets/gitea/lfs_jwt_secret.age;
         owner = config.services.gitea.user;
         group = config.services.gitea.group;
         path = "${config.services.gitea.customDir}/conf/lfs_jwt_secret";
       };
       "gitea/security_secret_key" = {
-        file = ../../secrets/gitea/security_secret_key.age;
+        file = ../../../secrets/gitea/security_secret_key.age;
         owner = config.services.gitea.user;
         group = config.services.gitea.group;
         path = "${config.services.gitea.customDir}/conf/secret_key";
       };
       "gitea/security_internal_token" = {
-        file = ../../secrets/gitea/security_internal_token.age;
+        file = ../../../secrets/gitea/security_internal_token.age;
         owner = config.services.gitea.user;
         group = config.services.gitea.group;
         path = "${config.services.gitea.customDir}/conf/internal_token";
@@ -97,10 +97,6 @@ in
       };
     };
 
-    boot.kernel.sysctl = {
-      "net.ipv4.ip_forward" = 1;
-      "net.ipv6.conf.all.forwarding" = 1;
-    };
     networking.firewall.extraCommands = ''
       # proxy all traffic on public interface to the gitea SSH server
       iptables -A PREROUTING -t nat -i eth0 -p tcp --dport 22 -j REDIRECT --to-port ${builtins.toString cfg.sshPort}

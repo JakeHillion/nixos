@@ -21,8 +21,14 @@
     ## Custom Services
     custom = {
       locations.autoServe = true;
-      services.version_tracker.enable = true;
       www.global.enable = true;
+      services = {
+        version_tracker.enable = true;
+        gitea.actions = {
+          enable = true;
+          tokenSecret = ../../secrets/gitea/actions/jorah.age;
+        };
+      };
     };
 
     ## Filesystems
@@ -34,6 +40,11 @@
     };
 
     ## Networking
+    boot.kernel.sysctl = {
+      "net.ipv4.ip_forward" = true;
+      "net.ipv6.conf.all.forwarding" = true;
+    };
+
     networking = {
       useDHCP = false;
       interfaces = {

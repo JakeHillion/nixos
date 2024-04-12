@@ -106,6 +106,8 @@ in
   "gitea/security_secret_key.age".publicKeys = jake_users ++ [ ts.cx.jorah ];
   "gitea/security_internal_token.age".publicKeys = jake_users ++ [ ts.cx.jorah ];
 
+  "gitea/actions/jorah.age".publicKeys = jake_users ++ [ ts.cx.jorah ];
+
   # HomeAssistant Secrets
   "homeassistant/secrets.yaml.age".publicKeys = jake_users ++ [ ts.home.microserver ];
 

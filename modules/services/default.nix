@@ -3,7 +3,7 @@
 {
   imports = [
     ./downloads.nix
-    ./gitea.nix
+    ./gitea/default.nix
     ./homeassistant.nix
     ./mastodon/default.nix
     ./matrix.nix
