@@ -34,15 +34,22 @@
     };
 
     ## Networking
-    systemd.network = {
-      enable = true;
-      networks."enp5s0".extraConfig = ''
-        [Match]
-        Name = enp5s0
-        [Network]
-        Address = 2a01:4f9:4b:3953::2/64
-        Gateway = fe80::1
-      '';
+    networking = {
+      useDHCP = false;
+      interfaces = {
+        enp5s0 = {
+          name = "eth0";
+          useDHCP = true;
+          ipv6.addresses = [{
+            address = "2a01:4f9:4b:3953::2";
+            prefixLength = 64;
+          }];
+        };
+      };
+      defaultGateway6 = {
+        address = "fe80::1";
+        interface = "eth0";
+      };
     };
 
     networking.firewall = {
@@ -53,7 +60,7 @@
       ];
       allowedUDPPorts = lib.mkForce [ ];
       interfaces = {
-        enp5s0 = {
+        eth0 = {
           allowedTCPPorts = lib.mkForce [
             80 # HTTP 1-2
             443 # HTTPS 1-2

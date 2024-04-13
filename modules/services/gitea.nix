@@ -103,8 +103,8 @@ in
     };
     networking.firewall.extraCommands = ''
       # proxy all traffic on public interface to the gitea SSH server
-      iptables -A PREROUTING -t nat -i enp5s0 -p tcp --dport 22 -j REDIRECT --to-port ${builtins.toString cfg.sshPort}
-      ip6tables -A PREROUTING -t nat -i enp5s0 -p tcp --dport 22 -j REDIRECT --to-port ${builtins.toString cfg.sshPort}
+      iptables -A PREROUTING -t nat -i eth0 -p tcp --dport 22 -j REDIRECT --to-port ${builtins.toString cfg.sshPort}
+      ip6tables -A PREROUTING -t nat -i eth0 -p tcp --dport 22 -j REDIRECT --to-port ${builtins.toString cfg.sshPort}
 
       # proxy locally originating outgoing packets
       iptables -A OUTPUT -d 95.217.229.104 -t nat -p tcp --dport 22 -j REDIRECT --to-port ${builtins.toString cfg.sshPort}
