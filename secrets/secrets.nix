@@ -108,4 +108,11 @@ in
 
   # HomeAssistant Secrets
   "homeassistant/secrets.yaml.age".publicKeys = jake_users ++ [ ts.home.microserver ];
+
+  # Web certificates
+  "certs/hillion.co.uk.pem.age".publicKeys = jake_users ++ [ ts.cx.jorah ];
+  "certs/blog.hillion.co.uk.pem.age".publicKeys = jake_users ++ [ ts.cx.jorah ];
+  "certs/gitea.hillion.co.uk.pem.age".publicKeys = jake_users ++ [ ts.cx.jorah ];
+  "certs/homeassistant.hillion.co.uk.pem.age".publicKeys = jake_users ++ [ ts.cx.jorah ];
+  "certs/links.hillion.co.uk.pem.age".publicKeys = jake_users ++ [ ts.cx.jorah ];
 }
