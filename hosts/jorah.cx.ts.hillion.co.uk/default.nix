@@ -31,6 +31,12 @@
       };
     };
 
+    services.foldingathome = {
+      enable = true;
+      user = "JakeH"; # https://stats.foldingathome.org/donor/id/357021
+      daemonNiceLevel = 19;
+    };
+
     ## Filesystems
     services.btrfs.autoScrub = {
       enable = true;
