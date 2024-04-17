@@ -37,6 +37,13 @@
       daemonNiceLevel = 19;
     };
 
+    ## Enable ZRAM to help with root on tmpfs
+    zramSwap = {
+      enable = true;
+      memoryPercent = 200;
+      algorithm = "zstd";
+    };
+
     ## Filesystems
     services.btrfs.autoScrub = {
       enable = true;
