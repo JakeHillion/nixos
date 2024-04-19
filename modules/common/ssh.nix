@@ -30,8 +30,8 @@
     "gendry.jakehillion.terminals.ts.hillion.co.uk".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPXM5aDvNv4MTITXAvJWSS2yvr/mbxJE31tgwJtcl38c";
     "homeassistant.homeassistant.ts.hillion.co.uk".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPM2ytacl/zYXhgvosvhudsl0zW5eQRHXm9aMqG9adux";
     "jorah.cx.ts.hillion.co.uk".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILA9Hp37ljgVRZwjXnTh+XqRuQWk23alOqe7ptwSr2A5";
+    "li.pop.ts.hillion.co.uk".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHQWgcDFL9UZBDKHPiEGepT1Qsc4gz3Pee0/XVHJ6V6u";
     "microserver.home.ts.hillion.co.uk".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPPOCPqXm5a+vGB6PsJFvjKNgjLhM5MxrwCy6iHGRjXw";
-    "microserver.parents.ts.hillion.co.uk".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL0cjjNQPnJwpu4wcYmvfjB1jlIfZwMxT+3nBusoYQFr";
     "router.home.ts.hillion.co.uk".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAlCj/i2xprN6h0Ik2tthOJQy6Qwq3Ony73+yfbHYTFu";
     "theon.storage.ts.hillion.co.uk".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN59psLVu3/sQORA4x3p8H3ei8MCQlcwX5T+k3kBeBMf";
     "tywin.storage.ts.hillion.co.uk".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGATsjWO0qZNFp2BhfgDuWi+e/ScMkFxp79N2OZoed1k";

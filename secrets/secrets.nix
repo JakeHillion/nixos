@@ -17,7 +17,7 @@ let
               microserver = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPPOCPqXm5a+vGB6PsJFvjKNgjLhM5MxrwCy6iHGRjXw root@microserver";
               router = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAlCj/i2xprN6h0Ik2tthOJQy6Qwq3Ony73+yfbHYTFu root@router";
             };
-            parents = { microserver = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL0cjjNQPnJwpu4wcYmvfjB1jlIfZwMxT+3nBusoYQFr root@microserver"; };
+            pop = { li = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHQWgcDFL9UZBDKHPiEGepT1Qsc4gz3Pee0/XVHJ6V6u root@li"; };
             terminals = { jakehillion = { gendry = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPXM5aDvNv4MTITXAvJWSS2yvr/mbxJE31tgwJtcl38c root@gendry"; }; };
             storage = {
               tywin = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGATsjWO0qZNFp2BhfgDuWi+e/ScMkFxp79N2OZoed1k root@tywin";
@@ -40,7 +40,7 @@ in
   "tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ];
   "tailscale/jorah.cx.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.cx.jorah ];
   "tailscale/microserver.home.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.home.microserver ];
-  "tailscale/microserver.parents.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.parents.microserver ];
+  "tailscale/li.pop.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.pop.li ];
   "tailscale/router.home.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.home.router ];
   "tailscale/theon.storage.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.storage.theon ];
   "tailscale/tywin.storage.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
