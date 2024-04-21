@@ -45,7 +45,7 @@ in
 
       directories = [
         "/etc/nixos"
-      ] ++ (listIf config.custom.tailscale.enable [ "/var/lib/tailscale" ]) ++
+      ] ++ (listIf (config.services.tailscale.enable || config.custom.tailscale.enable) [ "/var/lib/tailscale" ]) ++
       (listIf config.services.zigbee2mqtt.enable [ config.services.zigbee2mqtt.dataDir ]) ++
       (listIf config.services.postgresql.enable [ config.services.postgresql.dataDir ]) ++
       (listIf config.hardware.bluetooth.enable [ "/var/lib/bluetooth" ]) ++
