@@ -13,6 +13,9 @@
     networking.hostName = "li";
     networking.domain = "pop.ts.hillion.co.uk";
 
+    ## Custom Services
+    custom.locations.autoServe = true;
+
     # Networking
     ## Tailscale
     age.secrets."tailscale/li.pop.ts.hillion.co.uk".file = ../../secrets/tailscale/li.pop.ts.hillion.co.uk.age;
@@ -33,6 +36,14 @@
     ## Run a persistent iperf3 server
     services.iperf3.enable = true;
     services.iperf3.openFirewall = true;
+
+    networking.firewall.interfaces = {
+      "end0" = {
+        allowedTCPPorts = [
+          7654 # Tang
+        ];
+      };
+    };
   };
 }
 

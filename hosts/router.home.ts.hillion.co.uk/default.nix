@@ -105,14 +105,8 @@
               ip daddr 10.64.50.20 tcp dport 32400 counter accept comment "Plex"
 
               ip daddr 10.64.50.20 tcp dport 8444 counter accept comment "Chia"
-              ip daddr 10.64.50.20 tcp dport 28967 counter accept comment "zfs.tywin.storj"
-              ip daddr 10.64.50.20 udp dport 28967 counter accept comment "zfs.tywin.storj"
-              ip daddr 10.64.50.20 tcp dport 28968 counter accept comment "d0.tywin.storj"
-              ip daddr 10.64.50.20 udp dport 28968 counter accept comment "d0.tywin.storj"
-              ip daddr 10.64.50.20 tcp dport 28969 counter accept comment "d1.tywin.storj"
-              ip daddr 10.64.50.20 udp dport 28969 counter accept comment "d1.tywin.storj"
-              ip daddr 10.64.50.20 tcp dport 28970 counter accept comment "d2.tywin.storj"
-              ip daddr 10.64.50.20 udp dport 28970 counter accept comment "d2.tywin.storj"
+
+              ip daddr 10.64.50.21 tcp dport 7654 counter accept comment "Tang"
             }
           }
 
@@ -123,14 +117,8 @@
               iifname eth0 tcp dport 32400 counter dnat to 10.64.50.20
 
               iifname eth0 tcp dport 8444 counter dnat to 10.64.50.20
-              iifname eth0 tcp dport 28967 counter dnat to 10.64.50.20
-              iifname eth0 udp dport 28967 counter dnat to 10.64.50.20
-              iifname eth0 tcp dport 28968 counter dnat to 10.64.50.20
-              iifname eth0 udp dport 28968 counter dnat to 10.64.50.20
-              iifname eth0 tcp dport 28969 counter dnat to 10.64.50.20
-              iifname eth0 udp dport 28969 counter dnat to 10.64.50.20
-              iifname eth0 tcp dport 28970 counter dnat to 10.64.50.20
-              iifname eth0 udp dport 28970 counter dnat to 10.64.50.20
+
+              iifname eth0 tcp dport 7654 counter dnat to 10.64.50.21
             }
 
             chain postrouting {
@@ -188,6 +176,12 @@
                     hw-address = "00:1e:06:49:06:1e";
                     ip-address = "10.64.50.22";
                     hostname = "syncbox";
+                  }
+                  {
+                    # microserver.home.ts.hillion.co.uk
+                    hw-address = "e4:5f:01:b4:58:95";
+                    ip-address = "10.64.50.21";
+                    hostname = "microserver";
                   }
                 ];
               }

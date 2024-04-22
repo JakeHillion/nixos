@@ -53,6 +53,7 @@
           5353 # HomeKit
         ];
         allowedTCPPorts = [
+          7654 # Tang
           21063 # HomeKit
         ];
       };

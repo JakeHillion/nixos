@@ -11,13 +11,15 @@
 
     home-manager.url = "github:nix-community/home-manager/release-23.11";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    home-manager-unstable.url = "github:nix-community/home-manager";
+    home-manager-unstable.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
     impermanence.url = "github:nix-community/impermanence/master";
   };
 
   description = "Hillion Nix flake";
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, flake-utils, agenix, home-manager, impermanence, ... }@inputs: {
+  outputs = { self, nixpkgs, nixpkgs-unstable, flake-utils, agenix, home-manager, home-manager-unstable, impermanence, ... }@inputs: {
     nixosConfigurations =
       let
         fqdns = builtins.attrNames (builtins.readDir ./hosts);
@@ -27,9 +29,12 @@
           })
         ];
         mkHost = fqdn:
-          let system = builtins.readFile ./hosts/${fqdn}/system;
+          let
+            system = builtins.readFile ./hosts/${fqdn}/system;
+            func = if builtins.pathExists ./hosts/${fqdn}/unstable then nixpkgs-unstable.lib.nixosSystem else nixpkgs.lib.nixosSystem;
+            home-manager-pick = if builtins.pathExists ./hosts/${fqdn}/unstable then home-manager-unstable else home-manager;
           in
-          nixpkgs.lib.nixosSystem {
+          func {
             inherit system;
             specialArgs = inputs;
             modules = [
@@ -39,7 +44,7 @@
               agenix.nixosModules.default
               impermanence.nixosModules.impermanence
 
-              home-manager.nixosModules.default
+              home-manager-pick.nixosModules.default
               {
                 home-manager.sharedModules = [
                   impermanence.nixosModules.home-manager.impermanence
@@ -47,7 +52,6 @@
               }
 
               ({ config, ... }: {
-                nix.registry.nixpkgs.flake = nixpkgs; # pin `nix shell` nixpkgs
                 system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
                 nixpkgs.overlays = getSystemOverlays config.nixpkgs.hostPlatform.system config.nixpkgs.config;
               })

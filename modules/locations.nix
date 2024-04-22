@@ -18,6 +18,10 @@ in
           homeassistant = "microserver.home.ts.hillion.co.uk";
           mastodon = "";
           matrix = "jorah.cx.ts.hillion.co.uk";
+          tang = [
+            "li.pop.ts.hillion.co.uk"
+            "microserver.home.ts.hillion.co.uk"
+          ];
           unifi = "jorah.cx.ts.hillion.co.uk";
         };
       };
@@ -30,6 +34,7 @@ in
     custom.services.homeassistant.enable = cfg.locations.services.homeassistant == config.networking.fqdn;
     custom.services.mastodon.enable = cfg.locations.services.mastodon == config.networking.fqdn;
     custom.services.matrix.enable = cfg.locations.services.matrix == config.networking.fqdn;
+    custom.services.tang.enable = builtins.elem config.networking.fqdn cfg.locations.services.tang;
     custom.services.unifi.enable = cfg.locations.services.unifi == config.networking.fqdn;
   };
 }

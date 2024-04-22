@@ -12,7 +12,10 @@ let
       co = {
         hillion = {
           ts = {
-            cx = { jorah = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILA9Hp37ljgVRZwjXnTh+XqRuQWk23alOqe7ptwSr2A5 root@jorah"; };
+            cx = {
+              boron = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOtQy+FGs/2cN82X15LUGJk8iAAxkttEffwpNnpmLXdg root@boron";
+              jorah = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILA9Hp37ljgVRZwjXnTh+XqRuQWk23alOqe7ptwSr2A5 root@jorah";
+            };
             home = {
               microserver = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPPOCPqXm5a+vGB6PsJFvjKNgjLhM5MxrwCy6iHGRjXw root@microserver";
               router = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAlCj/i2xprN6h0Ik2tthOJQy6Qwq3Ony73+yfbHYTFu root@router";
@@ -43,6 +46,7 @@ in
 
   # Tailscale Pre-Auth Keys
   "tailscale/be.lt.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.lt.be ];
+  "tailscale/boron.cx.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.cx.boron ];
   "tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ];
   "tailscale/jorah.cx.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.cx.jorah ];
   "tailscale/microserver.home.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.home.microserver ];
