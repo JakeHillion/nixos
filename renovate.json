@@ -4,9 +4,16 @@
   },
   "lockFileMaintenance": {
     "enabled": true,
-    "rebaseWhen": "behind-base-branch",
     "schedule": ["* 2-5 * * *"]
   },
+  "rebaseWhen": "behind-base-branch",
+  "packageRules": [
+    {
+      "matchManagers": ["github-actions"],
+      "automerge": true,
+      "schedule": ["after 11pm on Monday and Thursday"]
+    }
+  ],
   "extends": [
     "config:recommended",
     "helpers:pinGitHubActionDigests"
