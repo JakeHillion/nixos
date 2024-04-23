@@ -6,5 +6,9 @@
     "enabled": true,
     "rebaseWhen": "behind-base-branch",
     "schedule": ["* 2-5 * * *"]
-  }
+  },
+  "extends": [
+    "config:recommended",
+    "helpers:pinGitHubActionDigests"
+  ]
 }
