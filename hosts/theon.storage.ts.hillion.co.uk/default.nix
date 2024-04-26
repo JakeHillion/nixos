@@ -23,6 +23,7 @@
     ## Networking
     systemd.network.enable = true;
 
+    networking.nameservers = lib.mkForce [ ]; # Trust the DHCP nameservers
     networking.firewall = {
       trustedInterfaces = [ "tailscale0" ];
       allowedTCPPorts = lib.mkForce [

@@ -161,7 +161,7 @@
                   }
                   {
                     name = "domain-name-servers";
-                    data = "1.1.1.1, 8.8.8.8";
+                    data = "10.64.50.1, 1.1.1.1, 8.8.8.8";
                   }
                 ];
                 reservations = [
@@ -202,7 +202,7 @@
                   }
                   {
                     name = "domain-name-servers";
-                    data = "1.1.1.1, 8.8.8.8";
+                    data = "10.239.19.1, 1.1.1.1, 8.8.8.8";
                   }
                 ];
                 reservations = [
@@ -222,6 +222,36 @@
               }
             ];
           };
+        };
+      };
+
+      unbound = {
+        enable = true;
+        settings = {
+          server = {
+            interface = [
+              "127.0.0.1"
+              "10.64.50.1"
+              "10.239.19.1"
+            ];
+            access-control = [
+              "10.64.50.0/24 allow"
+              "10.239.19.0/24 allow"
+            ];
+          };
+
+          forward-zone = [
+            {
+              name = ".";
+              forward-tls-upstream = "yes";
+              forward-addr = [
+                "1.1.1.1#cloudflare-dns.com"
+                "1.0.0.1#cloudflare-dns.com"
+                "8.8.8.8#dns.google"
+                "8.8.4.4#dns.google"
+              ];
+            }
+          ];
         };
       };
     };

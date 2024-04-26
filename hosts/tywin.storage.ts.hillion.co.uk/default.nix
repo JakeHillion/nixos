@@ -211,7 +211,8 @@
       openFirewall = true;
     };
 
-    ## Firewall
+    ## Networking
+    networking.nameservers = lib.mkForce [ ]; # Trust the DHCP nameservers
     networking.firewall.interfaces."tailscale0".allowedTCPPorts = [
       80 # Caddy (restic.tywin.storage.ts.)
       14002 # Storj Dashboard (d0.)

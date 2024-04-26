@@ -90,5 +90,8 @@
         prismlauncher
       ];
     };
+
+    ## Networking
+    networking.nameservers = lib.mkForce [ ]; # Trust the DHCP nameservers
   };
 }

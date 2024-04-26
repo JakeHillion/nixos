@@ -47,6 +47,7 @@
     services.iperf3.enable = true;
     services.iperf3.openFirewall = true;
 
+    networking.nameservers = lib.mkForce [ ]; # Trust the DHCP nameservers
     networking.firewall.interfaces = {
       "eth0" = {
         allowedUDPPorts = [
