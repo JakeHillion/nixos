@@ -3,7 +3,6 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../../modules/common/default.nix
     ../../modules/rpi/rpi4.nix
   ];
 
@@ -12,6 +11,8 @@
 
     networking.hostName = "microserver";
     networking.domain = "home.ts.hillion.co.uk";
+
+    custom.defaults = true;
 
     ## Custom Services
     custom.locations.autoServe = true;

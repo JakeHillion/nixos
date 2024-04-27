@@ -2,7 +2,6 @@
 
 {
   imports = [
-    ../../modules/common/default.nix
     ./hardware-configuration.nix
   ];
 
@@ -14,6 +13,8 @@
 
     boot.loader.grub.enable = false;
     boot.loader.generic-extlinux-compatible.enable = true;
+
+    custom.defaults = true;
 
     ## Custom Services
     custom = {

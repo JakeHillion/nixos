@@ -2,7 +2,6 @@
 
 {
   imports = [
-    ../../modules/common/default.nix
     ./hardware-configuration.nix
   ];
 
@@ -28,6 +27,8 @@
         };
       };
     };
+
+    custom.defaults = true;
 
     ## Impermanence
     custom.impermanence.enable = true;

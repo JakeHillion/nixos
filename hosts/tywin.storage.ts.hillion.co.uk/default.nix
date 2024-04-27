@@ -2,7 +2,6 @@
 
 {
   imports = [
-    ../../modules/common/default.nix
     ./hardware-configuration.nix
   ];
 
@@ -17,6 +16,7 @@
     boot.loader.efi.canTouchEfiVariables = true;
 
     custom.locations.autoServe = true;
+    custom.defaults = true;
 
     ## Tailscale
     age.secrets."tailscale/tywin.storage.ts.hillion.co.uk".file = ../../secrets/tailscale/tywin.storage.ts.hillion.co.uk.age;

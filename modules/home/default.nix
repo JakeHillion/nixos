@@ -6,7 +6,9 @@
     ./tmux/default.nix
   ];
 
-  config = {
+  options.custom.home.defaults = lib.mkEnableOption "home";
+
+  config = lib.mkIf config.custom.home.defaults {
     home-manager = {
       users.root.home = {
         stateVersion = "22.11";
@@ -22,5 +24,9 @@
         file.".zshrc".text = "";
       };
     };
+
+    # Delegation
+    custom.home.git.enable = true;
+    custom.home.tmux.enable = true;
   };
 }

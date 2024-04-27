@@ -2,7 +2,6 @@
 
 {
   imports = [
-    ../../modules/common/default.nix
     ../../modules/spotify/default.nix
     ./bluetooth.nix
     ./hardware-configuration.nix
@@ -16,6 +15,8 @@
 
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
+
+    custom.defaults = true;
 
     ## Impermanence
     custom.impermanence = {

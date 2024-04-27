@@ -1,7 +1,20 @@
 { pkgs, lib, config, ... }:
 
+let
+  cfg = config.custom.shell;
+in
 {
-  config = {
+  imports = [
+    ./update_scripts.nix
+  ];
+
+  options.custom.shell = {
+    enable = lib.mkEnableOption "shell";
+  };
+
+  config = lib.mkIf cfg.enable {
+    custom.shell.update_scripts.enable = true;
+
     users.defaultUserShell = pkgs.zsh;
 
     environment.systemPackages = with pkgs; [ direnv ];

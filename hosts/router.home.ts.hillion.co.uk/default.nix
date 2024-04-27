@@ -2,7 +2,6 @@
 
 {
   imports = [
-    ../../modules/common/default.nix
     ./hardware-configuration.nix
   ];
 
@@ -18,6 +17,8 @@
     boot.kernel.sysctl = {
       "net.ipv4.conf.all.forwarding" = true;
     };
+
+    custom.defaults = true;
 
     ## Interactive password
     custom.users.jake.password = true;

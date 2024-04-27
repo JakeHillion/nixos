@@ -1,6 +1,8 @@
 { config, pkgs, lib, ... }:
 
 let
+  cfg = config.custom.shell.update_scripts;
+
   update = pkgs.writeScriptBin "update" ''
     #! ${pkgs.runtimeShell}
     set -e
@@ -50,7 +52,11 @@ let
   '';
 in
 {
-  config = {
+  options.custom.shell.update_scripts = {
+    enable = lib.mkEnableOption "update_scripts";
+  };
+
+  config = lib.mkIf cfg.enable {
     environment.systemPackages = [
       update
     ];
