@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ./authoritative_dns.nix
     ./downloads.nix
     ./gitea/default.nix
     ./homeassistant.nix
