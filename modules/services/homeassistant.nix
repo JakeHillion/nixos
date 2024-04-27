@@ -64,7 +64,10 @@ in
 
           http = {
             use_x_forwarded_for = true;
-            trusted_proxies = [ "100.96.143.138" ];
+            trusted_proxies = with config.custom.dns.authoritative; [
+              ipv4.uk.co.hillion.ts.cx.jorah
+              ipv6.uk.co.hillion.ts.cx.jorah
+            ];
           };
 
           google_assistant = {
