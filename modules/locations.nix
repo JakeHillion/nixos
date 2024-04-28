@@ -12,7 +12,12 @@ in
 
     locations = lib.mkOption {
       readOnly = true;
-      default = {
+    };
+  };
+
+  config = lib.mkMerge [
+    {
+      custom.locations.locations = {
         services = {
           authoritative_dns = [
             "jorah.cx.ts.hillion.co.uk"
@@ -29,17 +34,18 @@ in
           unifi = "jorah.cx.ts.hillion.co.uk";
         };
       };
-    };
-  };
+    }
 
-  config = lib.mkIf cfg.autoServe {
-    custom.services = lib.mapAttrsRecursive
-      (path: value: {
-        enable =
-          if builtins.isList value
-          then builtins.elem config.networking.fqdn value
-          else config.networking.fqdn == value;
+    (lib.mkIf cfg.autoServe
+      {
+        custom.services = lib.mapAttrsRecursive
+          (path: value: {
+            enable =
+              if builtins.isList value
+              then builtins.elem config.networking.fqdn value
+              else config.networking.fqdn == value;
+          })
+          cfg.locations.services;
       })
-      cfg.locations.services;
-  };
+  ];
 }
