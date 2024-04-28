@@ -13,7 +13,7 @@ let
         hillion = {
           ts = {
             cx = {
-              boron = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOtQy+FGs/2cN82X15LUGJk8iAAxkttEffwpNnpmLXdg root@boron";
+              boron = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDtcJ7HY/vjtheMV8EN2wlTw1hU53CJebGIeRJcSkzt5 root@boron";
               jorah = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILA9Hp37ljgVRZwjXnTh+XqRuQWk23alOqe7ptwSr2A5 root@jorah";
             };
             home = {

@@ -9,7 +9,7 @@
       (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "nvme" "ahci" ];
+  boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
@@ -23,33 +23,33 @@
 
   fileSystems."/boot" =
     {
-      device = "/dev/disk/by-uuid/DCB2-4E87";
+      device = "/dev/disk/by-uuid/ED9C-4ABC";
       fsType = "vfat";
       options = [ "fmask=0022" "dmask=0022" ];
     };
 
   fileSystems."/data" =
     {
-      device = "/dev/disk/by-uuid/81342423-ba98-44eb-8b84-6e106d1c86c2";
+      device = "/dev/disk/by-uuid/9aebe351-156a-4aa0-9a97-f09b01ac23ad";
       fsType = "btrfs";
       options = [ "subvol=data" ];
     };
 
-  boot.initrd.luks.devices."disk0-crypt" = {
-    device = "/dev/disk/by-uuid/87fa328c-ab54-4ef0-8b9d-40c5869dbc78";
-    allowDiscards = true;
-  };
-  boot.initrd.luks.devices."disk1-crypt" = {
-    device = "/dev/disk/by-uuid/9e9ced9d-f1c5-4b4e-9974-93724a6d9112";
-    allowDiscards = true;
-  };
-
   fileSystems."/nix" =
     {
-      device = "/dev/disk/by-uuid/81342423-ba98-44eb-8b84-6e106d1c86c2";
+      device = "/dev/disk/by-uuid/9aebe351-156a-4aa0-9a97-f09b01ac23ad";
       fsType = "btrfs";
       options = [ "subvol=nix" ];
     };
+
+  boot.initrd.luks.devices."disk0-crypt" = {
+    device = "/dev/disk/by-uuid/a68ead16-1bdc-4d26-9e55-62c2be11ceee";
+    allowDiscards = true;
+  };
+  boot.initrd.luks.devices."disk1-crypt" = {
+    device = "/dev/disk/by-uuid/19bde205-bee4-430d-a4c1-52d635a23963";
+    allowDiscards = true;
+  };
 
   swapDevices = [ ];
 
@@ -58,7 +58,7 @@
   # still possible to use this option, but it's recommended to use it in conjunction
   # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
   networking.useDHCP = lib.mkDefault true;
-  # networking.interfaces.eth0.useDHCP = lib.mkDefault true;
+  # networking.interfaces.enp6s0.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;

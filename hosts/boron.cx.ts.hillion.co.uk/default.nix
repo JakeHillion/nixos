@@ -22,13 +22,23 @@
         enable = true;
         useTang = true;
         devices = {
-          "disk0-crypt".secretFile = ./disk_encryption.jwe;
-          "disk1-crypt".secretFile = ./disk_encryption.jwe;
+          "disk0-crypt".secretFile = "/data/disk_encryption.jwe";
+          "disk1-crypt".secretFile = "/data/disk_encryption.jwe";
         };
       };
     };
 
     custom.defaults = true;
+
+    ## Kernel
+    ### Explicitly use the latest kernel at time of writing because the LTS
+    ### kernels available in NixOS do not seem to support this server's very
+    ### modern hardware.
+    boot.kernelPackages = pkgs.linuxPackages_6_8;
+
+    ## Enable btrfs compression
+    fileSystems."/data".options = [ "compress=zstd" ];
+    fileSystems."/nix".options = [ "compress=zstd" ];
 
     ## Impermanence
     custom.impermanence.enable = true;

@@ -39,7 +39,7 @@ in
             hillion = {
               ts = {
                 cx = {
-                  boron = "100.112.54.25";
+                  boron = "100.113.188.46";
                   jorah = "100.96.143.138";
                 };
                 home = {
@@ -64,7 +64,7 @@ in
             hillion = {
               ts = {
                 cx = {
-                  boron = "fd7a:115c:a1e0::2a01:3619";
+                  boron = "fd7a:115c:a1e0::2a01:bc2f";
                   jorah = "fd7a:115c:a1e0:ab12:4843:cd96:6260:8f8a";
                 };
                 home = {
