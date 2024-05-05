@@ -132,7 +132,10 @@ in
 
             script = with pkgs; "${iproute2}/bin/ip link set up lo";
           };
-          networking.hosts = { "127.0.0.1" = builtins.map (x: "${x}.downloads.ts.hillion.co.uk") [ "prowlarr" "sonarr" "radarr" "deluge" ]; };
+          networking = {
+            nameservers = [ "1.1.1.1" "8.8.8.8" ];
+            hosts = { "127.0.0.1" = builtins.map (x: "${x}.downloads.ts.hillion.co.uk") [ "prowlarr" "sonarr" "radarr" "deluge" ]; };
+          };
 
           services = {
             prowlarr.enable = true;
