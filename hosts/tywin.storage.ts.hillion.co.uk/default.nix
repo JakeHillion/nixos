@@ -18,6 +18,13 @@
     custom.locations.autoServe = true;
     custom.defaults = true;
 
+    # zram swap: used in the hope it will give the ZFS ARC more room to back off
+    zramSwap = {
+      enable = true;
+      memoryPercent = 200;
+      algorithm = "zstd";
+    };
+
     ## Tailscale
     age.secrets."tailscale/tywin.storage.ts.hillion.co.uk".file = ../../secrets/tailscale/tywin.storage.ts.hillion.co.uk.age;
     services.tailscale = {
