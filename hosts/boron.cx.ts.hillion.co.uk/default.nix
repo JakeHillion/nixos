@@ -28,6 +28,9 @@
       };
     };
 
+    hardware.enableAllFirmware = true;
+    security.tpm2.enable = true;
+
     custom.defaults = true;
 
     ## Kernel
