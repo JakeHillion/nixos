@@ -24,7 +24,6 @@
       locations.autoServe = true;
       www.global.enable = true;
       services = {
-        version_tracker.enable = true;
         gitea.actions = {
           enable = true;
           tokenSecret = ../../secrets/gitea/actions/jorah.age;

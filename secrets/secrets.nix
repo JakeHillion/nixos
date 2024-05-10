@@ -97,7 +97,7 @@ in
   "storj/auth.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
 
   # Version tracker secrets
-  "version_tracker/ssh.key.age".publicKeys = jake_users ++ [ ts.cx.jorah ];
+  "version_tracker/ssh.key.age".publicKeys = jake_users ++ [ ts.cx.boron ts.cx.jorah ];
 
   # Home Automation secrets
   "mqtt/zigbee2mqtt.age".publicKeys = jake_users ++ [ ts.home.router ];
