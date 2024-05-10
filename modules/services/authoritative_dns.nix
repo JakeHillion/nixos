@@ -12,11 +12,6 @@ in
     services.nsd = {
       enable = true;
 
-      interfaces = [
-        "95.217.229.104"
-        "2a01:4f9:4b:3953::2"
-      ];
-
       zones = {
         "ts.hillion.co.uk" = {
           data =

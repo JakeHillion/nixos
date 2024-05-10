@@ -20,6 +20,7 @@ in
       custom.locations.locations = {
         services = {
           authoritative_dns = [
+            "boron.cx.ts.hillion.co.uk"
             "jorah.cx.ts.hillion.co.uk"
           ];
           downloads = "tywin.storage.ts.hillion.co.uk";

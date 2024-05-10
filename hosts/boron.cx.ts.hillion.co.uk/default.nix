@@ -54,6 +54,11 @@
       };
     };
 
+    services.nsd.interfaces = [
+      "138.201.252.214"
+      "2a01:4f8:173:23d2::2"
+    ];
+
     ## Enable ZRAM to help with root on tmpfs
     zramSwap = {
       enable = true;
@@ -100,8 +105,10 @@
       interfaces = {
         eth0 = {
           allowedTCPPorts = lib.mkForce [
+            53 # DNS
           ];
           allowedUDPPorts = lib.mkForce [
+            53 # DNS
           ];
         };
       };

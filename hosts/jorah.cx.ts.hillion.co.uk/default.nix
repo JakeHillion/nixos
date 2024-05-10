@@ -31,6 +31,11 @@
       };
     };
 
+    services.nsd.interfaces = [
+      "95.217.229.104"
+      "2a01:4f9:4b:3953::2"
+    ];
+
     services.foldingathome = {
       enable = true;
       user = "JakeH"; # https://stats.foldingathome.org/donor/id/357021
