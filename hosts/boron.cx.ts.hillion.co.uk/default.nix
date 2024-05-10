@@ -46,6 +46,12 @@
     ## Custom Services
     custom = {
       locations.autoServe = true;
+      services = {
+        gitea.actions = {
+          enable = true;
+          tokenSecret = ../../secrets/gitea/actions/boron.age;
+        };
+      };
     };
 
     ## Enable ZRAM to help with root on tmpfs
