@@ -48,12 +48,6 @@
       locations.autoServe = true;
     };
 
-    services.foldingathome = {
-      enable = true;
-      user = "JakeH"; # https://stats.foldingathome.org/donor/id/357021
-      daemonNiceLevel = 19;
-    };
-
     ## Enable ZRAM to help with root on tmpfs
     zramSwap = {
       enable = true;
