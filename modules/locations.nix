@@ -24,7 +24,7 @@ in
             "jorah.cx.ts.hillion.co.uk"
           ];
           downloads = "tywin.storage.ts.hillion.co.uk";
-          gitea = "jorah.cx.ts.hillion.co.uk";
+          gitea = "boron.cx.ts.hillion.co.uk";
           homeassistant = "microserver.home.ts.hillion.co.uk";
           mastodon = "";
           matrix = "jorah.cx.ts.hillion.co.uk";

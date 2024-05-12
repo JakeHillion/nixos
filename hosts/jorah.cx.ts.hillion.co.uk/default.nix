@@ -82,10 +82,7 @@
 
     networking.firewall = {
       trustedInterfaces = [ "tailscale0" ];
-      allowedTCPPorts = lib.mkForce [
-        22 # SSH
-        3022 # Gitea SSH (accessed via public 22)
-      ];
+      allowedTCPPorts = lib.mkForce [ ];
       allowedUDPPorts = lib.mkForce [ ];
       interfaces = {
         eth0 = {

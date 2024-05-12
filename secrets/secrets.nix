@@ -110,11 +110,11 @@ in
   "deluge/auth.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
 
   # Gitea Secrets
-  "gitea/lfs_jwt_secret.age".publicKeys = jake_users ++ [ ts.cx.jorah ];
-  "gitea/mailer_password.age".publicKeys = jake_users ++ [ ts.cx.jorah ];
-  "gitea/oauth_jwt_secret.age".publicKeys = jake_users ++ [ ts.cx.jorah ];
-  "gitea/security_secret_key.age".publicKeys = jake_users ++ [ ts.cx.jorah ];
-  "gitea/security_internal_token.age".publicKeys = jake_users ++ [ ts.cx.jorah ];
+  "gitea/lfs_jwt_secret.age".publicKeys = jake_users ++ [ ts.cx.boron ];
+  "gitea/mailer_password.age".publicKeys = jake_users ++ [ ts.cx.boron ];
+  "gitea/oauth_jwt_secret.age".publicKeys = jake_users ++ [ ts.cx.boron ];
+  "gitea/security_secret_key.age".publicKeys = jake_users ++ [ ts.cx.boron ];
+  "gitea/security_internal_token.age".publicKeys = jake_users ++ [ ts.cx.boron ];
 
   "gitea/actions/boron.age".publicKeys = jake_users ++ [ ts.cx.boron ];
   "gitea/actions/jorah.age".publicKeys = jake_users ++ [ ts.cx.jorah ];

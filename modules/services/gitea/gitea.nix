@@ -50,6 +50,9 @@ in
       };
     };
 
+    users.users.gitea.uid = config.ids.uids.gitea;
+    users.groups.gitea.gid = config.ids.gids.gitea;
+
     services.gitea = {
       enable = true;
       package = nixpkgs-unstable.legacyPackages.x86_64-linux.gitea;

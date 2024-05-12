@@ -106,6 +106,8 @@
       interfaces = {
         eth0 = {
           allowedTCPPorts = lib.mkForce [
+            22 # SSH
+            3022 # SSH (Gitea) - redirected to 22
             53 # DNS
             80 # HTTP 1-2
             443 # HTTPS 1-2
