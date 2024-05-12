@@ -46,6 +46,7 @@
     ## Custom Services
     custom = {
       locations.autoServe = true;
+      www.global.enable = true;
       services = {
         gitea.actions = {
           enable = true;
@@ -106,9 +107,12 @@
         eth0 = {
           allowedTCPPorts = lib.mkForce [
             53 # DNS
+            80 # HTTP 1-2
+            443 # HTTPS 1-2
           ];
           allowedUDPPorts = lib.mkForce [
             53 # DNS
+            443 # HTTP 3
           ];
         };
       };

@@ -65,8 +65,8 @@ in
           http = {
             use_x_forwarded_for = true;
             trusted_proxies = with config.custom.dns.authoritative; [
-              ipv4.uk.co.hillion.ts.cx.jorah
-              ipv6.uk.co.hillion.ts.cx.jorah
+              ipv4.uk.co.hillion.ts.cx.boron
+              ipv6.uk.co.hillion.ts.cx.boron
             ];
           };
 

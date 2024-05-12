@@ -22,7 +22,6 @@
     ## Custom Services
     custom = {
       locations.autoServe = true;
-      www.global.enable = true;
       services = {
         gitea.actions = {
           enable = true;
