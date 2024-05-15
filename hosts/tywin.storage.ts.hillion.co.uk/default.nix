@@ -42,9 +42,16 @@
     };
     boot.kernelParams = [ "zfs.zfs_arc_max=25769803776" ];
 
-    services.zfs.autoScrub = {
+    services.btrfs.autoScrub = {
       enable = true;
       interval = "Tue, 02:00";
+      # All filesystems includes the BTRFS parts of all the hard drives. This
+      # would take forever and is redundant as they get fully read regularly.
+      fileSystems = [ "/" ];
+    };
+    services.zfs.autoScrub = {
+      enable = true;
+      interval = "Wed, 02:00";
     };
 
     ## Backups
