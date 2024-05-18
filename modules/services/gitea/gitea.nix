@@ -106,8 +106,8 @@ in
       ip6tables -A PREROUTING -t nat -i eth0 -p tcp --dport 22 -j REDIRECT --to-port ${builtins.toString cfg.sshPort}
 
       # proxy locally originating outgoing packets
-      iptables -A OUTPUT -d 95.217.229.104 -t nat -p tcp --dport 22 -j REDIRECT --to-port ${builtins.toString cfg.sshPort}
-      ip6tables -A OUTPUT -d 2a01:4f9:4b:3953::2 -t nat -p tcp --dport 22 -j REDIRECT --to-port ${builtins.toString cfg.sshPort}
+      iptables -A OUTPUT -d 138.201.252.214 -t nat -p tcp --dport 22 -j REDIRECT --to-port ${builtins.toString cfg.sshPort}
+      ip6tables -A OUTPUT -d 2a01:4f8:173:23d2::2 -t nat -p tcp --dport 22 -j REDIRECT --to-port ${builtins.toString cfg.sshPort}
     '';
   };
 }
