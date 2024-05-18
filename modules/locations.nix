@@ -27,7 +27,7 @@ in
           gitea = "boron.cx.ts.hillion.co.uk";
           homeassistant = "microserver.home.ts.hillion.co.uk";
           mastodon = "";
-          matrix = "jorah.cx.ts.hillion.co.uk";
+          matrix = "boron.cx.ts.hillion.co.uk";
           tang = [
             "li.pop.ts.hillion.co.uk"
             "microserver.home.ts.hillion.co.uk"
