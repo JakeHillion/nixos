@@ -88,14 +88,9 @@
         eth0 = {
           allowedTCPPorts = lib.mkForce [
             53 # DNS
-            80 # HTTP 1-2
-            443 # HTTPS 1-2
-            8080 # Unifi (inform)
           ];
           allowedUDPPorts = lib.mkForce [
             53 # DNS
-            443 # HTTP 3
-            3478 # Unifi STUN
           ];
         };
       };
