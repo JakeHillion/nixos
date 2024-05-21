@@ -19,10 +19,7 @@ in
     {
       custom.locations.locations = {
         services = {
-          authoritative_dns = [
-            "boron.cx.ts.hillion.co.uk"
-            "jorah.cx.ts.hillion.co.uk"
-          ];
+          authoritative_dns = [ "boron.cx.ts.hillion.co.uk" ];
           downloads = "tywin.storage.ts.hillion.co.uk";
           gitea = "boron.cx.ts.hillion.co.uk";
           homeassistant = "microserver.home.ts.hillion.co.uk";
@@ -33,7 +30,7 @@ in
             "microserver.home.ts.hillion.co.uk"
           ];
           unifi = "boron.cx.ts.hillion.co.uk";
-          version_tracker = [ "boron.cx.ts.hillion.co.uk" "jorah.cx.ts.hillion.co.uk" ];
+          version_tracker = [ "boron.cx.ts.hillion.co.uk" ];
         };
       };
     }

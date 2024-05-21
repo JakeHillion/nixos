@@ -40,7 +40,6 @@ in
               ts = {
                 cx = {
                   boron = "100.113.188.46";
-                  jorah = "100.96.143.138";
                 };
                 home = {
                   microserver = "100.105.131.47";
@@ -65,7 +64,6 @@ in
               ts = {
                 cx = {
                   boron = "fd7a:115c:a1e0::2a01:bc2f";
-                  jorah = "fd7a:115c:a1e0:ab12:4843:cd96:6260:8f8a";
                 };
                 home = {
                   microserver = "fd7a:115c:a1e0:ab12:4843:cd96:6269:832f";
