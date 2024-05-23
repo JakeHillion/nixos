@@ -79,9 +79,6 @@ in
   "git/git_backups_ecdsa.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
   "git/git_backups_remotes.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
 
-  # Spotify Secrets
-  "spotify/11132032266.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ];
-
   # Mastodon Secrets
   "mastodon/social.hillion.co.uk/otp_secret_file.age".publicKeys = jake_users ++ [ ];
   "mastodon/social.hillion.co.uk/secret_key_base.age".publicKeys = jake_users ++ [ ];
