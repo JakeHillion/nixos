@@ -2,7 +2,6 @@
 
 {
   imports = [
-    ../../modules/spotify/default.nix
     ./bluetooth.nix
     ./hardware-configuration.nix
   ];
@@ -76,15 +75,6 @@
     ## Graphics
     boot.initrd.kernelModules = [ "amdgpu" ];
     services.xserver.videoDrivers = [ "amdgpu" ];
-
-    ## Spotify
-    home-manager.users.jake.services.spotifyd.settings = {
-      global = {
-        device_name = "Gendry";
-        device_type = "computer";
-        bitrate = 320;
-      };
-    };
 
     users.users."${config.custom.user}" = {
       packages = with pkgs; [
