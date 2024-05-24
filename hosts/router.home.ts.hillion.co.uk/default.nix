@@ -145,6 +145,35 @@
               persist = true;
               name = "/var/lib/kea/dhcp4.leases";
             };
+
+            option-def = [
+              {
+                name = "cookie";
+                space = "vendor-encapsulated-options-space";
+                code = 1;
+                type = "string";
+                array = false;
+              }
+            ];
+            client-classes = [
+              {
+                name = "APC";
+                test = "option[vendor-class-identifier].text == 'APC'";
+                option-data = [
+                  {
+                    always-send = true;
+                    name = "vendor-encapsulated-options";
+                  }
+                  {
+                    name = "cookie";
+                    space = "vendor-encapsulated-options-space";
+                    code = 1;
+                    data = "1APC";
+                  }
+                ];
+              }
+            ];
+
             subnet4 = [
               {
                 subnet = "10.64.50.0/24";
@@ -175,6 +204,7 @@
                   { hostname = "microserver"; hw-address = "e4:5f:01:b4:58:95"; }
                   { hostname = "theon"; hw-address = "00:1e:06:49:06:1e"; }
                   { hostname = "server-switch"; hw-address = "84:d8:1b:9d:0d:85"; }
+                  { hostname = "apc-ap7921"; hw-address = "00:c0:b7:6b:f4:34"; }
                 ];
               }
               {
