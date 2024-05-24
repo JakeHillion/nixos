@@ -42,7 +42,10 @@ in
             header /.well-known/matrix/* Access-Control-Allow-Origin *
 
             respond /.well-known/matrix/server "{\"m.server\": \"matrix.hillion.co.uk:443\"}" 200
-            respond /.well-known/matrix/client `{"m.homeserver":{"base_url":"https://matrix.hillion.co.uk"}}`
+            respond /.well-known/matrix/client `${builtins.toJSON {
+              "m.homeserver" = { "base_url" = "https://matrix.hillion.co.uk"; };
+              "org.matrix.msc3575.proxy" = { "url" = "https://matrix.hillion.co.uk"; };
+            }}` 200
 
             respond 404
           }
@@ -65,6 +68,7 @@ in
           reverse_proxy http://${locations.services.gitea}:3000
         '';
         "matrix.hillion.co.uk".extraConfig = ''
+          reverse_proxy /_matrix/client/unstable/org.matrix.msc3575/sync http://${locations.services.matrix}:8009
           reverse_proxy /_matrix/* http://${locations.services.matrix}:8008
           reverse_proxy /_synapse/client/* http://${locations.services.matrix}:8008
         '';

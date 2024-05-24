@@ -41,6 +41,10 @@ in
         owner = "matrix-synapse";
         group = "matrix-synapse";
       };
+
+      "matrix/matrix.hillion.co.uk/syncv3_secret" = {
+        file = ../../secrets/matrix/matrix.hillion.co.uk/syncv3_secret.age;
+      };
     };
 
     services = {
@@ -111,6 +115,15 @@ in
           app_service_config_files = lib.mkIf cfg.heisenbridge [
             "/var/lib/heisenbridge/registration.yml"
           ];
+        };
+      };
+
+      matrix-synapse.sliding-sync = {
+        enable = true;
+        environmentFile = config.age.secrets."matrix/matrix.hillion.co.uk/syncv3_secret".path;
+        settings = {
+          SYNCV3_SERVER = "https://matrix.hillion.co.uk";
+          SYNCV3_BINDADDR = "[::]:8009";
         };
       };
 
