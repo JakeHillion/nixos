@@ -118,7 +118,7 @@ in
         };
       };
 
-      matrix-synapse.sliding-sync = {
+      matrix-sliding-sync = {
         enable = true;
         environmentFile = config.age.secrets."matrix/matrix.hillion.co.uk/syncv3_secret".path;
         settings = {
