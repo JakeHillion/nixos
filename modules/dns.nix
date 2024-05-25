@@ -47,7 +47,10 @@ in
                 };
                 jakehillion-terminals = { gendry = "100.70.100.77"; };
                 lt = { be = "100.105.166.79"; };
-                pop = { li = "100.106.87.35"; };
+                pop = {
+                  li = "100.106.87.35";
+                  sodium = "100.82.135.64";
+                };
                 storage = {
                   theon = "100.104.142.22";
                   tywin = "100.115.31.91";
@@ -71,7 +74,10 @@ in
                 };
                 jakehillion-terminals = { gendry = "fd7a:115c:a1e0:ab12:4843:cd96:6246:644d"; };
                 lt = { be = "fd7a:115c:a1e0::9001:a64f"; };
-                pop = { li = "fd7a:115c:a1e0::e701:5723"; };
+                pop = {
+                  li = "fd7a:115c:a1e0::e701:5723";
+                  sodium = "fd7a:115c:a1e0::c701:8740";
+                };
                 storage = {
                   theon = "fd7a:115c:a1e0::4aa8:8e16";
                   tywin = "fd7a:115c:a1e0:ab12:4843:cd96:6273:1f5b";
