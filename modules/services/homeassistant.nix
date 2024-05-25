@@ -116,10 +116,7 @@ in
                   unique_id = "87a4cbb5-e5a7-44fd-9f28-fec2d6a62538";
                   value_template = "{{ states('sensor.bathroom_motion_sensor_illuminance_lux') | int > 500 }}";
                   turn_on = { service = "script.noop"; };
-                  turn_off = {
-                    service = "switch.turn_on";
-                    entity_id = "switch.bathroom_light";
-                  };
+                  turn_off = { service = "script.bathroom_light_switch_if_on"; };
                 };
               };
             }
