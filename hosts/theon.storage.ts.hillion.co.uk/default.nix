@@ -22,6 +22,7 @@
     };
 
     ## Networking
+    networking.useNetworkd = true;
     systemd.network.enable = true;
 
     networking.nameservers = lib.mkForce [ ]; # Trust the DHCP nameservers
