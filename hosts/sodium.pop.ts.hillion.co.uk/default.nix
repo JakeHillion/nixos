@@ -41,6 +41,19 @@
     #   };
     # };
 
+    ## Use ccache for building the Linux kernel
+    programs.ccache.enable = true;
+    nix.settings.extra-sandbox-paths = [ config.programs.ccache.cacheDir ];
+    fileSystems."${config.programs.ccache.cacheDir}" = {
+      device = "${config.custom.dns.authoritative.ipv4.uk.co.hillion.ts.storage.tywin}:/ccache";
+      fsType = "nfs";
+      options = [ "x-systemd.automount" "noauto" "x-systemd.idle-timeout=600" ];
+    };
+    programs.ccache.packageNames = [
+      # linux_rpi5 overrides from linux_rpi4
+      "linux_rpi4"
+    ];
+
     ## Custom Services
     custom.locations.autoServe = true;
 
