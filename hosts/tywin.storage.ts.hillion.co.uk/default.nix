@@ -67,6 +67,15 @@
       interval = "Wed, 02:00";
     };
 
+    ## NFS
+    services.nfs.server = {
+      enable = true;
+      exports = ''
+        /export           ${config.custom.dns.authoritative.ipv4.uk.co.hillion.ts.pop.sodium}(ro,fsid=0,no_subtree_check)
+        /export/ccache    ${config.custom.dns.authoritative.ipv4.uk.co.hillion.ts.pop.sodium}(rw,no_subtree_check)
+      '';
+    };
+
     ## Backups
     ### Git
     age.secrets."git/git_backups_ecdsa".file = ../../secrets/git/git_backups_ecdsa.age;
@@ -238,8 +247,19 @@
 
     ## Networking
     networking.nameservers = lib.mkForce [ ]; # Trust the DHCP nameservers
-    networking.firewall.interfaces."tailscale0".allowedTCPPorts = [
-      80 # Caddy (restic.tywin.storage.ts.)
-    ];
+    networking.firewall = {
+      trustedInterfaces = [ "tailscale0" ];
+      allowedTCPPorts = lib.mkForce [
+      ];
+      allowedUDPPorts = lib.mkForce [ ];
+      interfaces = {
+        eth0 = {
+          allowedTCPPorts = lib.mkForce [
+          ];
+          allowedUDPPorts = lib.mkForce [
+          ];
+        };
+      };
+    };
   };
 }
