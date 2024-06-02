@@ -1,4 +1,4 @@
-{ config, pkgs, lib, nixos-hardware, ... }:
+{ config, pkgs, nixpkgs-unstable, lib, nixos-hardware, ... }:
 
 {
   imports = [
@@ -23,6 +23,23 @@
 
     ## Impermanence
     custom.impermanence.enable = true;
+    boot.initrd.postDeviceCommands = lib.mkAfter ''
+      btrfs subvolume delete /cache/tmp
+      btrfs subvolume snapshot /cache/empty_snapshot /cache/tmp
+      chmod 0777 /cache/tmp
+      chmod +t /cache/tmp
+    '';
+
+    ### nix only supports build-dir from 2.22. bind mount /tmp to something persistent instead.
+    fileSystems."/tmp" = {
+      device = "/cache/tmp";
+      options = [ "bind" ];
+    };
+    # nix = {
+    #   settings = {
+    #     build-dir = "/cache/tmp/";
+    #   };
+    # };
 
     ## Custom Services
     custom.locations.autoServe = true;

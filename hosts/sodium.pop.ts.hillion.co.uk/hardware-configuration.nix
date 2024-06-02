@@ -42,6 +42,13 @@
       options = [ "subvol=data" ];
     };
 
+  fileSystems."/cache" =
+    {
+      device = "/dev/disk/by-uuid/48ae82bd-4d7f-4be6-a9c9-4fcc29d4aac0";
+      fsType = "btrfs";
+      options = [ "subvol=cache" ];
+    };
+
   swapDevices = [ ];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
