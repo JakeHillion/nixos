@@ -49,7 +49,7 @@ in
                 lt = { be = "100.105.166.79"; };
                 pop = {
                   li = "100.106.87.35";
-                  sodium = "100.82.135.64";
+                  sodium = "100.87.188.4";
                 };
                 storage = {
                   theon = "100.104.142.22";
@@ -76,7 +76,7 @@ in
                 lt = { be = "fd7a:115c:a1e0::9001:a64f"; };
                 pop = {
                   li = "fd7a:115c:a1e0::e701:5723";
-                  sodium = "fd7a:115c:a1e0::c701:8740";
+                  sodium = "fd7a:115c:a1e0::3701:bc04";
                 };
                 storage = {
                   theon = "fd7a:115c:a1e0::4aa8:8e16";
