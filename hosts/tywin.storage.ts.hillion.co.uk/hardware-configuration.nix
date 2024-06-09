@@ -20,6 +20,11 @@
       fsType = "btrfs";
     };
 
+  boot.initrd.luks.devices."root" = {
+    device = "/dev/disk/by-uuid/32837730-5e15-4917-9939-cbb58bb0aabf";
+    allowDiscards = true;
+  };
+
   fileSystems."/boot" =
     {
       device = "/dev/disk/by-uuid/BC57-0AF6";
