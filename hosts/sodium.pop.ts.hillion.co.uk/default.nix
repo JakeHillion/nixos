@@ -64,6 +64,7 @@
       interfaces = {
         eth0 = {
           allowedTCPPorts = lib.mkForce [
+            7654 # Tang
           ];
           allowedUDPPorts = lib.mkForce [
           ];

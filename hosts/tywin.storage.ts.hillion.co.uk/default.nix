@@ -15,6 +15,20 @@
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
 
+    boot.kernelParams = [
+      "ip=dhcp"
+      "zfs.zfs_arc_max=25769803776"
+    ];
+    boot.initrd = {
+      availableKernelModules = [ "r8169" ];
+      network.enable = true;
+      clevis = {
+        enable = true;
+        useTang = true;
+        devices."root".secretFile = "/disk_encryption.jwe";
+      };
+    };
+
     custom.locations.autoServe = true;
     custom.defaults = true;
 
@@ -40,7 +54,6 @@
       forceImportRoot = false;
       extraPools = [ "data" ];
     };
-    boot.kernelParams = [ "zfs.zfs_arc_max=25769803776" ];
 
     services.btrfs.autoScrub = {
       enable = true;
