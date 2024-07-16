@@ -29,6 +29,13 @@
       ];
     };
 
+    ## Enable ZRAM swap to help with root on tmpfs
+    zramSwap = {
+      enable = true;
+      memoryPercent = 200;
+      algorithm = "zstd";
+    };
+
     ## Desktop
     custom.users.jake.password = true;
     custom.desktop.awesome.enable = true;
