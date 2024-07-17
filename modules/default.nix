@@ -11,6 +11,7 @@
     ./hostinfo.nix
     ./ids.nix
     ./impermanence.nix
+    ./laptop.nix
     ./locations.nix
     ./resilio.nix
     ./services/default.nix
