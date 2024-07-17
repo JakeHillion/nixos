@@ -28,7 +28,10 @@
       options = [ "subvol=nix" ];
     };
 
-  boot.initrd.luks.devices."root".device = "/dev/disk/by-uuid/af328e8d-d929-43f1-8d04-1c96b5147e5e";
+  boot.initrd.luks.devices."root" = {
+    device = "/dev/disk/by-uuid/af328e8d-d929-43f1-8d04-1c96b5147e5e";
+    allowDiscards = true;
+  };
 
   fileSystems."/data" =
     {
