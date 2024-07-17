@@ -57,6 +57,9 @@ in
   "tailscale/theon.storage.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.storage.theon ];
   "tailscale/tywin.storage.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
 
+  # WiFi Environment Files
+  "wifi/be.lt.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.lt.be ];
+
   # Resilio Sync Secrets
   ## Encrypted Resilio Sync Secrets
   "resilio/encrypted/dad.age".publicKeys = jake_users ++ [ ];
