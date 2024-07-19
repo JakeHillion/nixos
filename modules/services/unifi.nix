@@ -10,20 +10,14 @@ in
     dataDir = lib.mkOption {
       type = lib.types.str;
       default = "/var/lib/unifi";
+      readOnly = true; # NixOS module only supports this directory
     };
   };
 
   config = lib.mkIf cfg.enable {
-    users.users.unifi = {
-      uid = config.ids.uids.unifi;
-      isSystemUser = true;
-      group = "unifi";
-      description = "UniFi controller daemon user";
-      home = "${cfg.dataDir}";
-    };
-    users.groups.unifi = {
-      gid = config.ids.gids.unifi;
-    };
+    # Fix dynamically allocated user and group ids
+    users.users.unifi.uid = config.ids.uids.unifi;
+    users.groups.unifi.gid = config.ids.gids.unifi;
 
     services.caddy = {
       enable = true;
@@ -38,21 +32,9 @@ in
       };
     };
 
-    virtualisation.oci-containers.containers = {
-      "unifi" = {
-        image = "lscr.io/linuxserver/unifi-controller:8.0.24-ls221";
-        environment = {
-          PUID = toString config.ids.uids.unifi;
-          PGID = toString config.ids.gids.unifi;
-          TZ = "Etc/UTC";
-        };
-        volumes = [ "${cfg.dataDir}:/config" ];
-        ports = [
-          "8080:8080"
-          "8443:8443"
-          "3478:3478/udp"
-        ];
-      };
+    services.unifi = {
+      enable = true;
+      unifiPackage = pkgs.unifi8;
     };
   };
 }
