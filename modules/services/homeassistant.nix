@@ -44,7 +44,6 @@ in
           "bluetooth"
           "default_config"
           "esphome"
-          "flux"
           "google_assistant"
           "homekit"
           "met"
@@ -53,6 +52,9 @@ in
           "otp"
           "sun"
           "switchbot"
+        ];
+        customComponents = with pkgs.home-assistant-custom-components; [
+          adaptive_lighting
         ];
 
         config = {
@@ -88,25 +90,19 @@ in
 
           bluetooth = { };
 
-          switch = [
-            {
-              platform = "flux";
-              start_time = "07:00";
-              stop_time = "23:59";
-              mode = "mired";
-              disable_brightness_adjust = true;
-              lights = [
-                "light.bedroom_lamp"
-                "light.bedroom_light"
-                "light.cubby_light"
-                "light.desk_lamp"
-                "light.hallway_light"
-                "light.living_room_lamp"
-                "light.living_room_light"
-                "light.wardrobe_light"
-              ];
-            }
-          ];
+          adaptive_lighting = {
+            lights = [
+              "light.bedroom_lamp"
+              "light.bedroom_light"
+              "light.cubby_light"
+              "light.desk_lamp"
+              "light.hallway_light"
+              "light.living_room_lamp"
+              "light.living_room_light"
+              "light.wardrobe_light"
+            ];
+            min_sunset_time = "21:00";
+          };
 
           light = [
             {
