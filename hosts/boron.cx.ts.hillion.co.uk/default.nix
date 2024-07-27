@@ -34,7 +34,7 @@
     ### Explicitly use the latest kernel at time of writing because the LTS
     ### kernels available in NixOS do not seem to support this server's very
     ### modern hardware.
-    boot.kernelPackages = pkgs.linuxPackages_6_9;
+    boot.kernelPackages = pkgs.linuxPackages_6_10;
 
     ## Enable btrfs compression
     fileSystems."/data".options = [ "compress=zstd" ];
