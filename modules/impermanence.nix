@@ -2,7 +2,6 @@
 
 let
   cfg = config.custom.impermanence;
-  listIf = (enable: x: if enable then x else [ ]);
 in
 {
   options.custom.impermanence = {
@@ -45,13 +44,14 @@ in
 
       directories = [
         "/etc/nixos"
-      ] ++ (listIf config.services.tailscale.enable [ "/var/lib/tailscale" ]) ++
-      (listIf config.services.zigbee2mqtt.enable [ config.services.zigbee2mqtt.dataDir ]) ++
-      (listIf config.services.postgresql.enable [ config.services.postgresql.dataDir ]) ++
-      (listIf config.hardware.bluetooth.enable [ "/var/lib/bluetooth" ]) ++
-      (listIf config.custom.services.unifi.enable [ "/var/lib/unifi" ]) ++
-      (listIf (config.virtualisation.oci-containers.containers != { }) [ "/var/lib/containers" ]) ++
-      (listIf config.services.tang.enable [ "/var/lib/private/tang" ]);
+      ] ++ (lib.lists.optional config.services.tailscale.enable "/var/lib/tailscale") ++
+      (lib.lists.optional config.services.zigbee2mqtt.enable config.services.zigbee2mqtt.dataDir) ++
+      (lib.lists.optional config.services.postgresql.enable config.services.postgresql.dataDir) ++
+      (lib.lists.optional config.hardware.bluetooth.enable "/var/lib/bluetooth") ++
+      (lib.lists.optional config.custom.services.unifi.enable "/var/lib/unifi") ++
+      (lib.lists.optional (config.virtualisation.oci-containers.containers != { }) "/var/lib/containers") ++
+      (lib.lists.optional config.services.tang.enable "/var/lib/private/tang") ++
+      (lib.lists.optional config.services.step-ca.enable "/var/lib/step-ca/db");
     };
 
     home-manager.users =

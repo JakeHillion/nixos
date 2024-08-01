@@ -29,10 +29,16 @@ in
 
       virtualHosts = builtins.listToAttrs (builtins.map
         (x: {
-          name = "http://${x}.downloads.ts.hillion.co.uk";
+          name = "${x}.downloads.ts.hillion.co.uk";
           value = {
             listenAddresses = [ config.custom.dns.tailscale.ipv4 config.custom.dns.tailscale.ipv6 ];
-            extraConfig = "reverse_proxy unix//${cfg.metadataPath}/caddy/caddy.sock";
+            extraConfig = ''
+              reverse_proxy unix//${cfg.metadataPath}/caddy/caddy.sock
+
+              tls {
+                ca https://ca.ts.hillion.co.uk:8443/acme/acme/directory
+              }
+            '';
           };
         }) [ "prowlarr" "sonarr" "radarr" "deluge" ]);
     };

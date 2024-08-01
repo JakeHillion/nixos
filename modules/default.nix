@@ -3,6 +3,7 @@
 {
   imports = [
     ./backups/default.nix
+    ./ca/default.nix
     ./chia.nix
     ./defaults.nix
     ./desktop/awesome/default.nix

@@ -54,6 +54,7 @@
     networking.firewall.enable = true;
 
     # Delegation
+    custom.ca.consumer.enable = true;
     custom.dns.enable = true;
     custom.home.defaults = true;
     custom.hostinfo.enable = true;
