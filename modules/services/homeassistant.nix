@@ -50,6 +50,7 @@ in
           "mobile_app"
           "mqtt"
           "otp"
+          "smartthings"
           "sun"
           "switchbot"
         ];
