@@ -81,6 +81,9 @@ in
             report_state = true;
             expose_by_default = true;
             exposed_domains = [ "light" ];
+            entity_config = {
+              "input_boolean.sleep_mode" = { };
+            };
           };
           homekit = [{
             filter = {
@@ -140,6 +143,13 @@ in
               };
             }
           ];
+
+          input_boolean = {
+            sleep_mode = {
+              name = "Set house to sleep mode";
+              icon = "mdi:sleep";
+            };
+          };
 
           # UI managed expansions
           automation = "!include automations.yaml";
