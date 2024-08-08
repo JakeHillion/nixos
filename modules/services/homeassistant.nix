@@ -51,6 +51,7 @@ in
           "mqtt"
           "otp"
           "smartthings"
+          "sonos"
           "sun"
           "switchbot"
         ];
