@@ -22,12 +22,14 @@
     fileSystems."/nix".options = [ "compress=zstd" ];
 
     ## Impermanence
-    custom.impermanence.enable = true;
+    custom.impermanence = {
+      enable = true;
+      cache.enable = true;
+    };
     boot.initrd.postDeviceCommands = lib.mkAfter ''
       btrfs subvolume delete /cache/tmp
       btrfs subvolume snapshot /cache/empty_snapshot /cache/tmp
-      chmod 0777 /cache/tmp
-      chmod +t /cache/tmp
+      chmod 1777 /cache/tmp
     '';
 
     ## CA server

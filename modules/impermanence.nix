@@ -11,6 +11,13 @@ in
       type = lib.types.str;
       default = "/data";
     };
+    cache = {
+      enable = lib.mkEnableOption "impermanence.cache";
+      path = lib.mkOption {
+        type = lib.types.str;
+        default = "/cache";
+      };
+    };
 
     users = lib.mkOption {
       type = with lib.types; listOf str;
@@ -39,20 +46,31 @@ in
       gitea.stateDir = "${cfg.base}/system/var/lib/gitea";
     };
 
-    environment.persistence."${cfg.base}/system" = {
-      hideMounts = true;
+    environment.persistence = lib.mkMerge [
+      {
+        "${cfg.base}/system" = {
+          hideMounts = true;
 
-      directories = [
-        "/etc/nixos"
-      ] ++ (lib.lists.optional config.services.tailscale.enable "/var/lib/tailscale") ++
-      (lib.lists.optional config.services.zigbee2mqtt.enable config.services.zigbee2mqtt.dataDir) ++
-      (lib.lists.optional config.services.postgresql.enable config.services.postgresql.dataDir) ++
-      (lib.lists.optional config.hardware.bluetooth.enable "/var/lib/bluetooth") ++
-      (lib.lists.optional config.custom.services.unifi.enable "/var/lib/unifi") ++
-      (lib.lists.optional (config.virtualisation.oci-containers.containers != { }) "/var/lib/containers") ++
-      (lib.lists.optional config.services.tang.enable "/var/lib/private/tang") ++
-      (lib.lists.optional config.services.step-ca.enable "/var/lib/step-ca/db");
-    };
+          directories = [
+            "/etc/nixos"
+          ] ++ (lib.lists.optional config.services.tailscale.enable "/var/lib/tailscale") ++
+          (lib.lists.optional config.services.zigbee2mqtt.enable config.services.zigbee2mqtt.dataDir) ++
+          (lib.lists.optional config.services.postgresql.enable config.services.postgresql.dataDir) ++
+          (lib.lists.optional config.hardware.bluetooth.enable "/var/lib/bluetooth") ++
+          (lib.lists.optional config.custom.services.unifi.enable "/var/lib/unifi") ++
+          (lib.lists.optional (config.virtualisation.oci-containers.containers != { }) "/var/lib/containers") ++
+          (lib.lists.optional config.services.tang.enable "/var/lib/private/tang") ++
+          (lib.lists.optional config.services.step-ca.enable "/var/lib/step-ca/db");
+        };
+      }
+      (lib.mkIf cfg.cache.enable {
+        "${cfg.cache.path}/system" = {
+          hideMounts = true;
+
+          directories = (lib.lists.optional config.services.postgresqlBackup.enable config.services.postgresqlBackup.location);
+        };
+      })
+    ];
 
     home-manager.users =
       let

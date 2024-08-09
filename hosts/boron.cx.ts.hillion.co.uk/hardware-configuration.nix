@@ -35,6 +35,13 @@
       options = [ "subvol=data" ];
     };
 
+  fileSystems."/cache" =
+    {
+      device = "/dev/disk/by-uuid/9aebe351-156a-4aa0-9a97-f09b01ac23ad";
+      fsType = "btrfs";
+      options = [ "subvol=cache" ];
+    };
+
   fileSystems."/nix" =
     {
       device = "/dev/disk/by-uuid/9aebe351-156a-4aa0-9a97-f09b01ac23ad";

@@ -41,7 +41,14 @@
     fileSystems."/nix".options = [ "compress=zstd" ];
 
     ## Impermanence
-    custom.impermanence.enable = true;
+    custom.impermanence = {
+      enable = true;
+      cache.enable = true;
+    };
+    boot.initrd.postDeviceCommands = lib.mkAfter ''
+      btrfs subvolume delete /cache/system
+      btrfs subvolume snapshot /cache/empty_snapshot /cache/system
+    '';
 
     ## Custom Services
     custom = {
