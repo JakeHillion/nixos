@@ -23,6 +23,7 @@ in
           downloads = "tywin.storage.ts.hillion.co.uk";
           gitea = "boron.cx.ts.hillion.co.uk";
           homeassistant = "microserver.home.ts.hillion.co.uk";
+          inventree = "boron.cx.ts.hillion.co.uk";
           mastodon = "";
           matrix = "boron.cx.ts.hillion.co.uk";
           prometheus = "boron.cx.ts.hillion.co.uk";

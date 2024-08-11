@@ -34,9 +34,7 @@ in
   config = lib.mkIf cfg.enable {
     environment.systemPackages = [ ctl ];
 
-    users.groups.chia = {
-      gid = config.ids.gids.chia;
-    };
+    users.groups.chia.gid = config.ids.gids.chia;
     users.users.chia = {
       home = cfg.path;
       createHome = true;

@@ -6,6 +6,7 @@
     ./downloads.nix
     ./gitea/default.nix
     ./homeassistant.nix
+    ./inventree.nix
     ./mastodon/default.nix
     ./matrix.nix
     ./tang.nix
