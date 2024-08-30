@@ -115,7 +115,7 @@ in
               lights = {
                 bathroom_light = {
                   unique_id = "87a4cbb5-e5a7-44fd-9f28-fec2d6a62538";
-                  value_template = "{{ states('sensor.bathroom_motion_sensor_illuminance_lux') | int > 500 }}";
+                  value_template = "{{ false if state_attr('script.bathroom_light_switch_if_on', 'last_triggered') > states.sensor.bathroom_motion_sensor_illuminance_lux.last_reported else states('sensor.bathroom_motion_sensor_illuminance_lux') | int > 500 }}";
                   turn_on = { service = "script.noop"; };
                   turn_off = { service = "script.bathroom_light_switch_if_on"; };
                 };
