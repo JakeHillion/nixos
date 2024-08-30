@@ -102,6 +102,7 @@ in
               "light.cubby_light"
               "light.desk_lamp"
               "light.hallway_light"
+              "light.living_room_hue_lamp"
               "light.living_room_lamp"
               "light.living_room_light"
               "light.wardrobe_light"
