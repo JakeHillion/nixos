@@ -63,6 +63,11 @@ in
               runner = {
                 capacity = 3;
               };
+              cache = {
+                enabled = true;
+                host = "10.108.27.2";
+                port = 41919;
+              };
             };
           };
 
@@ -75,6 +80,8 @@ in
                 table inet filter {
                   chain output {
                     type filter hook output priority 100; policy accept;
+
+                    ct state { established, related } counter accept
 
                     ip daddr 10.0.0.0/8 drop
                     ip daddr 100.64.0.0/10 drop
