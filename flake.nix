@@ -27,6 +27,7 @@
         fqdns = builtins.attrNames (builtins.readDir ./hosts);
         getSystemOverlays = system: nixpkgsConfig: [
           (final: prev: {
+            unstable = nixpkgs-unstable.legacyPackages.${prev.system};
             "storj" = final.callPackage ./pkgs/storj.nix { };
           })
         ];

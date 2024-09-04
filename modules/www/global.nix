@@ -33,6 +33,11 @@ in
 
     services.caddy = {
       enable = true;
+      package = pkgs.unstable.caddy;
+
+      globalConfig = ''
+        email acme@hillion.co.uk
+      '';
 
       virtualHosts = {
         "hillion.co.uk".extraConfig = ''

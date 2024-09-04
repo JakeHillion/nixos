@@ -60,6 +60,7 @@ in
           (lib.lists.optional config.custom.services.unifi.enable "/var/lib/unifi") ++
           (lib.lists.optional (config.virtualisation.oci-containers.containers != { }) "/var/lib/containers") ++
           (lib.lists.optional config.services.tang.enable "/var/lib/private/tang") ++
+          (lib.lists.optional config.services.caddy.enable "/var/lib/caddy") ++
           (lib.lists.optional config.services.step-ca.enable "/var/lib/step-ca/db");
         };
       }

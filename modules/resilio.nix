@@ -1,4 +1,4 @@
-{ pkgs, lib, config, nixpkgs-unstable, ... }:
+{ pkgs, lib, config, ... }:
 
 let
   cfg = config.custom.resilio;

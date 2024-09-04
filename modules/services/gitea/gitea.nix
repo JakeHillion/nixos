@@ -1,4 +1,4 @@
-{ config, pkgs, lib, nixpkgs-unstable, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   cfg = config.custom.services.gitea;
@@ -55,7 +55,7 @@ in
 
     services.gitea = {
       enable = true;
-      package = nixpkgs-unstable.legacyPackages.x86_64-linux.gitea;
+      package = pkgs.unstable.gitea;
       mailerPasswordFile = config.age.secrets."gitea/mailer_password".path;
 
       appName = "Hillion Gitea";
