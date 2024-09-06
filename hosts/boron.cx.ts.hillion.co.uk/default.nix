@@ -101,6 +101,18 @@
       fileSystems = [ "/data" ];
     };
 
+    ## General usability
+    ### Make podman available for dev tools such as act
+    virtualisation = {
+      containers.enable = true;
+      podman = {
+        enable = true;
+        dockerCompat = true;
+        dockerSocket.enable = true;
+      };
+    };
+    users.users.jake.extraGroups = [ "podman" ];
+
     ## Networking
     boot.kernel.sysctl = {
       "net.ipv4.ip_forward" = true;
