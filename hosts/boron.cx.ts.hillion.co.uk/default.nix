@@ -147,6 +147,7 @@
     services.tailscale = {
       enable = true;
       authKeyFile = config.age.secrets."tailscale/boron.cx.ts.hillion.co.uk".path;
+      extraSetFlags = [ "--accept-routes" ];
     };
   };
 }

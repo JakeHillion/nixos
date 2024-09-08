@@ -124,6 +124,9 @@
               iifname "tailscale0" oifname { "eth1", "eth2" } counter accept comment "Allow LAN access from Tailscale"
               iifname { "eth1", "eth2" } oifname "tailscale0" ct state { established,related } counter accept comment "Allow established back to Tailscale"
 
+              iifname "tailscale0" ip saddr 100.113.188.46 oifname "cameras" counter accept comment "Allow Tailscale subnet routing to cameras"
+              iifname "cameras" oifname "tailscale0" ct state { established, related} counter accept
+
               ip daddr 10.64.50.20 tcp dport 32400 counter accept comment "Plex"
               ip daddr 10.64.50.20 tcp dport 8444 counter accept comment "Chia"
               ip daddr 10.64.50.21 tcp dport 7654 counter accept comment "Tang"

@@ -34,13 +34,14 @@ in
 
               ca                    21600 CNAME sodium.pop.ts.hillion.co.uk.
               deluge.downloads      21600 CNAME tywin.storage.ts.hillion.co.uk.
+              frigate               21600 CNAME boron.cx.ts.hillion.co.uk.
               graphs.router.home    21600 CNAME router.home.ts.hillion.co.uk.
+              prometheus            21600 CNAME ${config.custom.locations.locations.services.prometheus}.
               prowlarr.downloads    21600 CNAME tywin.storage.ts.hillion.co.uk.
               radarr.downloads      21600 CNAME tywin.storage.ts.hillion.co.uk.
               restic.tywin.storage  21600 CNAME tywin.storage.ts.hillion.co.uk.
               sonarr.downloads      21600 CNAME tywin.storage.ts.hillion.co.uk.
               zigbee2mqtt.home      21600 CNAME router.home.ts.hillion.co.uk.
-              prometheus            21600 CNAME ${config.custom.locations.locations.services.prometheus}.
 
             '' + (makeRecords "A" config.custom.dns.authoritative.ipv4.uk.co.hillion.ts) + "\n\n" + (makeRecords "AAAA" config.custom.dns.authoritative.ipv6.uk.co.hillion.ts);
         };
