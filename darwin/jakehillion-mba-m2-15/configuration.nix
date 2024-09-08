@@ -15,10 +15,13 @@
     security.pam.enableSudoTouchIdAuth = true;
 
     environment.systemPackages = with pkgs; [
+      fd
       htop
       mosh
       neovim
       nix
+      ripgrep
+      sapling
     ];
   };
 }
