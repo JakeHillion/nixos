@@ -61,5 +61,7 @@ in
         in
         builtins.map (folder: mkFolder folder.name folder.secret) cfg.folders;
     };
+
+    systemd.services.resilio.unitConfig.RequiresMountsFor = builtins.map (folder: "${config.services.resilio.directoryRoot}/${folder.name}") cfg.folders;
   };
 }
