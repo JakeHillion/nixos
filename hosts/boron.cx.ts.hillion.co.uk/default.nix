@@ -83,6 +83,34 @@
       fileSystems = [ "/data" ];
     };
 
+    ## Resilio
+    custom.resilio = {
+      enable = true;
+      folders =
+        let
+          folderNames = [
+            "dad"
+            "joseph"
+            "projects"
+            "resources"
+            "sync"
+          ];
+          mkFolder = name: {
+            name = name;
+            secret = {
+              name = "resilio/plain/${name}";
+              file = ../../secrets/resilio/plain/${name}.age;
+            };
+          };
+        in
+        builtins.map (mkFolder) folderNames;
+    };
+    services.resilio = {
+      deviceName = "boron.cx";
+      directoryRoot = "/data/sync";
+      storagePath = "/data/sync/.sync";
+    };
+
     ## General usability
     ### Make podman available for dev tools such as act
     virtualisation = {
