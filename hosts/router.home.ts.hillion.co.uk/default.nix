@@ -32,6 +32,14 @@
       nat.enable = lib.mkForce false;
 
       useDHCP = false;
+
+      vlans = {
+        cameras = {
+          id = 3;
+          interface = "eth2";
+        };
+      };
+
       interfaces = {
         enp1s0 = {
           name = "eth0";
@@ -52,6 +60,14 @@
           ipv4.addresses = [
             {
               address = "10.239.19.1";
+              prefixLength = 24;
+            }
+          ];
+        };
+        cameras /* cameras@eth2 */ = {
+          ipv4.addresses = [
+            {
+              address = "10.133.145.1";
               prefixLength = 24;
             }
           ];
@@ -82,8 +98,8 @@
 
               ip protocol icmp counter accept comment "accept all ICMP types"
 
-              iifname "eth0" ct state { established, related } counter accept
-              iifname "eth0" drop
+              iifname { "eth0", "cameras" } ct state { established, related } counter accept
+              iifname { "eth0", "cameras" } drop
             }
 
             chain forward {
@@ -138,7 +154,7 @@
 
           settings = {
             interfaces-config = {
-              interfaces = [ "eth1" "eth2" ];
+              interfaces = [ "eth1" "eth2" "cameras" ];
             };
             lease-database = {
               type = "memfile";
@@ -241,6 +257,29 @@
                     ip-address = "10.239.19.3";
                     hostname = "living-room-everything-presence-one";
                   }
+                ];
+              }
+              {
+                subnet = "10.133.145.0/24";
+                interface = "cameras";
+                pools = [{
+                  pool = "10.133.145.64 - 10.133.145.254";
+                }];
+                option-data = [
+                  {
+                    name = "routers";
+                    data = "10.133.145.1";
+                  }
+                  {
+                    name = "broadcast-address";
+                    data = "10.133.145.255";
+                  }
+                  {
+                    name = "domain-name-servers";
+                    data = "1.1.1.1, 8.8.8.8";
+                  }
+                ];
+                reservations = [
                 ];
               }
             ];
