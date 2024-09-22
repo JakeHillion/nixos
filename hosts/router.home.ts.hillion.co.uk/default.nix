@@ -222,6 +222,7 @@
                   { hostname = "server-switch"; hw-address = "84:d8:1b:9d:0d:85"; }
                   { hostname = "apc-ap7921"; hw-address = "00:c0:b7:6b:f4:34"; }
                   { hostname = "sodium"; hw-address = "d8:3a:dd:c3:d6:2b"; }
+                  { hostname = "gendry"; hw-address = "18:c0:4d:35:60:1e"; }
                 ];
               }
               {
