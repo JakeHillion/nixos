@@ -23,12 +23,6 @@
     services.tailscale = {
       enable = true;
       authKeyFile = config.age.secrets."tailscale/microserver.home.ts.hillion.co.uk".path;
-      useRoutingFeatures = "server";
-      extraUpFlags = [
-        "--advertise-routes"
-        "10.64.50.0/24,10.239.19.0/24"
-        "--advertise-exit-node"
-      ];
     };
 
     ## Enable IoT VLAN
@@ -41,11 +35,6 @@
 
     hardware = {
       bluetooth.enable = true;
-    };
-
-    ## Enable IP forwarding for Tailscale
-    boot.kernel.sysctl = {
-      "net.ipv4.ip_forward" = true;
     };
 
     ## Run a persistent iperf3 server

@@ -108,6 +108,7 @@
               iifname {
                 "eth1",
                 "eth2",
+                "tailscale0",
               } oifname {
                 "eth0",
               } counter accept comment "Allow trusted LAN to WAN"
@@ -117,12 +118,14 @@
               } oifname {
                 "eth1",
                 "eth2",
-              } ct state established,related counter accept comment "Allow established back to LANs"
+                "tailscale0",
+              } ct state { established,related } counter accept comment "Allow established back to LANs"
+
+              iifname "tailscale0" oifname { "eth1", "eth2" } counter accept comment "Allow LAN access from Tailscale"
+              iifname { "eth1", "eth2" } oifname "tailscale0" ct state { established,related } counter accept comment "Allow established back to Tailscale"
 
               ip daddr 10.64.50.20 tcp dport 32400 counter accept comment "Plex"
-
               ip daddr 10.64.50.20 tcp dport 8444 counter accept comment "Chia"
-
               ip daddr 10.64.50.21 tcp dport 7654 counter accept comment "Tang"
             }
           }
@@ -132,15 +135,17 @@
               type nat hook prerouting priority filter; policy accept;
 
               iifname eth0 tcp dport 32400 counter dnat to 10.64.50.20
-
               iifname eth0 tcp dport 8444 counter dnat to 10.64.50.20
-
               iifname eth0 tcp dport 7654 counter dnat to 10.64.50.21
             }
 
             chain postrouting {
               type nat hook postrouting priority filter; policy accept;
+
               oifname "eth0" masquerade
+
+              iifname tailscale0 oifname eth1 snat to 10.64.50.1
+              iifname tailscale0 oifname eth2 snat to 10.239.19.1
             }
           }
         '';
@@ -324,6 +329,13 @@
     services.tailscale = {
       enable = true;
       authKeyFile = config.age.secrets."tailscale/router.home.ts.hillion.co.uk".path;
+      useRoutingFeatures = "server";
+      extraSetFlags = [
+        "--advertise-routes"
+        "10.64.50.0/24,10.239.19.0/24,10.133.145.0/24"
+        "--advertise-exit-node"
+        "--netfilter-mode=off"
+      ];
     };
 
     ## Enable btrfs compression
