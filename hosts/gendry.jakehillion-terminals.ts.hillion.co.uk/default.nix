@@ -99,6 +99,10 @@
     boot.initrd.kernelModules = [ "amdgpu" ];
     services.xserver.videoDrivers = [ "amdgpu" ];
 
+    programs.steam = {
+      enable = true;
+      remotePlay.openFirewall = true;
+    };
     users.users."${config.custom.user}" = {
       packages = with pkgs; [
         prismlauncher
