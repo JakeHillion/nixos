@@ -30,6 +30,9 @@
 
     custom.defaults = true;
 
+    ## Custom scheduler
+    custom.sched_ext.enable = true;
+
     ## Impermanence
     custom.impermanence = {
       enable = true;

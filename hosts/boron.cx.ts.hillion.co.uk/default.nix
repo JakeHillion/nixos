@@ -34,26 +34,8 @@
     ### Explicitly use the latest kernel at time of writing because the LTS
     ### kernels available in NixOS do not seem to support this server's very
     ### modern hardware.
-    boot.kernelPackages = pkgs.linuxPackages_6_10;
-    ### Apply patch to enable sched_ext which isn't yet available upstream.
-    boot.kernelPatches = [{
-      name = "sched_ext";
-      patch = pkgs.fetchpatch {
-        url = "https://github.com/sched-ext/scx-kernel-releases/releases/download/v6.10.3-scx1/linux-v6.10.3-scx1.patch.zst";
-        hash = "sha256-c4UlXsVOHGe0gvL69K9qTMWqCR8as25qwhfNVxCXUTs=";
-        decode = "${pkgs.zstd}/bin/unzstd";
-        excludes = [ "Makefile" ];
-      };
-      extraConfig = ''
-        BPF y
-        BPF_EVENTS y
-        BPF_JIT y
-        BPF_SYSCALL y
-        DEBUG_INFO_BTF y
-        FTRACE y
-        SCHED_CLASS_EXT y
-      '';
-    }];
+    ### custom.sched_ext.enable implies >=6.12, if this is removed the kernel may need to be pinned again. >=6.10 seems good.
+    custom.sched_ext.enable = true;
 
     ## Enable btrfs compression
     fileSystems."/data".options = [ "compress=zstd" ];

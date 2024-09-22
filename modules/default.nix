@@ -14,6 +14,7 @@
     ./impermanence.nix
     ./locations.nix
     ./resilio.nix
+    ./sched_ext.nix
     ./services/default.nix
     ./shell/default.nix
     ./ssh/default.nix
