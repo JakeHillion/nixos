@@ -46,7 +46,7 @@ in
     };
 
     virtualisation.oci-containers.containers.chia = {
-      image = "ghcr.io/chia-network/chia:2.4.1";
+      image = "ghcr.io/chia-network/chia:2.4.3";
       ports = [ "8444" ];
       extraOptions = [
         "--uidmap=0:${toString config.users.users.chia.uid}:1"
