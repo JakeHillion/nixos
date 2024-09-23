@@ -61,6 +61,7 @@ in
           (lib.lists.optional (config.virtualisation.oci-containers.containers != { }) "/var/lib/containers") ++
           (lib.lists.optional config.services.tang.enable "/var/lib/private/tang") ++
           (lib.lists.optional config.services.caddy.enable "/var/lib/caddy") ++
+          (lib.lists.optional config.services.prometheus.enable "/var/lib/${config.services.prometheus.stateDir}") ++
           (lib.lists.optional config.services.step-ca.enable "/var/lib/step-ca/db");
         };
       }

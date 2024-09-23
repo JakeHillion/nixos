@@ -13,6 +13,7 @@
     ./ids.nix
     ./impermanence.nix
     ./locations.nix
+    ./prometheus/default.nix
     ./resilio.nix
     ./sched_ext.nix
     ./services/default.nix

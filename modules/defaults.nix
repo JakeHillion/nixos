@@ -58,6 +58,7 @@
     custom.dns.enable = true;
     custom.home.defaults = true;
     custom.hostinfo.enable = true;
+    custom.prometheus.client.enable = true;
     custom.shell.enable = true;
     custom.ssh.enable = true;
   };

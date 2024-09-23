@@ -40,6 +40,7 @@ in
               restic.tywin.storage  21600 CNAME tywin.storage.ts.hillion.co.uk.
               sonarr.downloads      21600 CNAME tywin.storage.ts.hillion.co.uk.
               zigbee2mqtt.home      21600 CNAME router.home.ts.hillion.co.uk.
+              prometheus            21600 CNAME ${config.custom.locations.locations.services.prometheus}.
 
             '' + (makeRecords "A" config.custom.dns.authoritative.ipv4.uk.co.hillion.ts) + "\n\n" + (makeRecords "AAAA" config.custom.dns.authoritative.ipv6.uk.co.hillion.ts);
         };
