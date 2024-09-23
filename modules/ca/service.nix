@@ -9,6 +9,9 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    users.users.step-ca.uid = config.ids.uids.step-ca;
+    users.groups.step-ca.gid = config.ids.gids.step-ca;
+
     services.step-ca = {
       enable = true;
 

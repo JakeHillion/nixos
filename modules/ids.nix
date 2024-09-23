@@ -8,6 +8,7 @@
       chia = 185;
       gitea = 186;
       node-exporter = 188;
+      step-ca = 198;
 
       ## Consistent People
       jake = 1000;
@@ -19,6 +20,7 @@
       chia = 185;
       gitea = 186;
       node-exporter = 188;
+      step-ca = 198;
 
       ## Consistent Groups
       mediaaccess = 1200;
