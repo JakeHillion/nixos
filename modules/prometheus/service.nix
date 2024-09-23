@@ -9,9 +9,6 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    users.users.node-exporter.uid = config.ids.uids.node-exporter;
-    users.groups.node-exporter.gid = config.ids.gids.node-exporter;
-
     services.prometheus = {
       enable = true;
 
