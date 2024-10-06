@@ -263,6 +263,16 @@
                     ip-address = "10.239.19.3";
                     hostname = "living-room-everything-presence-one";
                   }
+                  {
+                    hw-address = "a0:7d:9c:b0:f0:14";
+                    ip-address = "10.239.19.4";
+                    hostname = "hallway-wall-tablet";
+                  }
+                  {
+                    hw-address = "d8:3a:dd:c3:d6:2b";
+                    ip-address = "10.239.19.5";
+                    hostname = "sodium";
+                  }
                 ];
               }
               {

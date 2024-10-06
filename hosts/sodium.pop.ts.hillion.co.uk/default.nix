@@ -16,6 +16,8 @@
     boot.loader.efi.canTouchEfiVariables = true;
 
     custom.defaults = true;
+    custom.www.home.enable = true;
+    custom.www.iot.enable = true;
 
     ## Enable btrfs compression
     fileSystems."/data".options = [ "compress=zstd" ];
@@ -51,11 +53,11 @@
 
     # Networking
     networking = {
-      useDHCP = false;
-      interfaces = {
-        end0 = {
-          name = "eth0";
-          useDHCP = true;
+      interfaces.end0.name = "eth0";
+      vlans = {
+        iot = {
+          id = 2;
+          interface = "eth0";
         };
       };
     };
@@ -63,15 +65,26 @@
 
     networking.firewall = {
       trustedInterfaces = [ "tailscale0" ];
-      allowedTCPPorts = lib.mkForce [
-      ];
+      allowedTCPPorts = lib.mkForce [ ];
       allowedUDPPorts = lib.mkForce [ ];
       interfaces = {
         eth0 = {
           allowedTCPPorts = lib.mkForce [
+            80 # HTTP 1-2
+            443 # HTTPS 1-2
             7654 # Tang
           ];
           allowedUDPPorts = lib.mkForce [
+            443 # HTTP 3
+          ];
+        };
+        iot = {
+          allowedTCPPorts = lib.mkForce [
+            80 # HTTP 1-2
+            443 # HTTPS 1-2
+          ];
+          allowedUDPPorts = lib.mkForce [
+            443 # HTTP 3
           ];
         };
       };

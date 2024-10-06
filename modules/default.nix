@@ -21,8 +21,7 @@
     ./ssh/default.nix
     ./storj.nix
     ./users.nix
-    ./www/global.nix
-    ./www/www-repo.nix
+    ./www/default.nix
   ];
 
   options.custom = {

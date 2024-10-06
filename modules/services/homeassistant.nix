@@ -44,6 +44,7 @@ in
           "bluetooth"
           "default_config"
           "esphome"
+          "fully_kiosk"
           "google_assistant"
           "homekit"
           "met"
@@ -62,6 +63,20 @@ in
         config = {
           default_config = { };
 
+          homeassistant = {
+            auth_providers = [
+              { type = "homeassistant"; }
+              {
+                type = "trusted_networks";
+                trusted_networks = [ "10.239.19.4/32" ];
+                trusted_users = {
+                  "10.239.19.4" = "fb4979873ecb480d9e3bb336250fa344";
+                };
+                allow_bypass_login = true;
+              }
+            ];
+          };
+
           recorder = {
             db_url = "postgresql://@/homeassistant";
           };
@@ -71,6 +86,8 @@ in
             trusted_proxies = with config.custom.dns.authoritative; [
               ipv4.uk.co.hillion.ts.cx.boron
               ipv6.uk.co.hillion.ts.cx.boron
+              ipv4.uk.co.hillion.ts.pop.sodium
+              ipv6.uk.co.hillion.ts.pop.sodium
             ];
           };
 
