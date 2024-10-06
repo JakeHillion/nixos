@@ -16,8 +16,6 @@
     boot.loader.efi.canTouchEfiVariables = true;
 
     custom.defaults = true;
-    custom.www.home.enable = true;
-    custom.www.iot.enable = true;
 
     ## Enable btrfs compression
     fileSystems."/data".options = [ "compress=zstd" ];
@@ -50,6 +48,9 @@
 
     ## Custom Services
     custom.locations.autoServe = true;
+    custom.www.home.enable = true;
+    custom.www.iot.enable = true;
+    custom.services.isponsorblocktv.enable = true;
 
     # Networking
     networking = {

@@ -9,6 +9,7 @@
       gitea = 186;
       node-exporter = 188;
       step-ca = 198;
+      isponsorblocktv = 199;
 
       ## Consistent People
       jake = 1000;
@@ -21,6 +22,7 @@
       gitea = 186;
       node-exporter = 188;
       step-ca = 198;
+      isponsorblocktv = 199;
 
       ## Consistent Groups
       mediaaccess = 1200;
