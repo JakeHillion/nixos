@@ -57,7 +57,7 @@ in
             ${pkgs.git}/bin/git clone ${cfg.remote} ${cfg.location}
         else
             cd ${cfg.location}
-            ${pkgs.git} remote set-url origin ${cfg.remote}
+            ${pkgs.git}/bin/git remote set-url origin ${cfg.remote}
             ${pkgs.git}/bin/git fetch
             ${pkgs.git}/bin/git reset --hard origin/${cfg.branch}
         fi
