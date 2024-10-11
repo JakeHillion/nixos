@@ -31,6 +31,7 @@
         (final: prev: {
           unstable = nixpkgs-unstable.legacyPackages.${prev.system};
 
+          "scx_lavd" = final.callPackage ./pkgs/scx/lavd.nix { };
           "scx_layered" = final.callPackage ./pkgs/scx/layered.nix { };
           "storj" = final.callPackage ./pkgs/storj.nix { };
         })

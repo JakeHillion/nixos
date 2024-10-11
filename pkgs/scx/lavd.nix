@@ -1,7 +1,7 @@
 { stdenv, lib, fetchFromGitHub, rustPlatform, pkg-config, llvmPackages, elfutils, zlib, ... }:
 
 rustPlatform.buildRustPackage rec {
-  pname = "scx_layered";
+  pname = "scx_lavd";
 
   src = fetchFromGitHub {
     owner = "sched-ext";
@@ -11,12 +11,12 @@ rustPlatform.buildRustPackage rec {
   };
   version = "1.0.5-dirty";
 
-  cargoRoot = "scheds/rust/scx_layered";
-  cargoLock.lockFile = ./layered.Cargo.lock;
+  cargoRoot = "scheds/rust/scx_lavd";
+  cargoLock.lockFile = ./lavd.Cargo.lock;
 
   postPatch = ''
     rm Cargo.toml Cargo.lock
-    ln -fs ${./layered.Cargo.lock} scheds/rust/scx_layered/Cargo.lock
+    ln -fs ${./lavd.Cargo.lock} scheds/rust/scx_lavd/Cargo.lock
   '';
 
   nativeBuildInputs = [ pkg-config llvmPackages.clang ];
@@ -25,21 +25,21 @@ rustPlatform.buildRustPackage rec {
   LIBCLANG_PATH = "${llvmPackages.libclang.lib}/lib";
 
   preBuild = ''
-    cd scheds/rust/scx_layered
+    cd scheds/rust/scx_lavd
   '';
 
   installPhase = ''
     runHook preInstall
 
     mkdir -p $out/bin
-    cp target/${stdenv.targetPlatform.config}/release/scx_layered $out/bin/
+    cp target/${stdenv.targetPlatform.config}/release/scx_lavd $out/bin/
 
     runHook postInstall
   '';
 
   meta = with lib; {
     homepage = "https://github.com/sched-ext/scx";
-    description = "scx_layered sched_ext userspace scheduler";
+    description = "scx_lavd sched_ext userspace scheduler";
     license = licenses.gpl2Only;
     platforms = platforms.linux;
     maintainers = [{
