@@ -48,6 +48,7 @@ in
       };
 
       script = ''
+        set -e
         shopt -s nullglob
 
         # Read and deduplicate repos
@@ -95,7 +96,6 @@ in
         Persistent = true;
         OnUnitInactiveSec = "15m";
         RandomizedDelaySec = "5m";
-        Unit = "backup-git.service";
       };
     };
   };
