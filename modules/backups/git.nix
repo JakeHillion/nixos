@@ -93,9 +93,9 @@ in
       wantedBy = [ "timers.target" ];
       timerConfig = {
         Persistent = true;
+        OnBootSec = "10m";
         OnUnitInactiveSec = "15m";
         RandomizedDelaySec = "5m";
-        Unit = "backup-git.service";
       };
     };
   };
