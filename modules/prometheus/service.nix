@@ -23,6 +23,20 @@ in
           targets = builtins.map (x: "${x}:9000") (builtins.attrNames (builtins.readDir ../../hosts));
         }];
       }];
+
+      rules = [
+        ''
+          groups:
+          - name: service alerting
+            rules:
+            - alert: ResilioSyncDown
+              expr: node_systemd_unit_state{ name = 'resilio.service', state != 'active' } > 0
+              for: 10m
+              annotations:
+                summary: "Resilio Sync systemd service is down"
+                description: "The Resilio Sync systemd service is not active on instance {{ $labels.instance }}."
+        ''
+      ];
     };
 
     services.caddy = {
