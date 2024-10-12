@@ -1,4 +1,4 @@
-{ pkgs, lib, config, agenix, ... }:
+{ pkgs, nixpkgs-unstable, lib, config, agenix, ... }:
 
 {
   options.custom.defaults = lib.mkEnableOption "defaults";
@@ -52,6 +52,11 @@
       networkmanager.dns = "none";
     };
     networking.firewall.enable = true;
+
+    nix.registry.nixpkgs-unstable.to = {
+      type = "path";
+      path = nixpkgs-unstable;
+    };
 
     # Delegation
     custom.ca.consumer.enable = true;
