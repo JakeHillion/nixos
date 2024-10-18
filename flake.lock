@@ -155,16 +155,16 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1728492678,
-        "narHash": "sha256-9UTxR8eukdg+XZeHgxW5hQA9fIKHsKCdOIUycTryeVw=",
-        "owner": "nixos",
+        "lastModified": 1729253258,
+        "narHash": "sha256-ySLpY+UqJ2V8ZuKSB2VbL2aw+rv62wQB32hHk5wvTVM=",
+        "owner": "JakeHillion",
         "repo": "nixpkgs",
-        "rev": "5633bcff0c6162b9e4b5f1264264611e950c8ec7",
+        "rev": "61e8e3832fb4b51d8c1646d9f9153c6adf1af945",
         "type": "github"
       },
       "original": {
-        "owner": "nixos",
-        "ref": "nixos-unstable",
+        "owner": "JakeHillion",
+        "ref": "scx_layered_init",
         "repo": "nixpkgs",
         "type": "github"
       }

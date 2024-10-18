@@ -1,7 +1,7 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs-unstable.url = "github:JakeHillion/nixpkgs/scx_layered_init";
 
     nixos-hardware.url = "github:nixos/nixos-hardware";
 
@@ -32,7 +32,6 @@
           unstable = nixpkgs-unstable.legacyPackages.${prev.system};
 
           "scx_lavd" = final.callPackage ./pkgs/scx/lavd.nix { };
-          "scx_layered" = final.callPackage ./pkgs/scx/layered.nix { };
           "storj" = final.callPackage ./pkgs/storj.nix { };
         })
       ];
