@@ -33,6 +33,8 @@ in
               86400 NS ns1.hillion.co.uk.
 
               ca                    21600 CNAME sodium.pop.ts.hillion.co.uk.
+              charlie.kvm           21600 CNAME router.home.ts.hillion.co.uk.
+              hammer.kvm            21600 CNAME router.home.ts.hillion.co.uk.
               deluge.downloads      21600 CNAME tywin.storage.ts.hillion.co.uk.
               graphs.router.home    21600 CNAME router.home.ts.hillion.co.uk.
               prowlarr.downloads    21600 CNAME tywin.storage.ts.hillion.co.uk.

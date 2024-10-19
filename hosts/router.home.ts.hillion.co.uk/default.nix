@@ -252,13 +252,11 @@
                 ];
                 reservations = [
                   {
-                    # bedroom-everything-presence-one
                     hw-address = "40:22:d8:e0:1d:50";
                     ip-address = "10.239.19.2";
                     hostname = "bedroom-everything-presence-one";
                   }
                   {
-                    # living-room-everything-presence-one
                     hw-address = "40:22:d8:e0:0f:78";
                     ip-address = "10.239.19.3";
                     hostname = "living-room-everything-presence-one";
@@ -272,6 +270,16 @@
                     hw-address = "d8:3a:dd:c3:d6:2b";
                     ip-address = "10.239.19.5";
                     hostname = "sodium";
+                  }
+                  {
+                    hw-address = "48:da:35:6f:f2:4b";
+                    ip-address = "10.239.19.6";
+                    hostname = "hammer";
+                  }
+                  {
+                    hw-address = "48:da:35:6f:83:b8";
+                    ip-address = "10.239.19.7";
+                    hostname = "charlie";
                   }
                 ];
               }
@@ -369,9 +377,34 @@
     };
     services.caddy = {
       enable = true;
-      virtualHosts."http://graphs.router.home.ts.hillion.co.uk" = {
-        listenAddresses = [ config.custom.dns.tailscale.ipv4 config.custom.dns.tailscale.ipv6 ];
-        extraConfig = "reverse_proxy unix///run/netdata/netdata.sock";
+      virtualHosts = {
+        "graphs.router.home.ts.hillion.co.uk" = {
+          listenAddresses = [ config.custom.dns.tailscale.ipv4 config.custom.dns.tailscale.ipv6 ];
+          extraConfig = ''
+            tls {
+              ca https://ca.ts.hillion.co.uk:8443/acme/acme/directory
+            }
+            reverse_proxy unix///run/netdata/netdata.sock
+          '';
+        };
+        "hammer.kvm.ts.hillion.co.uk" = {
+          listenAddresses = [ config.custom.dns.tailscale.ipv4 config.custom.dns.tailscale.ipv6 ];
+          extraConfig = ''
+            tls {
+              ca https://ca.ts.hillion.co.uk:8443/acme/acme/directory
+            }
+            reverse_proxy http://10.239.19.6
+          '';
+        };
+        "charlie.kvm.ts.hillion.co.uk" = {
+          listenAddresses = [ config.custom.dns.tailscale.ipv4 config.custom.dns.tailscale.ipv6 ];
+          extraConfig = ''
+            tls {
+              ca https://ca.ts.hillion.co.uk:8443/acme/acme/directory
+            }
+            reverse_proxy http://10.239.19.7
+          '';
+        };
       };
     };
     users.users.caddy.extraGroups = [ "netdata" ];
