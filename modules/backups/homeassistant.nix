@@ -22,7 +22,7 @@ in
           OnCalendar = "03:00";
           RandomizedDelaySec = "60m";
         };
-        repository = "rest:http://restic.tywin.storage.ts.hillion.co.uk/128G";
+        repository = "rest:https://restic.ts.hillion.co.uk/128G";
         passwordFile = config.age.secrets."backups/homeassistant/restic/128G".path;
         paths = [
           config.services.home-assistant.configDir

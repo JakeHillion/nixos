@@ -9,6 +9,7 @@
     ./isponsorblocktv.nix
     ./mastodon/default.nix
     ./matrix.nix
+    ./restic.nix
     ./tang.nix
     ./unifi.nix
     ./version_tracker.nix

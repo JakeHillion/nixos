@@ -75,7 +75,7 @@ in
     };
 
     services.restic.backups."zigbee2mqtt" = lib.mkIf cfg.backup {
-      repository = "rest:http://restic.tywin.storage.ts.hillion.co.uk/1.6T";
+      repository = "rest:https://restic.ts.hillion.co.uk/1.6T";
       user = "zigbee2mqtt";
       passwordFile = config.age.secrets."resilio/zigbee2mqtt/1.6T.key".path;
 

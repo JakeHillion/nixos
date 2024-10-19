@@ -37,7 +37,7 @@ in
               graphs.router.home    21600 CNAME router.home.ts.hillion.co.uk.
               prowlarr.downloads    21600 CNAME tywin.storage.ts.hillion.co.uk.
               radarr.downloads      21600 CNAME tywin.storage.ts.hillion.co.uk.
-              restic.tywin.storage  21600 CNAME tywin.storage.ts.hillion.co.uk.
+              restic                21600 CNAME ${config.custom.locations.locations.services.restic}.
               sonarr.downloads      21600 CNAME tywin.storage.ts.hillion.co.uk.
               zigbee2mqtt.home      21600 CNAME router.home.ts.hillion.co.uk.
               prometheus            21600 CNAME ${config.custom.locations.locations.services.prometheus}.

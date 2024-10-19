@@ -67,6 +67,9 @@
       interval = "Wed, 02:00";
     };
 
+    ## Restic
+    custom.services.restic.path = "/data/backups/restic";
+
     ## Backups
     ### Git
     age.secrets."git/git_backups_ecdsa".file = ../../secrets/git/git_backups_ecdsa.age;
@@ -110,7 +113,7 @@
       group = "rslsync";
     };
     services.restic.backups."sync" = {
-      repository = "rest:http://restic.tywin.storage.ts.hillion.co.uk/128G";
+      repository = "rest:https://restic.ts.hillion.co.uk/128G";
       user = "rslsync";
       passwordFile = config.age.secrets."resilio/restic/128G.key".path;
 
@@ -130,81 +133,6 @@
         "/data/users/jake/sync/resources/media/tv"
 
         "/data/users/jake/sync/dad/media"
-      ];
-    };
-
-    ## Restic
-    age.secrets."restic/128G.key" = {
-      file = ../../secrets/restic/128G.age;
-      owner = "restic";
-      group = "restic";
-    };
-    age.secrets."restic/1.6T.key" = {
-      file = ../../secrets/restic/1.6T.age;
-      owner = "restic";
-      group = "restic";
-    };
-
-    services.restic.server = {
-      enable = true;
-      appendOnly = true;
-      extraFlags = [ "--no-auth" ];
-      dataDir = "/data/backups/restic";
-      listenAddress = "127.0.0.1:8000"; # TODO: can this be a Unix socket?
-    };
-    services.caddy = {
-      enable = true;
-      virtualHosts."http://restic.tywin.storage.ts.hillion.co.uk".extraConfig = ''
-        bind ${config.custom.dns.tailscale.ipv4} ${config.custom.dns.tailscale.ipv6}
-        reverse_proxy http://localhost:8000
-      '';
-    };
-    ### HACK: Allow Caddy to restart if it fails. This happens because Tailscale
-    ### is too late at starting. Upstream nixos caddy does restart on failure
-    ### but it's prevented on exit code 1. Set the exit code to 0 (non-failure)
-    ### to override this.
-    systemd.services.caddy = {
-      requires = [ "tailscaled.service" ];
-      after = [ "tailscaled.service" ];
-      serviceConfig = {
-        RestartPreventExitStatus = lib.mkForce 0;
-      };
-    };
-
-    services.restic.backups."prune-128G" = {
-      repository = "/data/backups/restic/128G";
-      user = "restic";
-      passwordFile = config.age.secrets."restic/128G.key".path;
-
-      timerConfig = {
-        Persistent = true;
-        OnCalendar = "02:30";
-        RandomizedDelaySec = "1h";
-      };
-
-      pruneOpts = [
-        "--keep-last 48"
-        "--keep-within-hourly 7d"
-        "--keep-within-daily 1m"
-        "--keep-within-weekly 6m"
-        "--keep-within-monthly 24m"
-      ];
-    };
-    services.restic.backups."prune-1.6T" = {
-      repository = "/data/backups/restic/1.6T";
-      user = "restic";
-      passwordFile = config.age.secrets."restic/1.6T.key".path;
-
-      timerConfig = {
-        Persistent = true;
-        OnCalendar = "Wed, 02:30";
-        RandomizedDelaySec = "4h";
-      };
-
-      pruneOpts = [
-        "--keep-within-daily 14d"
-        "--keep-within-weekly 2m"
-        "--keep-within-monthly 18m"
       ];
     };
 
@@ -239,7 +167,8 @@
     ## Networking
     networking.nameservers = lib.mkForce [ ]; # Trust the DHCP nameservers
     networking.firewall.interfaces."tailscale0".allowedTCPPorts = [
-      80 # Caddy (restic.tywin.storage.ts.)
+      80 # Caddy HTTP  1-2 (restic.ts.)
+      443 # Caddy HTTPS 1-2 (restic.ts.)
     ];
   };
 }
