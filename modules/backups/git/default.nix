@@ -25,7 +25,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    age.secrets."git-backups/restic/128G".file = ../../secrets/restic/128G.age;
+    age.secrets."git-backups/restic/128G".file = ../../../secrets/restic/128G.age;
 
     systemd.services.backup-git = {
       description = "Git repo backup service.";

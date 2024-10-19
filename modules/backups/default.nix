@@ -2,7 +2,7 @@
 
 {
   imports = [
-    ./git.nix
+    ./git/default.nix
     ./homeassistant.nix
     ./matrix.nix
   ];
