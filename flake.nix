@@ -21,11 +21,27 @@
     home-manager-unstable.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
     impermanence.url = "github:nix-community/impermanence/master";
+
+    disko.url = "github:nix-community/disko";
+    disko.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   description = "Hillion Nix flake";
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, nixos-hardware, flake-utils, agenix, home-manager, home-manager-unstable, darwin, impermanence, ... }@inputs:
+  outputs =
+    { self
+    , agenix
+    , darwin
+    , disko
+    , flake-utils
+    , home-manager
+    , home-manager-unstable
+    , impermanence
+    , nixos-hardware
+    , nixpkgs
+    , nixpkgs-unstable
+    , ...
+    }@inputs:
     let
       getSystemOverlays = system: nixpkgsConfig: [
         (final: prev: {
@@ -55,6 +71,7 @@
 
                 agenix.nixosModules.default
                 impermanence.nixosModules.impermanence
+                disko.nixosModules.disko
 
                 home-manager-pick.nixosModules.default
                 {

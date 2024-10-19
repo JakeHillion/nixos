@@ -228,6 +228,7 @@
                   { hostname = "apc-ap7921"; hw-address = "00:c0:b7:6b:f4:34"; }
                   { hostname = "sodium"; hw-address = "d8:3a:dd:c3:d6:2b"; }
                   { hostname = "gendry"; hw-address = "18:c0:4d:35:60:1e"; }
+                  { hostname = "phoenix"; hw-address = "a8:b8:e0:04:17:a5"; }
                 ];
               }
               {

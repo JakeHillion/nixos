@@ -22,8 +22,8 @@ in
       default = null;
     };
     plotDirectories = lib.mkOption {
-      type = with lib.types; nullOr (listOf str);
-      default = null;
+      type = with lib.types; listOf str;
+      default = [ ];
     };
     openFirewall = lib.mkOption {
       type = lib.types.bool;

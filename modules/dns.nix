@@ -51,6 +51,9 @@ in
                   li = "100.106.87.35";
                   sodium = "100.87.188.4";
                 };
+                st = {
+                  phoenix = "100.92.37.106";
+                };
                 storage = {
                   theon = "100.104.142.22";
                   tywin = "100.115.31.91";
@@ -77,6 +80,9 @@ in
                 pop = {
                   li = "fd7a:115c:a1e0::e701:5723";
                   sodium = "fd7a:115c:a1e0::3701:bc04";
+                };
+                st = {
+                  phoenix = "fd7a:115c:a1e0::6901:256a";
                 };
                 storage = {
                   theon = "fd7a:115c:a1e0::4aa8:8e16";
