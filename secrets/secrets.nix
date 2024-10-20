@@ -84,11 +84,11 @@ in
   "matrix/matrix.hillion.co.uk/syncv3_secret.age".publicKeys = jake_users ++ [ ts.cx.boron ];
 
   # Backups Secrets
-  "restic/128G.age".publicKeys = jake_users ++ [ ts.storage.tywin ts.cx.boron ts.home.microserver ];
+  "restic/128G.age".publicKeys = jake_users ++ [ ts.st.phoenix ts.storage.tywin ts.cx.boron ts.home.microserver ];
   "restic/1.6T.age".publicKeys = jake_users ++ [ ts.storage.tywin ts.home.router ];
 
-  "git/git_backups_ecdsa.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
-  "git/git_backups_remotes.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
+  "git/git_backups_ecdsa.age".publicKeys = jake_users ++ [ ts.st.phoenix ];
+  "git/git_backups_remotes.age".publicKeys = jake_users ++ [ ts.st.phoenix ];
 
   # Mastodon Secrets
   "mastodon/social.hillion.co.uk/otp_secret_file.age".publicKeys = jake_users ++ [ ];

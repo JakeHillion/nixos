@@ -55,6 +55,13 @@
       keyFile = config.age.secrets."chia/farmer.key".path;
     };
 
+    ## Backups
+    ### Git
+    custom.backups.git = {
+      enable = true;
+      extraRepos = [ "https://gitea.hillion.co.uk/JakeHillion/nixos.git" ];
+    };
+
     ## Networking
     networking = {
       interfaces.enp4s0.name = "eth0";

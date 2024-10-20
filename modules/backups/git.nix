@@ -7,24 +7,16 @@ in
   options.custom.backups.git = {
     enable = lib.mkEnableOption "git";
 
-    repos = lib.mkOption {
+    extraRepos = lib.mkOption {
       description = "A list of remotes to clone.";
       type = with lib.types; listOf str;
       default = [ ];
     };
-    reposFile = lib.mkOption {
-      description = "A file containing the remotes to clone, one per line.";
-      type = with lib.types; nullOr str;
-      default = null;
-    };
-    sshKey = lib.mkOption {
-      description = "SSH private key to use when cloning repositories over SSH.";
-      type = with lib.types; nullOr str;
-      default = null;
-    };
   };
 
   config = lib.mkIf cfg.enable {
+    age.secrets."git/git_backups_ecdsa".file = ../../secrets/git/git_backups_ecdsa.age;
+    age.secrets."git/git_backups_remotes".file = ../../secrets/git/git_backups_remotes.age;
     age.secrets."git-backups/restic/128G".file = ../../secrets/restic/128G.age;
 
     systemd.services.backup-git = {
@@ -37,9 +29,10 @@ in
         WorkingDirectory = "%C/backup-git";
 
         LoadCredential = [
+          "id_ecdsa:${config.age.secrets."git/git_backups_ecdsa".path}"
+          "repos_file:${config.age.secrets."git/git_backups_remotes".path}"
           "restic_password:${config.age.secrets."git-backups/restic/128G".path}"
-        ] ++ (if cfg.sshKey == null then [ ] else [ "id_ecdsa:${cfg.sshKey}" ])
-        ++ (if cfg.reposFile == null then [ ] else [ "repos_file:${cfg.reposFile}" ]);
+        ];
       };
 
       environment = {
@@ -48,11 +41,12 @@ in
       };
 
       script = ''
+        set -x
         shopt -s nullglob
 
         # Read and deduplicate repos
-        ${if cfg.reposFile == null then "" else "readarray -t raw_repos < $CREDENTIALS_DIRECTORY/repos_file"}
-        declare -A repos=(${builtins.concatStringsSep " " (builtins.map (x : "[${x}]=1") cfg.repos)})
+        readarray -t raw_repos < $CREDENTIALS_DIRECTORY/repos_file
+        declare -A repos=(${builtins.concatStringsSep " " (builtins.map (x : "[${x}]=1") cfg.extraRepos)})
         for repo in ''${raw_repos[@]}; do repos[$repo]=1; done
 
         # Clean up existing repos
