@@ -46,6 +46,10 @@ in
       gitea.stateDir = "${cfg.base}/system/var/lib/gitea";
     };
 
+    custom.chia = lib.mkIf config.custom.chia.enable {
+      path = lib.mkOverride 999 "/data/chia";
+    };
+
     environment.persistence = lib.mkMerge [
       {
         "${cfg.base}/system" = {

@@ -125,7 +125,6 @@
               iifname { "eth1", "eth2" } oifname "tailscale0" ct state { established,related } counter accept comment "Allow established back to Tailscale"
 
               ip daddr 10.64.50.20 tcp dport 32400 counter accept comment "Plex"
-              ip daddr 10.64.50.20 tcp dport 8444 counter accept comment "Chia"
               ip daddr 10.64.50.21 tcp dport 7654 counter accept comment "Tang"
             }
           }
@@ -135,7 +134,6 @@
               type nat hook prerouting priority filter; policy accept;
 
               iifname eth0 tcp dport 32400 counter dnat to 10.64.50.20
-              iifname eth0 tcp dport 8444 counter dnat to 10.64.50.20
               iifname eth0 tcp dport 7654 counter dnat to 10.64.50.21
             }
 

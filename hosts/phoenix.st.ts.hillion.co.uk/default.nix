@@ -44,6 +44,17 @@
       fileSystems = [ "/data" ];
     };
 
+    ## Chia
+    age.secrets."chia/farmer.key" = {
+      file = ../../secrets/chia/farmer.key.age;
+      owner = "chia";
+      group = "chia";
+    };
+    custom.chia = {
+      enable = true;
+      keyFile = config.age.secrets."chia/farmer.key".path;
+    };
+
     ## Networking
     networking = {
       interfaces.enp4s0.name = "eth0";

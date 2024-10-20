@@ -97,7 +97,7 @@ in
   "mastodon/social.hillion.co.uk/mastodon_at_social.hillion.co.uk.age".publicKeys = jake_users ++ [ ];
 
   # Chia Secrets
-  "chia/farmer.key.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
+  "chia/farmer.key.age".publicKeys = jake_users ++ [ ts.st.phoenix ts.storage.tywin ];
 
   # Storj Secrets
   "storj/auth.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
