@@ -53,6 +53,7 @@
     custom.chia = {
       enable = true;
       keyFile = config.age.secrets."chia/farmer.key".path;
+      plotDirectories = builtins.genList (i: "/mnt/d${toString i}/plots/contract-k32") 8;
     };
 
     ## Backups
