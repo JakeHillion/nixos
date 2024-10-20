@@ -20,13 +20,13 @@ in
       custom.locations.locations = {
         services = {
           authoritative_dns = [ "boron.cx.ts.hillion.co.uk" ];
-          downloads = "tywin.storage.ts.hillion.co.uk";
+          downloads = "";
           gitea = "boron.cx.ts.hillion.co.uk";
           homeassistant = "microserver.home.ts.hillion.co.uk";
           mastodon = "";
           matrix = "boron.cx.ts.hillion.co.uk";
           prometheus = "boron.cx.ts.hillion.co.uk";
-          restic = "tywin.storage.ts.hillion.co.uk";
+          restic = "";
           tang = [
             "li.pop.ts.hillion.co.uk"
             "microserver.home.ts.hillion.co.uk"
