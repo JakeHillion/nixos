@@ -26,7 +26,7 @@ in
           mastodon = "";
           matrix = "boron.cx.ts.hillion.co.uk";
           prometheus = "boron.cx.ts.hillion.co.uk";
-          restic = "";
+          restic = "phoenix.st.ts.hillion.co.uk";
           tang = [
             "li.pop.ts.hillion.co.uk"
             "microserver.home.ts.hillion.co.uk"

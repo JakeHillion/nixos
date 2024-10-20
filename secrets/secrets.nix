@@ -85,7 +85,7 @@ in
 
   # Backups Secrets
   "restic/128G.age".publicKeys = jake_users ++ [ ts.st.phoenix ts.cx.boron ts.home.microserver ];
-  "restic/1.6T.age".publicKeys = jake_users ++ [ ts.home.router ];
+  "restic/1.6T.age".publicKeys = jake_users ++ [ ts.st.phoenix ts.home.router ];
 
   "git/git_backups_ecdsa.age".publicKeys = jake_users ++ [ ts.st.phoenix ];
   "git/git_backups_remotes.age".publicKeys = jake_users ++ [ ts.st.phoenix ];

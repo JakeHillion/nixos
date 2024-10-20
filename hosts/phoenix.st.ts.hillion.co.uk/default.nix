@@ -71,6 +71,9 @@ in
       plotDirectories = builtins.genList (i: "/mnt/d${toString i}/plots/contract-k32") 8;
     };
 
+    ## Restic
+    custom.services.restic.path = "/${zpool_name}/backups/restic";
+
     ## Backups
     ### Git
     custom.backups.git = {
