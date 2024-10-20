@@ -70,11 +70,11 @@ in
   "resilio/encrypted/sync.age".publicKeys = jake_users ++ [ ];
 
   ## Read/Write Resilio Sync Secrets
-  "resilio/plain/dad.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ts.storage.tywin ts.cx.boron ];
-  "resilio/plain/joseph.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ts.storage.tywin ts.cx.boron ];
-  "resilio/plain/projects.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ts.storage.tywin ts.cx.boron ];
-  "resilio/plain/resources.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ts.storage.tywin ts.cx.boron ];
-  "resilio/plain/sync.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ts.storage.tywin ts.cx.boron ];
+  "resilio/plain/dad.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ts.cx.boron ];
+  "resilio/plain/joseph.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ts.cx.boron ];
+  "resilio/plain/projects.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ts.cx.boron ];
+  "resilio/plain/resources.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ts.cx.boron ];
+  "resilio/plain/sync.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ts.cx.boron ];
 
   # Matrix Secrets
   "matrix/matrix.hillion.co.uk/macaroon_secret_key.age".publicKeys = jake_users ++ [ ts.cx.boron ];
@@ -84,8 +84,8 @@ in
   "matrix/matrix.hillion.co.uk/syncv3_secret.age".publicKeys = jake_users ++ [ ts.cx.boron ];
 
   # Backups Secrets
-  "restic/128G.age".publicKeys = jake_users ++ [ ts.st.phoenix ts.storage.tywin ts.cx.boron ts.home.microserver ];
-  "restic/1.6T.age".publicKeys = jake_users ++ [ ts.storage.tywin ts.home.router ];
+  "restic/128G.age".publicKeys = jake_users ++ [ ts.st.phoenix ts.cx.boron ts.home.microserver ];
+  "restic/1.6T.age".publicKeys = jake_users ++ [ ts.home.router ];
 
   "git/git_backups_ecdsa.age".publicKeys = jake_users ++ [ ts.st.phoenix ];
   "git/git_backups_remotes.age".publicKeys = jake_users ++ [ ts.st.phoenix ];
@@ -97,10 +97,10 @@ in
   "mastodon/social.hillion.co.uk/mastodon_at_social.hillion.co.uk.age".publicKeys = jake_users ++ [ ];
 
   # Chia Secrets
-  "chia/farmer.key.age".publicKeys = jake_users ++ [ ts.st.phoenix ts.storage.tywin ];
+  "chia/farmer.key.age".publicKeys = jake_users ++ [ ts.st.phoenix ];
 
   # Storj Secrets
-  "storj/auth.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
+  "storj/auth.age".publicKeys = jake_users ++ [ ];
 
   # Version tracker secrets
   "version_tracker/ssh.key.age".publicKeys = jake_users ++ [ ts.cx.boron ];
@@ -110,10 +110,10 @@ in
   "mqtt/homeassistant.age".publicKeys = jake_users ++ [ ];
 
   # Wireguard Secrets
-  "wireguard/downloads.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
+  "wireguard/downloads.age".publicKeys = jake_users ++ [ ];
 
   # Deluge Secrets
-  "deluge/auth.age".publicKeys = jake_users ++ [ ts.storage.tywin ];
+  "deluge/auth.age".publicKeys = jake_users ++ [ ];
 
   # Gitea Secrets
   "gitea/lfs_jwt_secret.age".publicKeys = jake_users ++ [ ts.cx.boron ];
