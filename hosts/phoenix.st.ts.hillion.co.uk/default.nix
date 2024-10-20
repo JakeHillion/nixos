@@ -1,5 +1,8 @@
 { config, pkgs, lib, ... }:
 
+let
+  zpool_name = "practical-defiant-coffee";
+in
 {
   imports = [
     ./disko.nix
@@ -11,6 +14,7 @@
 
     networking.hostName = "phoenix";
     networking.domain = "st.ts.hillion.co.uk";
+    networking.hostId = "4d7241e9";
 
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
@@ -36,12 +40,23 @@
     custom.locations.autoServe = true;
     custom.impermanence.enable = true;
 
+    ## Filesystems
+    boot.supportedFilesystems = [ "zfs" ];
+    boot.zfs = {
+      forceImportRoot = false;
+      extraPools = [ zpool_name ];
+    };
+
     services.btrfs.autoScrub = {
       enable = true;
       interval = "Tue, 02:00";
       # All filesystems includes the BTRFS parts of all the hard drives. This
       # would take forever and is redundant as they get fully read regularly.
       fileSystems = [ "/data" ];
+    };
+    services.zfs.autoScrub = {
+      enable = true;
+      interval = "Wed, 02:00";
     };
 
     ## Chia
