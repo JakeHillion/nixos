@@ -20,7 +20,7 @@ in
       custom.locations.locations = {
         services = {
           authoritative_dns = [ "boron.cx.ts.hillion.co.uk" ];
-          downloads = "";
+          downloads = "phoenix.st.ts.hillion.co.uk";
           gitea = "boron.cx.ts.hillion.co.uk";
           homeassistant = "microserver.home.ts.hillion.co.uk";
           mastodon = "";

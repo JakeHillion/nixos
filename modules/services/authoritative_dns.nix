@@ -33,16 +33,19 @@ in
               86400 NS ns1.hillion.co.uk.
 
               ca                    21600 CNAME sodium.pop.ts.hillion.co.uk.
+              restic                21600 CNAME ${config.custom.locations.locations.services.restic}.
+              prometheus            21600 CNAME ${config.custom.locations.locations.services.prometheus}.
+
+              deluge.downloads      21600 CNAME ${config.custom.locations.locations.services.downloads}.
+              prowlarr.downloads    21600 CNAME ${config.custom.locations.locations.services.downloads}.
+              radarr.downloads      21600 CNAME ${config.custom.locations.locations.services.downloads}.
+              sonarr.downloads      21600 CNAME ${config.custom.locations.locations.services.downloads}.
+
+              graphs.router.home    21600 CNAME router.home.ts.hillion.co.uk.
+              zigbee2mqtt.home      21600 CNAME router.home.ts.hillion.co.uk.
+
               charlie.kvm           21600 CNAME router.home.ts.hillion.co.uk.
               hammer.kvm            21600 CNAME router.home.ts.hillion.co.uk.
-              deluge.downloads      21600 CNAME tywin.storage.ts.hillion.co.uk.
-              graphs.router.home    21600 CNAME router.home.ts.hillion.co.uk.
-              prowlarr.downloads    21600 CNAME tywin.storage.ts.hillion.co.uk.
-              radarr.downloads      21600 CNAME tywin.storage.ts.hillion.co.uk.
-              restic                21600 CNAME ${config.custom.locations.locations.services.restic}.
-              sonarr.downloads      21600 CNAME tywin.storage.ts.hillion.co.uk.
-              zigbee2mqtt.home      21600 CNAME router.home.ts.hillion.co.uk.
-              prometheus            21600 CNAME ${config.custom.locations.locations.services.prometheus}.
 
             '' + (makeRecords "A" config.custom.dns.authoritative.ipv4.uk.co.hillion.ts) + "\n\n" + (makeRecords "AAAA" config.custom.dns.authoritative.ipv6.uk.co.hillion.ts);
         };

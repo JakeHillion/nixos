@@ -78,6 +78,14 @@ in
       extraRepos = [ "https://gitea.hillion.co.uk/JakeHillion/nixos.git" ];
     };
 
+    ## Downloads
+    custom.services.downloads = {
+      metadataPath = "/${zpool_name}/downloads/metadata";
+      downloadCachePath = "/${zpool_name}/downloads/torrents";
+      filmsPath = "/${zpool_name}/media/films";
+      tvPath = "/${zpool_name}/media/tv";
+    };
+
     ## Networking
     networking = {
       interfaces.enp4s0.name = "eth0";

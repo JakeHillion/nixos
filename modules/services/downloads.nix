@@ -24,6 +24,12 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    age.secrets."wireguard/downloads".file = ../../secrets/wireguard/downloads.age;
+    age.secrets."deluge/auth" = {
+      file = ../../secrets/deluge/auth.age;
+      owner = "deluge";
+    };
+
     services.caddy = {
       enable = true;
 
@@ -45,12 +51,6 @@ in
 
 
     ## Wireguard
-    age.secrets."wireguard/downloads".file = ../../secrets/wireguard/downloads.age;
-    age.secrets."deluge/auth" = {
-      file = ../../secrets/deluge/auth.age;
-      owner = "deluge";
-    };
-
     networking.wireguard.interfaces."downloads" = {
       privateKeyFile = config.age.secrets."wireguard/downloads".path;
       ips = [ "10.2.0.2/32" ];

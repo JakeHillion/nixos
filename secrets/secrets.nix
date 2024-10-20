@@ -110,10 +110,10 @@ in
   "mqtt/homeassistant.age".publicKeys = jake_users ++ [ ];
 
   # Wireguard Secrets
-  "wireguard/downloads.age".publicKeys = jake_users ++ [ ];
+  "wireguard/downloads.age".publicKeys = jake_users ++ [ ts.st.phoenix ];
 
   # Deluge Secrets
-  "deluge/auth.age".publicKeys = jake_users ++ [ ];
+  "deluge/auth.age".publicKeys = jake_users ++ [ ts.st.phoenix ];
 
   # Gitea Secrets
   "gitea/lfs_jwt_secret.age".publicKeys = jake_users ++ [ ts.cx.boron ];
