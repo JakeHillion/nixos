@@ -115,6 +115,10 @@ in
       tvPath = "/${zpool_name}/media/tv";
     };
 
+    ## Plex
+    users.users.plex.extraGroups = [ "mediaaccess" ];
+    services.plex.enable = true;
+
     ## Networking
     networking = {
       interfaces.enp4s0.name = "eth0";
@@ -130,7 +134,9 @@ in
       allowedUDPPorts = lib.mkForce [ ];
       interfaces = {
         eth0 = {
-          allowedTCPPorts = lib.mkForce [ ];
+          allowedTCPPorts = lib.mkForce [
+            32400 # Plex
+          ];
           allowedUDPPorts = lib.mkForce [ ];
         };
       };
