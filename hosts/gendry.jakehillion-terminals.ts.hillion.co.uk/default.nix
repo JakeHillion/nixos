@@ -59,7 +59,6 @@
     ## Resilio
     custom.resilio.enable = true;
 
-    services.resilio.deviceName = "gendry.jakehillion-terminals";
     services.resilio.directoryRoot = "/data/sync";
     services.resilio.storagePath = "/data/sync/.sync";
 

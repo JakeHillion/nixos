@@ -106,7 +106,6 @@
         builtins.map (mkFolder) folderNames;
     };
     services.resilio = {
-      deviceName = "boron.cx";
       directoryRoot = "/data/sync";
       storagePath = "/data/sync/.sync";
     };

@@ -46,6 +46,8 @@ in
 
     services.resilio = {
       enable = true;
+      deviceName = lib.mkOverride 999 (lib.strings.concatStringsSep "." (lib.lists.take 2 (lib.strings.splitString "." config.networking.fqdnOrHostName)));
+
       sharedFolders =
         let
           mkFolder = name: secret: {
