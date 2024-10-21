@@ -105,10 +105,7 @@
         in
         builtins.map (mkFolder) folderNames;
     };
-    services.resilio = {
-      directoryRoot = "/data/sync";
-      storagePath = "/data/sync/.sync";
-    };
+    services.resilio.directoryRoot = "/data/sync";
 
     ## General usability
     ### Make podman available for dev tools such as act

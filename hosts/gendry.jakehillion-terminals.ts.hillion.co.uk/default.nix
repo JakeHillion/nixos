@@ -60,7 +60,6 @@
     custom.resilio.enable = true;
 
     services.resilio.directoryRoot = "/data/sync";
-    services.resilio.storagePath = "/data/sync/.sync";
 
     custom.resilio.folders =
       let

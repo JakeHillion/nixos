@@ -48,6 +48,8 @@ in
       enable = true;
       deviceName = lib.mkOverride 999 (lib.strings.concatStringsSep "." (lib.lists.take 2 (lib.strings.splitString "." config.networking.fqdnOrHostName)));
 
+      storagePath = lib.mkOverride 999 "${config.services.resilio.directoryRoot}/.sync";
+
       sharedFolders =
         let
           mkFolder = name: secret: {
