@@ -98,6 +98,8 @@
 
               ip protocol icmp counter accept comment "accept all ICMP types"
 
+              iifname "eth0" tcp dport 22 counter accept comment "SSH"
+
               iifname { "eth0", "cameras" } ct state { established, related } counter accept
               iifname { "eth0", "cameras" } drop
             }

@@ -14,6 +14,8 @@ in
         "jake".openssh.authorizedKeys.keys = [
           "sk-ecdsa-sha2-nistp256@openssh.com AAAAInNrLWVjZHNhLXNoYTItbmlzdHAyNTZAb3BlbnNzaC5jb20AAAAIbmlzdHAyNTYAAABBBBwJH4udKNvi9TjOBgkxpBBy7hzWqmP0lT5zE9neusCpQLIiDhr6KXYMPXWXdZDc18wH1OLi2+639dXOvp8V/wgAAAAEc3NoOg== jake@beryllium-keys"
 
+          "sk-ecdsa-sha2-nistp256@openssh.com AAAAInNrLWVjZHNhLXNoYTItbmlzdHAyNTZAb3BlbnNzaC5jb20AAAAIbmlzdHAyNTYAAABBBPPJtW19jOaUsjmxc0+QibaLJ3J3yxPXSXZXwKT0Ean6VeaH5G8zG+zjt1Y6sg2d52lHgrRfeVl1xrG/UGX8qWoAAAAEc3NoOg== jakehillion@jakehillion-mbp"
+
           "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBOt74U+rL+BMtAEjfu/Optg1D7Ly7U+TupRxd5u9kfN7oJnW4dJA25WRSr4dgQNq7MiMveoduBY/ky2s0c9gvIA= jake@jake-gentoo"
           "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBC0uKIvvvkzrOcS7AcamsQRFId+bqPwUC9IiUIsiH5oWX1ReiITOuEo+TL9YMII5RyyfJFeu2ZP9moNuZYlE7Bs= jake@jake-mbp"
 
