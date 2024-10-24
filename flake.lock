@@ -175,18 +175,15 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1729715795,
-        "narHash": "sha256-DCftJ5RrQaF2iYeuvn8LW1kA8EMBUZHQUneEDhxlcvY=",
-        "owner": "JakeHillion",
-        "repo": "nixpkgs",
-        "rev": "ba5d4d99265e9cdc9eebb08944bfb032e6ccbb64",
-        "type": "github"
+        "lastModified": 1729721951,
+        "narHash": "sha256-VcFLwgj0VAt9PI75oOqK3g1/5D1/blgJB2QkTGi4aHE=",
+        "rev": "809dda1c882659e1ec1194e38c9213d14b39448e",
+        "type": "tarball",
+        "url": "https://gitea.hillion.co.uk/api/v1/repos/JakeHillion/nixpkgs/archive/809dda1c882659e1ec1194e38c9213d14b39448e.tar.gz"
       },
       "original": {
-        "owner": "JakeHillion",
-        "ref": "nixos-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
+        "type": "tarball",
+        "url": "https://gitea.hillion.co.uk/JakeHillion/nixpkgs/archive/nixos-unstable.tar.gz"
       }
     },
     "root": {

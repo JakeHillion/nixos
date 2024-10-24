@@ -1,7 +1,7 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
-    nixpkgs-unstable.url = "github:JakeHillion/nixpkgs/nixos-unstable";
+    nixpkgs-unstable.url = "https://gitea.hillion.co.uk/JakeHillion/nixpkgs/archive/nixos-unstable.tar.gz";
 
     nixos-hardware.url = "github:nixos/nixos-hardware";
 
