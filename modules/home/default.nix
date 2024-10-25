@@ -3,6 +3,7 @@
 {
   imports = [
     ./git.nix
+    ./neovim.nix
     ./tmux/default.nix
   ];
 
@@ -27,6 +28,7 @@
 
     # Delegation
     custom.home.git.enable = true;
+    custom.home.neovim.enable = true;
     custom.home.tmux.enable = true;
   };
 }
