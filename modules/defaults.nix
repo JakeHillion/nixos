@@ -38,7 +38,6 @@
         git
         htop
         nix
-        sapling
         vim
       ];
       variables.EDITOR = "vim";

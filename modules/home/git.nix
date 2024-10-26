@@ -9,21 +9,28 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    home-manager.users.jake.programs.git = lib.mkIf (config.custom.user == "jake") {
-      enable = true;
-      extraConfig = {
-        user = {
-          email = "jake@hillion.co.uk";
-          name = "Jake Hillion";
-        };
-        pull = {
-          rebase = true;
-        };
-        merge = {
-          conflictstyle = "diff3";
-        };
-        init = {
-          defaultBranch = "main";
+    home-manager.users.jake.programs = {
+      sapling = lib.mkIf (config.custom.user == "jake") {
+        enable = true;
+        userName = "Jake Hillion";
+        userEmail = "jake@hillion.co.uk";
+      };
+
+      git = lib.mkIf (config.custom.user == "jake") {
+        enable = true;
+        userName = "Jake Hillion";
+        userEmail = "jake@hillion.co.uk";
+
+        extraConfig = {
+          pull = {
+            rebase = true;
+          };
+          merge = {
+            conflictstyle = "diff3";
+          };
+          init = {
+            defaultBranch = "main";
+          };
         };
       };
     };
