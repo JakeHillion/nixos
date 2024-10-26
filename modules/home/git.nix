@@ -14,6 +14,12 @@ in
         enable = true;
         userName = "Jake Hillion";
         userEmail = "jake@hillion.co.uk";
+
+        extraConfig = {
+          ui = {
+            "merge:interactive" = ":merge3";
+          };
+        };
       };
 
       git = lib.mkIf (config.custom.user == "jake") {
