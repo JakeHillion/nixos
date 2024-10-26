@@ -135,7 +135,9 @@ in
 
     networking.firewall = {
       trustedInterfaces = [ "tailscale0" ];
-      allowedTCPPorts = lib.mkForce [ ];
+      allowedTCPPorts = lib.mkForce [
+        22 # SSH
+      ];
       allowedUDPPorts = lib.mkForce [ ];
       interfaces = {
         eth0 = {
