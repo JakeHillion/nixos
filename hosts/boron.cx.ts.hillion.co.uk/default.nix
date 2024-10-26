@@ -48,6 +48,7 @@
 
       userExtraFiles.jake = [
         ".ssh/id_ecdsa"
+        ".ssh/id_rsa"
       ];
     };
     boot.initrd.postDeviceCommands = lib.mkAfter ''
