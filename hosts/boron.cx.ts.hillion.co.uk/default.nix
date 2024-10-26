@@ -45,6 +45,10 @@
     custom.impermanence = {
       enable = true;
       cache.enable = true;
+
+      userExtraFiles.jake = [
+        ".ssh/id_ecdsa"
+      ];
     };
     boot.initrd.postDeviceCommands = lib.mkAfter ''
       btrfs subvolume delete /cache/system
