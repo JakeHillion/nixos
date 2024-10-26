@@ -10,21 +10,25 @@
   options.custom.home.defaults = lib.mkEnableOption "home";
 
   config = lib.mkIf config.custom.home.defaults {
-    home-manager = {
-      users.root.home = {
-        stateVersion = "22.11";
+    home-manager =
+      let
+        stateVersion = if (builtins.compareVersions config.system.stateVersion "24.05") > 0 then config.system.stateVersion else "22.11";
+      in
+      {
+        users.root.home = {
+          inherit stateVersion;
 
-        ## Set an empty ZSH config and defer to the global one
-        file.".zshrc".text = "";
+          ## Set an empty ZSH config and defer to the global one
+          file.".zshrc".text = "";
+        };
+
+        users."${config.custom.user}".home = {
+          inherit stateVersion;
+
+          ## Set an empty ZSH config and defer to the global one
+          file.".zshrc".text = "";
+        };
       };
-
-      users."${config.custom.user}".home = {
-        stateVersion = "22.11";
-
-        ## Set an empty ZSH config and defer to the global one
-        file.".zshrc".text = "";
-      };
-    };
 
     # Delegation
     custom.home.git.enable = true;
