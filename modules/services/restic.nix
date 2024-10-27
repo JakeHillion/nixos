@@ -15,6 +15,51 @@ in
     repos = lib.mkOption {
       readOnly = true;
 
+      type = with lib.types; attrsOf (submodule {
+        options = {
+          path = lib.mkOption {
+            default = null;
+            type = nullOr str;
+          };
+          passwordFile = lib.mkOption {
+            default = null;
+            type = nullOr str;
+          };
+          environmentFile = lib.mkOption {
+            default = null;
+            type = nullOr str;
+          };
+
+          forgetConfig = lib.mkOption {
+            default = null;
+            type = nullOr (submodule {
+              options = {
+                timerConfig = lib.mkOption {
+                  type = attrs;
+                };
+                opts = lib.mkOption {
+                  type = listOf str;
+                };
+              };
+            });
+          };
+
+          clones = lib.mkOption {
+            default = [ ];
+            type = listOf (submodule {
+              options = {
+                timerConfig = lib.mkOption {
+                  type = attrs;
+                };
+                repo = lib.mkOption {
+                  type = str;
+                };
+              };
+            });
+          };
+        };
+      });
+
       default = {
         "128G" = {
           path = "${cfg.path}/128G";
@@ -33,6 +78,17 @@ in
               "--keep-within-monthly 24m"
             ];
           };
+
+          clones = [
+            {
+              repo = "128G-wasabi";
+              timerConfig = {
+                OnBootSec = "30m";
+                OnUnitInactiveSec = "60m";
+                RandomizedDelaySec = "20m";
+              };
+            }
+          ];
         };
 
         "1.6T" = {
@@ -50,6 +106,24 @@ in
               "--keep-within-monthly 18m"
             ];
           };
+
+          clones = [
+            {
+              repo = "1.6T-wasabi";
+              timerConfig = {
+                OnBootSec = "30m";
+                OnUnitInactiveSec = "60m";
+                RandomizedDelaySec = "20m";
+              };
+            }
+          ];
+        };
+
+        "128G-wasabi" = {
+          environmentFile = config.age.secrets."restic/128G-wasabi.env".path;
+        };
+        "1.6T-wasabi" = {
+          environmentFile = config.age.secrets."restic/1.6T-wasabi.env".path;
         };
       };
     };
@@ -62,12 +136,14 @@ in
         owner = "restic";
         group = "restic";
       };
+      "restic/128G-wasabi.env".file = ../../secrets/restic/128G-wasabi.env.age;
 
       "restic/1.6T.key" = {
         file = ../../secrets/restic/1.6T.age;
         owner = "restic";
         group = "restic";
       };
+      "restic/1.6T-wasabi.env".file = ../../secrets/restic/1.6T-wasabi.env.age;
     };
 
     services.restic.server = {
@@ -92,7 +168,7 @@ in
 
     systemd =
       let
-        mkRepoInfo = repo_cfg: {
+        mkRepoInfo = repo_cfg: (if (repo_cfg.passwordFile != null) then {
           serviceConfig.LoadCredential = [
             "password_file:${repo_cfg.passwordFile}"
           ];
@@ -100,28 +176,85 @@ in
             RESTIC_REPOSITORY = repo_cfg.path;
             RESTIC_PASSWORD_FILE = "%d/password_file";
           };
+        } else {
+          serviceConfig.EnvironmentFile = repo_cfg.environmentFile;
+        });
+
+        mkForgetService = name: repo_cfg:
+          if (repo_cfg.forgetConfig != null) then
+            ({
+              description = "Restic forget service for ${name}";
+
+              serviceConfig = {
+                User = "restic";
+                Group = "restic";
+              };
+
+              script = ''
+                set -xe
+
+                ${pkgs.restic}/bin/restic forget ${lib.strings.concatStringsSep " " repo_cfg.forgetConfig.opts} \
+                  --prune \
+                  --retry-lock 30m
+              '';
+            } // (mkRepoInfo repo_cfg)) else { };
+        mkForgetTimer = repo_cfg:
+          if (repo_cfg.forgetConfig != null) then {
+            wantedBy = [ "timers.target" ];
+            timerConfig = repo_cfg.forgetConfig.timerConfig;
+          } else { };
+
+        mkCloneService = from_repo: clone_cfg: to_repo: {
+          name = "restic-clone-${from_repo.name}-${to_repo.name}";
+          value = lib.mkMerge [
+            {
+              description = "Restic copy from ${from_repo.name} to ${to_repo.name}";
+
+              serviceConfig = {
+                User = "restic";
+                Group = "restic";
+
+                LoadCredential = [
+                  "from_password_file:${from_repo.cfg.passwordFile}"
+                ];
+              };
+
+              environment = {
+                RESTIC_FROM_PASSWORD_FILE = "%d/from_password_file";
+              };
+
+              script = ''
+                set -xe
+
+                ${pkgs.restic}/bin/restic copy \
+                    --from-repo ${from_repo.cfg.path} \
+                    --retry-lock 30m
+              '';
+            }
+            (mkRepoInfo to_repo.cfg)
+          ];
         };
-
-        mkForgetService = name: repo_cfg: ({
-          description = "Restic remote copy service ${name}";
-
-          serviceConfig = {
-            User = "restic";
-            Group = "restic";
+        mkCloneTimer = from_repo: clone_cfg: to_repo: {
+          name = "restic-clone-${from_repo.name}-${to_repo.name}";
+          value = {
+            wantedBy = [ "timers.target" ];
+            timerConfig = clone_cfg.timerConfig;
           };
-
-          script = ''
-            set -xe
-
-            ${pkgs.restic}/bin/restic forget ${lib.strings.concatStringsSep " " repo_cfg.forgetConfig.opts} \
-              --prune \
-              --retry-lock 30m
-          '';
-        } // (mkRepoInfo repo_cfg));
-        mkForgetTimer = repo_cfg: {
-          wantedBy = [ "timers.target" ];
-          timerConfig = repo_cfg.forgetConfig.timerConfig;
         };
+
+        mapClones = fn: builtins.listToAttrs (lib.lists.flatten (lib.mapAttrsToList
+          (
+            from_repo_name: from_repo_cfg: (builtins.map
+              (
+                clone_cfg: (fn
+                  { name = from_repo_name; cfg = from_repo_cfg; }
+                  clone_cfg
+                  { name = clone_cfg.repo; cfg = cfg.repos."${clone_cfg.repo}"; }
+                )
+              )
+              from_repo_cfg.clones)
+          )
+          cfg.repos));
 
       in
       {
@@ -137,9 +270,12 @@ in
               RestartPreventExitStatus = lib.mkForce 0;
             };
           };
-        } // lib.mapAttrs' (name: value: lib.attrsets.nameValuePair ("restic-forget-" + name) (mkForgetService name value)) cfg.repos;
+        }
+        // lib.mapAttrs' (name: value: lib.attrsets.nameValuePair ("restic-forget-" + name) (mkForgetService name value)) cfg.repos
+        // mapClones mkCloneService;
 
-        timers = lib.mapAttrs' (name: value: lib.attrsets.nameValuePair ("restic-forget-" + name) (mkForgetTimer value)) cfg.repos;
+        timers = lib.mapAttrs' (name: value: lib.attrsets.nameValuePair ("restic-forget-" + name) (mkForgetTimer value)) cfg.repos
+          // mapClones mkCloneTimer;
       };
   };
 }
