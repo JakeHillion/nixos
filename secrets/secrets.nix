@@ -46,6 +46,7 @@ in
     ts.terminals.jakehillion.gendry
     ts.home.router
     ts.lt.be
+    ts.st.phoenix
   ];
 
   # Tailscale Pre-Auth Keys

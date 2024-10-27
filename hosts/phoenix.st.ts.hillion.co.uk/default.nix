@@ -45,6 +45,8 @@ in
     custom.locations.autoServe = true;
     custom.impermanence.enable = true;
 
+    custom.users.jake.password = true; # TODO: remove me once booting has stabilised
+
     ## Filesystems
     boot.supportedFilesystems = [ "zfs" ];
     boot.zfs = {
