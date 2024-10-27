@@ -88,9 +88,11 @@ in
   # Backups Secrets
   "restic/128G.age".publicKeys = jake_users ++ [ ts.st.phoenix ts.cx.boron ts.home.microserver ];
   "restic/128G-wasabi.env.age".publicKeys = jake_users ++ [ ts.st.phoenix ];
+  "restic/128G-backblaze.env.age".publicKeys = jake_users ++ [ ts.st.phoenix ];
 
   "restic/1.6T.age".publicKeys = jake_users ++ [ ts.st.phoenix ts.home.router ];
   "restic/1.6T-wasabi.env.age".publicKeys = jake_users ++ [ ts.st.phoenix ];
+  "restic/1.6T-backblaze.env.age".publicKeys = jake_users ++ [ ts.st.phoenix ];
 
   "git/git_backups_ecdsa.age".publicKeys = jake_users ++ [ ts.st.phoenix ];
   "git/git_backups_remotes.age".publicKeys = jake_users ++ [ ts.st.phoenix ];
