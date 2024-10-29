@@ -56,7 +56,6 @@ in
                 };
                 storage = {
                   theon = "100.104.142.22";
-                  tywin = "100.115.31.91";
                 };
               };
             };
@@ -86,7 +85,6 @@ in
                 };
                 storage = {
                   theon = "fd7a:115c:a1e0::4aa8:8e16";
-                  tywin = "fd7a:115c:a1e0:ab12:4843:cd96:6273:1f5b";
                 };
               };
             };

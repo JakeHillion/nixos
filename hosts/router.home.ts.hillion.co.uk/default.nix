@@ -216,12 +216,12 @@
                     data = "10.64.50.1, 1.1.1.1, 8.8.8.8";
                   }
                 ];
-                reservations = lib.lists.imap0
-                  (i: el: {
+                reservations = lib.lists.remove null (lib.lists.imap0
+                  (i: el: if el == null then null else {
                     ip-address = "10.64.50.${toString (20 + i)}";
                     inherit (el) hw-address hostname;
                   }) [
-                  { hostname = "tywin"; hw-address = "c8:7f:54:6d:e1:03"; }
+                  null
                   { hostname = "microserver"; hw-address = "e4:5f:01:b4:58:95"; }
                   { hostname = "theon"; hw-address = "00:1e:06:49:06:1e"; }
                   { hostname = "server-switch"; hw-address = "84:d8:1b:9d:0d:85"; }
@@ -229,7 +229,7 @@
                   { hostname = "sodium"; hw-address = "d8:3a:dd:c3:d6:2b"; }
                   { hostname = "gendry"; hw-address = "18:c0:4d:35:60:1e"; }
                   { hostname = "phoenix"; hw-address = "a8:b8:e0:04:17:a5"; }
-                ];
+                ]);
               }
               {
                 subnet = "10.239.19.0/24";
