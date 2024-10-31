@@ -22,11 +22,18 @@
           file.".zshrc".text = "";
         };
 
-        users."${config.custom.user}".home = {
-          inherit stateVersion;
+        users."${config.custom.user}" = {
+          home = {
+            inherit stateVersion;
+          };
 
-          ## Set an empty ZSH config and defer to the global one
-          file.".zshrc".text = "";
+          services = {
+            ssh-agent.enable = true;
+          };
+
+          programs = {
+            zsh.enable = true;
+          };
         };
       };
 

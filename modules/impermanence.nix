@@ -95,9 +95,10 @@ in
                 files = cfg.userExtraFiles.${x} or [ ];
                 directories = cfg.userExtraDirs.${x} or [ ];
               };
-              file.".zshrc".text = lib.mkForce ''
-                HISTFILE=/data/users/${x}/.zsh_history
-              '';
+            };
+
+            programs = {
+              zsh.history.path = lib.mkOverride 999 "/data/users/${x}/.zsh_history";
             };
           };
         });
