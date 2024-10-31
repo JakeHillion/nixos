@@ -85,23 +85,29 @@ in
 
     home-manager.users =
       let
-        mkUser = (x: {
-          name = x;
-          value = {
-            home = {
-              persistence."/data/users/${x}" = {
-                allowOther = false;
+        mkUser = (x:
+          let
+            homeCfg = config.home-manager.users."${x}";
+          in
+          {
+            name = x;
+            value = {
+              home = {
+                persistence."/data/users/${x}" = {
+                  allowOther = false;
 
-                files = cfg.userExtraFiles.${x} or [ ];
-                directories = cfg.userExtraDirs.${x} or [ ];
+                  files = cfg.userExtraFiles.${x} or [ ];
+                  directories = cfg.userExtraDirs.${x} or [ ];
+                };
+
+                sessionVariables = lib.attrsets.optionalAttrs homeCfg.programs.zoxide.enable { _ZO_DATA_DIR = "/data/users/${x}/.local/share/zoxide"; };
+              };
+
+              programs = {
+                zsh.history.path = lib.mkOverride 999 "/data/users/${x}/.zsh_history";
               };
             };
-
-            programs = {
-              zsh.history.path = lib.mkOverride 999 "/data/users/${x}/.zsh_history";
-            };
-          };
-        });
+          });
       in
       builtins.listToAttrs (builtins.map mkUser cfg.users);
 
