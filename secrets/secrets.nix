@@ -25,11 +25,12 @@ let
               li = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHQWgcDFL9UZBDKHPiEGepT1Qsc4gz3Pee0/XVHJ6V6u root@li";
               sodium = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDQmG7v/XrinPmkTU2eIoISuU3+hoV4h60Bmbwd+xDjr root@sodium";
             };
-            terminals = { jakehillion = { gendry = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPXM5aDvNv4MTITXAvJWSS2yvr/mbxJE31tgwJtcl38c root@gendry"; }; };
+            rig = { merlin = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN99UrXe3puoW0Jr1bSPRHL6ImLZD9A9sXeE54JFggIC root@merlin"; };
             st = { phoenix = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBPQcp9MzabvwbViNmILVNfipMUnwV+5okRfhOuV7+Mt root@phoenix"; };
             storage = {
               theon = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN59psLVu3/sQORA4x3p8H3ei8MCQlcwX5T+k3kBeBMf root@theon";
             };
+            terminals = { jakehillion = { gendry = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPXM5aDvNv4MTITXAvJWSS2yvr/mbxJE31tgwJtcl38c root@gendry"; }; };
           };
         };
       };
@@ -42,10 +43,11 @@ in
 {
   # User Passwords
   "passwords/jake.age".publicKeys = jake_users ++ [
-    ts.terminals.jakehillion.gendry
     ts.home.router
     ts.lt.be
+    ts.rig.merlin
     ts.st.phoenix
+    ts.terminals.jakehillion.gendry
   ];
 
   # Tailscale Pre-Auth Keys
@@ -53,6 +55,7 @@ in
   "tailscale/boron.cx.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.cx.boron ];
   "tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ];
   "tailscale/li.pop.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.pop.li ];
+  "tailscale/merlin.rig.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.rig.merlin ];
   "tailscale/microserver.home.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.home.microserver ];
   "tailscale/phoenix.st.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.st.phoenix ];
   "tailscale/router.home.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.home.router ];

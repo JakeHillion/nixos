@@ -229,6 +229,7 @@
                   { hostname = "sodium"; hw-address = "d8:3a:dd:c3:d6:2b"; }
                   { hostname = "gendry"; hw-address = "18:c0:4d:35:60:1e"; }
                   { hostname = "phoenix"; hw-address = "a8:b8:e0:04:17:a5"; }
+                  { hostname = "merlin"; hw-address = "b0:41:6f:13:20:14"; }
                 ]);
               }
               {
