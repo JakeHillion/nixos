@@ -47,6 +47,14 @@ in
 
     custom.users.jake.password = true; # TODO: remove me once booting has stabilised
 
+    ## Hardware optimisations
+    nix.settings.system-features = [ "nixos-test" "benchmark" "big-parallel" "kvm" "gccarch-znver4" ];
+    nixpkgs.hostPlatform = {
+      gcc.arch = "znver4";
+      gcc.tune = "znver4";
+      system = builtins.readFile ./system;
+    };
+
     ## Filesystems
     boot.supportedFilesystems = [ "zfs" ];
     boot.zfs = {
