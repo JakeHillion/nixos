@@ -30,6 +30,14 @@
 
     custom.defaults = true;
 
+    ## Hardware optimisations
+    nix.settings.system-features = [ "nixos-test" "benchmark" "big-parallel" "kvm" "gccarch-znver4" ];
+    nixpkgs.hostPlatform = {
+      gcc.arch = "znver4";
+      gcc.tune = "znver4";
+      system = builtins.readFile ./system;
+    };
+
     ## Kernel
     ### Explicitly use the latest kernel at time of writing because the LTS
     ### kernels available in NixOS do not seem to support this server's very
