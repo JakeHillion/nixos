@@ -50,6 +50,7 @@ in
                 pop = {
                   li = "100.106.87.35";
                   sodium = "100.87.188.4";
+                  stinger = "100.117.89.126";
                 };
                 rig = {
                   merlin = "100.69.181.56";
@@ -82,6 +83,7 @@ in
                 pop = {
                   li = "fd7a:115c:a1e0::e701:5723";
                   sodium = "fd7a:115c:a1e0::3701:bc04";
+                  stinger = "fd7a:115c:a1e0::8401:597e";
                 };
                 rig = {
                   merlin = "fd7a:115c:a1e0::8d01:b538";
