@@ -4,6 +4,7 @@
   options.custom.defaults = lib.mkEnableOption "defaults";
 
   config = lib.mkIf config.custom.defaults {
+    hardware.enableAllFirmware = true;
     nix = {
       settings.experimental-features = [ "nix-command" "flakes" ];
       settings = {
