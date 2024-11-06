@@ -42,6 +42,12 @@
     # Networking
     networking = {
       interfaces.enp1s0.name = "eth0";
+      vlans = {
+        iot = {
+          id = 2;
+          interface = "eth0";
+        };
+      };
     };
     networking.nameservers = lib.mkForce [ ]; # Trust the DHCP nameservers
 

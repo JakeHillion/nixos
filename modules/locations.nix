@@ -22,7 +22,7 @@ in
           authoritative_dns = [ "boron.cx.ts.hillion.co.uk" ];
           downloads = "phoenix.st.ts.hillion.co.uk";
           gitea = "boron.cx.ts.hillion.co.uk";
-          homeassistant = "microserver.home.ts.hillion.co.uk";
+          homeassistant = "stinger.pop.ts.hillion.co.uk";
           mastodon = "";
           matrix = "boron.cx.ts.hillion.co.uk";
           prometheus = "boron.cx.ts.hillion.co.uk";

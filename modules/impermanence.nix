@@ -54,6 +54,10 @@ in
       dataDir = lib.mkOverride 999 "/data/plex";
     };
 
+    services.home-assistant = lib.mkIf config.services.home-assistant.enable {
+      configDir = lib.mkOverride 999 "/data/home-assistant";
+    };
+
     environment.persistence = lib.mkMerge [
       {
         "${cfg.base}/system" = {

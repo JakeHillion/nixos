@@ -89,11 +89,11 @@ in
   "matrix/matrix.hillion.co.uk/syncv3_secret.age".publicKeys = jake_users ++ [ ts.cx.boron ];
 
   # Backups Secrets
-  "restic/128G.age".publicKeys = jake_users ++ [ ts.st.phoenix ts.cx.boron ts.home.microserver ];
+  "restic/128G.age".publicKeys = jake_users ++ [ ts.st.phoenix ts.cx.boron ts.pop.stinger ];
   "restic/128G-wasabi.env.age".publicKeys = jake_users ++ [ ts.st.phoenix ];
   "restic/128G-backblaze.env.age".publicKeys = jake_users ++ [ ts.st.phoenix ];
 
-  "restic/1.6T.age".publicKeys = jake_users ++ [ ts.st.phoenix ts.home.router ts.home.microserver ];
+  "restic/1.6T.age".publicKeys = jake_users ++ [ ts.st.phoenix ts.home.router ts.pop.stinger ];
   "restic/1.6T-wasabi.env.age".publicKeys = jake_users ++ [ ts.st.phoenix ];
   "restic/1.6T-backblaze.env.age".publicKeys = jake_users ++ [ ts.st.phoenix ];
 
@@ -135,7 +135,7 @@ in
   "gitea/actions/boron.age".publicKeys = jake_users ++ [ ts.cx.boron ];
 
   # HomeAssistant Secrets
-  "homeassistant/secrets.yaml.age".publicKeys = jake_users ++ [ ts.home.microserver ];
+  "homeassistant/secrets.yaml.age".publicKeys = jake_users ++ [ ts.pop.stinger ];
 
   # Web certificates
   "certs/hillion.co.uk.pem.age".publicKeys = jake_users ++ [ ts.cx.boron ];
