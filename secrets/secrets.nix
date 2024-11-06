@@ -93,7 +93,7 @@ in
   "restic/128G-wasabi.env.age".publicKeys = jake_users ++ [ ts.st.phoenix ];
   "restic/128G-backblaze.env.age".publicKeys = jake_users ++ [ ts.st.phoenix ];
 
-  "restic/1.6T.age".publicKeys = jake_users ++ [ ts.st.phoenix ts.home.router ];
+  "restic/1.6T.age".publicKeys = jake_users ++ [ ts.st.phoenix ts.home.router ts.home.microserver ];
   "restic/1.6T-wasabi.env.age".publicKeys = jake_users ++ [ ts.st.phoenix ];
   "restic/1.6T-backblaze.env.age".publicKeys = jake_users ++ [ ts.st.phoenix ];
 
