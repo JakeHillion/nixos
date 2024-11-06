@@ -39,6 +39,10 @@
     custom.locations.autoServe = true;
     custom.impermanence.enable = true;
 
+    hardware = {
+      bluetooth.enable = true;
+    };
+
     # Networking
     networking = {
       interfaces.enp1s0.name = "eth0";
