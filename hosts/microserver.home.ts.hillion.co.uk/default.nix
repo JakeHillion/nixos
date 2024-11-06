@@ -45,12 +45,9 @@
     networking.firewall.interfaces = {
       "eth0" = {
         allowedUDPPorts = [
-          5353 # HomeKit
         ];
         allowedTCPPorts = [
-          1400 # HA Sonos
           7654 # Tang
-          21063 # HomeKit
         ];
       };
     };

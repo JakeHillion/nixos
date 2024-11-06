@@ -63,8 +63,13 @@
       allowedUDPPorts = lib.mkForce [ ];
       interfaces = {
         eth0 = {
-          allowedTCPPorts = lib.mkForce [ ];
-          allowedUDPPorts = lib.mkForce [ ];
+          allowedTCPPorts = lib.mkForce [
+            1400 # HA Sonos
+            21063 # HomeKit
+          ];
+          allowedUDPPorts = lib.mkForce [
+            5353 # HomeKit
+          ];
         };
       };
     };
