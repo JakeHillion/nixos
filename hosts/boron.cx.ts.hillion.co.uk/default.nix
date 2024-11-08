@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, nixpkgs-unstable, ... }:
 
 {
   imports = [
@@ -123,6 +123,15 @@
       };
     };
     users.users.jake.extraGroups = [ "podman" ];
+
+    ## Ollama
+    services.ollama = {
+      enable = true;
+      package = nixpkgs-unstable.legacyPackages.x86_64-linux.ollama;
+
+      models = "/data/ollama/models";
+      writablePaths = [ "/data/ollama/models" ];
+    };
 
     ## Networking
     boot.kernel.sysctl = {
