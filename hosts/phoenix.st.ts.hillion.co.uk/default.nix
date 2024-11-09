@@ -132,6 +132,13 @@ in
       interfaces.enp5s0.name = "eth1";
       interfaces.enp6s0.name = "eth2";
       interfaces.enp8s0.name = "eth3";
+
+      vlans = {
+        cameras = {
+          id = 3;
+          interface = "eth0";
+        };
+      };
     };
     networking.nameservers = lib.mkForce [ ]; # Trust the DHCP nameservers
 

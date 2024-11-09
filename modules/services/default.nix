@@ -4,6 +4,7 @@
   imports = [
     ./authoritative_dns.nix
     ./downloads.nix
+    ./frigate.nix
     ./gitea/default.nix
     ./homeassistant.nix
     ./isponsorblocktv.nix

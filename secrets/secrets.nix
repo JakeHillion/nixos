@@ -143,4 +143,7 @@ in
   "certs/gitea.hillion.co.uk.pem.age".publicKeys = jake_users ++ [ ts.cx.boron ];
   "certs/homeassistant.hillion.co.uk.pem.age".publicKeys = jake_users ++ [ ts.cx.boron ];
   "certs/links.hillion.co.uk.pem.age".publicKeys = jake_users ++ [ ts.cx.boron ];
+
+  # Frigate secrets
+  "frigate/secrets.env.age".publicKeys = jake_users ++ [ ts.st.phoenix ];
 }

@@ -39,15 +39,18 @@ in
 
     services = {
       openssh.hostKeys = [
-        { path = "/data/system/etc/ssh/ssh_host_ed25519_key"; type = "ed25519"; }
-        { path = "/data/system/etc/ssh/ssh_host_rsa_key"; type = "rsa"; bits = 4096; }
+        { path = "${cfg.base}/system/etc/ssh/ssh_host_ed25519_key"; type = "ed25519"; }
+        { path = "${cfg.base}/system/etc/ssh/ssh_host_rsa_key"; type = "rsa"; bits = 4096; }
       ];
       matrix-synapse.dataDir = "${cfg.base}/system/var/lib/matrix-synapse";
       gitea.stateDir = "${cfg.base}/system/var/lib/gitea";
     };
 
     custom.chia = lib.mkIf config.custom.chia.enable {
-      path = lib.mkOverride 999 "/data/chia";
+      path = lib.mkOverride 999 "${cfg.base}/chia";
+    };
+    custom.services.frigate = lib.mkIf config.custom.services.frigate.enable {
+      dataPath = lib.mkOverride 999 "${cfg.base}/frigate";
     };
 
     services.resilio = lib.mkIf config.services.resilio.enable {
@@ -55,7 +58,7 @@ in
     };
 
     services.plex = lib.mkIf config.services.plex.enable {
-      dataDir = lib.mkOverride 999 "/data/plex";
+      dataDir = lib.mkOverride 999 "${cfg.base}/plex";
     };
 
     services.home-assistant = lib.mkIf config.services.home-assistant.enable {
@@ -101,18 +104,18 @@ in
             name = x;
             value = {
               home = {
-                persistence."/data/users/${x}" = {
+                persistence."${cfg.base}/users/${x}" = {
                   allowOther = false;
 
                   files = cfg.userExtraFiles.${x} or [ ];
                   directories = cfg.userExtraDirs.${x} or [ ];
                 };
 
-                sessionVariables = lib.attrsets.optionalAttrs homeCfg.programs.zoxide.enable { _ZO_DATA_DIR = "/data/users/${x}/.local/share/zoxide"; };
+                sessionVariables = lib.attrsets.optionalAttrs homeCfg.programs.zoxide.enable { _ZO_DATA_DIR = "${cfg.base}/users/${x}/.local/share/zoxide"; };
               };
 
               programs = {
-                zsh.history.path = lib.mkOverride 999 "/data/users/${x}/.zsh_history";
+                zsh.history.path = lib.mkOverride 999 "${cfg.base}/users/${x}/.zsh_history";
               };
             };
           });
@@ -122,8 +125,8 @@ in
     systemd.tmpfiles.rules = lib.lists.flatten (builtins.map
       (user:
         let details = config.users.users.${user}; in [
-          "d /data/users/${user} 0700 ${user} ${details.group} - -"
-          "L ${details.home}/local - ${user} ${details.group} - /data/users/${user}"
+          "d ${cfg.base}/users/${user} 0700 ${user} ${details.group} - -"
+          "L ${details.home}/local - ${user} ${details.group} - ${cfg.base}/users/${user}"
         ])
       cfg.users);
   };

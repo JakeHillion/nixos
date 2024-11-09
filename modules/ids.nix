@@ -10,6 +10,7 @@
       node-exporter = 188;
       step-ca = 198;
       isponsorblocktv = 199;
+      frigate = 200;
 
       ## Consistent People
       jake = 1000;
@@ -23,6 +24,7 @@
       node-exporter = 188;
       step-ca = 198;
       isponsorblocktv = 199;
+      frigate = 200;
 
       ## Consistent Groups
       mediaaccess = 1200;

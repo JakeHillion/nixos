@@ -21,6 +21,7 @@ in
         services = {
           authoritative_dns = [ "boron.cx.ts.hillion.co.uk" ];
           downloads = "phoenix.st.ts.hillion.co.uk";
+          frigate = "phoenix.st.ts.hillion.co.uk";
           gitea = "boron.cx.ts.hillion.co.uk";
           homeassistant = "stinger.pop.ts.hillion.co.uk";
           mastodon = "";
