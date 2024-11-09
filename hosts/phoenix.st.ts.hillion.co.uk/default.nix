@@ -90,7 +90,7 @@ in
         in
         builtins.map (mkFolder) folderNames;
     };
-    services.resilio.directoryRoot = "/${zpool_name}/users/jake/sync";
+    services.resilio.directoryRoot = "/${zpool_name}/sync";
 
     ## Chia
     age.secrets."chia/farmer.key" = {

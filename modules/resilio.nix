@@ -1,9 +1,12 @@
-{ pkgs, lib, config, ... }:
+{ pkgs, lib, config, nixpkgs-unstable, ... }:
 
 let
   cfg = config.custom.resilio;
 in
 {
+  imports = [ "${nixpkgs-unstable}/nixos/modules/services/networking/resilio.nix" ];
+  disabledModules = [ "services/networking/resilio.nix" ];
+
   options.custom.resilio = {
     enable = lib.mkEnableOption "resilio";
 
