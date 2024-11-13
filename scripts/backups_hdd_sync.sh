@@ -7,7 +7,7 @@ HOST="restic.ts.hillion.co.uk"
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd "$DIR"
 
-rsync -ar --no-perms --delete-after --rsync-path='sudo -u restic rsync' --progress $HOST:/practical-defiant-coffee/backups/restic/ restic
+rsync -ar --no-perms --delete-after --rsync-path='sudo -u restic rsync' --progress --exclude .cache $HOST:/practical-defiant-coffee/backups/restic/ restic
 
 echo 'checking 128G'
 restic -r restic/128G check --read-data
