@@ -83,7 +83,13 @@ in
         owner = "rslsync";
         group = "rslsync";
       };
-      services.restic.backups."resilio" = {
+      age.secrets."resilio/restic/1.6T.key" = {
+        file = ../secrets/restic/1.6T.age;
+        owner = "rslsync";
+        group = "rslsync";
+      };
+
+      services.restic.backups."resilio-128G" = {
         repository = "rest:https://restic.ts.hillion.co.uk/128G";
         user = "rslsync";
         passwordFile = config.age.secrets."resilio/restic/128G.key".path;
@@ -99,11 +105,25 @@ in
           "${config.services.resilio.directoryRoot}/.sync"
           "${config.services.resilio.directoryRoot}/*/.sync"
 
-          "${config.services.resilio.directoryRoot}/resources/media/films"
-          "${config.services.resilio.directoryRoot}/resources/media/iso"
-          "${config.services.resilio.directoryRoot}/resources/media/tv"
-
           "${config.services.resilio.directoryRoot}/dad/media"
+          "${config.services.resilio.directoryRoot}/resources/media"
+        ];
+      };
+      services.restic.backups."resilio-1.6T" = {
+        repository = "rest:https://restic.ts.hillion.co.uk/1.6T";
+        user = "rslsync";
+        passwordFile = config.age.secrets."resilio/restic/1.6T.key".path;
+
+        timerConfig = {
+          OnBootSec = "30m";
+          OnUnitInactiveSec = "24h";
+          RandomizedDelaySec = "1h";
+        };
+
+        paths = [
+          "${config.services.resilio.directoryRoot}/resources/media/audiobooks"
+          "${config.services.resilio.directoryRoot}/resources/media/home"
+          "${config.services.resilio.directoryRoot}/resources/media/iso"
         ];
       };
     })
