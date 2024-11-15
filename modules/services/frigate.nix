@@ -64,7 +64,7 @@ in
         "/run/nginx-frigate" = { hostPath = "/run/nginx-frigate"; isReadOnly = false; };
 
         "/var/lib/frigate" = { hostPath = cfg.dataPath; isReadOnly = false; };
-        "/media/frigate/recordings" = { hostPath = cfg.recordingsPath; isReadOnly = false; };
+        "/var/lib/frigate/recordings" = { hostPath = cfg.recordingsPath; isReadOnly = false; };
       };
 
       config = (hostConfig: { config, pkgs, ... }: {
@@ -85,6 +85,7 @@ in
           users.users.frigate.uid = hostConfig.ids.uids.frigate;
           users.groups.frigate.gid = hostConfig.ids.gids.frigate;
 
+          users.users.nginx.extraGroups = [ "frigate" ];
           services.nginx.virtualHosts."frigate.ts.hillion.co.uk".listen = lib.mkForce [
             { addr = "unix:/run/nginx-frigate/nginx.sock"; }
           ];
