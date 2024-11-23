@@ -118,15 +118,6 @@ in
         };
       };
 
-      matrix-sliding-sync = {
-        enable = true;
-        environmentFile = config.age.secrets."matrix/matrix.hillion.co.uk/syncv3_secret".path;
-        settings = {
-          SYNCV3_SERVER = "https://matrix.hillion.co.uk";
-          SYNCV3_BINDADDR = "[::]:8009";
-        };
-      };
-
       heisenbridge = lib.mkIf cfg.heisenbridge {
         enable = true;
         owner = "@jake:hillion.co.uk";

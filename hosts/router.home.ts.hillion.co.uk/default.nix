@@ -197,6 +197,7 @@
 
             subnet4 = [
               {
+                id = 1;
                 subnet = "10.64.50.0/24";
                 interface = "eth1";
                 pools = [{
@@ -234,6 +235,7 @@
                 ]);
               }
               {
+                id = 2;
                 subnet = "10.239.19.0/24";
                 interface = "eth2";
                 pools = [{
@@ -287,6 +289,7 @@
                 ];
               }
               {
+                id = 3;
                 subnet = "10.133.145.0/24";
                 interface = "cameras";
                 pools = [{

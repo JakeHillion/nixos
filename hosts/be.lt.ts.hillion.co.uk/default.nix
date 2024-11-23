@@ -28,10 +28,10 @@
     age.secrets."wifi/be.lt.ts.hillion.co.uk".file = ../../secrets/wifi/be.lt.ts.hillion.co.uk.age;
     networking.wireless = {
       enable = true;
-      environmentFile = config.age.secrets."wifi/be.lt.ts.hillion.co.uk".path;
+      secretsFile = config.age.secrets."wifi/be.lt.ts.hillion.co.uk".path;
 
       networks = {
-        "Hillion WPA3 Network".psk = "@HILLION_WPA3_NETWORK_PSK@";
+        "Hillion WPA3 Network".pskRaw = "ext:HILLION_WPA3_NETWORK_PSK";
       };
     };
 
