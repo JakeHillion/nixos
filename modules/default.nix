@@ -13,6 +13,7 @@
     ./ids.nix
     ./impermanence.nix
     ./locations.nix
+    ./oci-containers/default.nix
     ./prometheus/default.nix
     ./resilio.nix
     ./sched_ext.nix

@@ -2,7 +2,9 @@
 
 let
   cfg = config.custom.services.isponsorblocktv;
-  ver = "v2.2.1";
+
+  imageName = "ghcr.io/dmunozv04/isponsorblocktv";
+  ver = config.custom.oci-containers.versions."${imageName}";
 
   ctl = pkgs.writeScriptBin "isponsorblocktv-config" ''
     #! ${pkgs.runtimeShell}
@@ -15,7 +17,7 @@ let
         --uidmap=0:${toString config.users.users.isponsorblocktv.uid}:1 \
         --gidmap=0:${toString config.users.groups.isponsorblocktv.gid}:1 \
         -v ${cfg.dataDir}:/app/data              \
-        ghcr.io/dmunozv04/isponsorblocktv:${ver} \
+        ${imageName}:${ver} \
         --setup-cli
 
     sudo systemctl start podman-isponsorblocktv
@@ -46,7 +48,7 @@ in
     };
 
     virtualisation.oci-containers.containers.isponsorblocktv = {
-      image = "ghcr.io/dmunozv04/isponsorblocktv:${ver}";
+      image = "${imageName}:${ver}";
       extraOptions = [
         "--uidmap=0:${toString config.users.users.isponsorblocktv.uid}:1"
         "--gidmap=0:${toString config.users.groups.isponsorblocktv.gid}:1"
