@@ -1,9 +1,9 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, nixos-hardware, ... }:
 
 {
   imports = [
+    "${nixos-hardware}/raspberry-pi/4/default.nix"
     ./hardware-configuration.nix
-    ../../modules/rpi/rpi4.nix
   ];
 
   config = {
