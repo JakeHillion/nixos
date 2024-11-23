@@ -6,6 +6,18 @@
     "enabled": true,
     "schedule": ["* 2-5 * * *"]
   },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["modules/oci-containers/versions.json"],
+      "matchStrings": [
+        "\"(?<depName>[^\"]+)\":\\s*\"(?<currentValue>[^\"]+)\""
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
+    }
+  ],
+
   "rebaseWhen": "behind-base-branch",
   "packageRules": [
     {
@@ -19,6 +31,7 @@
   ],
   "extends": [
     "config:recommended",
-    "helpers:pinGitHubActionDigests"
+    "helpers:pinGitHubActionDigests",
+    "docker:enableMajor"
   ]
 }
