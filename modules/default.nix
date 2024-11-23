@@ -12,6 +12,7 @@
     ./hostinfo.nix
     ./ids.nix
     ./impermanence.nix
+    ./kernel.nix
     ./locations.nix
     ./prometheus/default.nix
     ./resilio.nix

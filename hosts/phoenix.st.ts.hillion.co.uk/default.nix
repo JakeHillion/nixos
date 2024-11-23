@@ -42,8 +42,9 @@ in
     };
 
     custom.defaults = true;
-    custom.locations.autoServe = true;
     custom.impermanence.enable = true;
+    custom.kernel.enable = true;
+    custom.locations.autoServe = true;
 
     custom.users.jake.password = true; # TODO: remove me once booting has stabilised
 

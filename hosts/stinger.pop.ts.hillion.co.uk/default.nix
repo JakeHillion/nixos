@@ -36,8 +36,9 @@
     };
 
     custom.defaults = true;
-    custom.locations.autoServe = true;
     custom.impermanence.enable = true;
+    custom.kernel.enable = true;
+    custom.locations.autoServe = true;
 
     hardware = {
       bluetooth.enable = true;

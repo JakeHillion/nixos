@@ -29,8 +29,7 @@
     };
 
     custom.defaults = true;
-
-    ## Custom scheduler
+    custom.kernel.enable = true;
     custom.sched_ext.enable = true;
 
     ## Impermanence

@@ -35,7 +35,12 @@
       };
     };
 
-    boot.kernelPackages = pkgs.linuxPackages_latest;
+    ### This host was initially setup with 6.11 because the hardware is very new.
+    ### Don't let it fall behind that.
+    custom.kernel = {
+      enable = true;
+      requiredVersions = [ "6.11" ];
+    };
 
     custom.defaults = true;
     custom.locations.autoServe = true;

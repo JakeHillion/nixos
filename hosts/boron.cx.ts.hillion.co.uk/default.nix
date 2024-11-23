@@ -29,13 +29,14 @@
     };
 
     custom.defaults = true;
-
-    ## Kernel
-    ### Explicitly use the latest kernel at time of writing because the LTS
-    ### kernels available in NixOS do not seem to support this server's very
-    ### modern hardware.
-    ### custom.sched_ext.enable implies >=6.12, if this is removed the kernel may need to be pinned again. >=6.10 seems good.
     custom.sched_ext.enable = true;
+
+    ### This server has very modern hardware which seems empirically to require
+    ### at least kernel 6.10.
+    custom.kernel = {
+      enable = true;
+      requiredVersions = [ "6.10" ];
+    };
 
     ## Enable btrfs compression
     fileSystems."/data".options = [ "compress=zstd" ];

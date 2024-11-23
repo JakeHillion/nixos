@@ -15,6 +15,7 @@
     boot.loader.efi.canTouchEfiVariables = true;
 
     custom.defaults = true;
+    custom.kernel.enable = true;
 
     ## Impermanence
     custom.impermanence = {

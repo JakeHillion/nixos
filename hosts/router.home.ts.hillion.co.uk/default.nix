@@ -19,6 +19,7 @@
     };
 
     custom.defaults = true;
+    custom.kernel.enable = true;
 
     ## Interactive password
     custom.users.jake.password = true;
