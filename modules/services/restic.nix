@@ -207,22 +207,25 @@ in
 
         mkForgetService = name: repo_cfg:
           if (repo_cfg.forgetConfig != null) then
-            ({
-              description = "Restic forget service for ${name}";
+            lib.mkMerge [
+              {
+                description = "Restic forget service for ${name}";
 
-              serviceConfig = {
-                User = "restic";
-                Group = "restic";
-              };
+                serviceConfig = {
+                  User = "restic";
+                  Group = "restic";
+                };
 
-              script = ''
-                set -xe
+                script = ''
+                  set -xe
 
-                ${pkgs.restic}/bin/restic forget ${lib.strings.concatStringsSep " " repo_cfg.forgetConfig.opts} \
-                  --prune \
-                  --retry-lock 30m
-              '';
-            } // (mkRepoInfo repo_cfg)) else { };
+                  ${pkgs.restic}/bin/restic forget ${lib.strings.concatStringsSep " " repo_cfg.forgetConfig.opts} \
+                    --prune \
+                    --retry-lock 30m
+                '';
+              }
+              (mkRepoInfo repo_cfg)
+            ] else { };
         mkForgetTimer = repo_cfg:
           if (repo_cfg.forgetConfig != null) then {
             wantedBy = [ "timers.target" ];
