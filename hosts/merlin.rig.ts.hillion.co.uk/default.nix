@@ -44,6 +44,10 @@
     custom.users.jake.password = true;
     security.sudo.wheelNeedsPassword = lib.mkForce true;
 
+    ## Video drivers when docked
+    boot.initrd.kernelModules = [ "amdgpu" ];
+    services.xserver.videoDrivers = [ "amdgpu" ];
+
     # Networking
     networking = {
       interfaces.enp171s0.name = "eth0";
