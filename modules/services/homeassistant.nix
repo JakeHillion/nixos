@@ -55,6 +55,7 @@ in
           "sonos"
           "sun"
           "switchbot"
+          "wake_on_lan"
           "waze_travel_time"
         ];
         customComponents = with pkgs.home-assistant-custom-components; [
@@ -170,6 +171,15 @@ in
               icon = "mdi:sleep";
             };
           };
+
+          switch = [
+            {
+              name = "merlin.rig.ts.hillion.co.uk";
+              platform = "wake_on_lan";
+              mac = "b0:41:6f:13:20:14";
+              host = "10.64.50.28";
+            }
+          ];
 
           # UI managed expansions
           automation = "!include automations.yaml";
