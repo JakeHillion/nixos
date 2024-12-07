@@ -127,20 +127,58 @@ in
     services.plex.enable = true;
 
     ## Networking
-    networking = {
-      interfaces.enp4s0.name = "eth0";
-      interfaces.enp5s0.name = "eth1";
-      interfaces.enp6s0.name = "eth2";
-      interfaces.enp8s0.name = "eth3";
+    networking.useDHCP = lib.mkForce false;
+    systemd.network = {
+      # TODO: the enabled systemd-resolved breaks `hostname -f`
+      enable = true;
 
-      vlans = {
-        cameras = {
-          id = 3;
-          interface = "eth0";
+      links = {
+        "10-eth0" = {
+          matchConfig.MACAddress = "a8:b8:e0:04:17:a5";
+          linkConfig.Name = "eth0";
+        };
+        "10-eth1" = {
+          matchConfig.MACAddress = "a8:b8:e0:04:17:a6";
+          linkConfig.Name = "eth1";
+        };
+        "10-eth2" = {
+          matchConfig.MACAddress = "a8:b8:e0:04:17:a7";
+          linkConfig.Name = "eth2";
+        };
+        "10-eth3" = {
+          matchConfig.MACAddress = "a8:b8:e0:04:17:a8";
+          linkConfig.Name = "eth3";
+        };
+      };
+
+      netdevs = {
+        "20-vlan_cameras" = {
+          netdevConfig = {
+            Kind = "vlan";
+            Name = "cameras";
+          };
+          vlanConfig.Id = 3;
+        };
+      };
+
+      networks = {
+        "10-lan" = {
+          matchConfig.Name = "eth0";
+          networkConfig.DHCP = "ipv4";
+          linkConfig.RequiredForOnline = "routable";
+
+          vlan = [ "cameras" ];
+        };
+
+        "11-cameras" = {
+          matchConfig.Name = "cameras";
+          networkConfig.DHCP = "ipv4";
+          linkConfig.RequiredForOnline = "routable";
+
+          dhcpV4Config.UseGateway = false;
         };
       };
     };
-    networking.nameservers = lib.mkForce [ ]; # Trust the DHCP nameservers
 
     networking.firewall = {
       trustedInterfaces = [ "tailscale0" ];
