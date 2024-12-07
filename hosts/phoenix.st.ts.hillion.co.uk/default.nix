@@ -20,7 +20,6 @@ in
     boot.loader.efi.canTouchEfiVariables = true;
 
     boot.kernelParams = [
-      "ip=dhcp"
       "zfs.zfs_arc_max=34359738368"
 
       # zswap
@@ -30,7 +29,9 @@ in
     ];
     boot.initrd = {
       availableKernelModules = [ "igc" ];
-      network.enable = true;
+      network = {
+        enable = true;
+      };
       clevis = {
         enable = true;
         useTang = true;

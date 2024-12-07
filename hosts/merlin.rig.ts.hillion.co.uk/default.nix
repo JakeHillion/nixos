@@ -16,8 +16,6 @@
     boot.loader.efi.canTouchEfiVariables = true;
 
     boot.kernelParams = [
-      "ip=dhcp"
-
       # zswap
       "zswap.enabled=1"
       "zswap.compressor=zstd"
@@ -50,7 +48,12 @@
 
     # Networking
     networking = {
-      interfaces.enp171s0.name = "eth0";
+      useDHCP = false;
+
+      interfaces.enp171s0 = {
+        name = "eth0";
+        useDHCP = true;
+      };
       interfaces.enp172s0.name = "eth1";
     };
     networking.nameservers = lib.mkForce [ ]; # Trust the DHCP nameservers
