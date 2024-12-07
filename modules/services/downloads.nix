@@ -120,6 +120,14 @@ in
 
       config = (hostConfig: ({ config, pkgs, ... }: {
         config = {
+          # TODO: remove me as soon as the Arrs are compatible with a newer version
+          nixpkgs.config.permittedInsecurePackages = [
+            "aspnetcore-runtime-6.0.36"
+            "aspnetcore-runtime-wrapped-6.0.36"
+            "dotnet-sdk-wrapped-6.0.428"
+            "dotnet-sdk-6.0.428"
+          ];
+
           system.stateVersion = "23.05";
 
           ids = hostConfig.ids;
