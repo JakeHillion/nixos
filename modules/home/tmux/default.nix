@@ -11,7 +11,7 @@ in
   config = lib.mkIf cfg.enable {
     home-manager.users.jake.programs.tmux = {
       enable = true;
-      extraConfig = lib.readFile ./.tmux.conf;
+      extraConfig = builtins.replaceStrings [ "@FQDN" ] [ config.networking.fqdn ] (builtins.readFile ./.tmux.conf);
     };
   };
 }
