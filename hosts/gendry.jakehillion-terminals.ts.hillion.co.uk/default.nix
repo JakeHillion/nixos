@@ -52,10 +52,6 @@
       algorithm = "zstd";
     };
 
-    ## Desktop
-    custom.users.jake.password = true;
-    custom.desktop.awesome.enable = true;
-
     ## Resilio
     custom.resilio.enable = true;
 
@@ -87,21 +83,9 @@
       authKeyFile = config.age.secrets."tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk".path;
     };
 
-    security.sudo.wheelNeedsPassword = lib.mkForce true;
-
     ## Enable btrfs compression
     fileSystems."/data".options = [ "compress=zstd" ];
     fileSystems."/nix".options = [ "compress=zstd" ];
-
-    ## Graphics
-    boot.initrd.kernelModules = [ "amdgpu" ];
-    services.xserver.videoDrivers = [ "amdgpu" ];
-
-    users.users."${config.custom.user}" = {
-      packages = with pkgs; [
-        prismlauncher
-      ];
-    };
 
     ## Networking
     networking.nameservers = lib.mkForce [ ]; # Trust the DHCP nameservers
