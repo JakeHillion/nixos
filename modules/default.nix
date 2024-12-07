@@ -6,7 +6,7 @@
     ./ca/default.nix
     ./chia.nix
     ./defaults.nix
-    ./desktop/awesome/default.nix
+    ./desktop/default.nix
     ./dns.nix
     ./home/default.nix
     ./hostinfo.nix
