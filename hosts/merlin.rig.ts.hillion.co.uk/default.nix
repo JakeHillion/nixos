@@ -48,6 +48,9 @@
     boot.initrd.kernelModules = [ "amdgpu" ];
     services.xserver.videoDrivers = [ "amdgpu" ];
 
+    # Allow performing aarch64 builds in QEMU
+    boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
     # Networking
     networking = {
       interfaces.enp171s0.name = "eth0";

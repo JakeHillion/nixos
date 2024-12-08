@@ -52,6 +52,9 @@
       algorithm = "zstd";
     };
 
+    # Allow performing aarch64 builds in QEMU
+    boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
     ## Resilio
     custom.resilio.enable = true;
 
