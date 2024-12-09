@@ -61,8 +61,6 @@ in
           allowedIPs = [ "0.0.0.0/0" ];
         }
       ];
-      interfaceNamespace = "downloads";
-      preSetup = "test -f /run/netns/downloads || ip netns add downloads || test -f /run/netns/downloads";
     };
 
     ## Host User/Directories
@@ -101,8 +99,8 @@ in
       autoStart = true;
       ephemeral = true;
 
-      additionalCapabilities = [ "CAP_NET_ADMIN" ];
-      extraFlags = [ "--network-namespace-path=/run/netns/downloads" ];
+      interfaces = [ "downloads" ];
+      privateNetwork = true;
 
       bindMounts = {
         "/var/lib/caddy" = { hostPath = "${cfg.metadataPath}/caddy"; isReadOnly = false; };
