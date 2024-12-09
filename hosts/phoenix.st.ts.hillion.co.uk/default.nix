@@ -175,7 +175,10 @@ in
           networkConfig.DHCP = "ipv4";
           linkConfig.RequiredForOnline = "routable";
 
-          dhcpV4Config.UseGateway = false;
+          dhcpV4Config = {
+            UseGateway = false;
+            UseDNS = false;
+          };
         };
       };
     };
