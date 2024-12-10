@@ -148,7 +148,8 @@ in
           };
           systemd.services.setup-resolv = {
             description = "Setup resolv.conf.";
-            before = [ "network-online.target" ];
+            before = [ "network-pre.target" ];
+            wants = [ "network-pre.target" ];
 
             serviceConfig.Type = "oneshot";
             serviceConfig.RemainAfterExit = true;
@@ -163,6 +164,7 @@ in
             '';
           };
           networking = {
+            resolvconf.enable = lib.mkForce false;
             nameservers = [ "1.1.1.1" "8.8.8.8" ];
             hosts = { "127.0.0.1" = builtins.map (x: "${x}.downloads.ts.hillion.co.uk") [ "prowlarr" "sonarr" "radarr" "deluge" ]; };
           };
