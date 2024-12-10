@@ -11,6 +11,7 @@
       step-ca = 198;
       isponsorblocktv = 199;
       frigate = 200;
+      nebula-jakehillion = 205;
 
       ## Consistent People
       jake = 1000;
@@ -25,6 +26,7 @@
       step-ca = 198;
       isponsorblocktv = 199;
       frigate = 200;
+      nebula-jakehillion = 205;
 
       ## Consistent Groups
       mediaaccess = 1200;

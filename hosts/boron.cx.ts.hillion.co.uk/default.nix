@@ -149,7 +149,7 @@
     };
 
     networking.firewall = {
-      trustedInterfaces = [ "tailscale0" ];
+      trustedInterfaces = [ "tailscale0" "neb.jh" ];
       allowedTCPPorts = lib.mkForce [ ];
       allowedUDPPorts = lib.mkForce [ ];
       interfaces = {
@@ -166,6 +166,7 @@
             53 # DNS
             443 # HTTP 3
             3478 # Unifi STUN
+            4242 # Nebula Lighthouse
           ];
         };
       };

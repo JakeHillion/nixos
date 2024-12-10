@@ -38,11 +38,15 @@
     services.iperf3.enable = true;
     services.iperf3.openFirewall = true;
 
-    networking.firewall.interfaces = {
-      "end0" = {
-        allowedTCPPorts = [
-          7654 # Tang
-        ];
+    networking.firewall = {
+      trustedInterfaces = [ "tailscale0" "neb.jh" ];
+
+      interfaces = {
+        "end0" = {
+          allowedTCPPorts = [
+            7654 # Tang
+          ];
+        };
       };
     };
   };
