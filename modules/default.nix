@@ -13,6 +13,7 @@
     ./ids.nix
     ./impermanence.nix
     ./locations.nix
+    ./nebula/default.nix
     ./oci-containers/default.nix
     ./prometheus/default.nix
     ./resilio.nix

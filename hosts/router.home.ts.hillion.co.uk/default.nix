@@ -94,11 +94,13 @@
                 "eth1",
                 "eth2",
                 "tailscale0",
+                "neb.jh",
               } counter accept
 
               ip protocol icmp counter accept comment "accept all ICMP types"
 
               iifname "eth0" tcp dport 22 counter accept comment "SSH"
+              iifname "eth0" udp dport 4242 counter accept comment "Nebula Lighthouse"
 
               iifname { "eth0", "cameras" } ct state { established, related } counter accept
               iifname { "eth0", "cameras" } drop

@@ -42,13 +42,17 @@
     services.iperf3.openFirewall = true;
 
     networking.nameservers = lib.mkForce [ ]; # Trust the DHCP nameservers
-    networking.firewall.interfaces = {
-      "eth0" = {
-        allowedUDPPorts = [
-        ];
-        allowedTCPPorts = [
-          7654 # Tang
-        ];
+    networking.firewall = {
+      trustedInterfaces = [ "tailscale0" "neb.jh" ];
+
+      interfaces = {
+        "eth0" = {
+          allowedUDPPorts = [
+          ];
+          allowedTCPPorts = [
+            7654 # Tang
+          ];
+        };
       };
     };
   };

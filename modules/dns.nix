@@ -65,7 +65,41 @@ in
             };
           };
         };
+
+        me = {
+          jakehillion = {
+            neb = {
+              cx = {
+                boron = "172.20.0.1";
+              };
+              home = {
+                microserver = "172.20.0.2";
+                router = "172.20.0.3";
+              };
+              jakehillion-terminals = { gendry = "172.20.0.4"; };
+              lt = {
+                be = "172.20.0.5";
+                jakehillion-mba-m2-15 = "172.20.0.6";
+              };
+              pop = {
+                li = "172.20.0.7";
+                sodium = "172.20.0.8";
+                stinger = "172.20.0.9";
+              };
+              rig = {
+                merlin = "172.20.0.10";
+              };
+              st = {
+                phoenix = "172.20.0.11";
+              };
+              storage = {
+                theon = "172.20.0.12";
+              };
+            };
+          };
+        };
       };
+
       ipv6 = {
         uk = {
           co = {
