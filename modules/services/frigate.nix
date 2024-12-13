@@ -23,7 +23,7 @@ in
     services.caddy = {
       enable = true;
 
-      virtualHosts."frigate.ts.hillion.co.uk" = {
+      virtualHosts."frigate.neb.jakehillion.me" = {
         listenAddresses = [ config.custom.dns.tailscale.ipv4 config.custom.dns.tailscale.ipv6 ];
         extraConfig = ''
           reverse_proxy unix///run/nginx-frigate/nginx.sock

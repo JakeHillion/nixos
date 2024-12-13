@@ -32,7 +32,6 @@ in
             86400 NS ns1.hillion.co.uk.
 
             ca                    21600 CNAME sodium.pop.ts.hillion.co.uk.
-            frigate               21600 CNAME ${config.custom.locations.locations.services.frigate}.
             prometheus            21600 CNAME ${config.custom.locations.locations.services.prometheus}.
             restic                21600 CNAME ${config.custom.locations.locations.services.restic}.
 
@@ -62,6 +61,8 @@ in
             )
 
             86400 NS ns1.jakehillion.me.
+
+            frigate               21600 CNAME ${config.custom.locations.locations.services.frigate}.
 
           '' + (makeRecords "A" config.custom.dns.authoritative.ipv4.me.jakehillion.neb);
         };
