@@ -46,6 +46,9 @@
           allowedTCPPorts = [
             7654 # Tang
           ];
+          allowedUDPPorts = [
+            4242 # Nebula Lighthouse
+          ];
         };
       };
     };
