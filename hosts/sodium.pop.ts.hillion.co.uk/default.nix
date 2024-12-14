@@ -46,6 +46,14 @@
     #   };
     # };
 
+    services.iodine.server = {
+      enable = true;
+      passwordFile = "/data/system/iodine.password";
+      domain = "io.hillion.co.uk";
+      ip = "172.16.10.1/24";
+      extraConfig = "-c -n auto";
+    };
+
     ## Custom Services
     custom.locations.autoServe = true;
     custom.www.home.enable = true;
@@ -78,6 +86,7 @@
             7654 # Tang
           ];
           allowedUDPPorts = lib.mkForce [
+            53 # DNS
             443 # HTTP 3
           ];
         };

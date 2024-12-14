@@ -130,6 +130,7 @@
 
               ip daddr 10.64.50.27 tcp dport 32400 counter accept comment "Plex"
               ip daddr 10.64.50.21 tcp dport 7654 counter accept comment "Tang"
+              ip daddr 10.64.50.25 udp dport 53 counter accept comment "Iodine (DNS)"
             }
           }
 
@@ -139,6 +140,7 @@
 
               iifname eth0 tcp dport 32400 counter dnat to 10.64.50.27
               iifname eth0 tcp dport 7654 counter dnat to 10.64.50.21
+              iifname eth0 udp dport 53 counter dnat to 10.64.50.25
             }
 
             chain postrouting {
