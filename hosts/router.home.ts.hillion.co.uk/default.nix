@@ -19,12 +19,13 @@
     };
 
     custom.defaults = true;
+    custom.impermanence.enable = true;
+    custom.locations.autoServe = true;
+
+    services.nsd.interfaces = [ "eth0" ];
 
     ## Interactive password
     custom.users.jake.password = true;
-
-    ## Impermanence
-    custom.impermanence.enable = true;
 
     ## Networking
     networking = {
@@ -99,8 +100,11 @@
 
               ip protocol icmp counter accept comment "accept all ICMP types"
 
-              iifname "eth0" tcp dport 22 counter accept comment "SSH"
-              iifname "eth0" udp dport 4242 counter accept comment "Nebula Lighthouse"
+              iifname "eth0" tcp dport    22 counter accept comment "SSH"
+              iifname "eth0" tcp dport    53 counter accept comment "Public DNS"
+
+              iifname "eth0" udp dport    53 counter accept comment "Public DNS"
+              iifname "eth0" udp dport  4242 counter accept comment "Nebula Lighthouse"
 
               iifname { "eth0", "cameras" } ct state { established, related } counter accept
               iifname { "eth0", "cameras" } drop
@@ -128,8 +132,8 @@
               iifname "tailscale0" oifname { "eth1", "eth2" } counter accept comment "Allow LAN access from Tailscale"
               iifname { "eth1", "eth2" } oifname "tailscale0" ct state { established,related } counter accept comment "Allow established back to Tailscale"
 
+              ip daddr 10.64.50.21 tcp dport  7654 counter accept comment "Tang"
               ip daddr 10.64.50.27 tcp dport 32400 counter accept comment "Plex"
-              ip daddr 10.64.50.21 tcp dport 7654 counter accept comment "Tang"
             }
           }
 
@@ -137,8 +141,8 @@
             chain prerouting {
               type nat hook prerouting priority filter; policy accept;
 
+              iifname eth0 tcp dport  7654 counter dnat to 10.64.50.21
               iifname eth0 tcp dport 32400 counter dnat to 10.64.50.27
-              iifname eth0 tcp dport 7654 counter dnat to 10.64.50.21
             }
 
             chain postrouting {
@@ -321,6 +325,7 @@
 
       unbound = {
         enable = true;
+
         settings = {
           server = {
             interface = [
