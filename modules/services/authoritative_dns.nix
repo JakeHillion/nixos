@@ -65,6 +65,7 @@ in
             86400 NS ns2.jakehillion.me.
 
             frigate               21600 CNAME phoenix.st.neb.jakehillion.me.  ; TODO: go via locations once domain is changed to nebula
+            immich                21600 CNAME phoenix.st.neb.jakehillion.me.  ; TODO: go via locations once domains are changed to nebula
 
           '' + (makeRecords "A" config.custom.dns.authoritative.ipv4.me.jakehillion.neb);
         };

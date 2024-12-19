@@ -126,6 +126,9 @@ in
     users.users.plex.extraGroups = [ "mediaaccess" ];
     services.plex.enable = true;
 
+    ## Immich
+    services.immich.mediaLocation = "/${zpool_name}/media/photos";
+
     ## Networking
     networking.useDHCP = lib.mkForce false;
     systemd.network = {

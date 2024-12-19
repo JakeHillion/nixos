@@ -7,6 +7,7 @@
     ./frigate.nix
     ./gitea/default.nix
     ./homeassistant.nix
+    ./immich.nix
     ./isponsorblocktv.nix
     ./mastodon/default.nix
     ./matrix.nix

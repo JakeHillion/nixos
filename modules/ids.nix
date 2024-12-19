@@ -12,6 +12,7 @@
       isponsorblocktv = 199;
       frigate = 200;
       nebula-jakehillion = 205;
+      immich = 206;
 
       ## Consistent People
       jake = 1000;
@@ -27,6 +28,7 @@
       isponsorblocktv = 199;
       frigate = 200;
       nebula-jakehillion = 205;
+      immich = 206;
 
       ## Consistent Groups
       mediaaccess = 1200;

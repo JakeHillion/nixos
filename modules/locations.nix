@@ -27,6 +27,7 @@ in
           frigate = "phoenix.st.ts.hillion.co.uk";
           gitea = "boron.cx.ts.hillion.co.uk";
           homeassistant = "stinger.pop.ts.hillion.co.uk";
+          immich = "phoenix.st.ts.hillion.co.uk";
           mastodon = "";
           matrix = "boron.cx.ts.hillion.co.uk";
           prometheus = "boron.cx.ts.hillion.co.uk";
