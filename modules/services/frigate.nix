@@ -86,16 +86,18 @@ in
           users.groups.frigate.gid = hostConfig.ids.gids.frigate;
 
           users.users.nginx.extraGroups = [ "frigate" ];
-          services.nginx.virtualHosts."frigate.ts.hillion.co.uk".listen = lib.mkForce [
+          services.nginx.virtualHosts."frigate.neb.jakehillion.me".listen = lib.mkForce [
             { addr = "unix:/run/nginx-frigate/nginx.sock"; }
           ];
 
           services.frigate = {
             enable = true;
             package = pkgs.frigate;
-            hostname = "frigate.ts.hillion.co.uk";
+            hostname = "frigate.neb.jakehillion.me";
 
             settings = {
+              auth.enabled = false;
+
               record = {
                 enabled = true;
                 retain.mode = "motion";
