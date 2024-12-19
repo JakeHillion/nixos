@@ -24,7 +24,7 @@ in
       enable = true;
 
       virtualHosts."frigate.neb.jakehillion.me" = {
-        listenAddresses = [ config.custom.dns.tailscale.ipv4 config.custom.dns.tailscale.ipv6 ];
+        listenAddresses = [ config.custom.dns.nebula.ipv4 ];
         extraConfig = ''
           reverse_proxy unix///run/nginx-frigate/nginx.sock
 

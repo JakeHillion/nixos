@@ -164,14 +164,17 @@ in
     }
 
     (lib.mkIf cfg.enable {
-      custom.dns.tailscale =
-        let
-          lookupFqdn = lib.attrsets.attrByPath (lib.reverseList (lib.splitString "." config.networking.fqdn)) null;
-        in
-        {
-          ipv4 = lookupFqdn cfg.authoritative.ipv4;
-          ipv6 = lookupFqdn cfg.authoritative.ipv6;
-        };
+      custom.dns = let
+        nebulaFqdn = ((lib.concatStringsSep "." (lib.take 2 (lib.splitString "." config.networking.fqdn))) + ".neb.jakehillion.me");
+
+        lookupFqdn = fqdn: lib.attrsets.attrByPath (lib.reverseList (lib.splitString "." fqdn)) null;
+        lookupConfiguredFqdn = lookupFqdn config.networking.fqdn;
+      in {
+        tailscale.ipv4 = lookupConfiguredFqdn cfg.authoritative.ipv4;
+        tailscale.ipv6 = lookupConfiguredFqdn cfg.authoritative.ipv6;
+
+        nebula.ipv4 = lookupFqdn nebulaFqdn cfg.authoritative.ipv4;
+      };
 
       networking.hosts =
         let
