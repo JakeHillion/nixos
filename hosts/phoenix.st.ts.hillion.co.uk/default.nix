@@ -104,6 +104,20 @@ in
       plotDirectories = builtins.genList (i: "/mnt/d${toString i}/plots/contract-k32") 8;
     };
 
+    ## BTRBK
+    users.users."btrbk" = {
+      group = "btrbk";
+      home = "/${zpool_name}/backups/btrbk";
+      uid = config.ids.uids.btrbk;
+      isSystemUser = true;
+
+      openssh.authorizedKeys.keys = [
+        "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBA3ox1rviyJRpE2JVSzyV2sFSEXw2OZQ0Y8VX04BFicUGcX70PHFjfZL2THcQ1MLUP6a2df0y1hCUzBQnRXBVmg= root@sodium"
+      ];
+    };
+    users.groups."btrbk".gid = config.ids.gids.btrbk;
+
+
     ## Restic
     custom.services.restic.path = "/${zpool_name}/backups/restic";
 
