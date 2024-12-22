@@ -9,6 +9,15 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    age.secrets."immich/restic/1.6T.key" = {
+      file = ../../secrets/restic/1.6T.age;
+      owner = "immich";
+      group = "immich";
+    };
+
+    users.users.immich.uid = config.ids.uids.immich;
+    users.groups.immich.gid = config.ids.gids.immich;
+
     services.caddy = {
       enable = true;
 
@@ -24,8 +33,19 @@ in
       };
     };
 
-    users.users.immich.uid = config.ids.uids.immich;
-    users.groups.immich.gid = config.ids.gids.immich;
+    services.restic.backups."immich" = {
+      repository = "rest:https://restic.ts.hillion.co.uk/1.6T";
+      user = "immich";
+      passwordFile = config.age.secrets."immich/restic/1.6T.key".path;
+
+      timerConfig = {
+        OnBootSec = "60m";
+        OnUnitInactiveSec = "30m";
+        RandomizedDelaySec = "5m";
+      };
+
+      paths = [ config.services.immich.mediaLocation ];
+    };
 
     services.immich = {
       enable = true;
