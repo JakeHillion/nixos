@@ -34,7 +34,6 @@ in
           restic = "phoenix.st.ts.hillion.co.uk";
           tang = [
             "li.pop.ts.hillion.co.uk"
-            "microserver.home.ts.hillion.co.uk"
             "sodium.pop.ts.hillion.co.uk"
           ];
           unifi = "boron.cx.ts.hillion.co.uk";

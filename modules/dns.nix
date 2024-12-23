@@ -66,7 +66,6 @@ in
                     boron = "100.113.188.46";
                   };
                   home = {
-                    microserver = "100.105.131.47";
                     router = "100.105.71.48";
                   };
                   jakehillion-terminals = { gendry = "100.70.100.77"; };
@@ -97,7 +96,7 @@ in
                   boron = "172.20.0.1";
                 };
                 home = {
-                  microserver = "172.20.0.2";
+                  microserver = "172.20.0.2"; # removed 23/12/2024
                   router = "172.20.0.3";
                 };
                 jakehillion-terminals = { gendry = "172.20.0.4"; };
@@ -136,7 +135,6 @@ in
                     boron = "fd7a:115c:a1e0::2a01:bc2f";
                   };
                   home = {
-                    microserver = "fd7a:115c:a1e0:ab12:4843:cd96:6269:832f";
                     router = "fd7a:115c:a1e0:ab12:4843:cd96:6269:4730";
                   };
                   jakehillion-terminals = { gendry = "fd7a:115c:a1e0:ab12:4843:cd96:6246:644d"; };
