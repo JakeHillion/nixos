@@ -38,9 +38,9 @@ in
 
       virtualHosts = builtins.listToAttrs (builtins.map
         (x: {
-          name = "${x}.downloads.ts.hillion.co.uk";
+          name = "${x}.downloads.neb.jakehillion.me";
           value = {
-            listenAddresses = [ config.custom.dns.tailscale.ipv4 config.custom.dns.tailscale.ipv6 ];
+            listenAddresses = [ config.custom.dns.nebula.ipv4 ];
             extraConfig = ''
               reverse_proxy unix//${cfg.metadataPath}/caddy/caddy.sock
 
@@ -202,7 +202,7 @@ in
               enable = true;
               virtualHosts = builtins.listToAttrs (builtins.map
                 (x: {
-                  name = "http://${x.name}.downloads.ts.hillion.co.uk";
+                  name = "http://${x.name}.downloads.neb.jakehillion.me";
                   value = {
                     listenAddresses = [ "127.0.0.1" "unix///var/lib/caddy/caddy.sock" ];
                     extraConfig = "reverse_proxy http://localhost:${toString x.port}";

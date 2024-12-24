@@ -36,11 +36,6 @@ in
             prometheus            21600 CNAME ${config.custom.locations.locations.services.prometheus}.
             restic                21600 CNAME ${config.custom.locations.locations.services.restic}.
 
-            deluge.downloads      21600 CNAME ${config.custom.locations.locations.services.downloads}.
-            prowlarr.downloads    21600 CNAME ${config.custom.locations.locations.services.downloads}.
-            radarr.downloads      21600 CNAME ${config.custom.locations.locations.services.downloads}.
-            sonarr.downloads      21600 CNAME ${config.custom.locations.locations.services.downloads}.
-
             graphs.router.home    21600 CNAME router.home.ts.hillion.co.uk.
             zigbee2mqtt.home      21600 CNAME router.home.ts.hillion.co.uk.
 
@@ -64,8 +59,13 @@ in
             86400 NS ns1.jakehillion.me.
             86400 NS ns2.jakehillion.me.
 
-            frigate               21600 CNAME phoenix.st.neb.jakehillion.me.  ; TODO: go via locations once domain is changed to nebula
+            frigate               21600 CNAME phoenix.st.neb.jakehillion.me.  ; TODO: go via locations once domains are changed to nebula
             immich                21600 CNAME phoenix.st.neb.jakehillion.me.  ; TODO: go via locations once domains are changed to nebula
+
+            deluge.downloads      21600 CNAME phoenix.st.neb.jakehillion.me.  ; TODO: go via locations once domains are changed to nebula
+            prowlarr.downloads    21600 CNAME phoenix.st.neb.jakehillion.me.  ; TODO: go via locations once domains are changed to nebula
+            radarr.downloads      21600 CNAME phoenix.st.neb.jakehillion.me.  ; TODO: go via locations once domains are changed to nebula
+            sonarr.downloads      21600 CNAME phoenix.st.neb.jakehillion.me.  ; TODO: go via locations once domains are changed to nebula
 
           '' + (makeRecords "A" config.custom.dns.authoritative.ipv4.me.jakehillion.neb);
         };
