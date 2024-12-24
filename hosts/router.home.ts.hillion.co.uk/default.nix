@@ -143,6 +143,8 @@
 
               iifname eth0 tcp dport  7654 counter dnat to 10.64.50.21
               iifname eth0 tcp dport 32400 counter dnat to 10.64.50.27
+
+              iifname eth1 ip daddr 185.240.111.53 udp dport 4242 dnat to 10.64.50.1
             }
 
             chain postrouting {
