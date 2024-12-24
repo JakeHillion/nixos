@@ -27,13 +27,6 @@
       extraUpFlags = [ "--advertise-routes" "192.168.1.0/24" ];
     };
 
-    ## Enable ZRAM to make up for 2GB of RAM
-    zramSwap = {
-      enable = true;
-      memoryPercent = 200;
-      algorithm = "zstd";
-    };
-
     ## Run a persistent iperf3 server
     services.iperf3.enable = true;
     services.iperf3.openFirewall = true;
