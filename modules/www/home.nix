@@ -17,7 +17,7 @@ in
         "homeassistant.home.hillion.co.uk".extraConfig = ''
           bind 10.64.50.25
           tls {
-            ca https://ca.ts.hillion.co.uk:8443/acme/acme/directory
+            ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
           }
           reverse_proxy http://${locations.services.homeassistant}:8123
         '';

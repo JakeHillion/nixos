@@ -184,7 +184,7 @@ in
       virtualHosts."restic.ts.hillion.co.uk".extraConfig = ''
         bind ${config.custom.dns.tailscale.ipv4} ${config.custom.dns.tailscale.ipv6}
         tls {
-          ca https://ca.ts.hillion.co.uk:8443/acme/acme/directory
+          ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
         }
 
         reverse_proxy http://localhost:8000

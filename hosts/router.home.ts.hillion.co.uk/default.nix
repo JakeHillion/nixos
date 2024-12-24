@@ -395,7 +395,7 @@
           listenAddresses = [ config.custom.dns.tailscale.ipv4 config.custom.dns.tailscale.ipv6 ];
           extraConfig = ''
             tls {
-              ca https://ca.ts.hillion.co.uk:8443/acme/acme/directory
+              ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
             }
             reverse_proxy unix///run/netdata/netdata.sock
           '';
@@ -404,7 +404,7 @@
           listenAddresses = [ config.custom.dns.tailscale.ipv4 config.custom.dns.tailscale.ipv6 ];
           extraConfig = ''
             tls {
-              ca https://ca.ts.hillion.co.uk:8443/acme/acme/directory
+              ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
             }
             reverse_proxy http://10.239.19.6
           '';
@@ -413,7 +413,7 @@
           listenAddresses = [ config.custom.dns.tailscale.ipv4 config.custom.dns.tailscale.ipv6 ];
           extraConfig = ''
             tls {
-              ca https://ca.ts.hillion.co.uk:8443/acme/acme/directory
+              ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
             }
             reverse_proxy http://10.239.19.7
           '';

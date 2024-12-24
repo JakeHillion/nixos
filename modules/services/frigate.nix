@@ -29,7 +29,7 @@ in
           reverse_proxy unix///run/nginx-frigate/nginx.sock
 
           tls {
-            ca https://ca.ts.hillion.co.uk:8443/acme/acme/directory
+            ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
           }
         '';
       };

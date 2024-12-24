@@ -27,7 +27,7 @@ in
           reverse_proxy http://localhost:${toString config.services.immich.port}
 
           tls {
-            ca https://ca.ts.hillion.co.uk:8443/acme/acme/directory
+            ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
           }
         '';
       };

@@ -45,7 +45,7 @@ in
               reverse_proxy unix//${cfg.metadataPath}/caddy/caddy.sock
 
               tls {
-                ca https://ca.ts.hillion.co.uk:8443/acme/acme/directory
+                ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
               }
             '';
           };

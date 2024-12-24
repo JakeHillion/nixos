@@ -32,7 +32,6 @@ in
             86400 NS ns1.hillion.co.uk.
             86400 NS ns2.hillion.co.uk.
 
-            ca                    21600 CNAME sodium.pop.ts.hillion.co.uk.
             prometheus            21600 CNAME ${config.custom.locations.locations.services.prometheus}.
             restic                21600 CNAME ${config.custom.locations.locations.services.restic}.
 
@@ -59,6 +58,7 @@ in
             86400 NS ns1.jakehillion.me.
             86400 NS ns2.jakehillion.me.
 
+            ca                    21600 CNAME sodium.pop.neb.jakehillion.me.
             frigate               21600 CNAME phoenix.st.neb.jakehillion.me.  ; TODO: go via locations once domains are changed to nebula
             immich                21600 CNAME phoenix.st.neb.jakehillion.me.  ; TODO: go via locations once domains are changed to nebula
 

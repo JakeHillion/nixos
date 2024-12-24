@@ -18,7 +18,7 @@ in
         "homeassistant.iot.hillion.co.uk".extraConfig = ''
           bind 10.239.19.5
           tls {
-            ca https://ca.ts.hillion.co.uk:8443/acme/acme/directory
+            ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
           }
 
           @blocked not remote_ip 10.239.19.4
