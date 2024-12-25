@@ -20,7 +20,7 @@ in
       scrapeConfigs = [{
         job_name = "node";
         static_configs = [{
-          targets = builtins.map (x: "${x}:9000") (builtins.attrNames (builtins.readDir ../../hosts));
+          targets = builtins.map (x: "${lib.concatStringsSep "." (lib.take 2 (lib.splitString "." x))}.neb.jakehillion.me:9000") (builtins.attrNames (builtins.readDir ../../hosts));
         }];
       }];
 
@@ -41,8 +41,8 @@ in
 
     services.caddy = {
       enable = true;
-      virtualHosts."prometheus.ts.hillion.co.uk" = {
-        listenAddresses = [ config.custom.dns.tailscale.ipv4 config.custom.dns.tailscale.ipv6 ];
+      virtualHosts."prometheus.neb.jakehillion.me" = {
+        listenAddresses = [ config.custom.dns.nebula.ipv4 ];
         extraConfig = ''
           reverse_proxy http://localhost:9090
 
