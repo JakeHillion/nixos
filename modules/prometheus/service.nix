@@ -17,12 +17,22 @@ in
       };
       retentionTime = "1y";
 
-      scrapeConfigs = [{
-        job_name = "node";
-        static_configs = [{
-          targets = builtins.map (x: "${lib.concatStringsSep "." (lib.take 2 (lib.splitString "." x))}.neb.jakehillion.me:9000") (builtins.attrNames (builtins.readDir ../../hosts));
-        }];
-      }];
+      scrapeConfigs = [
+        {
+          job_name = "node";
+          static_configs = [{
+            targets =
+              let
+                hosts = builtins.map
+                  (
+                    x: "${lib.concatStringsSep "." (lib.take 2 (lib.splitString "." x))}.neb.jakehillion.me"
+                  )
+                  (builtins.attrNames (builtins.readDir ../../hosts));
+              in
+              lib.lists.flatten (builtins.map (x: [ "${x}:9000" "${x}:9001" ]) hosts);
+          }];
+        }
+      ];
 
       rules = [
         ''
@@ -50,17 +60,6 @@ in
             ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
           }
         '';
-      };
-    };
-    ### HACK: Allow Caddy to restart if it fails. This happens because Tailscale
-    ### is too late at starting. Upstream nixos caddy does restart on failure
-    ### but it's prevented on exit code 1. Set the exit code to 0 (non-failure)
-    ### to override this.
-    systemd.services.caddy = {
-      requires = [ "tailscaled.service" ];
-      after = [ "tailscaled.service" ];
-      serviceConfig = {
-        RestartPreventExitStatus = lib.mkForce 0;
       };
     };
   };

@@ -82,6 +82,20 @@ in
 
           staticHostMap = lib.attrsets.mapAttrs' (name: value: lib.attrsets.nameValuePair (lookupIpv4 name) [ value ]) lighthouses;
 
+          settings = {
+            stats = {
+              type = "prometheus";
+              namespace = "nebula";
+
+              interval = "60s";
+              listen = "${config.custom.dns.nebula.ipv4}:9001";
+              path = "/metrics";
+
+              message_metrics = true;
+              lighthouse_metrics = true;
+            };
+          };
+
           firewall = {
             inbound = [{ host = "any"; port = "any"; proto = "any"; }];
             outbound = [{ host = "any"; port = "any"; proto = "any"; }];
