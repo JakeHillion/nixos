@@ -9,6 +9,7 @@ let
   lighthouses = {
     "boron.cx.neb.jakehillion.me" = "boron.cx.jakehillion.me:4242";
     "li.pop.neb.jakehillion.me" = "home.scott.hillion.co.uk:4242";
+    "router.home.neb.jakehillion.me" = "home.jakehillion.me:4242";
   };
   relays = [
     "router.home.neb.jakehillion.me"
