@@ -11,6 +11,7 @@ let
     "li.pop.neb.jakehillion.me" = "home.scott.hillion.co.uk:4242";
   };
   relays = [
+    "router.home.neb.jakehillion.me"
     "boron.cx.neb.jakehillion.me"
   ];
 
@@ -22,9 +23,6 @@ in
 {
   options.custom.nebula = {
     enable = lib.mkEnableOption "nebula";
-
-    lighthouse = lib.mkEnableOption "nebula.lighthouse";
-    relay = lib.mkEnableOption "nebula.relay";
 
     certPath = lib.mkOption {
       type = lib.types.str;
