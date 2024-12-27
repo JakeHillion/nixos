@@ -203,10 +203,6 @@ in
     };
 
     ## Tailscale
-    age.secrets."tailscale/phoenix.st.ts.hillion.co.uk".file = ../../secrets/tailscale/phoenix.st.ts.hillion.co.uk.age;
-    services.tailscale = {
-      enable = true;
-      authKeyFile = config.age.secrets."tailscale/phoenix.st.ts.hillion.co.uk".path;
-    };
+    services.tailscale.enable = true;
   };
 }

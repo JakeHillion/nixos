@@ -50,18 +50,6 @@ in
     ts.terminals.jakehillion.gendry
   ];
 
-  # Tailscale Pre-Auth Keys
-  "tailscale/be.lt.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.lt.be ];
-  "tailscale/boron.cx.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.cx.boron ];
-  "tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.terminals.jakehillion.gendry ];
-  "tailscale/li.pop.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.pop.li ];
-  "tailscale/merlin.rig.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.rig.merlin ];
-  "tailscale/phoenix.st.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.st.phoenix ];
-  "tailscale/router.home.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.home.router ];
-  "tailscale/sodium.pop.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.pop.sodium ];
-  "tailscale/stinger.pop.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.pop.stinger ];
-  "tailscale/theon.storage.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.storage.theon ];
-
   # WiFi Environment Files
   "wifi/be.lt.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.lt.be ];
 

@@ -40,11 +40,7 @@
     custom.desktop.awesome.enable = true;
 
     ## Tailscale
-    age.secrets."tailscale/be.lt.ts.hillion.co.uk".file = ../../secrets/tailscale/be.lt.ts.hillion.co.uk.age;
-    services.tailscale = {
-      enable = true;
-      authKeyFile = config.age.secrets."tailscale/be.lt.ts.hillion.co.uk".path;
-    };
+    services.tailscale.enable = true;
 
     security.sudo.wheelNeedsPassword = lib.mkForce true;
 

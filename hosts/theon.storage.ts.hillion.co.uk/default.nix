@@ -41,11 +41,7 @@
     };
 
     ## Tailscale
-    age.secrets."tailscale/theon.storage.ts.hillion.co.uk".file = ../../secrets/tailscale/theon.storage.ts.hillion.co.uk.age;
-    services.tailscale = {
-      enable = true;
-      authKeyFile = config.age.secrets."tailscale/theon.storage.ts.hillion.co.uk".path;
-    };
+    services.tailscale.enable = true;
 
     ## Packages
     environment.systemPackages = with pkgs; [

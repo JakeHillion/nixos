@@ -173,10 +173,6 @@
     };
 
     ## Tailscale
-    age.secrets."tailscale/boron.cx.ts.hillion.co.uk".file = ../../secrets/tailscale/boron.cx.ts.hillion.co.uk.age;
-    services.tailscale = {
-      enable = true;
-      authKeyFile = config.age.secrets."tailscale/boron.cx.ts.hillion.co.uk".path;
-    };
+    services.tailscale.enable = true;
   };
 }

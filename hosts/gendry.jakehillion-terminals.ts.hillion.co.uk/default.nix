@@ -80,11 +80,7 @@
       builtins.map (mkFolder) folderNames;
 
     ## Tailscale
-    age.secrets."tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk".file = ../../secrets/tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk.age;
-    services.tailscale = {
-      enable = true;
-      authKeyFile = config.age.secrets."tailscale/gendry.jakehillion-terminals.ts.hillion.co.uk".path;
-    };
+    services.tailscale.enable = true;
 
     ## Enable btrfs compression
     fileSystems."/data".options = [ "compress=zstd" ];

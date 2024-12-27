@@ -19,10 +19,8 @@
 
     # Networking
     ## Tailscale
-    age.secrets."tailscale/li.pop.ts.hillion.co.uk".file = ../../secrets/tailscale/li.pop.ts.hillion.co.uk.age;
     services.tailscale = {
       enable = true;
-      authKeyFile = config.age.secrets."tailscale/li.pop.ts.hillion.co.uk".path;
       useRoutingFeatures = "server";
       extraUpFlags = [ "--advertise-routes" "192.168.1.0/24" ];
     };

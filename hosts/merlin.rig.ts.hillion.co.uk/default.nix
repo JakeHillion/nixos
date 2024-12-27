@@ -73,10 +73,6 @@
     };
 
     ## Tailscale
-    age.secrets."tailscale/merlin.rig.ts.hillion.co.uk".file = ../../secrets/tailscale/merlin.rig.ts.hillion.co.uk.age;
-    services.tailscale = {
-      enable = true;
-      authKeyFile = config.age.secrets."tailscale/merlin.rig.ts.hillion.co.uk".path;
-    };
+    services.tailscale.enable = true;
   };
 }

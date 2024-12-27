@@ -94,10 +94,6 @@
     };
 
     ## Tailscale
-    age.secrets."tailscale/sodium.pop.ts.hillion.co.uk".file = ../../secrets/tailscale/sodium.pop.ts.hillion.co.uk.age;
-    services.tailscale = {
-      enable = true;
-      authKeyFile = config.age.secrets."tailscale/sodium.pop.ts.hillion.co.uk".path;
-    };
+    services.tailscale.enable = true;
   };
 }
