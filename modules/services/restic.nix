@@ -181,8 +181,8 @@ in
 
     services.caddy = {
       enable = true;
-      virtualHosts."restic.ts.hillion.co.uk".extraConfig = ''
-        bind ${config.custom.dns.tailscale.ipv4} ${config.custom.dns.tailscale.ipv6}
+      virtualHosts."restic.neb.jakehillion.me".extraConfig = ''
+        bind ${config.custom.dns.nebula.ipv4}
         tls {
           ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
         }

@@ -90,7 +90,7 @@ in
       };
 
       services.restic.backups."resilio-128G" = {
-        repository = "rest:https://restic.ts.hillion.co.uk/128G";
+        repository = "rest:https://restic.neb.jakehillion.me/128G";
         user = "rslsync";
         passwordFile = config.age.secrets."resilio/restic/128G.key".path;
 
@@ -110,7 +110,7 @@ in
         ];
       };
       services.restic.backups."resilio-1.6T" = {
-        repository = "rest:https://restic.ts.hillion.co.uk/1.6T";
+        repository = "rest:https://restic.neb.jakehillion.me/1.6T";
         user = "rslsync";
         passwordFile = config.age.secrets."resilio/restic/1.6T.key".path;
 

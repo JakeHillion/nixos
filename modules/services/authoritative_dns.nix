@@ -32,8 +32,6 @@ in
             86400 NS ns1.hillion.co.uk.
             86400 NS ns2.hillion.co.uk.
 
-            restic                21600 CNAME ${config.custom.locations.locations.services.restic}.
-
             graphs.router.home    21600 CNAME router.home.ts.hillion.co.uk.
             zigbee2mqtt.home      21600 CNAME router.home.ts.hillion.co.uk.
 
@@ -61,6 +59,7 @@ in
             frigate               21600 CNAME phoenix.st.neb.jakehillion.me.  ; TODO: go via locations once domains are changed to nebula
             immich                21600 CNAME phoenix.st.neb.jakehillion.me.  ; TODO: go via locations once domains are changed to nebula
             prometheus            21600 CNAME boron.cx.neb.jakehillion.me.    ; TODO: go via locations once domains are changed to nebula
+            restic                21600 CNAME phoenix.st.neb.jakehillion.me.  ; TODO: go via locations once domains are changed to nebula
 
             deluge.downloads      21600 CNAME phoenix.st.neb.jakehillion.me.  ; TODO: go via locations once domains are changed to nebula
             prowlarr.downloads    21600 CNAME phoenix.st.neb.jakehillion.me.  ; TODO: go via locations once domains are changed to nebula

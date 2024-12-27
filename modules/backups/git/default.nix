@@ -73,7 +73,7 @@ in
 
         # Backup to Restic
         ${pkgs.restic}/bin/restic \
-          -r rest:https://restic.ts.hillion.co.uk/128G \
+          -r rest:https://restic.neb.jakehillion.me/128G \
           --cache-dir .restic --exclude .restic \
            backup .
 

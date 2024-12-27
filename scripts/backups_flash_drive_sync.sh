@@ -2,7 +2,7 @@
 #!nix-shell -i bash -p restic rsync
 set -e
 
-HOST="restic.ts.hillion.co.uk"
+HOST="restic.neb.jakehillion.me"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd "$DIR"

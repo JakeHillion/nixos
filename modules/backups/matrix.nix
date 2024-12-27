@@ -24,7 +24,7 @@ in
           OnCalendar = "03:00";
           RandomizedDelaySec = "60m";
         };
-        repository = "rest:https://restic.ts.hillion.co.uk/128G";
+        repository = "rest:https://restic.neb.jakehillion.me/128G";
         passwordFile = config.age.secrets."backups/matrix/restic/128G".path;
         paths = [
           "${config.services.postgresqlBackup.location}/matrix-synapse.sql"

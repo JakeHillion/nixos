@@ -34,7 +34,7 @@ in
     };
 
     services.restic.backups."immich" = {
-      repository = "rest:https://restic.ts.hillion.co.uk/1.6T";
+      repository = "rest:https://restic.neb.jakehillion.me/1.6T";
       user = "immich";
       passwordFile = config.age.secrets."immich/restic/1.6T.key".path;
 
