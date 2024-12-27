@@ -85,10 +85,8 @@ in
           http = {
             use_x_forwarded_for = true;
             trusted_proxies = with config.custom.dns.authoritative; [
-              ipv4.uk.co.hillion.ts.cx.boron
-              ipv6.uk.co.hillion.ts.cx.boron
-              ipv4.uk.co.hillion.ts.pop.sodium
-              ipv6.uk.co.hillion.ts.pop.sodium
+              ipv4.me.jakehillion.neb.cx.boron
+              ipv4.me.jakehillion.neb.pop.sodium
             ];
           };
 
@@ -159,7 +157,7 @@ in
 
           switch = [
             {
-              name = "merlin.rig.ts.hillion.co.uk";
+              name = "merlin.rig.neb.jakehillion.me";
               platform = "wake_on_lan";
               mac = "b0:41:6f:13:20:14";
               host = "10.64.50.28";

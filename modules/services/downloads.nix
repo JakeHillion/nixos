@@ -155,7 +155,7 @@ in
           };
           networking = {
             nameservers = [ "1.1.1.1" "8.8.8.8" ];
-            hosts = { "127.0.0.1" = builtins.map (x: "${x}.downloads.ts.hillion.co.uk") [ "prowlarr" "sonarr" "radarr" "deluge" ]; };
+            hosts = { "127.0.0.1" = builtins.map (x: "${x}.downloads.neb.jakehillion.me") [ "prowlarr" "sonarr" "radarr" "deluge" ]; };
           };
 
           services = {

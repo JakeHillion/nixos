@@ -9,7 +9,7 @@
     system.stateVersion = "23.11";
 
     networking.hostName = "theon";
-    networking.domain = "storage.ts.hillion.co.uk";
+    networking.domain = "storage.neb.jakehillion.me";
 
     boot.loader.grub.enable = false;
     boot.loader.generic-extlinux-compatible.enable = true;

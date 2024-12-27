@@ -3,9 +3,6 @@
 let
   cfg = config.custom.nebula;
 
-  hostMatch = query: match:
-    ((lib.concatStringsSep "." (lib.take 2 (lib.splitString "." query))) + ".neb.jakehillion.me") == match;
-
   lighthouses = {
     "boron.cx.neb.jakehillion.me" = "boron.cx.jakehillion.me:4242";
     "li.pop.neb.jakehillion.me" = "home.scott.hillion.co.uk:4242";
@@ -62,8 +59,8 @@ in
 
     services.nebula.networks =
       let
-        isLighthouse = lib.lists.any (x: hostMatch config.networking.fqdn x) (builtins.attrNames lighthouses);
-        isRelay = lib.lists.any (x: hostMatch config.networking.fqdn x) relays;
+        isLighthouse = lib.lists.any (x: config.networking.fqdn == x) (builtins.attrNames lighthouses);
+        isRelay = lib.lists.any (x: config.networking.fqdn == x) relays;
       in
       {
         "jakehillion" = {

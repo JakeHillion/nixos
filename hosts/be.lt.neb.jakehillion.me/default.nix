@@ -9,7 +9,7 @@
     system.stateVersion = "23.11";
 
     networking.hostName = "be";
-    networking.domain = "lt.ts.hillion.co.uk";
+    networking.domain = "lt.neb.jakehillion.me";
 
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;

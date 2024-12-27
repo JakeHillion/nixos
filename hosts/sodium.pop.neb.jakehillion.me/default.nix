@@ -10,7 +10,7 @@
     system.stateVersion = "24.05";
 
     networking.hostName = "sodium";
-    networking.domain = "pop.ts.hillion.co.uk";
+    networking.domain = "pop.neb.jakehillion.me";
 
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;

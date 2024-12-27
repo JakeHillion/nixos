@@ -20,24 +20,24 @@ in
       custom.locations.locations = {
         services = {
           authoritative_dns = [
-            "boron.cx.ts.hillion.co.uk"
-            "router.home.ts.hillion.co.uk"
+            "boron.cx.neb.jakehillion.me"
+            "router.home.neb.jakehillion.me"
           ];
-          downloads = "phoenix.st.ts.hillion.co.uk";
-          frigate = "phoenix.st.ts.hillion.co.uk";
-          gitea = "boron.cx.ts.hillion.co.uk";
-          homeassistant = "stinger.pop.ts.hillion.co.uk";
-          immich = "phoenix.st.ts.hillion.co.uk";
+          downloads = "phoenix.st.neb.jakehillion.me";
+          frigate = "phoenix.st.neb.jakehillion.me";
+          gitea = "boron.cx.neb.jakehillion.me";
+          homeassistant = "stinger.pop.neb.jakehillion.me";
+          immich = "phoenix.st.neb.jakehillion.me";
           mastodon = "";
-          matrix = "boron.cx.ts.hillion.co.uk";
-          prometheus = "boron.cx.ts.hillion.co.uk";
-          restic = "phoenix.st.ts.hillion.co.uk";
+          matrix = "boron.cx.neb.jakehillion.me";
+          prometheus = "boron.cx.neb.jakehillion.me";
+          restic = "phoenix.st.neb.jakehillion.me";
           tang = [
-            "li.pop.ts.hillion.co.uk"
-            "sodium.pop.ts.hillion.co.uk"
+            "li.pop.neb.jakehillion.me"
+            "sodium.pop.neb.jakehillion.me"
           ];
-          unifi = "boron.cx.ts.hillion.co.uk";
-          version_tracker = [ "boron.cx.ts.hillion.co.uk" ];
+          unifi = "boron.cx.neb.jakehillion.me";
+          version_tracker = [ "boron.cx.neb.jakehillion.me" ];
         };
       };
     }

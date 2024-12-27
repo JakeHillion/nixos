@@ -7,7 +7,7 @@ Raspberry Pi images that support Tailscale and headless SSH can be built using a
     docker run -v $PWD:/src -it --rm nixos/nix:latest /bin/sh
     nix-env -f https://github.com/nix-community/nixos-generators/archive/master.tar.gz -i
     cd /src
-    nixos-generate -f sd-aarch64-installer --system aarch64-linux -c hosts/microserver.home.ts.hillion.co.uk/default.nix
+    nixos-generate -f sd-aarch64-installer --system aarch64-linux -c hosts/microserver.home.neb.jakehillion.me/default.nix
     cp SOME_OUTPUT out.img.zst
 
 Alternatively, a Raspberry Pi image with headless SSH can be easily built using the logic in [this repo](https://github.com/Robertof/nixos-docker-sd-image-builder/tree/master).

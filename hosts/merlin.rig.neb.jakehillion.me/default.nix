@@ -10,7 +10,7 @@
     system.stateVersion = "24.05";
 
     networking.hostName = "merlin";
-    networking.domain = "rig.ts.hillion.co.uk";
+    networking.domain = "rig.neb.jakehillion.me";
 
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;

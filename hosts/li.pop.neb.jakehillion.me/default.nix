@@ -10,7 +10,7 @@
     system.stateVersion = "23.11";
 
     networking.hostName = "li";
-    networking.domain = "pop.ts.hillion.co.uk";
+    networking.domain = "pop.neb.jakehillion.me";
 
     custom.defaults = true;
 

@@ -80,8 +80,7 @@ in
               x_forwarded = true;
               bind_addresses = [
                 "::1"
-                config.custom.dns.tailscale.ipv4
-                config.custom.dns.tailscale.ipv6
+                config.custom.dns.nebula.ipv4
               ];
               resources = [
                 {

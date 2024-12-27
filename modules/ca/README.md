@@ -8,4 +8,4 @@ Creating a 10 year root certificate:
 
 Creating the intermediate key:
 
-    nix run nixpkgs#step-cli -- certificate create 'Hillion ACME (sodium.pop.ts.hillion.co.uk)' intermediate_cert.pem intermediate_key.pem --kty=EC --curve=P-521 --profile=intermediate-ca --not-after=8760h --ca=$NIXOS_ROOT/modules/ca/cert.pem --ca-key=DOWNLOADED_KEY.pem
+    nix run nixpkgs#step-cli -- certificate create 'Hillion ACME (sodium.pop.neb.jakehillion.me)' intermediate_cert.pem intermediate_key.pem --kty=EC --curve=P-521 --profile=intermediate-ca --not-after=8760h --ca=$NIXOS_ROOT/modules/ca/cert.pem --ca-key=DOWNLOADED_KEY.pem
