@@ -38,7 +38,7 @@ in
       settings = {
         permit_join = false;
         mqtt = {
-          server = "mqtt://router.home.ts.hillion.co.uk:1883";
+          server = "mqtt://localhost:1883"; # TODO: move MQTT to a separate service and use locations (not inlined)
           user = "zigbee2mqtt";
           password = "!${config.age.secrets."mqtt/zigbee2mqtt.yaml".path} password";
         };
