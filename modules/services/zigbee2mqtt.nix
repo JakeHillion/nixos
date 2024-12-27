@@ -22,9 +22,14 @@ in
     services.caddy = {
       enable = true;
 
-      virtualHosts."http://zigbee2mqtt.home.ts.hillion.co.uk" = {
-        listenAddresses = [ config.custom.dns.tailscale.ipv4 config.custom.dns.tailscale.ipv6 ];
-        extraConfig = "reverse_proxy http://127.0.0.1:15606";
+      virtualHosts."zigbee2mqtt.home.neb.jakehillion.me" = {
+        listenAddresses = [ config.custom.dns.nebula.ipv4 ];
+        extraConfig = ''
+          tls {
+            ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
+          }
+          reverse_proxy http://127.0.0.1:15606
+        '';
       };
     };
 
@@ -42,7 +47,7 @@ in
         };
         frontend = {
           port = 15606;
-          url = "http://zigbee2mqtt.home.ts.hillion.co.uk";
+          url = "http://zigbee2mqtt.home.neb.jakehillion.me";
         };
         homeassistant = true;
         advanced = {

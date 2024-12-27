@@ -33,7 +33,6 @@ in
             86400 NS ns2.hillion.co.uk.
 
             graphs.router.home    21600 CNAME router.home.ts.hillion.co.uk.
-            zigbee2mqtt.home      21600 CNAME router.home.ts.hillion.co.uk.
 
             charlie.kvm           21600 CNAME router.home.ts.hillion.co.uk.
             hammer.kvm            21600 CNAME router.home.ts.hillion.co.uk.
@@ -60,6 +59,8 @@ in
             immich                21600 CNAME phoenix.st.neb.jakehillion.me.  ; TODO: go via locations once domains are changed to nebula
             prometheus            21600 CNAME boron.cx.neb.jakehillion.me.    ; TODO: go via locations once domains are changed to nebula
             restic                21600 CNAME phoenix.st.neb.jakehillion.me.  ; TODO: go via locations once domains are changed to nebula
+
+            zigbee2mqtt.home      21600 CNAME router.home.neb.jakehillion.me. ; TODO: go via locations once domains are changed to nebula 
 
             deluge.downloads      21600 CNAME phoenix.st.neb.jakehillion.me.  ; TODO: go via locations once domains are changed to nebula
             prowlarr.downloads    21600 CNAME phoenix.st.neb.jakehillion.me.  ; TODO: go via locations once domains are changed to nebula
