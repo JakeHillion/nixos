@@ -391,8 +391,8 @@
     services.caddy = {
       enable = true;
       virtualHosts = {
-        "graphs.router.home.ts.hillion.co.uk" = {
-          listenAddresses = [ config.custom.dns.tailscale.ipv4 config.custom.dns.tailscale.ipv6 ];
+        "graphs.router.home.neb.jakehillion.me" = {
+          listenAddresses = [ config.custom.dns.nebula.ipv4 ];
           extraConfig = ''
             tls {
               ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
@@ -400,8 +400,8 @@
             reverse_proxy unix///run/netdata/netdata.sock
           '';
         };
-        "hammer.kvm.ts.hillion.co.uk" = {
-          listenAddresses = [ config.custom.dns.tailscale.ipv4 config.custom.dns.tailscale.ipv6 ];
+        "hammer.kvm.neb.jakehillion.me" = {
+          listenAddresses = [ config.custom.dns.nebula.ipv4 ];
           extraConfig = ''
             tls {
               ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
@@ -409,8 +409,8 @@
             reverse_proxy http://10.239.19.6
           '';
         };
-        "charlie.kvm.ts.hillion.co.uk" = {
-          listenAddresses = [ config.custom.dns.tailscale.ipv4 config.custom.dns.tailscale.ipv6 ];
+        "charlie.kvm.neb.jakehillion.me" = {
+          listenAddresses = [ config.custom.dns.nebula.ipv4 ];
           extraConfig = ''
             tls {
               ca https://ca.neb.jakehillion.me:8443/acme/acme/directory

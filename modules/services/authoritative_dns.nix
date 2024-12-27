@@ -32,11 +32,6 @@ in
             86400 NS ns1.hillion.co.uk.
             86400 NS ns2.hillion.co.uk.
 
-            graphs.router.home    21600 CNAME router.home.ts.hillion.co.uk.
-
-            charlie.kvm           21600 CNAME router.home.ts.hillion.co.uk.
-            hammer.kvm            21600 CNAME router.home.ts.hillion.co.uk.
-
           '' + (makeRecords "A" config.custom.dns.authoritative.ipv4.uk.co.hillion.ts) + "\n\n" + (makeRecords "AAAA" config.custom.dns.authoritative.ipv6.uk.co.hillion.ts);
 
           "neb.jakehillion.me".data = ''
@@ -61,6 +56,10 @@ in
             restic                21600 CNAME phoenix.st.neb.jakehillion.me.  ; TODO: go via locations once domains are changed to nebula
 
             zigbee2mqtt.home      21600 CNAME router.home.neb.jakehillion.me. ; TODO: go via locations once domains are changed to nebula 
+            graphs.router.home    21600 CNAME router.home.neb.jakehillion.me.
+
+            charlie.kvm           21600 CNAME router.home.neb.jakehillion.me.
+            hammer.kvm            21600 CNAME router.home.neb.jakehillion.me.
 
             deluge.downloads      21600 CNAME phoenix.st.neb.jakehillion.me.  ; TODO: go via locations once domains are changed to nebula
             prowlarr.downloads    21600 CNAME phoenix.st.neb.jakehillion.me.  ; TODO: go via locations once domains are changed to nebula
