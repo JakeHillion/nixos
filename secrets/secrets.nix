@@ -51,7 +51,7 @@ in
   ];
 
   # WiFi Environment Files
-  "wifi/be.lt.ts.hillion.co.uk.age".publicKeys = jake_users ++ [ ts.lt.be ];
+  "wifi/be.lt.neb.jakehillion.me.age".publicKeys = jake_users ++ [ ts.lt.be ];
 
   # Resilio Sync Secrets
   ## Encrypted Resilio Sync Secrets
