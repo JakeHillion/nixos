@@ -181,14 +181,16 @@ in
 
     services.caddy = {
       enable = true;
-      virtualHosts."restic.neb.jakehillion.me".extraConfig = ''
-        bind ${config.custom.dns.nebula.ipv4}
-        tls {
-          ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
-        }
+      virtualHosts."restic.neb.jakehillion.me" = {
+        listenAddresses = [ "::1" config.custom.dns.nebula.ipv4 ];
+        extraConfig = ''
+          tls {
+            ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
+          }
 
-        reverse_proxy http://localhost:8000
-      '';
+          reverse_proxy http://localhost:8000
+        '';
+      };
     };
 
     systemd =
