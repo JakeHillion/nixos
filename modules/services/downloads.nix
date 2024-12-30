@@ -59,8 +59,8 @@ in
       ips = [ "10.2.0.2/32" ];
       peers = [
         {
-          publicKey = "9nrcUUgwvjNU5Z+EBB0C2cbrhQ3dsCz+zSU83/eqGFY=";
-          endpoint = "138.199.6.177:51820";
+          publicKey = "XPVCz7LndzqWe7y3+WSo51hvNOX8nX5CTwVTWhzg8g8=";
+          endpoint = "149.88.27.234:51820";
           allowedIPs = [ "0.0.0.0/0" ];
         }
       ];
