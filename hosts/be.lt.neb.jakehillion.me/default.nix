@@ -47,5 +47,28 @@
     ## Enable btrfs compression
     fileSystems."/data".options = [ "compress=zstd" ];
     fileSystems."/nix".options = [ "compress=zstd" ];
+
+    ## Networking
+    networking.firewall = {
+      trustedInterfaces = [ "neb.jh" ];
+      allowedTCPPorts = lib.mkForce [
+        22 # SSH
+      ];
+      allowedUDPPorts = lib.mkForce [ ];
+      interfaces = {
+        eth0 = {
+          allowedTCPPorts = lib.mkForce [
+          ];
+          allowedUDPPorts = lib.mkForce [
+          ];
+        };
+        iot = {
+          allowedTCPPorts = lib.mkForce [
+          ];
+          allowedUDPPorts = lib.mkForce [
+          ];
+        };
+      };
+    };
   };
 }
