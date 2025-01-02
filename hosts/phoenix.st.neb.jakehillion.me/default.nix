@@ -114,7 +114,11 @@ in
       extraRepos = [ "https://gitea.hillion.co.uk/JakeHillion/nixos.git" ];
     };
 
+    ## Frigate
+    systemd.services."container@frigate".after = [ "zfs-import-practical-defiant-coffee.service" ];
+
     ## Downloads
+    systemd.services."container@downloads".after = [ "zfs-import-practical-defiant-coffee.service" ];
     custom.services.downloads = {
       metadataPath = "/${zpool_name}/downloads/metadata";
       downloadCachePath = "/${zpool_name}/downloads/torrents";
