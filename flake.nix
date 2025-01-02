@@ -47,6 +47,7 @@
         (final: prev: {
           unstable = nixpkgs-unstable.legacyPackages.${prev.system};
 
+          "inventree" = final.callPackage ./pkgs/inventree.nix { };
           "storj" = final.callPackage ./pkgs/storj.nix { };
         })
       ];

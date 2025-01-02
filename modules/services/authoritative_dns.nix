@@ -53,6 +53,7 @@ in
             ca                    21600 CNAME sodium.pop.neb.jakehillion.me.
             frigate               21600 CNAME ${locations.services.frigate}.
             immich                21600 CNAME ${locations.services.immich}.
+            inventree             21600 CNAME ${locations.services.inventree}.
             prometheus            21600 CNAME ${locations.services.prometheus}.
             restic                21600 CNAME ${locations.services.restic}.
 

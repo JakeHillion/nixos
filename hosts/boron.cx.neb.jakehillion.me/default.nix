@@ -148,6 +148,8 @@
       };
     };
 
+    environment.systemPackages = with pkgs; [ inventree ];
+
     networking.firewall = {
       trustedInterfaces = [ "tailscale0" "neb.jh" ];
       allowedTCPPorts = lib.mkForce [ ];

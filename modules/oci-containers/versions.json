@@ -1,4 +1,5 @@
 {
-  "ghcr.io/dmunozv04/isponsorblocktv": "v2.2.1",
-  "ghcr.io/chia-network/chia": "2.5.0"
+  "docker.io/inventree/inventree": "0.17.1",
+  "ghcr.io/chia-network/chia": "2.5.0",
+  "ghcr.io/dmunozv04/isponsorblocktv": "v2.2.1"
 }
