@@ -43,6 +43,7 @@
 
     custom.users.jake.password = true;
     security.sudo.wheelNeedsPassword = lib.mkForce true;
+    custom.desktop.sway.enable = true;
 
     ## Video drivers when docked
     boot.initrd.kernelModules = [ "amdgpu" ];
