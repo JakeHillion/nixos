@@ -124,6 +124,10 @@
     };
     users.users.jake.extraGroups = [ "podman" ];
 
+    environment.systemPackages = with pkgs; [
+      storj
+    ];
+
     ## Networking
     boot.kernel.sysctl = {
       "net.ipv4.ip_forward" = true;
