@@ -165,12 +165,14 @@ in
     }
 
     (lib.mkIf cfg.enable {
-      custom.dns = let
-        lookupFqdn = fqdn: lib.attrsets.attrByPath (lib.reverseList (lib.splitString "." fqdn)) null;
-        lookupConfiguredFqdn = lookupFqdn config.networking.fqdn;
-      in {
-        nebula.ipv4 = lookupConfiguredFqdn cfg.authoritative.ipv4;
-      };
+      custom.dns =
+        let
+          lookupFqdn = fqdn: lib.attrsets.attrByPath (lib.reverseList (lib.splitString "." fqdn)) null;
+          lookupConfiguredFqdn = lookupFqdn config.networking.fqdn;
+        in
+        {
+          nebula.ipv4 = lookupConfiguredFqdn cfg.authoritative.ipv4;
+        };
 
       networking.hosts =
         let

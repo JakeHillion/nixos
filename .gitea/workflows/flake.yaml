@@ -16,7 +16,7 @@ jobs:
       - uses: DeterminateSystems/magic-nix-cache-action@87b14cf437d03d37989d87f0fa5ce4f5dc1a330b # v8
       - name: lint
         run: |
-          nix fmt
+          nix fmt -- .
           git diff --exit-code
       - name: flake check
         run: nix flake check --all-systems
