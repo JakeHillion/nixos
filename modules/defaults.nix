@@ -58,6 +58,13 @@
       path = nixpkgs-unstable;
     };
 
+    # Caddy package
+    ## TODO: drop to stable once available
+    services.caddy.package = pkgs.unstable.caddy.withPlugins {
+      plugins = [ "github.com/caddy-dns/cloudflare@v0.0.0-20240703190432-89f16b99c18e" ];
+      hash = "sha256-WGV/Ve7hbVry5ugSmTYWDihoC9i+D3Ct15UKgdpYc9U=";
+    };
+
     # Delegation
     custom.ca.consumer.enable = true;
     custom.dns.enable = true;

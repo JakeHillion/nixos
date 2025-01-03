@@ -12,7 +12,6 @@ in
   config = lib.mkIf cfg.enable {
     services.caddy = {
       enable = true;
-      package = pkgs.unstable.caddy;
 
       virtualHosts = {
         "homeassistant.iot.hillion.co.uk".extraConfig = ''
