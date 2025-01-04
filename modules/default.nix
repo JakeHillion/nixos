@@ -22,6 +22,7 @@
     ./shell/default.nix
     ./ssh/default.nix
     ./storj.nix
+    ./syncthing.nix
     ./users.nix
     ./www/default.nix
   ];

@@ -66,6 +66,14 @@ in
       interval = "Wed, 02:00";
     };
 
+    ## Syncthing
+    custom.syncthing = {
+      enable = true;
+      baseDir = "/${zpool_name}/users/jake/sync";
+
+      # backups.enable = true;
+    };
+
     ## Resilio
     custom.resilio = {
       enable = true;
