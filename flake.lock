@@ -113,11 +113,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1735925111,
-        "narHash": "sha256-/NptDI4njO5hH0ZVQ2yzbvTXmBOabZaGYkjhnMJ37TY=",
+        "lastModified": 1735947440,
+        "narHash": "sha256-jnEcfmOhWntmVEcqlvs+j532+mvmgsKtQSSfukgkn+A=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "ef64efdbaca99f9960f75efab991e4c49e79a5f1",
+        "rev": "a9987622b7b93c82e147f198574e8e6ffbf5e327",
         "type": "github"
       },
       "original": {
@@ -175,11 +175,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1735554643,
-        "narHash": "sha256-rNe1NQWg21IB66nAn6yVpoFgZYMuT4ksSDCNzq/Se4w=",
-        "rev": "2e151a2231400436d093ff3d316535db17173786",
+        "lastModified": 1735943431,
+        "narHash": "sha256-1kaE0xA5WXvNtr/pTd7ITB4j+QJZOwnBSQr7PrMHBB4=",
+        "rev": "76f183bdd54a6dd149e7b580fbc4a4ccb3b26382",
         "type": "tarball",
-        "url": "https://gitea.hillion.co.uk/api/v1/repos/JakeHillion/nixpkgs/archive/2e151a2231400436d093ff3d316535db17173786.tar.gz"
+        "url": "https://gitea.hillion.co.uk/api/v1/repos/JakeHillion/nixpkgs/archive/76f183bdd54a6dd149e7b580fbc4a4ccb3b26382.tar.gz"
       },
       "original": {
         "type": "tarball",
