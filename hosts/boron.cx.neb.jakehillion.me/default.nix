@@ -88,6 +88,12 @@
       fileSystems = [ "/data" ];
     };
 
+    ## Syncthing
+    custom.syncthing = {
+      enable = true;
+      baseDir = "/data/users/jake/sync";
+    };
+
     ## Resilio
     custom.resilio = {
       enable = true;
