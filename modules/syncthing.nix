@@ -35,6 +35,7 @@ in
               {
                 "boron.cx" = "LX5YKSC-SV22B4A-ESU7YPL-AANIT55-OVT3UJN-3FKNKUF-E7AOTOW-MMPNJQL";
                 "jakehillion-mba-m2-15.lt" = "7NAXX6J-4RRJD6B-NP5LG3L-LUIGASI-OXLPS3H-ACLCXBA-RZNSRXN-CXMFZQC";
+                "merlin.rig" = "IUCUUDQ-7Q3VCA3-JMUA3GL-UOYWAPM-IE6RT3O-CTSA5VL-HRXEPZD-SSOBKQ2";
                 "phoenix.st" = "65COGEC-WBF67I4-EBM73U3-DQMVOS7-PWM7VMS-M744STW-TQVIO7S-NBP56AV";
               };
           in
@@ -80,7 +81,11 @@ in
 
                   "appdata/zotero" = {
                     id = "sustainable-horizontal-skating";
-                    devices = [ "jakehillion-mba-m2-15.lt" "phoenix.st" ];
+                    devices = [
+                      "jakehillion-mba-m2-15.lt"
+                      "merlin.rig"
+                      "phoenix.st"
+                    ];
                   };
                 };
           };
