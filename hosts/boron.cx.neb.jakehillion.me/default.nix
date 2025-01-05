@@ -88,9 +88,15 @@
       fileSystems = [ "/data" ];
     };
 
+    ## Syncthing
+    custom.syncthing = {
+      enable = true;
+      baseDir = "/data/users/jake/sync";
+    };
+
     ## Resilio
     custom.resilio = {
-      enable = true;
+      enable = false;
       folders =
         let
           folderNames = [

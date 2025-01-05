@@ -56,8 +56,7 @@
     boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
     ## Resilio
-    custom.resilio.enable = true;
-
+    custom.resilio.enable = false;
     services.resilio.directoryRoot = "/data/sync";
 
     custom.resilio.folders =
