@@ -48,6 +48,12 @@
     fileSystems."/data".options = [ "compress=zstd" ];
     fileSystems."/nix".options = [ "compress=zstd" ];
 
+    ## Syncthing
+    custom.syncthing = {
+      enable = true;
+      baseDir = "/data/users/jake/sync";
+    };
+
     ## Networking
     networking.firewall = {
       trustedInterfaces = [ "neb.jh" ];

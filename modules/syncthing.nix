@@ -33,6 +33,7 @@ in
                 addresses = [ "tcp://${name}.neb.jakehillion.me:22000" ];
               })
               {
+                "be.lt" = "QKNSUEX-XGJIDH3-5DM5MFY-7ES5AVO-ERJ447V-RKS553C-3PGMIJI-Y4YRZAF";
                 "boron.cx" = "LX5YKSC-SV22B4A-ESU7YPL-AANIT55-OVT3UJN-3FKNKUF-E7AOTOW-MMPNJQL";
                 "gendry.jakehillion-terminals" = "7JSM6OY-SYSZXM5-633SD6U-ZZJ5KN3-SZQNQFY-C7RGOLM-DZG3CUW-JCVR2AH";
                 "jakehillion-mba-m2-15.lt" = "7NAXX6J-4RRJD6B-NP5LG3L-LUIGASI-OXLPS3H-ACLCXBA-RZNSRXN-CXMFZQC";
