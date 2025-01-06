@@ -55,6 +55,12 @@
     # Allow performing aarch64 builds in QEMU
     boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
+    ## Syncthing
+    custom.syncthing = {
+      enable = true;
+      baseDir = "/data/users/jake/sync";
+    };
+
     ## Resilio
     custom.resilio.enable = false;
     services.resilio.directoryRoot = "/data/sync";
