@@ -64,8 +64,14 @@
 
     # Networking
     networking = {
-      interfaces.enp171s0.name = "eth0";
-      interfaces.enp172s0.name = "eth1";
+      interfaces.enp171s0 = {
+        name = "eth0";
+        useDHCP = true;
+      };
+      interfaces.enp172s0 = {
+        name = "eth1";
+        useDHCP = false;
+      };
     };
     networking.nameservers = lib.mkForce [ ]; # Trust the DHCP nameservers
 
