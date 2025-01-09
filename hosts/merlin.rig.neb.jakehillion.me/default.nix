@@ -62,6 +62,12 @@
       baseDir = "/data/users/jake/sync";
     };
 
+    # TODO: move and impermanence me
+    programs.kdeconnect.enable = true;
+    home-manager.users."jake".services.kdeconnect.enable = true;
+    hardware.uinput.enable = true;
+    users.users."jake".extraGroups = [ "uinput" ];
+
     # Networking
     networking = {
       interfaces.enp171s0.name = "eth0";
@@ -74,11 +80,20 @@
       allowedTCPPorts = lib.mkForce [
         22 # SSH
       ];
+      allowedTCPPortRanges = lib.mkForce [ ];
       allowedUDPPorts = lib.mkForce [ ];
+      allowedUDPPortRanges = lib.mkForce [ ];
+
       interfaces = {
         eth0 = {
           allowedTCPPorts = lib.mkForce [ ];
+          allowedTCPPortRanges = lib.mkForce [
+            { from = 1714; to = 1764; } # KDE Connect
+          ];
           allowedUDPPorts = lib.mkForce [ ];
+          allowedUDPPortRanges = lib.mkForce [
+            { from = 1714; to = 1764; } # KDE Connect
+          ];
         };
       };
     };
