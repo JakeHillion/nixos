@@ -39,10 +39,15 @@
 
     custom.defaults = true;
     custom.locations.autoServe = true;
-    custom.impermanence.enable = true;
 
     custom.users.jake.password = true;
     security.sudo.wheelNeedsPassword = lib.mkForce true;
+
+    ## Impermanence
+    custom.impermanence = {
+      enable = true;
+      userExtraFiles.jake = [ ".ssh/id_ecdsa" ];
+    };
 
     ## Video drivers when docked
     boot.initrd.kernelModules = [ "amdgpu" ];
