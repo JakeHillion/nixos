@@ -52,5 +52,16 @@ in
     };
 
     programs.sway.enable = true;
+
+    home-manager.users."jake" = {
+      xdg.configFile."sway/config" = {
+        text = with pkgs; ''
+          ### Configure paths filled in by Nix
+          set $term "${alacritty}/bin/alacritty"
+          set $tmux "${tmux}/bin/tmux"
+
+        '' + builtins.readFile ./config;
+      };
+    };
   };
 }
