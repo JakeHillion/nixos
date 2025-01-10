@@ -84,5 +84,12 @@ in
         '' + builtins.readFile ./config;
       };
     };
+
+    services.redshift.enable = true;
+    location.provider = "geoclue2";
+    services.geoclue2 = {
+      enable = true;
+      geoProviderUrl = "https://api.beacondb.net/v1/geolocate";
+    };
   };
 }
