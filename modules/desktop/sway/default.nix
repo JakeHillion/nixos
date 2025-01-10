@@ -55,10 +55,31 @@ in
 
     home-manager.users."jake" = {
       xdg.configFile."sway/config" = {
-        text = with pkgs; ''
+        text = with pkgs; let
+          config_watcher = pkgs.writeShellScript "sway_config_watcher" ''
+            CONFIG_FILE="$HOME/.config/sway/config"
+            LAST_MOD_TIME=$(stat -c %Y "$CONFIG_FILE")
+
+            echo "Monitoring $CONFIG_FILE for changes..."
+
+            # inotifywait doesn't work on tmpfs used with impermanence. poll instead.
+            while true; do
+                sleep 5
+                CURRENT_MOD_TIME=$(stat -c %Y "$CONFIG_FILE")
+
+                if [ "$CURRENT_MOD_TIME" -ne "$LAST_MOD_TIME" ]; then
+                    # File has been modified
+                    ${sway}/bin/swaymsg reload
+                    LAST_MOD_TIME=$CURRENT_MOD_TIME
+                fi
+            done
+          '';
+        in
+        ''
           ### Configure paths filled in by Nix
           set $term "${alacritty}/bin/alacritty"
           set $tmux "${tmux}/bin/tmux"
+          set $config_watcher "${config_watcher}"
 
         '' + builtins.readFile ./config;
       };
