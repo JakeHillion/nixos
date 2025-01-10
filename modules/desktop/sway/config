@@ -228,4 +228,11 @@ bar {
     }
 }
 
+#
+# Visuals:
+#
+
+# Disable borders on terminals
+for_window [app_id="Alacritty"] border none
+
 include /etc/sway/config.d/*
