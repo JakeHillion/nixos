@@ -55,10 +55,21 @@ in
 
     home-manager.users."jake" = {
       xdg.configFile."sway/config" = {
-        text = with pkgs; ''
+        text = with pkgs; let
+          config_watcher = pkgs.writeShellScript "sway_config_watcher" ''
+            CONFIG_FILE="$HOME/.config/sway/config"
+
+            ${inotify-tools}/bin/inotifywait -m -e close_write "$CONFIG_FILE" | while read -r filename event; do
+              ${sway}/bin/swaymsg reload
+              ${libnotify}/bin/notify-send "Sway Config Reloaded" "Your Sway configuration has been reloaded."
+            done
+          '';
+        in
+        ''
           ### Configure paths filled in by Nix
           set $term "${alacritty}/bin/alacritty"
           set $tmux "${tmux}/bin/tmux"
+          set $config_watcher "${config_watcher}"
 
         '' + builtins.readFile ./config;
       };
