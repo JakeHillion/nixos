@@ -11,6 +11,7 @@ in
   config = lib.mkIf cfg.enable {
     systemd.tmpfiles.rules = [
       "d /var/cache/regreet 0755 greeter greeter -"
+      "f /var/cache/regreet/cache.toml 0644 greeter greeter -"
     ];
     systemd.services.populate-regreet-cache = {
       description = "Populate /var/cache/regreet/cache.toml to automatically select Sway";
