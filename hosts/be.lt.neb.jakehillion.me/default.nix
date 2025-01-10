@@ -37,7 +37,7 @@
 
     ## Desktop
     custom.users.jake.password = true;
-    custom.desktop.awesome.enable = true;
+    custom.desktop.sway.enable = true;
 
     ## Tailscale
     services.tailscale.enable = true;
