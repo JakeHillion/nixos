@@ -28,55 +28,78 @@
     custom.users.jake.password = true;
 
     ## Networking
+    systemd.network = {
+      enable = true;
+
+      links = {
+        "10-eth0" = {
+          matchConfig.MACAddress = "20:7c:14:a1:f1:d8";
+          linkConfig.Name = "eth0";
+        };
+        "10-eth1" = {
+          matchConfig.MACAddress = "20:7c:14:a1:f1:d9";
+          linkConfig.Name = "eth1";
+        };
+        "10-eth2" = {
+          matchConfig.MACAddress = "20:7c:14:a1:f1:da";
+          linkConfig.Name = "eth2";
+        };
+        "10-eth3" = {
+          matchConfig.MACAddress = "20:7c:14:a1:f1:db";
+          linkConfig.Name = "eth3";
+        };
+        "10-eth4" = {
+          matchConfig.MACAddress = "20:7c:14:a1:f1:dc";
+          linkConfig.Name = "eth4";
+        };
+        "10-eth5" = {
+          matchConfig.MACAddress = "20:7c:14:a1:f1:dd";
+          linkConfig.Name = "eth5";
+        };
+      };
+
+      netdevs = {
+        "20-vlan_cameras" = {
+          netdevConfig = {
+            Kind = "vlan";
+            Name = "cameras";
+          };
+          vlanConfig.Id = 3;
+        };
+      };
+
+      networks = {
+        "10-wan" = {
+          matchConfig.Name = "eth0";
+          networkConfig.DHCP = "ipv4";
+          linkConfig = {
+            RequiredForOnline = "routable";
+            MACAddress = "b4:fb:e4:b0:90:3c";
+          };
+        };
+
+        "11-lan" = {
+          matchConfig.Name = "eth1";
+          networkConfig.Address = "10.64.50.1/24";
+        };
+        "12-iot" = {
+          matchConfig.Name = "eth2";
+          networkConfig.Address = "10.239.19.1/24";
+
+          vlan = [ "cameras" ];
+        };
+        "13-cameras" = {
+          matchConfig.Name = "cameras";
+          networkConfig.Address = "10.133.145.1/24";
+        };
+      };
+    };
+    services.resolved.enable = lib.mkForce false;
+
     networking = {
+      useDHCP = lib.mkForce false;
       firewall.enable = lib.mkForce false;
       nat.enable = lib.mkForce false;
-
-      useDHCP = false;
-
-      vlans = {
-        cameras = {
-          id = 3;
-          interface = "eth2";
-        };
-      };
-
-      interfaces = {
-        enp1s0 = {
-          name = "eth0";
-          macAddress = "b4:fb:e4:b0:90:3c";
-          useDHCP = true;
-        };
-        enp2s0 = {
-          name = "eth1";
-          ipv4.addresses = [
-            {
-              address = "10.64.50.1";
-              prefixLength = 24;
-            }
-          ];
-        };
-        enp3s0 = {
-          name = "eth2";
-          ipv4.addresses = [
-            {
-              address = "10.239.19.1";
-              prefixLength = 24;
-            }
-          ];
-        };
-        cameras /* cameras@eth2 */ = {
-          ipv4.addresses = [
-            {
-              address = "10.133.145.1";
-              prefixLength = 24;
-            }
-          ];
-        };
-        enp4s0 = { name = "eth3"; };
-        enp5s0 = { name = "eth4"; };
-        enp6s0 = { name = "eth5"; };
-      };
 
       nftables = {
         enable = true;
