@@ -40,6 +40,15 @@ output * bg /run/current-system/sw/share/backgrounds/sway/Sway_Wallpaper_Blue_19
 # your displays after another 300 seconds, and turn your screens back on when
 # resumed. It will also lock your screen before your computer goes to sleep.
 
+set $swaylock $swaylock -f
+set $swaylock $swaylock --screenshots --indicator --clock --fade-in 0.5 --effect-blur 7x5
+set $swaylock $swaylock --grace 5 --grace-no-mouse --grace-no-touch
+
+exec swayidle -w \
+         timeout 300 '$swaylock' \
+         timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
+         before-sleep '$swaylock'
+
 ### Input configuration
 #
 # Example configuration:

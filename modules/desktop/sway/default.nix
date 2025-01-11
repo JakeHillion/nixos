@@ -77,9 +77,10 @@ in
         in
         ''
           ### Configure paths filled in by Nix
+          set $config_watcher "${config_watcher}"
+          set $swaylock "${swaylock-effects}/bin/swaylock"
           set $term "${alacritty}/bin/alacritty"
           set $tmux "${tmux}/bin/tmux"
-          set $config_watcher "${config_watcher}"
 
         '' + builtins.readFile ./config;
       };
