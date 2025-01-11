@@ -129,7 +129,7 @@ in
   "certs/links.hillion.co.uk.pem.age".publicKeys = jake_users ++ [ neb.cx.boron ];
 
   # Cloudflare
-  "cloudflare/zone_keys.env.age".publicKeys = jake_users ++ [ ts.cx.boron ];
+  "cloudflare/zone_keys.env.age".publicKeys = jake_users ++ [ neb.cx.boron ];
 
   # Frigate secrets
   "frigate/secrets.env.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
