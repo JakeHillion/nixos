@@ -9,6 +9,13 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    age.secrets."sway/timewall" = {
+      file = ../../../secrets/sway/timewall/${config.networking.fqdn}.toml.age;
+      path = "/home/jake/.config/timewall/config.toml";
+      owner = "jake";
+      group = "users";
+    };
+
     systemd.tmpfiles.rules = [
       "d /var/cache/regreet 0755 greeter greeter -"
       "f /var/cache/regreet/cache.toml 0644 greeter greeter -"
@@ -76,11 +83,15 @@ in
           '';
         in
         ''
-          ### Configure paths filled in by Nix
+          ### Configure binary paths from the Nix store
           set $config_watcher "${config_watcher}"
           set $swaylock "${swaylock-effects}/bin/swaylock"
           set $term "${alacritty}/bin/alacritty"
+          set $timewall "${unstable.timewall}/bin/timewall"
           set $tmux "${tmux}/bin/tmux"
+
+          ### Configure extra items from the Nix store
+          set $wallpaper ${./Desert_Sands_Louis_Coyle.heic}
 
         '' + builtins.readFile ./config;
       };

@@ -133,4 +133,8 @@ in
 
   # Frigate secrets
   "frigate/secrets.env.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
+
+  # Desktop secrets
+  "sway/timewall/merlin.rig.neb.jakehillion.me.toml.age".publicKeys = jake_users ++ [ neb.rig.merlin ];
+  "sway/timewall/be.lt.neb.jakehillion.me.toml.age".publicKeys = jake_users ++ [ neb.lt.be ];
 }
