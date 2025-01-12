@@ -19,6 +19,8 @@ in
     systemd.tmpfiles.rules = [
       "d /var/cache/regreet 0755 greeter greeter -"
       "f /var/cache/regreet/cache.toml 0644 greeter greeter -"
+
+      "d /home/jake/.config 0755 jake users" # so a secret can be placed into it
     ];
     systemd.services.populate-regreet-cache = {
       description = "Populate /var/cache/regreet/cache.toml to automatically select Sway";
