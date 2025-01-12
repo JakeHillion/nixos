@@ -57,6 +57,9 @@
     # Allow performing aarch64 builds in QEMU
     boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
+    ## Udisks
+    services.udisks2.enable = true;
+
     ## Syncthing
     custom.syncthing = {
       enable = true;
