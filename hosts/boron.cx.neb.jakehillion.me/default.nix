@@ -130,6 +130,11 @@
     };
     users.users.jake.extraGroups = [ "podman" ];
 
+    programs.nix-index = {
+      enable = true;
+      enableZshIntegration = true;
+    };
+
     ## Networking
     boot.kernel.sysctl = {
       "net.ipv4.ip_forward" = true;
