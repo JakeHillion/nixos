@@ -130,6 +130,34 @@ in
       tvPath = "/${zpool_name}/media/tv";
     };
 
+    ## Wallpapers
+    services.caddy = {
+      enable = true;
+
+      virtualHosts."wallpapers.neb.jakehillion.me" = {
+        listenAddresses = [ config.custom.dns.nebula.ipv4 ];
+        extraConfig = ''
+          tls {
+            ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
+          }
+
+          root * /${zpool_name}/media/wallpapers
+          file_server
+        '';
+      };
+    };
+
+    age.secrets."restic/wallpapers/1.6T".file = ../../secrets/restic/1.6T.age;
+    services.restic.backups."wallpapers" = {
+      timerConfig = {
+        OnCalendar = "03:00";
+        RandomizedDelaySec = "60m";
+      };
+      repository = "rest:https://restic.neb.jakehillion.me/1.6T";
+      passwordFile = config.age.secrets."restic/wallpapers/1.6T".path;
+      paths = [ "/${zpool_name}/media/wallpapers" ];
+    };
+
     ## Plex
     users.users.plex.extraGroups = [ "mediaaccess" ];
     services.plex.enable = true;

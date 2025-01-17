@@ -55,6 +55,7 @@ in
             immich                21600 CNAME ${locations.services.immich}.
             prometheus            21600 CNAME ${locations.services.prometheus}.
             restic                21600 CNAME ${locations.services.restic}.
+            wallpapers            21600 CNAME phoenix.st.neb.jakehillion.me.
 
             zigbee2mqtt.home      21600 CNAME router.home.neb.jakehillion.me.
             graphs.router.home    21600 CNAME router.home.neb.jakehillion.me.

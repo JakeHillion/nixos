@@ -3,7 +3,10 @@
 let
   cfg = config.custom.desktop.sway;
 
-  wallpaper = ./Desert_Sands_Louis_Coyle.heic;
+  wallpaper = pkgs.fetchurl {
+    url = "https://wallpapers.neb.jakehillion.me/JetsonCreative/24hr-BigSur-1.heic";
+    sha256 = "a9efd07f6823c8e08753614007f895487ec47532263a90bd24f5ab6a49a68503";
+  };
 in
 {
   options.custom.desktop.sway = {
