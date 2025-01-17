@@ -2,6 +2,8 @@
 
 let
   cfg = config.custom.desktop.sway;
+
+  wallpaper = ./Desert_Sands_Louis_Coyle.heic;
 in
 {
   options.custom.desktop.sway = {
@@ -15,8 +17,14 @@ in
       owner = "jake";
       group = "users";
     };
+    age.secrets."regreet/timewall" = {
+      file = ../../../secrets/sway/timewall/${config.networking.fqdn}.toml.age;
+      owner = "greeter";
+      group = "greeter";
+    };
 
     systemd.tmpfiles.rules = [
+      "d /run/regreet 0755 greeter greeter -"
       "d /var/cache/regreet 0755 greeter greeter -"
       "f /var/cache/regreet/cache.toml 0644 greeter greeter -"
 
@@ -39,6 +47,27 @@ in
         ''} /var/cache/regreet/cache.toml";
       };
     };
+    systemd.services.generate-regreet-wallpaper = {
+      description = "Populate /run/regreet/wallpaper with a dynamic symlink";
+      after = [ "local-fs.target" ];
+      wantedBy = [ "multi-user.target" ];
+
+      serviceConfig = {
+        User = "greeter";
+        Group = "greeter";
+
+        WorkingDirectory = "/run/regreet";
+      };
+
+      script = ''
+        mkdir -p timewall/cache
+
+        ${pkgs.toml-cli}/bin/toml set ${config.age.secrets."regreet/timewall".path} setter.command '@COMMAND@' >timewall/config.toml
+        sed -e "s|\"@COMMAND@\"|['ln', '-fs', '%f', '/run/regreet/wallpaper']|g" -i timewall/config.toml
+
+        TIMEWALL_CONFIG_DIR=timewall TIMEWALL_CACHE_DIR=timewall/cache ${pkgs.unstable.timewall}/bin/timewall set ${wallpaper}
+      '';
+    };
 
     programs.regreet = {
       enable = true;
@@ -51,7 +80,7 @@ in
 
       settings = {
         background = {
-          path = ./pine-watt-2Hzmz15wGik-unsplash.jpg;
+          path = "/run/regreet/wallpaper";
           fit = "Cover";
         };
         GTK = {
@@ -93,7 +122,7 @@ in
           set $tmux "${tmux}/bin/tmux"
 
           ### Configure extra items from the Nix store
-          set $wallpaper ${./Desert_Sands_Louis_Coyle.heic}
+          set $wallpaper ${wallpaper}
 
         '' + builtins.readFile ./config;
       };
