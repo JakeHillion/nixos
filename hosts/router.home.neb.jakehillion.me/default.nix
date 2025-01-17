@@ -59,6 +59,20 @@
       };
 
       netdevs = {
+        "10-br0" = {
+          netdevConfig = {
+            Kind = "bridge";
+            Name = "br0";
+          };
+        };
+
+        "20-vlan_iot" = {
+          netdevConfig = {
+            Kind = "vlan";
+            Name = "iot";
+          };
+          vlanConfig.Id = 2;
+        };
         "20-vlan_cameras" = {
           netdevConfig = {
             Kind = "vlan";
@@ -78,17 +92,41 @@
           };
         };
 
-        "11-lan" = {
+        "11-eth1" = {
           matchConfig.Name = "eth1";
-          networkConfig.Address = "10.64.50.1/24";
+          networkConfig.Bridge = "br0";
         };
-        "12-iot" = {
+        "11-eth2" = {
           matchConfig.Name = "eth2";
-          networkConfig.Address = "10.239.19.1/24";
-
-          vlan = [ "cameras" ];
+          networkConfig.Bridge = "br0";
         };
-        "13-cameras" = {
+        "11-eth3" = {
+          matchConfig.Name = "eth3";
+          networkConfig.Bridge = "br0";
+        };
+        "11-eth4" = {
+          matchConfig.Name = "eth4";
+          networkConfig.Bridge = "br0";
+        };
+        "11-eth5" = {
+          matchConfig.Name = "eth5";
+          networkConfig.Bridge = "br0";
+        };
+
+        "21-lan" = {
+          matchConfig.Name = "br0";
+          networkConfig.Address = "10.64.50.1/24";
+
+          vlan = [
+            "iot"
+            "cameras"
+          ];
+        };
+        "22-iot" = {
+          matchConfig.Name = "iot";
+          networkConfig.Address = "10.239.19.1/24";
+        };
+        "23-cameras" = {
           matchConfig.Name = "cameras";
           networkConfig.Address = "10.133.145.1/24";
         };
@@ -115,45 +153,51 @@
               # Allow trusted networks to access the router
               iifname {
                 "lo",
-                "eth1",
-                "eth2",
                 "tailscale0",
                 "neb.jh",
               } counter accept
 
               ip protocol icmp counter accept comment "accept all ICMP types"
 
-              iifname "eth0" tcp dport    22 counter accept comment "SSH"
+              tcp dport    22 counter accept comment "SSH"
+              udp dport  4242 counter accept comment "Nebula Lighthouse"
+
+              iifname { "br0", "iot" } udp dport 53 counter accept comment "Unbound"
+
+              iifname br0 tcp dport 5201 counter accept comment "iperf3"
+
               iifname "eth0" tcp dport    53 counter accept comment "Public DNS"
-
               iifname "eth0" udp dport    53 counter accept comment "Public DNS"
-              iifname "eth0" udp dport  4242 counter accept comment "Nebula Lighthouse"
 
-              iifname { "eth0", "cameras" } ct state { established, related } counter accept
-              iifname { "eth0", "cameras" } drop
+              iifname {
+                "eth0",
+                "br0",
+                "iot",
+                "cameras",
+              } ct state { established, related } counter accept
             }
 
             chain forward {
               type filter hook forward priority filter; policy drop;
 
               iifname {
-                "eth1",
-                "eth2",
+                "br0",
+                "iot",
                 "tailscale0",
               } oifname {
                 "eth0",
-              } counter accept comment "Allow trusted LAN to WAN"
+              } counter accept comment "Allow Internet enabled LANs to WAN"
 
               iifname {
                 "eth0",
               } oifname {
-                "eth1",
-                "eth2",
+                "br0",
+                "iot",
                 "tailscale0",
-              } ct state { established,related } counter accept comment "Allow established back to LANs"
+              } ct state { established,related } counter accept comment "Allow established back to Internet enabled LANs"
 
-              iifname "tailscale0" oifname { "eth1", "eth2" } counter accept comment "Allow LAN access from Tailscale"
-              iifname { "eth1", "eth2" } oifname "tailscale0" ct state { established,related } counter accept comment "Allow established back to Tailscale"
+              iifname "tailscale0" oifname { "br0", "iot" } counter accept comment "Allow LAN access from Tailscale"
+              iifname { "br0", "iot" } oifname "tailscale0" ct state { established,related } counter accept comment "Allow established back to Tailscale"
 
               ip daddr 10.64.50.21 tcp dport  7654 counter accept comment "Tang"
               ip daddr 10.64.50.27 tcp dport 32400 counter accept comment "Plex"
@@ -167,7 +211,7 @@
               iifname eth0 tcp dport  7654 counter dnat to 10.64.50.21
               iifname eth0 tcp dport 32400 counter dnat to 10.64.50.27
 
-              iifname eth1 ip daddr 185.240.111.53 udp dport 4242 dnat to 10.64.50.1
+              iifname br0 ip daddr 185.240.111.53 udp dport 4242 dnat to 10.64.50.1
             }
 
             chain postrouting {
@@ -175,8 +219,8 @@
 
               oifname "eth0" masquerade
 
-              iifname tailscale0 oifname eth1 snat to 10.64.50.1
-              iifname tailscale0 oifname eth2 snat to 10.239.19.1
+              iifname tailscale0 oifname br0 snat to 10.64.50.1
+              iifname tailscale0 oifname iot  snat to 10.239.19.1
             }
           }
         '';
@@ -190,7 +234,7 @@
 
           settings = {
             interfaces-config = {
-              interfaces = [ "eth1" "eth2" "cameras" ];
+              interfaces = [ "br0" "iot" "cameras" ];
             };
             lease-database = {
               type = "memfile";
@@ -230,7 +274,7 @@
               {
                 id = 1;
                 subnet = "10.64.50.0/24";
-                interface = "eth1";
+                interface = "br0";
                 pools = [{
                   pool = "10.64.50.64 - 10.64.50.254";
                 }];
@@ -268,7 +312,7 @@
               {
                 id = 2;
                 subnet = "10.239.19.0/24";
-                interface = "eth2";
+                interface = "iot";
                 pools = [{
                   pool = "10.239.19.64 - 10.239.19.254";
                 }];
