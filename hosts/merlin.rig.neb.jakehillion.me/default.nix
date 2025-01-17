@@ -66,6 +66,24 @@
       baseDir = "/data/users/jake/sync";
     };
 
+    ## Spotify
+    services.pipewire.enable = lib.mkForce false;
+    hardware.pulseaudio.enable = true;
+    users.users.jake.extraGroups = [ "audio" ];
+
+    home-manager.users.jake.services.spotifyd = {
+      enable = true;
+      settings = {
+        global = {
+          device_name = "merlin.rig";
+          device_type = "computer";
+          bitrate = 320;
+
+          backend = "pulseaudio";
+        };
+      };
+    };
+
     # Networking
     networking = {
       interfaces.enp171s0.name = "eth0";
