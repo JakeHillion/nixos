@@ -27,9 +27,9 @@ in
     };
 
     systemd.tmpfiles.rules = [
-      "d /run/regreet 0755 greeter greeter -"
       "d /var/cache/regreet 0755 greeter greeter -"
       "f /var/cache/regreet/cache.toml 0644 greeter greeter -"
+      "Z /var/cache/regreet - greeter greeter -"
 
       "d /home/jake/.config 0755 jake users" # so a secret can be placed into it
     ];
@@ -51,7 +51,7 @@ in
       };
     };
     systemd.services.generate-regreet-wallpaper = {
-      description = "Populate /run/regreet/wallpaper with a dynamic symlink";
+      description = "Populate /var/cache/regreet/wallpaper with a dynamic symlink";
       after = [ "local-fs.target" ];
       wantedBy = [ "multi-user.target" ];
 
@@ -59,16 +59,19 @@ in
         User = "greeter";
         Group = "greeter";
 
-        WorkingDirectory = "/run/regreet";
+        WorkingDirectory = "/var/cache/regreet";
       };
 
-      script = ''
+      preStart = ''
         mkdir -p timewall/cache
 
         ${pkgs.toml-cli}/bin/toml set ${config.age.secrets."regreet/timewall".path} setter.command '@COMMAND@' >timewall/config.toml
-        sed -e "s|\"@COMMAND@\"|['ln', '-fs', '%f', '/run/regreet/wallpaper']|g" -i timewall/config.toml
+        sed -e "s|\"@COMMAND@\"|['ln', '-fs', '%f', '/var/cache/regreet/wallpaper']|g" -i timewall/config.toml
 
         TIMEWALL_CONFIG_DIR=timewall TIMEWALL_CACHE_DIR=timewall/cache ${pkgs.unstable.timewall}/bin/timewall set ${wallpaper}
+      '';
+      script = ''
+        TIMEWALL_CONFIG_DIR=timewall TIMEWALL_CACHE_DIR=timewall/cache ${pkgs.unstable.timewall}/bin/timewall set -d
       '';
     };
 
@@ -83,7 +86,7 @@ in
 
       settings = {
         background = {
-          path = "/run/regreet/wallpaper";
+          path = "/var/cache/regreet/wallpaper";
           fit = "Cover";
         };
         GTK = {

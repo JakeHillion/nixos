@@ -18,7 +18,7 @@ set $menu wmenu-run
 
 ### Sun based wallpapers
 # Default to the one built because the first run takes a while.
-exec swaymsg 'output * bg /run/regreet/wallpaper fill'
+exec swaymsg 'output * bg /var/cache/regreet/wallpaper fill'
 exec_always $timewall set $wallpaper
 exec $timewall set -d
 

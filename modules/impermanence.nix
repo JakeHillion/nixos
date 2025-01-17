@@ -19,6 +19,11 @@ in
       };
     };
 
+    extraDirs = lib.mkOption {
+      type = with lib.types; listOf str;
+      default = [ ];
+    };
+
     users = lib.mkOption {
       type = with lib.types; listOf str;
       default = [ "root" config.custom.user ];
@@ -72,7 +77,9 @@ in
 
           directories = [
             "/etc/nixos"
-          ] ++ (lib.lists.optional config.services.tailscale.enable "/var/lib/tailscale") ++
+          ] ++
+          cfg.extraDirs ++
+          (lib.lists.optional config.services.tailscale.enable "/var/lib/tailscale") ++
           (lib.lists.optional config.services.zigbee2mqtt.enable config.services.zigbee2mqtt.dataDir) ++
           (lib.lists.optional config.services.postgresql.enable config.services.postgresql.dataDir) ++
           (lib.lists.optional config.hardware.bluetooth.enable "/var/lib/bluetooth") ++
