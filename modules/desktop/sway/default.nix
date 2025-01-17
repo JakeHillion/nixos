@@ -88,6 +88,24 @@ in
         };
       };
     };
+    services.greetd.settings.default_session.command =
+      let
+        cmd_all_displays = cmd: pkgs.writeShellScript "sleep_all_displays" ''
+          ${lib.getExe pkgs.wlr-randr} --json \
+            | ${lib.getExe pkgs.jq} -r '.[].name' \
+            | xargs -I{} ${lib.getExe pkgs.wlr-randr} --output {} --${cmd}
+        '';
+
+        sleep_all_displays = cmd_all_displays "off";
+        wake_all_displays = cmd_all_displays "on";
+      in
+      "${pkgs.dbus}/bin/dbus-run-session ${lib.getExe pkgs.cage} ${lib.escapeShellArgs config.programs.regreet.cageArgs} -- ${pkgs.writeShellScript "sleepy_regreet" ''
+      ${lib.getExe pkgs.swayidle} -w \
+        timeout 300 "${sleep_all_displays}" \
+        resume "${wake_all_displays}" &
+
+      ${lib.getExe pkgs.greetd.regreet}
+    ''}";
 
     programs.sway.enable = true;
 
