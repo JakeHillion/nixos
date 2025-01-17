@@ -116,6 +116,15 @@ in
     programs.sway.enable = true;
 
     home-manager.users."jake" = {
+      programs.alacritty = {
+        enable = true;
+        settings = {
+          window = {
+            opacity = 0.8;
+          };
+        };
+      };
+
       xdg.configFile."sway/config" = {
         text = with pkgs; let
           config_watcher = pkgs.writeShellScript "sway_config_watcher" ''
