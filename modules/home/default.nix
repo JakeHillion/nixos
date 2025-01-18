@@ -37,6 +37,14 @@
               options = [ "--cmd cd" ];
             };
             zsh.enable = true;
+
+            htop = {
+              enable = true;
+              settings = {
+                show_cpu_frequency = 1;
+                show_cpu_temperature = 1;
+              };
+            };
           };
         };
       };
