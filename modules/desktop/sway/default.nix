@@ -7,6 +7,16 @@ let
     url = "https://wallpapers.neb.jakehillion.me/JetsonCreative/24_Hour_Cityscapes/24hr-CatalinaAvalonRight.heic";
     sha256 = "08dd78b75e909a9caad5902938da5d7dba46c453d14394b7d203d7a3c0b494b6";
   };
+
+  timewallPr141 = pkgs.unstable.timewall.overrideAttrs (oldAttrs: {
+    src = pkgs.fetchFromGitHub {
+      owner = "bcyran";
+      repo = "timewall";
+      rev = "d759019e4592d1c134d87d15e361a47e555b900d";
+      hash = "sha256-19b0IUf9hYhomnhc9iPdifV3SNdu0f4nNKZ/hAmOjJE=";
+    };
+    cargoHash = "sha256-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX=";
+  });
 in
 {
   options.custom.desktop.sway = {
@@ -14,18 +24,6 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    age.secrets."sway/timewall" = {
-      file = ../../../secrets/sway/timewall/${config.networking.fqdn}.toml.age;
-      path = "/home/jake/.config/timewall/config.toml";
-      owner = "jake";
-      group = "users";
-    };
-    age.secrets."regreet/timewall" = {
-      file = ../../../secrets/sway/timewall/${config.networking.fqdn}.toml.age;
-      owner = "greeter";
-      group = "greeter";
-    };
-
     systemd.tmpfiles.rules = [
       "d /var/cache/regreet 0755 greeter greeter -"
       "f /var/cache/regreet/cache.toml 0644 greeter greeter -"
@@ -65,14 +63,23 @@ in
       preStart = ''
         mkdir -p timewall/cache
 
-        ${pkgs.toml-cli}/bin/toml set ${config.age.secrets."regreet/timewall".path} setter.command '@COMMAND@' >timewall/config.toml
-        sed -e "s|\"@COMMAND@\"|['ln', '-fs', '%f', '/var/cache/regreet/wallpaper']|g" -i timewall/config.toml
+        ln -fs ${pkgs.writeText "timewall-regreet.toml" ''
+          [setter]
+          command = ['ln', '-fs', '%f', '/var/cache/regreet/wallpaper']
+        ''} timewall/config.toml
 
-        TIMEWALL_CONFIG_DIR=timewall TIMEWALL_CACHE_DIR=timewall/cache ${pkgs.unstable.timewall}/bin/timewall set ${wallpaper}
+        TIMEWALL_CONFIG_DIR=timewall TIMEWALL_CACHE_DIR=timewall/cache ${timewallPr141}/bin/timewall set ${wallpaper}
       '';
       script = ''
-        TIMEWALL_CONFIG_DIR=timewall TIMEWALL_CACHE_DIR=timewall/cache ${pkgs.unstable.timewall}/bin/timewall set -d
+        TIMEWALL_CONFIG_DIR=timewall TIMEWALL_CACHE_DIR=timewall/cache ${timewallPr141}/bin/timewall set -d
       '';
+    };
+    services.geoclue2 = {
+      enable = true;
+      appConfig."timewall" = {
+        isAllowed = true;
+        isSystem = true;
+      };
     };
 
     programs.regreet = {
@@ -125,6 +132,11 @@ in
         };
       };
 
+      xdg.configFile."timewall/config.toml".text = ''
+        [setter]
+        command = ['${pkgs.sway}/bin/swaymsg', 'output * bg %f fill']
+      '';
+
       xdg.configFile."sway/config" = {
         text = with pkgs; let
           config_watcher = pkgs.writeShellScript "sway_config_watcher" ''
@@ -151,7 +163,7 @@ in
           set $config_watcher "${config_watcher}"
           set $swaylock "${swaylock-effects}/bin/swaylock"
           set $term "${alacritty}/bin/alacritty"
-          set $timewall "${unstable.timewall}/bin/timewall"
+          set $timewall "${timewallPr141}/bin/timewall"
           set $tmux "${tmux}/bin/tmux"
 
           ### Configure extra items from the Nix store

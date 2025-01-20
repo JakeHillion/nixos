@@ -58,6 +58,8 @@
       path = nixpkgs-unstable;
     };
 
+    services.geoclue2.geoProviderUrl = lib.mkOverride 999 "https://api.beacondb.net/v1/geolocate";
+
     # Caddy package
     ## TODO: drop to stable once available
     services.caddy.package = pkgs.unstable.caddy.withPlugins {
