@@ -65,11 +65,23 @@
       interfaces = {
         eth0 = {
           allowedTCPPorts = lib.mkForce [
+            80 # HTTP 1-2
+            443 # HTTPS 1-2
             1400 # HA Sonos
             21063 # HomeKit
           ];
           allowedUDPPorts = lib.mkForce [
+            443 # HTTP 3
             5353 # HomeKit
+          ];
+        };
+        iot = {
+          allowedTCPPorts = lib.mkForce [
+            80 # HTTP 1-2
+            443 # HTTPS 1-2
+          ];
+          allowedUDPPorts = lib.mkForce [
+            443 # HTTP 3
           ];
         };
       };

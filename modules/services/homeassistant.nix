@@ -26,6 +26,36 @@ in
     };
 
     services = {
+      caddy = {
+        enable = true;
+
+        virtualHosts = {
+          "homeassistant.iot.hillion.co.uk" = {
+            listenAddresses = [ "10.239.19.8" ];
+            extraConfig = ''
+              tls {
+                ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
+              }
+
+              @blocked not remote_ip 10.239.19.4
+              respond @blocked "<h1>Access Denied</h1>" 403
+
+              reverse_proxy http://localhost:8123
+            '';
+          };
+
+          "homeassistant.home.hillion.co.uk" = {
+            listenAddresses = [ "10.64.50.29" ];
+            extraConfig = ''
+              tls {
+                ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
+              }
+              reverse_proxy http://localhost:8123
+            '';
+          };
+        };
+      };
+
       postgresql = {
         enable = true;
         initialScript = pkgs.writeText "homeassistant-init.sql" ''
@@ -85,8 +115,8 @@ in
           http = {
             use_x_forwarded_for = true;
             trusted_proxies = with config.custom.dns.authoritative; [
+              "::1"
               ipv4.me.jakehillion.neb.cx.boron
-              ipv4.me.jakehillion.neb.pop.sodium
             ];
           };
 

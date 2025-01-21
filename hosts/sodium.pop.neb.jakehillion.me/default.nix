@@ -48,8 +48,6 @@
 
     ## Custom Services
     custom.locations.autoServe = true;
-    custom.www.home.enable = true;
-    custom.www.iot.enable = true;
 
     # Networking
     networking = {

@@ -275,7 +275,7 @@
                     hostname = "living-room-everything-presence-one";
                   }
                   {
-                    hw-address = "a0:7d:9c:b0:f0:14";
+                    hw-address = "8c:51:09:20:53:8d";
                     ip-address = "10.239.19.4";
                     hostname = "hallway-wall-tablet";
                   }
@@ -293,6 +293,11 @@
                     hw-address = "48:da:35:6f:83:b8";
                     ip-address = "10.239.19.7";
                     hostname = "charlie";
+                  }
+                  {
+                    hw-address = "7c:83:34:be:30:dd";
+                    ip-address = "10.239.19.8";
+                    hostname = "stinger";
                   }
                 ];
               }
