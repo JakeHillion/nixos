@@ -50,7 +50,6 @@
     custom.locations.autoServe = true;
     custom.www.home.enable = true;
     custom.www.iot.enable = true;
-    custom.services.isponsorblocktv.enable = true;
 
     # Networking
     networking = {
