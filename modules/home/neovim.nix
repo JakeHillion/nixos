@@ -18,6 +18,7 @@ in
       plugins = with pkgs.vimPlugins; [
         a-vim
         dracula-nvim
+        git-blame-nvim
         telescope-nvim
       ];
       extraLuaConfig = ''
