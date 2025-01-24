@@ -109,22 +109,33 @@ in
           in
           {
             name = x;
-            value = {
-              home = {
-                persistence."${cfg.base}/users/${x}" = {
-                  allowOther = false;
+            value = args:
+              let
+                homeConfig = args.config;
+              in
+              {
+                home = {
+                  persistence."${cfg.base}/users/${x}" = {
+                    allowOther = false;
 
-                  files = cfg.userExtraFiles.${x} or [ ];
-                  directories = cfg.userExtraDirs.${x} or [ ];
+                    files = cfg.userExtraFiles.${x} or [ ];
+                    directories = cfg.userExtraDirs.${x} or [ ];
+                  };
+
+                  sessionVariables = lib.attrsets.optionalAttrs homeCfg.programs.zoxide.enable { _ZO_DATA_DIR = "${cfg.base}/users/${x}/.local/share/zoxide"; };
+
+                  file = {
+                    "local".source = homeConfig.lib.file.mkOutOfStoreSymlink "${cfg.base}/users/${x}";
+                  } //
+                  (lib.attrsets.optionalAttrs config.custom.games.steam.enable {
+                    ".local/share/Steam".source = homeConfig.lib.file.mkOutOfStoreSymlink "${cfg.base}/users/${x}/games/Steam";
+                  });
                 };
 
-                sessionVariables = lib.attrsets.optionalAttrs homeCfg.programs.zoxide.enable { _ZO_DATA_DIR = "${cfg.base}/users/${x}/.local/share/zoxide"; };
+                programs = {
+                  zsh.history.path = lib.mkOverride 999 "${cfg.base}/users/${x}/.zsh_history";
+                };
               };
-
-              programs = {
-                zsh.history.path = lib.mkOverride 999 "${cfg.base}/users/${x}/.zsh_history";
-              };
-            };
           });
       in
       builtins.listToAttrs (builtins.map mkUser cfg.users);
@@ -133,7 +144,6 @@ in
       (user:
         let details = config.users.users.${user}; in [
           "d ${cfg.base}/users/${user} 0700 ${user} ${details.group} - -"
-          "L ${details.home}/local - ${user} ${details.group} - ${cfg.base}/users/${user}"
         ])
       cfg.users);
   };

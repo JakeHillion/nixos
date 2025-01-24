@@ -8,6 +8,7 @@
     ./defaults.nix
     ./desktop/default.nix
     ./dns.nix
+    ./games/steam/default.nix
     ./home/default.nix
     ./hostinfo.nix
     ./ids.nix
