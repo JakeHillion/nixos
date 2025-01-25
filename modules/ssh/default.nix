@@ -9,6 +9,24 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    programs.mosh.enable = true;
+
+    services.openssh = {
+      enable = true;
+      openFirewall = true;
+
+      settings = {
+        PermitRootLogin = "no";
+        PasswordAuthentication = false;
+      };
+    };
+    services.fail2ban = {
+      enable = true;
+      ignoreIP = [ "172.20.0.0/24" ];
+      bantime = "1h";
+      bantime-increment.enable = true;
+    };
+
     users.users =
       if config.custom.user == "jake" then {
         "jake".openssh.authorizedKeys.keys = [
@@ -24,17 +42,6 @@ in
           "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCw4lgH20nfuchDqvVf0YciqN0GnBw5hfh8KIun5z0P7wlNgVYnCyvPvdIlGf2Nt1z5EGfsMzMLhKDOZkcTMlhupd+j2Er/ZB764uVBGe1n3CoPeasmbIlnamZ12EusYDvQGm2hVJTGQPPp9nKaRxr6ljvTMTNl0KWlWvKP4kec74d28MGgULOPLT3HlAyvUymSULK4lSxFK0l97IVXLa8YwuL5TNFGHUmjoSsi/Q7/CKaqvNh+ib1BYHzHYsuEzaaApnCnfjDBNexHm/AfbI7s+g3XZDcZOORZn6r44dOBNFfwvppsWj3CszwJQYIFeJFuMRtzlC8+kyYxci0+FXHn jake@jake-gentoo"
         ];
       } else { };
-
-    programs.mosh.enable = true;
-    services.openssh = {
-      enable = true;
-      openFirewall = true;
-
-      settings = {
-        PermitRootLogin = "no";
-        PasswordAuthentication = false;
-      };
-    };
 
     programs.ssh.knownHosts = {
       # Global Internet hosts
