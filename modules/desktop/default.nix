@@ -4,5 +4,6 @@
   imports = [
     ./awesome/default.nix
     ./sway/default.nix
+    ./timewall.nix
   ];
 }

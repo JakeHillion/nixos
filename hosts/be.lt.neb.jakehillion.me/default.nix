@@ -20,13 +20,6 @@
     custom.impermanence = {
       enable = true;
 
-      extraDirs = [
-        "/var/cache/regreet/timewall" # too slow on boot otherwise and bad for the battery
-      ];
-
-      userExtraDirs.jake = [
-        ".cache/timewall" # too slow on boot otherwise and bad for the battery
-      ];
       userExtraFiles.jake = [
         ".ssh/id_ecdsa_sk_keys"
       ];

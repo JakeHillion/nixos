@@ -17,10 +17,8 @@ set $right l
 set $menu wmenu-run
 
 ### Sun based wallpapers
-# Default to the one built because the first run takes a while.
-exec swaymsg 'output * bg /var/cache/regreet/wallpaper fill'
-exec $timewall set -d $wallpaper
-exec_always $timewall set $wallpaper
+exec systemctl --user set-environment SWAYSOCK=$SWAYSOCK
+exec systemctl --user restart timewall-sway.service
 
 ### Idle configuration
 #
