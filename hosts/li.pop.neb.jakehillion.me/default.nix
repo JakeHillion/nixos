@@ -35,6 +35,7 @@
       interfaces = {
         "end0" = {
           allowedTCPPorts = [
+            22 # SSH
             7654 # Tang
           ];
           allowedUDPPorts = [

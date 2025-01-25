@@ -100,13 +100,16 @@ in
       };
     };
 
+    # Swap cfg.sshPort and port 22 on eth0
     networking.firewall.extraCommands = ''
       # proxy all traffic on public interface to the gitea SSH server
-      iptables -A PREROUTING -t nat -i eth0 -p tcp --dport 22 -j REDIRECT --to-port ${builtins.toString cfg.sshPort}
+      iptables  -A PREROUTING -t nat -i eth0 -p tcp --dport 22 -j REDIRECT --to-port ${builtins.toString cfg.sshPort}
       ip6tables -A PREROUTING -t nat -i eth0 -p tcp --dport 22 -j REDIRECT --to-port ${builtins.toString cfg.sshPort}
+      iptables  -A PREROUTING -t nat -i eth0 -p tcp --dport ${builtins.toString cfg.sshPort} -j REDIRECT --to-port 22
+      ip6tables -A PREROUTING -t nat -i eth0 -p tcp --dport ${builtins.toString cfg.sshPort} -j REDIRECT --to-port 22
 
       # proxy locally originating outgoing packets
-      iptables -A OUTPUT -d 138.201.252.214 -t nat -p tcp --dport 22 -j REDIRECT --to-port ${builtins.toString cfg.sshPort}
+      iptables  -A OUTPUT -d 138.201.252.214      -t nat -p tcp --dport 22 -j REDIRECT --to-port ${builtins.toString cfg.sshPort}
       ip6tables -A OUTPUT -d 2a01:4f8:173:23d2::2 -t nat -p tcp --dport 22 -j REDIRECT --to-port ${builtins.toString cfg.sshPort}
     '';
   };
