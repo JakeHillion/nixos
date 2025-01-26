@@ -17,20 +17,13 @@
     ## Custom Services
     custom.locations.autoServe = true;
 
-    # Networking
-    ## Tailscale
-    services.tailscale = {
-      enable = true;
-      useRoutingFeatures = "server";
-      extraUpFlags = [ "--advertise-routes" "192.168.1.0/24" ];
-    };
-
     ## Run a persistent iperf3 server
     services.iperf3.enable = true;
     services.iperf3.openFirewall = true;
 
+    # Networking
     networking.firewall = {
-      trustedInterfaces = [ "tailscale0" "neb.jh" ];
+      trustedInterfaces = [ "neb.jh" ];
 
       interfaces = {
         "end0" = {

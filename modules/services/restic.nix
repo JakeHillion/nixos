@@ -290,12 +290,14 @@ in
       {
         services = {
           caddy = {
-            ### HACK: Allow Caddy to restart if it fails. This happens because Tailscale
+            ### HACK: Allow Caddy to restart if it fails. This happens because Nebula
             ### is too late at starting. Upstream nixos caddy does restart on failure
             ### but it's prevented on exit code 1. Set the exit code to 0 (non-failure)
             ### to override this.
-            requires = [ "tailscaled.service" ];
-            after = [ "tailscaled.service" ];
+            ### TODO: unclear if this is needed with Nebula but it was with Tailscale. If
+            ### it is needed this should be centralised.
+            requires = [ "nebula@jakehillion.service" ];
+            after = [ "nebula@jakehillion.service" ];
             serviceConfig = {
               RestartPreventExitStatus = lib.mkForce 0;
             };

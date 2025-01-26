@@ -79,7 +79,6 @@ in
             "/etc/nixos"
           ] ++
           cfg.extraDirs ++
-          (lib.lists.optional config.services.tailscale.enable "/var/lib/tailscale") ++
           (lib.lists.optional config.services.zigbee2mqtt.enable config.services.zigbee2mqtt.dataDir) ++
           (lib.lists.optional config.services.postgresql.enable config.services.postgresql.dataDir) ++
           (lib.lists.optional config.hardware.bluetooth.enable "/var/lib/bluetooth") ++

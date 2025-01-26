@@ -18,20 +18,9 @@ in
       };
     };
 
-    tailscale = {
-      ipv4 = lib.mkOption {
-        description = "tailscale ipv4 address";
-        readOnly = true;
-      };
-      ipv6 = lib.mkOption {
-        description = "tailscale ipv6 address";
-        readOnly = true;
-      };
-    };
-
     nebula = {
       ipv4 = lib.mkOption {
-        description = "tailscale ipv4 address";
+        description = "nebula ipv4 address";
         readOnly = true;
       };
     };
@@ -58,37 +47,6 @@ in
 
       custom.dns.authoritative = {
         ipv4 = {
-          uk = {
-            co = {
-              hillion = {
-                ts = {
-                  cx = {
-                    boron = "100.113.188.46";
-                  };
-                  home = {
-                    router = "100.105.71.48";
-                  };
-                  jakehillion-terminals = { gendry = "100.70.100.77"; };
-                  lt = { be = "100.105.166.79"; };
-                  pop = {
-                    li = "100.106.87.35";
-                    sodium = "100.87.188.4";
-                    stinger = "100.117.89.126";
-                  };
-                  rig = {
-                    merlin = "100.69.181.56";
-                  };
-                  st = {
-                    phoenix = "100.92.37.106";
-                  };
-                  storage = {
-                    theon = "100.104.142.22";
-                  };
-                };
-              };
-            };
-          };
-
           me = {
             jakehillion = {
               neb = {
@@ -129,38 +87,7 @@ in
           };
         };
 
-        ipv6 = {
-          uk = {
-            co = {
-              hillion = {
-                ts = {
-                  cx = {
-                    boron = "fd7a:115c:a1e0::2a01:bc2f";
-                  };
-                  home = {
-                    router = "fd7a:115c:a1e0:ab12:4843:cd96:6269:4730";
-                  };
-                  jakehillion-terminals = { gendry = "fd7a:115c:a1e0:ab12:4843:cd96:6246:644d"; };
-                  lt = { be = "fd7a:115c:a1e0::9001:a64f"; };
-                  pop = {
-                    li = "fd7a:115c:a1e0::e701:5723";
-                    sodium = "fd7a:115c:a1e0::3701:bc04";
-                    stinger = "fd7a:115c:a1e0::8401:597e";
-                  };
-                  rig = {
-                    merlin = "fd7a:115c:a1e0::8d01:b538";
-                  };
-                  st = {
-                    phoenix = "fd7a:115c:a1e0::6901:256a";
-                  };
-                  storage = {
-                    theon = "fd7a:115c:a1e0::4aa8:8e16";
-                  };
-                };
-              };
-            };
-          };
-        };
+        ipv6 = { };
       };
     }
 

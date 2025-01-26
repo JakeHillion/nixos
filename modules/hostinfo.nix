@@ -63,7 +63,5 @@ in
         mode = "0444";
       };
     };
-
-    networking.firewall.interfaces."tailscale0".allowedTCPPorts = [ 30653 ];
   };
 }

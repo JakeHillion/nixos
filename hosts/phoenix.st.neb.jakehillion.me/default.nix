@@ -223,7 +223,7 @@ in
     };
 
     networking.firewall = {
-      trustedInterfaces = [ "tailscale0" "neb.jh" ];
+      trustedInterfaces = [ "neb.jh" ];
       allowedTCPPorts = lib.mkForce [
         22 # SSH
       ];
@@ -237,8 +237,5 @@ in
         };
       };
     };
-
-    ## Tailscale
-    services.tailscale.enable = true;
   };
 }
