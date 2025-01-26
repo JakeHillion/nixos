@@ -94,7 +94,6 @@
                 "lo",
                 "eth1",
                 "eth2",
-                "tailscale0",
                 "neb.jh",
               } counter accept
 
@@ -116,7 +115,6 @@
               iifname {
                 "eth1",
                 "eth2",
-                "tailscale0",
               } oifname {
                 "eth0",
               } counter accept comment "Allow trusted LAN to WAN"
@@ -126,11 +124,7 @@
               } oifname {
                 "eth1",
                 "eth2",
-                "tailscale0",
               } ct state { established,related } counter accept comment "Allow established back to LANs"
-
-              iifname "tailscale0" oifname { "eth1", "eth2" } counter accept comment "Allow LAN access from Tailscale"
-              iifname { "eth1", "eth2" } oifname "tailscale0" ct state { established,related } counter accept comment "Allow established back to Tailscale"
 
               ip daddr 10.64.50.21 tcp dport  7654 counter accept comment "Tang"
               ip daddr 10.64.50.27 tcp dport 32400 counter accept comment "Plex"
@@ -151,9 +145,6 @@
               type nat hook postrouting priority filter; policy accept;
 
               oifname "eth0" masquerade
-
-              iifname tailscale0 oifname eth1 snat to 10.64.50.1
-              iifname tailscale0 oifname eth2 snat to 10.239.19.1
             }
           }
         '';
@@ -362,18 +353,6 @@
       };
     };
 
-    ## Tailscale
-    services.tailscale = {
-      enable = true;
-      useRoutingFeatures = "server";
-      extraSetFlags = [
-        "--advertise-routes"
-        "10.64.50.0/24,10.239.19.0/24,10.133.145.0/24"
-        "--advertise-exit-node"
-        "--netfilter-mode=off"
-      ];
-    };
-
     ## Enable btrfs compression
     fileSystems."/data".options = [ "compress=zstd" ];
     fileSystems."/nix".options = [ "compress=zstd" ];
@@ -426,13 +405,15 @@
       };
     };
     users.users.caddy.extraGroups = [ "netdata" ];
-    ### HACK: Allow Caddy to restart if it fails. This happens because Tailscale
+    ### HACK: Allow Caddy to restart if it fails. This happens because Nebula
     ### is too late at starting. Upstream nixos caddy does restart on failure
     ### but it's prevented on exit code 1. Set the exit code to 0 (non-failure)
     ### to override this.
+    ### TODO: unclear if this is needed with Nebula but it was with Tailscale. If
+    ### it is needed this should be centralised.
     systemd.services.caddy = {
-      requires = [ "tailscaled.service" ];
-      after = [ "tailscaled.service" ];
+      requires = [ "nebula@jakehillion.service" ];
+      after = [ "nebula@jakehillion.service" ];
       serviceConfig = {
         RestartPreventExitStatus = lib.mkForce 0;
       };

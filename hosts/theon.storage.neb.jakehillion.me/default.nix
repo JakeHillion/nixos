@@ -27,7 +27,7 @@
 
     networking.nameservers = lib.mkForce [ ]; # Trust the DHCP nameservers
     networking.firewall = {
-      trustedInterfaces = [ "tailscale0" "neb.jh" ];
+      trustedInterfaces = [ "neb.jh" ];
       allowedTCPPorts = lib.mkForce [
         22 # SSH
       ];
@@ -39,9 +39,6 @@
         };
       };
     };
-
-    ## Tailscale
-    services.tailscale.enable = true;
 
     ## Packages
     environment.systemPackages = with pkgs; [

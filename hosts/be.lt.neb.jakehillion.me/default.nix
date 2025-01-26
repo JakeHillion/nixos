@@ -40,9 +40,6 @@
     custom.users.jake.password = true;
     custom.desktop.sway.enable = true;
 
-    ## Tailscale
-    services.tailscale.enable = true;
-
     security.sudo.wheelNeedsPassword = lib.mkForce true;
 
     ## Enable btrfs compression

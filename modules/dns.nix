@@ -18,20 +18,9 @@ in
       };
     };
 
-    tailscale = {
-      ipv4 = lib.mkOption {
-        description = "tailscale ipv4 address";
-        readOnly = true;
-      };
-      ipv6 = lib.mkOption {
-        description = "tailscale ipv6 address";
-        readOnly = true;
-      };
-    };
-
     nebula = {
       ipv4 = lib.mkOption {
-        description = "tailscale ipv4 address";
+        description = "nebula ipv4 address";
         readOnly = true;
       };
     };

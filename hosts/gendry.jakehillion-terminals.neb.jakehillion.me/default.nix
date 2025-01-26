@@ -84,9 +84,6 @@
       in
       builtins.map (mkFolder) folderNames;
 
-    ## Tailscale
-    services.tailscale.enable = true;
-
     ## Enable btrfs compression
     fileSystems."/data".options = [ "compress=zstd" ];
     fileSystems."/nix".options = [ "compress=zstd" ];

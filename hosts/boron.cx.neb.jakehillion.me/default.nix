@@ -155,7 +155,7 @@
     };
 
     networking.firewall = {
-      trustedInterfaces = [ "tailscale0" "neb.jh" ];
+      trustedInterfaces = [ "neb.jh" ];
       allowedTCPPorts = lib.mkForce [ ];
       allowedUDPPorts = lib.mkForce [ ];
       interfaces = {
@@ -177,8 +177,5 @@
         };
       };
     };
-
-    ## Tailscale
-    services.tailscale.enable = true;
   };
 }
