@@ -33,23 +33,24 @@ in
             86400 NS ns1.jakehillion.me.
             86400 NS ns2.jakehillion.me.
 
-            ca                    21600 CNAME sodium.pop.neb.jakehillion.me.
-            frigate               21600 CNAME ${locations.services.frigate}.
-            immich                21600 CNAME ${locations.services.immich}.
-            prometheus            21600 CNAME ${locations.services.prometheus}.
-            restic                21600 CNAME ${locations.services.restic}.
-            wallpapers            21600 CNAME phoenix.st.neb.jakehillion.me.
+            ca                                21600 CNAME sodium.pop.neb.jakehillion.me.
+            frigate                           21600 CNAME ${locations.services.frigate}.
+            immich                            21600 CNAME ${locations.services.immich}.
+            prometheus                        21600 CNAME ${locations.services.prometheus}.
+            restic                            21600 CNAME ${locations.services.restic}.
+            wallpapers                        21600 CNAME phoenix.st.neb.jakehillion.me.
 
-            zigbee2mqtt.home      21600 CNAME router.home.neb.jakehillion.me.
-            graphs.router.home    21600 CNAME router.home.neb.jakehillion.me.
+            zigbee2mqtt.home                  21600 CNAME router.home.neb.jakehillion.me.
+            graphs.router.home                21600 CNAME router.home.neb.jakehillion.me.
 
-            charlie.kvm           21600 CNAME router.home.neb.jakehillion.me.
-            hammer.kvm            21600 CNAME router.home.neb.jakehillion.me.
+            charlie.kvm                       21600 CNAME router.home.neb.jakehillion.me.
+            hammer.kvm                        21600 CNAME router.home.neb.jakehillion.me.
+            kvm.gendry.jakehillion-terminals  21600 CNAME router.home.neb.jakehillion.me.
 
-            deluge.downloads      21600 CNAME ${locations.services.downloads}.
-            prowlarr.downloads    21600 CNAME ${locations.services.downloads}.
-            radarr.downloads      21600 CNAME ${locations.services.downloads}.
-            sonarr.downloads      21600 CNAME ${locations.services.downloads}.
+            deluge.downloads                  21600 CNAME ${locations.services.downloads}.
+            prowlarr.downloads                21600 CNAME ${locations.services.downloads}.
+            radarr.downloads                  21600 CNAME ${locations.services.downloads}.
+            sonarr.downloads                  21600 CNAME ${locations.services.downloads}.
 
           '' + (makeRecords "A" config.custom.dns.authoritative.ipv4.me.jakehillion.neb);
         };

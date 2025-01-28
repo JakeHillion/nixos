@@ -290,6 +290,11 @@
                     ip-address = "10.239.19.8";
                     hostname = "stinger";
                   }
+                  {
+                    hw-address = "48:da:35:6f:d5:e5";
+                    ip-address = "10.239.19.9";
+                    hostname = "gendry-kvm";
+                  }
                 ];
               }
               {
@@ -400,6 +405,15 @@
               ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
             }
             reverse_proxy http://10.239.19.7
+          '';
+        };
+        "kvm.gendry.jakehillion-terminals.neb.jakehillion.me" = {
+          listenAddresses = [ config.custom.dns.nebula.ipv4 ];
+          extraConfig = ''
+            tls {
+              ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
+            }
+            reverse_proxy http://10.239.19.9
           '';
         };
       };
