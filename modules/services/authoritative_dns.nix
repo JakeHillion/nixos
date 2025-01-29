@@ -36,6 +36,7 @@ in
             ca                                21600 CNAME sodium.pop.neb.jakehillion.me.
             frigate                           21600 CNAME ${locations.services.frigate}.
             immich                            21600 CNAME ${locations.services.immich}.
+            ollama                            21600 CNAME ${locations.services.ollama}.
             prometheus                        21600 CNAME ${locations.services.prometheus}.
             restic                            21600 CNAME ${locations.services.restic}.
             wallpapers                        21600 CNAME phoenix.st.neb.jakehillion.me.

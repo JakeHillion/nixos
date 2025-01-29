@@ -80,6 +80,7 @@ in
           "met"
           "mobile_app"
           "mqtt"
+          "ollama"
           "otp"
           "smartthings"
           "sonos"

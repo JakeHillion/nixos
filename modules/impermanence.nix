@@ -70,6 +70,10 @@ in
       configDir = lib.mkOverride 999 "/data/home-assistant";
     };
 
+    custom.services.ollama = lib.mkIf config.custom.services.ollama.enable {
+      dataPath = lib.mkOverride 999 "${cfg.base}/services/ollama";
+    };
+
     environment.persistence = lib.mkMerge [
       {
         "${cfg.base}/system" = {
