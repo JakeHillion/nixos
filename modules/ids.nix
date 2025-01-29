@@ -13,6 +13,7 @@
       frigate = 200;
       nebula-jakehillion = 205;
       immich = 206;
+      ollama = 210;
 
       ## Consistent People
       jake = 1000;
@@ -29,6 +30,7 @@
       frigate = 200;
       nebula-jakehillion = 205;
       immich = 206;
+      ollama = 210;
 
       ## Consistent Groups
       mediaaccess = 1200;

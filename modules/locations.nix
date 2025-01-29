@@ -30,6 +30,7 @@ in
           immich = "phoenix.st.neb.jakehillion.me";
           mastodon = "";
           matrix = "boron.cx.neb.jakehillion.me";
+          ollama = "boron.cx.neb.jakehillion.me";
           prometheus = "boron.cx.neb.jakehillion.me";
           restic = "phoenix.st.neb.jakehillion.me";
           tang = [
