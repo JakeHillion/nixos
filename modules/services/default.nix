@@ -11,6 +11,7 @@
     ./isponsorblocktv.nix
     ./mastodon/default.nix
     ./matrix.nix
+    ./ollama.nix
     ./restic.nix
     ./tang.nix
     ./unifi.nix
