@@ -41,6 +41,10 @@
     fileSystems."/data".options = [ "compress=zstd" ];
     fileSystems."/nix".options = [ "compress=zstd" ];
 
+    ## Graphics
+    ### Enable iGPU support for Ollama acceleration.
+    hardware.graphics.enable = true;
+
     ## Impermanence
     custom.impermanence = {
       enable = true;
