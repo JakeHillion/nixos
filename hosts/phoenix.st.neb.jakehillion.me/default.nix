@@ -12,8 +12,6 @@ in
   config = {
     system.stateVersion = "24.05";
 
-    networking.hostName = "phoenix";
-    networking.domain = "st.neb.jakehillion.me";
     networking.hostId = "4d7241e9";
 
     boot.loader.systemd-boot.enable = true;

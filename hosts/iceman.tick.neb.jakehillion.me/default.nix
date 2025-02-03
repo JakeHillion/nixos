@@ -9,9 +9,6 @@
   config = {
     system.stateVersion = "24.11";
 
-    networking.hostName = "iceman";
-    networking.domain = "tick.neb.jakehillion.me";
-
     custom.defaults = true;
 
     ## Custom Services

@@ -8,9 +8,6 @@
   config = {
     system.stateVersion = "22.11";
 
-    networking.hostName = "router";
-    networking.domain = "home.neb.jakehillion.me";
-
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
 

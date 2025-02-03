@@ -79,9 +79,14 @@
                   ];
                 }
 
-                ({ config, ... }: {
+                ({ config, lib, ... }: {
                   system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
                   nixpkgs.overlays = getSystemOverlays config.nixpkgs.hostPlatform.system config.nixpkgs.config;
+
+                  networking = let parts = lib.splitString "." fqdn; in {
+                    hostName = builtins.head parts;
+                    domain = lib.concatStringsSep "." (builtins.tail parts);
+                  };
                 })
               ];
             };

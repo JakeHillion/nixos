@@ -9,9 +9,6 @@
   config = {
     system.stateVersion = "23.11";
 
-    networking.hostName = "li";
-    networking.domain = "pop.neb.jakehillion.me";
-
     custom.defaults = true;
 
     ## Custom Services

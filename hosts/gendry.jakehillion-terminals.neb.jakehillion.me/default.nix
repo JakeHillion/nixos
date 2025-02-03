@@ -9,9 +9,6 @@
   config = {
     system.stateVersion = "22.05";
 
-    networking.hostName = "gendry";
-    networking.domain = "jakehillion-terminals.neb.jakehillion.me";
-
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
 
