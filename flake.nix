@@ -24,6 +24,9 @@
 
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
+
+    nixos-generators.url = "github:nix-community/nixos-generators";
+    nixos-generators.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   description = "Hillion Nix flake";
@@ -37,6 +40,7 @@
     , home-manager
     , home-manager-unstable
     , impermanence
+    , nixos-generators
     , nixos-hardware
     , nixpkgs
     , nixpkgs-unstable
@@ -69,8 +73,9 @@
                 ./modules/default.nix
 
                 agenix.nixosModules.default
-                impermanence.nixosModules.impermanence
                 disko.nixosModules.disko
+                impermanence.nixosModules.impermanence
+                nixos-generators.nixosModules.all-formats
 
                 home-manager-pick.nixosModules.default
                 {

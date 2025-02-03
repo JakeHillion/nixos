@@ -2,12 +2,10 @@
 
 ### Building Raspberry Pi images
 
-Raspberry Pi images that support Nebula and headless SSH can be built using a command. It is easiest to run this command on AArch64 on Linux, such as within a Linux VM or Docker container on an M1 Mac.
+Raspberry Pi images that support headless SSH can be built as follows:
 
-    docker run -v $PWD:/src -it --rm nixos/nix:latest /bin/sh
-    nix-env -f https://github.com/nix-community/nixos-generators/archive/master.tar.gz -i
-    cd /src
-    nixos-generate -f sd-aarch64-installer --system aarch64-linux -c hosts/microserver.home.neb.jakehillion.me/default.nix
-    cp SOME_OUTPUT out.img.zst
+    nix build '.#nixosConfigurations."iceman.tick.neb.jakehillion.me".config.formats.sd-aarch64'
 
-Alternatively, a Raspberry Pi image with headless SSH can be easily built using the logic in [this repo](https://github.com/Robertof/nixos-docker-sd-image-builder/tree/master).
+Although this will have some support for Nebula it will not be authenticated without further setup. This is because each device generates its own signing key that still needs to be signed by the CA.
+
+This command should be run on a Linux machine with an aarch64 processor or binfmt misc support (`gendry.jakehillion-terminals` and `merlin.rig` at the time of writing). When creating Pi images you might need to comment out or update the existing file system UUID.
