@@ -32,7 +32,7 @@
       };
     };
 
-    boot.kernelPackages = pkgs.linuxPackages_latest;
+    boot.kernelPackages = pkgs.unstable.linuxPackages_testing;
 
     custom.defaults = true;
     custom.locations.autoServe = true;
