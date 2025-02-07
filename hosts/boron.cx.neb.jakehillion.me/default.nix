@@ -11,21 +11,13 @@
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
 
-    boot.kernelParams = [ "ip=dhcp" ];
-    boot.initrd = {
-      availableKernelModules = [ "igb" ];
-      network.enable = true;
-      clevis = {
-        enable = true;
-        useTang = true;
-        devices = {
-          "disk0-crypt".secretFile = "/data/disk_encryption.jwe";
-          "disk1-crypt".secretFile = "/data/disk_encryption.jwe";
-        };
-      };
-    };
-
     custom.defaults = true;
+    custom.tang = {
+      enable = true;
+      networkingModule = "igb";
+      secretFile = "/data/disk_encryption.jwe";
+      devices = [ "disk0-crypt" "disk1-crypt" ];
+    };
 
     ## Kernel
     ### Explicitly use the latest kernel at time of writing because the LTS

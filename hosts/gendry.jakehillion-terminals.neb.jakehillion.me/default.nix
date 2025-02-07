@@ -12,20 +12,13 @@
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
 
-    boot.kernelParams = [
-      "ip=dhcp"
-    ];
-    boot.initrd = {
-      availableKernelModules = [ "r8169" ];
-      network.enable = true;
-      clevis = {
-        enable = true;
-        useTang = true;
-        devices."root".secretFile = "/data/disk_encryption.jwe";
-      };
-    };
-
     custom.defaults = true;
+    custom.tang = {
+      enable = true;
+      networkingModule = "r8169";
+      secretFile = "/data/disk_encryption.jwe";
+      devices = [ "root" ];
+    };
 
     ## Custom scheduler
     custom.sched_ext.enable = true;

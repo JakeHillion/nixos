@@ -18,7 +18,6 @@ in
     boot.loader.efi.canTouchEfiVariables = true;
 
     boot.kernelParams = [
-      "ip=dhcp"
       "zfs.zfs_arc_max=34359738368"
 
       # zswap
@@ -26,22 +25,17 @@ in
       "zswap.compressor=zstd"
       "zswap.max_pool_percent=20"
     ];
-    boot.initrd = {
-      availableKernelModules = [ "igc" ];
-      network.enable = true;
-      clevis = {
-        enable = true;
-        useTang = true;
-        devices = {
-          "disk0-crypt".secretFile = "/data/disk_encryption.jwe";
-          "disk1-crypt".secretFile = "/data/disk_encryption.jwe";
-        };
-      };
-    };
 
     custom.defaults = true;
     custom.locations.autoServe = true;
     custom.impermanence.enable = true;
+
+    custom.tang = {
+      enable = true;
+      networkingModule = "igc";
+      secretFile = "/data/disk_encryption.jwe";
+      devices = [ "disk0-crypt" "disk1-crypt" ];
+    };
 
     custom.users.jake.password = true; # TODO: remove me once booting has stabilised
 
