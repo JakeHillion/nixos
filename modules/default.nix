@@ -23,6 +23,7 @@
     ./ssh/default.nix
     ./storj.nix
     ./syncthing.nix
+    ./tang/default.nix
     ./users.nix
     ./www/default.nix
   ];
