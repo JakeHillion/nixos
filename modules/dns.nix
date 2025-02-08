@@ -52,6 +52,7 @@ in
               neb = {
                 cx = {
                   boron = "172.20.0.1";
+                  warlock = "172.20.0.15";
                 };
                 home = {
                   microserver = "172.20.0.2"; # removed 23/12/2024
