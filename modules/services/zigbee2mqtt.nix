@@ -74,7 +74,7 @@ in
       ];
     };
 
-    age.secrets."resilio/zigbee2mqtt/1.6T.key" = lib.mkIf cfg.backup {
+    age.secrets."restic/zigbee2mqtt/1.6T.key" = lib.mkIf cfg.backup {
       file = ../../secrets/restic/1.6T.age;
       owner = "zigbee2mqtt";
     };
@@ -82,7 +82,7 @@ in
     services.restic.backups."zigbee2mqtt" = lib.mkIf cfg.backup {
       repository = "rest:https://restic.neb.jakehillion.me/1.6T";
       user = "zigbee2mqtt";
-      passwordFile = config.age.secrets."resilio/zigbee2mqtt/1.6T.key".path;
+      passwordFile = config.age.secrets."restic/zigbee2mqtt/1.6T.key".path;
 
       timerConfig = {
         OnBootSec = "15m";

@@ -71,32 +71,6 @@ in
       backups.enable = true;
     };
 
-    ## Resilio
-    custom.resilio = {
-      enable = false;
-      backups.enable = true;
-
-      folders =
-        let
-          folderNames = [
-            "dad"
-            "joseph"
-            "projects"
-            "resources"
-            "sync"
-          ];
-          mkFolder = name: {
-            name = name;
-            secret = {
-              name = "resilio/plain/${name}";
-              file = ../../secrets/resilio/plain/${name}.age;
-            };
-          };
-        in
-        builtins.map (mkFolder) folderNames;
-    };
-    services.resilio.directoryRoot = "/${zpool_name}/sync";
-
     ## Chia
     age.secrets."chia/farmer.key" = {
       file = ../../secrets/chia/farmer.key.age;

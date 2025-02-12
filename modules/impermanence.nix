@@ -58,10 +58,6 @@ in
       dataPath = lib.mkOverride 999 "${cfg.base}/frigate";
     };
 
-    services.resilio = lib.mkIf config.services.resilio.enable {
-      directoryRoot = lib.mkOverride 999 "${cfg.base}/sync";
-    };
-
     services.plex = lib.mkIf config.services.plex.enable {
       dataDir = lib.mkOverride 999 "${cfg.base}/plex";
     };

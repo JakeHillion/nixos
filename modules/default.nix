@@ -16,7 +16,6 @@
     ./nebula/default.nix
     ./oci-containers/default.nix
     ./prometheus/default.nix
-    ./resilio.nix
     ./sched_ext.nix
     ./services/default.nix
     ./shell/default.nix
