@@ -43,6 +43,8 @@ in
     custom.users.jake.password = true; # TODO: remove me once booting has stabilised
 
     ## Filesystems
+    boot.kernelPackages = if pkgs.linuxPackages.kernelAtLeast "6.12" then pkgs.linuxPackages else pkgs.linuxPackages_6_12;
+
     boot.supportedFilesystems = [ "zfs" ];
     boot.zfs = {
       forceImportRoot = false;
