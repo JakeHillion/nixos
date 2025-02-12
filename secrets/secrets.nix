@@ -51,20 +51,6 @@ in
   # WiFi Environment Files
   "wifi/be.lt.neb.jakehillion.me.age".publicKeys = jake_users ++ [ neb.lt.be ];
 
-  # Resilio Sync Secrets
-  ## Encrypted Resilio Sync Secrets
-  "resilio/encrypted/dad.age".publicKeys = jake_users ++ [ ];
-  "resilio/encrypted/projects.age".publicKeys = jake_users ++ [ ];
-  "resilio/encrypted/resources.age".publicKeys = jake_users ++ [ ];
-  "resilio/encrypted/sync.age".publicKeys = jake_users ++ [ ];
-
-  ## Read/Write Resilio Sync Secrets
-  "resilio/plain/dad.age".publicKeys = jake_users ++ [ neb.st.phoenix neb.terminals.jakehillion.gendry neb.cx.boron ];
-  "resilio/plain/joseph.age".publicKeys = jake_users ++ [ neb.st.phoenix neb.terminals.jakehillion.gendry neb.cx.boron ];
-  "resilio/plain/projects.age".publicKeys = jake_users ++ [ neb.st.phoenix neb.terminals.jakehillion.gendry neb.cx.boron ];
-  "resilio/plain/resources.age".publicKeys = jake_users ++ [ neb.st.phoenix neb.terminals.jakehillion.gendry neb.cx.boron ];
-  "resilio/plain/sync.age".publicKeys = jake_users ++ [ neb.st.phoenix neb.terminals.jakehillion.gendry neb.cx.boron ];
-
   # Matrix Secrets
   "matrix/matrix.hillion.co.uk/macaroon_secret_key.age".publicKeys = jake_users ++ [ neb.cx.boron ];
   "matrix/matrix.hillion.co.uk/email.age".publicKeys = jake_users ++ [ neb.cx.boron ];

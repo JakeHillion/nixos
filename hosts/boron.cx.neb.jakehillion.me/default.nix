@@ -87,30 +87,6 @@
       baseDir = "/data/users/jake/sync";
     };
 
-    ## Resilio
-    custom.resilio = {
-      enable = false;
-      folders =
-        let
-          folderNames = [
-            "dad"
-            "joseph"
-            "projects"
-            "resources"
-            "sync"
-          ];
-          mkFolder = name: {
-            name = name;
-            secret = {
-              name = "resilio/plain/${name}";
-              file = ../../secrets/resilio/plain/${name}.age;
-            };
-          };
-        in
-        builtins.map (mkFolder) folderNames;
-    };
-    services.resilio.directoryRoot = "/data/sync";
-
     ## General usability
     ### Make podman available for dev tools such as act
     virtualisation = {
