@@ -20,8 +20,6 @@
 
     # Networking
     networking.firewall = {
-      trustedInterfaces = [ "neb.jh" ];
-
       interfaces = {
         "end0" = {
           allowedTCPPorts = [

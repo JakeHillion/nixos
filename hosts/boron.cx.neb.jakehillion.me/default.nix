@@ -148,7 +148,6 @@
     };
 
     networking.firewall = {
-      trustedInterfaces = [ "neb.jh" ];
       allowedTCPPorts = lib.mkForce [ ];
       allowedUDPPorts = lib.mkForce [ ];
       interfaces = {

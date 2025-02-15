@@ -220,7 +220,6 @@ in
     };
 
     networking.firewall = {
-      trustedInterfaces = [ "neb.jh" ];
       allowedTCPPorts = lib.mkForce [
         22 # SSH
       ];

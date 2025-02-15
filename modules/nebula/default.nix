@@ -57,6 +57,9 @@ in
       '';
     };
 
+    # Turn off the normal firewall and use the Nebula capability based firewall instead.
+    networking.firewall.trustedInterfaces = [ "neb.jh" ];
+
     services.nebula.networks =
       let
         isLighthouse = lib.lists.any (x: config.networking.fqdn == x) (builtins.attrNames lighthouses);

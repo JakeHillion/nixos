@@ -24,7 +24,6 @@
     # Networking
     networking.interfaces.end0.name = "eth0";
     networking.firewall = {
-      trustedInterfaces = [ "neb.jh" ];
       allowedTCPPorts = lib.mkForce [
         22 # SSH
       ];

@@ -24,7 +24,6 @@
 
     networking.nameservers = lib.mkForce [ ]; # Trust the DHCP nameservers
     networking.firewall = {
-      trustedInterfaces = [ "neb.jh" ];
       allowedTCPPorts = lib.mkForce [
         22 # SSH
       ];
