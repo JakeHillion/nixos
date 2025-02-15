@@ -47,8 +47,11 @@
       algorithm = "zstd";
     };
 
-    # Allow performing aarch64 builds in QEMU
-    boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+    # Allow performing ARM builds in QEMU
+    boot.binfmt.emulatedSystems = [
+      "armv7l-linux"
+      "aarch64-linux"
+    ];
 
     ## Syncthing
     custom.syncthing = {
