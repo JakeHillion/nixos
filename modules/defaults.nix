@@ -4,7 +4,7 @@
   options.custom.defaults = lib.mkEnableOption "defaults";
 
   config = lib.mkIf config.custom.defaults {
-    hardware.enableAllFirmware = true;
+    hardware.enableAllFirmware = lib.mkDefault true;
     nix = {
       settings.experimental-features = [ "nix-command" "flakes" ];
       settings = {
@@ -34,7 +34,7 @@
 
     environment = {
       systemPackages = with pkgs; [
-        agenix.packages."${system}".default
+        #agenix.packages."${system}".default
         gh
         git
         htop

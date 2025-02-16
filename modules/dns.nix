@@ -54,6 +54,9 @@ in
                   boron = "172.20.0.1";
                   warlock = "172.20.0.15";
                 };
+                gw = {
+                  hondo = "172.20.0.16";
+                };
                 home = {
                   microserver = "172.20.0.2"; # removed 23/12/2024
                   router = "172.20.0.3";
