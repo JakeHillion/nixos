@@ -97,6 +97,11 @@ in
         session = {
           PROVIDER = "file";
         };
+        "cron.archive_cleanup" = {
+          ENABLED = true;
+          SCHEDULE = "@midnight";
+          OLDER_THAN = "28d";
+        };
       };
     };
 
