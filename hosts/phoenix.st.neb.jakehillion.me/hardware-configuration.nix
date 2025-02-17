@@ -16,8 +16,8 @@
 
   fileSystems."/mnt/d0" =
     {
-      device = "/dev/disk/by-uuid/9136434d-d883-4118-bd01-903f720e5ce1";
-      fsType = "btrfs";
+      device = "/dev/disk/by-uuid/7e4fdfc5-33e9-401c-872f-7e4e6efa8178";
+      fsType = "bcachefs";
       options = [ "noatime" "nofail" "x-systemd.device-timeout=0" ];
     };
 
