@@ -218,7 +218,7 @@
                     ip-address = "10.64.50.${toString (20 + i)}";
                     inherit (el) hw-address hostname;
                   }) [
-                  null
+                  { hostname = "rooster"; hw-address = "ac:1f:6b:e6:60:14"; }
                   null
                   { hostname = "theon"; hw-address = "00:1e:06:49:06:1e"; }
                   { hostname = "server-switch"; hw-address = "84:d8:1b:9d:0d:85"; }
