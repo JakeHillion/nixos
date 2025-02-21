@@ -12,6 +12,15 @@
     custom.tang.enable = true;
     custom.sched_ext.enable = true;
 
+    ## Impermanence
+    custom.impermanence = {
+      enable = true;
+      userExtraFiles.jake = [
+        ".ssh/id_rsa"
+        ".ssh/id_ecdsa"
+      ];
+    };
+
     networking = {
       useDHCP = false;
 
