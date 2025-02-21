@@ -10,6 +10,7 @@
 
     custom.defaults = true;
     custom.tang.enable = true;
+    custom.sched_ext.enable = true;
 
     networking = {
       useDHCP = false;
