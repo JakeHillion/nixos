@@ -14,11 +14,6 @@
 
     boot.kernelParams = [
       "ip=dhcp"
-
-      # zswap
-      "zswap.enabled=1"
-      "zswap.compressor=zstd"
-      "zswap.max_pool_percent=20"
     ];
     boot.initrd = {
       availableKernelModules = [ "igc" ];

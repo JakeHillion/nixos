@@ -40,13 +40,6 @@
       ];
     };
 
-    ## Enable ZRAM swap to help with root on tmpfs
-    zramSwap = {
-      enable = true;
-      memoryPercent = 200;
-      algorithm = "zstd";
-    };
-
     # Allow performing aarch64 builds in QEMU
     boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 

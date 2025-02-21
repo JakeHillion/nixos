@@ -12,13 +12,6 @@
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
 
-    boot.kernelParams = [
-      # zswap
-      "zswap.enabled=1"
-      "zswap.compressor=zstd"
-      "zswap.max_pool_percent=20"
-    ];
-
     custom.defaults = true;
     custom.locations.autoServe = true;
     custom.impermanence.enable = true;

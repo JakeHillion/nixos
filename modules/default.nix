@@ -5,6 +5,7 @@
     ./backups/default.nix
     ./ca/default.nix
     ./chia.nix
+    ./compressed_ram.nix
     ./defaults.nix
     ./desktop/default.nix
     ./dns.nix

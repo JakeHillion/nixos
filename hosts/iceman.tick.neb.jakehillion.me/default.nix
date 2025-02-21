@@ -14,13 +14,6 @@
     ## Custom Services
     custom.locations.autoServe = true;
 
-    ## Enable zram for 2GB Pi
-    zramSwap = {
-      enable = true;
-      memoryPercent = 200;
-      algorithm = "zstd";
-    };
-
     # Networking
     networking.interfaces.end0.name = "eth0";
     networking.firewall = {

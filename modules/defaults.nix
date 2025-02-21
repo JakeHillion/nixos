@@ -69,6 +69,7 @@
 
     # Delegation
     custom.ca.consumer.enable = true;
+    custom.compressed_ram.enable = true;
     custom.dns.enable = true;
     custom.home.defaults = true;
     custom.hostinfo.enable = true;

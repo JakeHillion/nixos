@@ -66,13 +66,6 @@
       "2a01:4f8:173:23d2::2"
     ];
 
-    ## Enable ZRAM to help with root on tmpfs
-    zramSwap = {
-      enable = true;
-      memoryPercent = 200;
-      algorithm = "zstd";
-    };
-
     ## Filesystems
     services.btrfs.autoScrub = {
       enable = true;

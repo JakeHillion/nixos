@@ -20,11 +20,6 @@ in
     boot.kernelParams = [
       "zfs.zfs_arc_max=34359738368"
 
-      # zswap
-      "zswap.enabled=1"
-      "zswap.compressor=zstd"
-      "zswap.max_pool_percent=20"
-
       # for tang - no idea why this is needed
       "ip=dhcp"
     ];

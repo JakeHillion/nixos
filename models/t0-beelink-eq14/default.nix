@@ -26,13 +26,6 @@
       ];
     };
 
-    ## Zswap
-    boot.kernelParams = [
-      "zswap.enabled=1"
-      "zswap.compressor=zstd"
-      "zswap.max_pool_percent=20"
-    ];
-
     ## Setup but don't enable tang, that depends on the device's location
     custom.tang = {
       networkingModule = "r8169";
