@@ -21,6 +21,12 @@
       ];
     };
 
+    # Allow performing emulated builds in QEMU
+    boot.binfmt.emulatedSystems = [
+      "aarch64-linux"
+      "armv7l-linux"
+    ];
+
     networking = {
       useDHCP = false;
 
