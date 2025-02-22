@@ -211,11 +211,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1739960993,
-        "narHash": "sha256-hyjScAjuovs6uRVruXgHh/bvncAS7AXyEKGnKZ0h2qU=",
-        "rev": "cb370f999f1c2865d5b6ed6853a17c3c9c6f4817",
+        "lastModified": 1740217363,
+        "narHash": "sha256-F25ZYvq6MXRp52bqIDYtEBNGcZPBx9xCMQFijcDWpec=",
+        "rev": "6b86a8281c149df4d96c2dc36228bbf4bea2d466",
         "type": "tarball",
-        "url": "https://gitea.hillion.co.uk/api/v1/repos/JakeHillion/nixpkgs/archive/cb370f999f1c2865d5b6ed6853a17c3c9c6f4817.tar.gz"
+        "url": "https://gitea.hillion.co.uk/api/v1/repos/JakeHillion/nixpkgs/archive/6b86a8281c149df4d96c2dc36228bbf4bea2d466.tar.gz"
       },
       "original": {
         "type": "tarball",
