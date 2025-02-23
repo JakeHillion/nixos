@@ -30,8 +30,8 @@
 
   fileSystems."/mnt/d2" =
     {
-      device = "/dev/disk/by-uuid/82b82c66-e6e6-4b76-a5ef-8adea33dbe18";
-      fsType = "btrfs";
+      device = "/dev/disk/by-uuid/77ab5fb8-4be4-4907-8faa-49ba09e7da08";
+      fsType = "bcachefs";
       options = [ "noatime" "nofail" "x-systemd.device-timeout=0" ];
     };
 
