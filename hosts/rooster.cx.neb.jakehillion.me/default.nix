@@ -10,7 +10,10 @@
 
     custom.defaults = true;
     custom.tang.enable = true;
-    custom.sched_ext.enable = true;
+    custom.sched_ext = {
+      enable = true;
+      scheduler = "scx_lavd";
+    };
 
     ## Impermanence
     custom.impermanence = {
