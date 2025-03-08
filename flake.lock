@@ -213,13 +213,16 @@
       "locked": {
         "lastModified": 1740803368,
         "narHash": "sha256-OjnAr6kZRRNlhI6LhUH+4dMYOSUfsgcMS2xQ4ozxX0M=",
+        "owner": "JakeHillion",
+        "repo": "nixpkgs2",
         "rev": "31c5b3601136be6038a616b43586093821a88d47",
-        "type": "tarball",
-        "url": "https://gitea.hillion.co.uk/api/v1/repos/JakeHillion/nixpkgs/archive/31c5b3601136be6038a616b43586093821a88d47.tar.gz"
+        "type": "github"
       },
       "original": {
-        "type": "tarball",
-        "url": "https://gitea.hillion.co.uk/JakeHillion/nixpkgs/archive/nixos-unstable.tar.gz"
+        "owner": "JakeHillion",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs2",
+        "type": "github"
       }
     },
     "root": {
