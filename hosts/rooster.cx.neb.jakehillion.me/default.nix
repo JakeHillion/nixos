@@ -30,6 +30,18 @@
       "armv7l-linux"
     ];
 
+    ## General usability
+    ### Make podman available for dev tools such as act
+    virtualisation = {
+      containers.enable = true;
+      podman = {
+        enable = true;
+        dockerCompat = true;
+        dockerSocket.enable = true;
+      };
+    };
+    users.users.jake.extraGroups = [ "podman" ];
+
     networking = {
       useDHCP = false;
 
