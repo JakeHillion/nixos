@@ -49,7 +49,12 @@
     let
       getSystemOverlays = system: nixpkgsConfig: [
         (final: prev: {
-          unstable = nixpkgs-unstable.legacyPackages.${prev.system};
+          unstable = import nixpkgs-unstable {
+            inherit (prev) system;
+            config = {
+              allowUnfree = true;
+            };
+          };
 
           "storj" = final.callPackage ./pkgs/storj.nix { };
         })

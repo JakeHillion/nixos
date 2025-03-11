@@ -9,6 +9,7 @@
     system.stateVersion = "24.11";
 
     custom.defaults = true;
+    custom.home.devbox = true;
     custom.tang.enable = true;
     custom.sched_ext = {
       enable = true;

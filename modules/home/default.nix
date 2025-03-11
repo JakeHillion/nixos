@@ -1,5 +1,9 @@
 { pkgs, lib, config, ... }:
 
+let
+  cfg = config.custom.home;
+  stateVersion = if (builtins.compareVersions config.system.stateVersion "24.05") > 0 then config.system.stateVersion else "22.11";
+in
 {
   imports = [
     ./git.nix
@@ -7,14 +11,15 @@
     ./tmux/default.nix
   ];
 
-  options.custom.home.defaults = lib.mkEnableOption "home";
+  options.custom.home = {
+    defaults = lib.mkEnableOption "home";
 
-  config = lib.mkIf config.custom.home.defaults {
-    home-manager =
-      let
-        stateVersion = if (builtins.compareVersions config.system.stateVersion "24.05") > 0 then config.system.stateVersion else "22.11";
-      in
-      {
+    devbox = lib.mkEnableOption "home.devbox";
+  };
+
+  config = lib.mkMerge [
+    (lib.mkIf cfg.defaults {
+      home-manager = {
         users.root.home = {
           inherit stateVersion;
 
@@ -49,9 +54,22 @@
         };
       };
 
-    # Delegation
-    custom.home.git.enable = true;
-    custom.home.neovim.enable = true;
-    custom.home.tmux.enable = true;
-  };
+      # Delegation
+      custom.home.git.enable = true;
+      custom.home.neovim.enable = true;
+      custom.home.tmux.enable = true;
+    })
+
+    (lib.mkIf cfg.devbox {
+      home-manager.users."${config.custom.user}" = {
+        home = {
+          inherit stateVersion;
+
+          packages = with pkgs; [
+            unstable.claude-code
+          ];
+        };
+      };
+    })
+  ];
 }
