@@ -37,6 +37,7 @@ in
                 "boron.cx" = "LX5YKSC-SV22B4A-ESU7YPL-AANIT55-OVT3UJN-3FKNKUF-E7AOTOW-MMPNJQL";
                 "gendry.jakehillion-terminals" = "7JSM6OY-SYSZXM5-633SD6U-ZZJ5KN3-SZQNQFY-C7RGOLM-DZG3CUW-JCVR2AH";
                 "jakehillion-mba-m2-15.lt" = "7NAXX6J-4RRJD6B-NP5LG3L-LUIGASI-OXLPS3H-ACLCXBA-RZNSRXN-CXMFZQC";
+                "jakes-ipad.mob" = "QPNNJBC-SZQG4ZH-J7R4M2B-YUY6DLH-DFP6HBS-ASPKR5S-CARCET3-OBJAGAI";
                 "jakes-iphone.mob" = "QHG6BBS-UPCFLPE-2OZGDZR-QUSKLVP-NEEEGXG-E6TMAXU-7YUHJ4I-AWLDKAB";
                 "merlin.rig" = "IUCUUDQ-7Q3VCA3-JMUA3GL-UOYWAPM-IE6RT3O-CTSA5VL-HRXEPZD-SSOBKQ2";
                 "phoenix.st" = "65COGEC-WBF67I4-EBM73U3-DQMVOS7-PWM7VMS-M744STW-TQVIO7S-NBP56AV";
@@ -58,7 +59,7 @@ in
             folders =
               let
                 allDevices = builtins.attrNames devices;
-                allComputers = lib.lists.remove "jakes-iphone.mob" allDevices;
+                allComputers = lib.lists.filter (x: !builtins.elem x [ "jakes-ipad.mob" "jakes-iphone.mob" ]) allDevices;
               in
               with lib.attrsets; mapAttrs'
                 (name: value: (nameValuePair "${cfg.baseDir}/${name}" {
@@ -87,6 +88,7 @@ in
                     id = "sustainable-horizontal-skating";
                     devices = [
                       "jakehillion-mba-m2-15.lt"
+                      "jakes-ipad.mob"
                       "merlin.rig"
                       "phoenix.st"
                     ];
