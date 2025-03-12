@@ -65,6 +65,7 @@ in
                   jakehillion-mba-m2-15 = "172.20.0.6";
                 };
                 mob = {
+                  jakes-ipad = "172.20.0.17";
                   jakes-iphone = "172.20.0.13";
                 };
                 pop = {
