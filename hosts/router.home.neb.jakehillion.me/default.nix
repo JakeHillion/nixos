@@ -292,6 +292,11 @@
                     ip-address = "10.239.19.9";
                     hostname = "gendry-kvm";
                   }
+                  {
+                    hw-address = "30:ed:a0:a1:cb:f4";
+                    ip-address = "10.239.19.10";
+                    hostname = "living-room-onju-voice-a1cbf4";
+                  }
                 ];
               }
               {
