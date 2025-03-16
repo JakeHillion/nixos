@@ -64,6 +64,22 @@ in
         '';
       };
 
+      wyoming = {
+        piper.servers.default = {
+          enable = true;
+          uri = "tcp://0.0.0.0:10200";
+
+          voice = "en_GB-southern_english_female-low";
+        };
+
+        faster-whisper.servers.default = {
+          enable = true;
+          uri = "tcp://0.0.0.0:10300";
+
+          language = "en";
+        };
+      };
+
       home-assistant = {
         enable = true;
 
@@ -86,6 +102,7 @@ in
           "sun"
           "wake_on_lan"
           "waze_travel_time"
+          "wyoming"
         ];
         customComponents = with pkgs.home-assistant-custom-components; [
           adaptive_lighting
