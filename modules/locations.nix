@@ -35,7 +35,9 @@ in
           restic = "phoenix.st.neb.jakehillion.me";
           tang = [
             "li.pop.neb.jakehillion.me"
-            "sodium.pop.neb.jakehillion.me"
+            "router.home.neb.jakehillion.me"
+            "stinger.pop.neb.jakehillion.me"
+            "warlock.cx.neb.jakehillion.me"
           ];
           unifi = "boron.cx.neb.jakehillion.me";
           version_tracker = [ "boron.cx.neb.jakehillion.me" ];

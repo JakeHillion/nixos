@@ -98,6 +98,7 @@
 
               iifname "eth0" tcp dport    22 counter accept comment "SSH"
               iifname "eth0" tcp dport    53 counter accept comment "Public DNS"
+              iifname "eth0" tcp dport  7654 counter accept comment "Tang"
 
               iifname "eth0" udp dport    53 counter accept comment "Public DNS"
               iifname "eth0" udp dport  4242 counter accept comment "Nebula Lighthouse"
@@ -123,7 +124,6 @@
                 "eth2",
               } ct state { established,related } counter accept comment "Allow established back to LANs"
 
-              ip daddr 10.64.50.21 tcp dport  7654 counter accept comment "Tang"
               ip daddr 10.64.50.27 tcp dport 32400 counter accept comment "Plex"
             }
           }
@@ -132,7 +132,6 @@
             chain prerouting {
               type nat hook prerouting priority filter; policy accept;
 
-              iifname eth0 tcp dport  7654 counter dnat to 10.64.50.21
               iifname eth0 tcp dport 32400 counter dnat to 10.64.50.27
 
               iifname eth1 ip daddr 185.240.111.53 udp dport 4242 dnat to 10.64.50.1
@@ -219,7 +218,7 @@
                     inherit (el) hw-address hostname;
                   }) [
                   { hostname = "rooster"; hw-address = "ac:1f:6b:e6:60:14"; }
-                  null
+                  { hostname = "warlock"; hw-address = "e8:ff:1e:d9:73:5a"; }
                   { hostname = "theon"; hw-address = "00:1e:06:49:06:1e"; }
                   { hostname = "server-switch"; hw-address = "84:d8:1b:9d:0d:85"; }
                   { hostname = "apc-ap7921"; hw-address = "00:c0:b7:6b:f4:34"; }

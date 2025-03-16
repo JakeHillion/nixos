@@ -68,7 +68,6 @@
           allowedTCPPorts = lib.mkForce [
             80 # HTTP 1-2
             443 # HTTPS 1-2
-            7654 # Tang
           ];
           allowedUDPPorts = lib.mkForce [
             443 # HTTP 3

@@ -13,8 +13,11 @@ in
       enable = true;
       ipAddressAllow = [
         "10.64.50.0/24"
+        "127.0.0.0/8"
         "138.201.252.214/32"
       ];
     };
+
+    networking.firewall.allowedTCPPorts = [ 7654 ];
   };
 }
