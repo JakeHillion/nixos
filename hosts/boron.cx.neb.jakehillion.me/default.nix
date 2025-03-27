@@ -127,6 +127,7 @@
             53 # DNS
             80 # HTTP 1-2
             443 # HTTPS 1-2
+            7654 # Tang
             8080 # Unifi (inform)
           ];
           allowedUDPPorts = lib.mkForce [
