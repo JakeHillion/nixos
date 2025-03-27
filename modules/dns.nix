@@ -55,6 +55,9 @@ in
                   warlock = "172.20.0.15";
                   rooster = "172.20.0.16";
                 };
+                gw = {
+                  cyclone = "172.20.0.18";
+                };
                 home = {
                   microserver = "172.20.0.2"; # removed 23/12/2024
                   router = "172.20.0.3";
