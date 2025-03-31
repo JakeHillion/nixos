@@ -34,6 +34,7 @@
 
     custom.defaults = true;
     custom.locations.autoServe = true;
+    custom.home.devbox = true;
 
     custom.users.jake.password = true;
     security.sudo.wheelNeedsPassword = lib.mkForce true;

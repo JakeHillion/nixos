@@ -61,6 +61,10 @@ in
     })
 
     (lib.mkIf cfg.devbox {
+      custom.impermanence = {
+        userExtraDirs."${config.custom.user}" = [ ".config/gh" ];
+      };
+
       home-manager.users."${config.custom.user}" = {
         home = {
           inherit stateVersion;
