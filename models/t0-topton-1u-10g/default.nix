@@ -18,6 +18,9 @@
         devices = [ "disk0-crypt" ];
       };
 
+      ## Get a serial console on ttyS0
+      boot.kernelParams = [ "console=ttyS0,115200n8" ];
+
       ## Delegation
       custom.impermanence.enable = true;
     }

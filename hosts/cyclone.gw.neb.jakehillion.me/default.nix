@@ -10,5 +10,8 @@
 
     custom.defaults = true;
     custom.tang.enable = true;
+
+    ## Interactive password
+    custom.users.jake.password = true;
   };
 }

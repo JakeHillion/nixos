@@ -16,6 +16,9 @@ let
           cx = {
             boron = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDtcJ7HY/vjtheMV8EN2wlTw1hU53CJebGIeRJcSkzt5 root@boron";
           };
+          gw = {
+            cyclone = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJM3XMKyjK4gYWkZ2byGewWiNI0RfVXK/wynv7bKzMmJ root@cyclone";
+          };
           home = {
             router = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAlCj/i2xprN6h0Ik2tthOJQy6Qwq3Ony73+yfbHYTFu root@router";
           };
@@ -42,6 +45,7 @@ in
 {
   # User Passwords
   "passwords/jake.age".publicKeys = jake_users ++ [
+    neb.gw.cyclone
     neb.home.router
     neb.lt.be
     neb.rig.merlin
