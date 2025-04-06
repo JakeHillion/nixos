@@ -17,6 +17,7 @@
     ./nebula/default.nix
     ./oci-containers/default.nix
     ./prometheus/default.nix
+    ./router.nix
     ./sched_ext.nix
     ./services/default.nix
     ./shell/default.nix
@@ -24,6 +25,7 @@
     ./storj.nix
     ./syncthing.nix
     ./tang/default.nix
+    ./topology.nix
     ./users.nix
     ./www/default.nix
   ];

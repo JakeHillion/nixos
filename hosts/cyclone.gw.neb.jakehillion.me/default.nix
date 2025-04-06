@@ -13,5 +13,8 @@
 
     ## Interactive password
     custom.users.jake.password = true;
+
+    ## Use the network topology abstraction
+    custom.router.auto = true;
   };
 }
