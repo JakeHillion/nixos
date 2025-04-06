@@ -120,6 +120,9 @@ in
             )
             locationCfg.networks;
       };
+      boot.initrd.postDeviceCommands = lib.mkIf (config.custom.tang.enable && locationCfg.wanMacAddress != null) ''
+        ip link set dev ${locationCfg.wanInterface} address ${locationCfg.wanMacAddress}
+      '';
 
       # Configure DHCP server for networks that have it enabled
       services.kea.dhcp4 = lib.mkIf (dhcpNetworks != { }) {
