@@ -9,6 +9,7 @@
     system.stateVersion = "24.11";
 
     custom.defaults = true;
+    custom.locations.autoServe = true;
     custom.tang.enable = true;
 
     ## Interactive password

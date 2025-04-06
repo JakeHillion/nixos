@@ -35,6 +35,7 @@ in
           restic = "phoenix.st.neb.jakehillion.me";
           tang = [
             "boron.cx.neb.jakehillion.me"
+            "cyclone.gw.neb.jakehillion.me"
             "li.pop.neb.jakehillion.me"
             "router.home.neb.jakehillion.me"
             "stinger.pop.neb.jakehillion.me"

@@ -77,6 +77,104 @@ in
       getInterfaceName = name: netCfg:
         if netCfg.vlanId == null then netCfg.interface else name;
 
+      # Filter trusted networks (for router access)
+      trustedNetworks = lib.attrsets.filterAttrs (name: netCfg: netCfg.trustedNetwork) locationCfg.networks;
+
+      # Filter networks with internet access
+      internetNetworks = lib.attrsets.filterAttrs (name: netCfg: netCfg.internetAccess) locationCfg.networks;
+
+      # Get a list of trusted interface names
+      trustedInterfaceNames = lib.attrsets.mapAttrsToList getInterfaceName trustedNetworks;
+
+      # Get a list of internet-enabled interface names
+      internetInterfaceNames = lib.attrsets.mapAttrsToList getInterfaceName internetNetworks;
+
+      # Helper for protocol-specific rules
+      protocolRules = protocol:
+        if protocol == "both" then [ "tcp" "udp" ] else [ protocol ];
+
+      # Helper to find IP address for an FQDN from reservedIps
+      findIpByFqdn = fqdn:
+        let
+          # For each network, search through reservedIps for matching FQDN
+          matches = lib.lists.flatten (lib.attrsets.mapAttrsToList
+            (netName: netCfg:
+              let
+                prefix = lib.strings.concatStringsSep "." (lib.lists.take 3 (lib.strings.splitString "." (lib.lists.elemAt (lib.strings.splitString "/" netCfg.subnet) 0)));
+                hostMatches = lib.attrsets.mapAttrsToList
+                  (hostId: hostCfg:
+                    if hostCfg.fqdn == fqdn then
+                      "${prefix}.${hostId}"
+                    else
+                      null
+                  )
+                  (netCfg.reservedIps or { });
+              in
+              lib.lists.filter (ip: ip != null) hostMatches
+            )
+            locationCfg.networks);
+        in
+        if matches == [ ] then null else lib.lists.head matches;
+
+      # Helper to determine if a port forward is for the router itself
+      isRouterService = rule:
+        let
+          # Get effective internal IP (resolve from FQDN if needed)
+          effectiveIP =
+            if rule.internalIP != null then rule.internalIP
+            else if rule.fqdn != null then findIpByFqdn rule.fqdn
+            else null;
+          # Get all gateway IPs
+          gatewayIPs = lib.attrsets.mapAttrsToList (name: netCfg: getGateway netCfg) locationCfg.networks;
+        in
+        effectiveIP != null && builtins.elem effectiveIP gatewayIPs;
+
+      # Helper to resolve all port forwarding rules across all networks
+      getAllPortForwardingRules =
+        lib.lists.flatten (
+          lib.attrsets.mapAttrsToList
+            (netName: netCfg:
+              # For each rule in this network
+              map
+                (rule:
+                  let
+                    # Resolve internal IP if it's not explicitly set
+                    effectiveIP =
+                      if rule.internalIP != null then rule.internalIP
+                      else if rule.fqdn != null then
+                        let
+                          # Calculate IP from the current network and host ID
+                          matches = lib.attrsets.mapAttrsToList
+                            (hostId: hostCfg:
+                              if hostCfg.fqdn == rule.fqdn then
+                                let
+                                  prefix = lib.strings.concatStringsSep "." (lib.lists.take 3 (lib.strings.splitString "." (lib.lists.elemAt (lib.strings.splitString "/" netCfg.subnet) 0)));
+                                in
+                                "${prefix}.${hostId}"
+                              else
+                                null
+                            )
+                            (netCfg.reservedIps or { });
+                          resolvedMatches = lib.lists.filter (ip: ip != null) matches;
+                        in
+                        if resolvedMatches == [ ] then null else lib.lists.head resolvedMatches
+                      else null;
+                  in
+                  # Only include rules that have a resolved IP
+                  if effectiveIP != null then
+                    {
+                      inherit (rule) description externalPort protocol loopbackEnabled;
+                      internalIP = effectiveIP;
+                      internalPort = rule.internalPort;
+                    }
+                  else
+                    null
+                )
+                (netCfg.portForwarding or [ ])
+            )
+            locationCfg.networks
+        );
+
     in
     lib.mkIf (cfg.auto && locationCfg != null) {
       networking = {
@@ -119,6 +217,131 @@ in
                 }
             )
             locationCfg.networks;
+
+        # Configure nftables firewall
+        nftables = {
+          enable = true;
+          ruleset = ''
+            table inet filter {
+              chain output {
+                type filter hook output priority 100; policy accept;
+              }
+
+              chain input {
+                type filter hook input priority filter; policy drop;
+
+                # Allow all loopback traffic
+                iifname "lo" counter accept
+
+                # Allow trusted networks to access the router
+                iifname {
+                  ${lib.strings.concatStringsSep ",\n      " (map (i: "\"${i}\"") (["lo"] ++ trustedInterfaceNames ++ ["neb.jh"]))}
+                } counter accept
+
+                # Allow ICMP from anywhere
+                ip protocol icmp counter accept comment "accept all ICMP types"
+
+                # Allow established connections
+                ct state { established, related } counter accept
+
+                # Allow specific services from WAN (both router services and port forwarding)
+                ${lib.strings.concatStringsSep "\n    " 
+                  (lib.lists.flatten 
+                    (map (rule: 
+                      map (proto: 
+                        "iifname \"${locationCfg.wanInterface}\" ${proto} dport ${toString rule.externalPort} counter accept comment \"${rule.description}\""
+                      ) (protocolRules rule.protocol)
+                    ) (lib.lists.filter (rule: rule != null) getAllPortForwardingRules))
+                  )
+                }
+
+                # Drop all other WAN traffic
+                iifname { "${locationCfg.wanInterface}" } counter drop
+              }
+
+              chain forward {
+                type filter hook forward priority filter; policy drop;
+
+                # Allow trusted LAN to WAN (internet access)
+                iifname {
+                  ${lib.strings.concatStringsSep ",\n      " (map (i: "\"${i}\"") internetInterfaceNames)}
+                } oifname {
+                  "${locationCfg.wanInterface}"
+                } counter accept comment "Allow trusted LAN to WAN"
+
+                # Allow established connections back to LANs
+                iifname {
+                  "${locationCfg.wanInterface}"
+                } oifname {
+                  ${lib.strings.concatStringsSep ",\n      " (map (i: "\"${i}\"") trustedInterfaceNames)}
+                } ct state { established, related } counter accept comment "Allow established back to LANs"
+
+                # Port forwarding rules from all networks
+                ${lib.strings.concatStringsSep "\n    " 
+                  (map (rule: 
+                    if rule.internalPort != null then
+                      "ip daddr ${rule.internalIP} ${rule.protocol} dport ${toString rule.internalPort} counter accept comment \"${rule.description}\""
+                    else
+                      "ip daddr ${rule.internalIP} ${rule.protocol} dport ${toString rule.externalPort} counter accept comment \"${rule.description}\""
+                  ) (lib.lists.filter (rule: rule != null) getAllPortForwardingRules))
+                }
+              }
+            }
+
+            table ip nat {
+              chain prerouting {
+                type nat hook prerouting priority filter; policy accept;
+
+                # Port forwarding (skip DNAT for router services)
+                ${lib.strings.concatStringsSep "\n    " 
+                  (map (rule: 
+                    "iifname ${locationCfg.wanInterface} ${rule.protocol} dport ${toString rule.externalPort} counter dnat to ${rule.internalIP}:${
+                      toString (if rule.internalPort != null then rule.internalPort else rule.externalPort)
+                    }"
+                  ) (lib.lists.filter (rule: rule != null && !(isRouterService rule)) getAllPortForwardingRules))
+                }
+                
+                # NAT loopback/reflection for internal clients accessing WAN IP
+                ${lib.strings.optionalString (locationCfg.staticWanIP != null) (
+                  lib.strings.concatStringsSep "\n    " 
+                  (lib.lists.flatten 
+                    (map (rule: 
+                      if (rule.loopbackEnabled) then
+                        let
+                          # Find the LAN interface where clients will connect from
+                          lanInterfaces = lib.attrsets.mapAttrsToList
+                            (name: netCfg: 
+                              if netCfg.trustedNetwork then getInterfaceName name netCfg else null
+                            )
+                            (lib.attrsets.filterAttrs (name: netCfg: netCfg.trustedNetwork) locationCfg.networks);
+                          filteredInterfaces = lib.lists.filter (i: i != null) lanInterfaces;
+                        in
+                        map (iface: 
+                          "iifname ${iface} ip daddr ${locationCfg.staticWanIP} ${rule.protocol} dport ${toString rule.externalPort} counter dnat to ${rule.internalIP}:${
+                            toString (if rule.internalPort != null then rule.internalPort else rule.externalPort)
+                          }"
+                        ) filteredInterfaces
+                      else
+                        []
+                    ) (lib.lists.filter (rule: rule != null) getAllPortForwardingRules))
+                  )
+                )}
+              }
+
+              chain postrouting {
+                type nat hook postrouting priority filter; policy accept;
+
+                # Masquerade outgoing WAN traffic
+                oifname "${locationCfg.wanInterface}" masquerade
+              }
+            }
+          '';
+        };
+      };
+
+      # Configure kernel IP forwarding for routing
+      boot.kernel.sysctl = {
+        "net.ipv4.conf.all.forwarding" = true;
       };
       boot.initrd.postDeviceCommands = lib.mkIf (config.custom.tang.enable && locationCfg.wanMacAddress != null) ''
         ip link set dev ${locationCfg.wanInterface} address ${locationCfg.wanMacAddress}
@@ -212,6 +435,28 @@ in
                       (if netCfg.dnsServers != [ ] then netCfg.dnsServers else [ "1.1.1.1" "8.8.8.8" ]);
                   }
                 ];
+
+                # Configure DHCP reservations from reservedIps
+                reservations = lib.attrsets.mapAttrsToList
+                  (id: reservation:
+                    let
+                      # Get the first 3 octets from the subnet
+                      subnetBase = lib.strings.splitString "/" netCfg.subnet;
+                      subnetParts = lib.strings.splitString "." (lib.lists.elemAt subnetBase 0);
+                      subnetPrefix = lib.strings.concatStringsSep "." (lib.lists.take 3 subnetParts);
+                      # Create IP address by combining subnet prefix with ID
+                      idNum = if builtins.isString id then lib.strings.toInt id else id;
+                      ipAddress = "${subnetPrefix}.${toString idNum}";
+                    in
+                    {
+                      ip-address = ipAddress;
+                      hw-address = reservation.hwAddress;
+                      hostname = reservation.hostname;
+                    }
+                  )
+                  (lib.attrsets.filterAttrs
+                    (id: reservation: reservation.dhcpReservation && reservation.hwAddress != null)
+                    (netCfg.reservedIps or { }));
               })
               dhcpNetworks;
         };
