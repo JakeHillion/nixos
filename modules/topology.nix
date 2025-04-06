@@ -194,18 +194,18 @@
         description = "Home Network";
         routerDevice = "cyclone.gw.neb.jakehillion.me";
         wanInterface = "enp2s0";
-        wanMacAddress = "b4:fb:e4:b0:90:3d"; # Temporary unique MAC address for testing
+        wanMacAddress = "b4:fb:e4:b0:90:3c";
         staticWanIP = "185.240.111.53";
 
         networks = {
           lan = {
             description = "Main LAN Network";
-            subnet = "10.91.135.0/24";
+            subnet = "10.64.50.0/24";
             interface = "enp1s0f0";
             dhcpEnabled = true;
             dhcpPool = {
-              start = "10.91.135.64";
-              end = "10.91.135.254";
+              start = "10.64.50.64";
+              end = "10.64.50.254";
             };
             dnsServers = [ "1.1.1.1" "8.8.8.8" ];
             internetAccess = true;
@@ -276,19 +276,19 @@
               {
                 description = "SSH";
                 externalPort = 22;
-                internalIP = "10.91.135.1";
+                internalIP = "10.64.50.1";
                 protocol = "tcp";
               }
               {
                 description = "Tang";
                 externalPort = 7654;
-                internalIP = "10.91.135.1";
+                internalIP = "10.64.50.1";
                 protocol = "tcp";
               }
               {
                 description = "Nebula Lighthouse";
                 externalPort = 4242;
-                internalIP = "10.91.135.1";
+                internalIP = "10.64.50.1";
                 protocol = "udp";
                 loopbackEnabled = true;
               }
@@ -297,13 +297,13 @@
 
           iot = {
             description = "IoT Devices Network";
-            vlanId = 102;
-            subnet = "10.37.106.0/24";
+            vlanId = 2;
+            subnet = "10.239.19.0/24";
             interface = "enp1s0f0"; # Parent interface for VLAN
             dhcpEnabled = true;
             dhcpPool = {
-              start = "10.37.106.64";
-              end = "10.37.106.254";
+              start = "10.239.19.64";
+              end = "10.239.19.254";
             };
             dnsServers = [ "1.1.1.1" "8.8.8.8" ];
             internetAccess = true;
@@ -360,13 +360,13 @@
 
           cameras = {
             description = "Security Cameras Network";
-            vlanId = 103;
-            subnet = "10.139.43.0/24";
+            vlanId = 3;
+            subnet = "10.133.145.0/24";
             interface = "enp1s0f0"; # Parent interface for VLAN
             dhcpEnabled = true;
             dhcpPool = {
-              start = "10.139.43.64";
-              end = "10.139.43.254";
+              start = "10.133.145.64";
+              end = "10.133.145.254";
             };
             dnsServers = [ "1.1.1.1" "8.8.8.8" ];
             internetAccess = false; # Cameras don't need internet access

@@ -5,12 +5,12 @@ let
 
   lighthouses = {
     "boron.cx.neb.jakehillion.me" = "boron.cx.jakehillion.me:4242";
+    "cyclone.gw.neb.jakehillion.me" = "home.jakehillion.me:4242";
     "li.pop.neb.jakehillion.me" = "home.scott.hillion.co.uk:4242";
-    "router.home.neb.jakehillion.me" = "home.jakehillion.me:4242";
   };
   relays = [
-    "router.home.neb.jakehillion.me"
     "boron.cx.neb.jakehillion.me"
+    "cyclone.gw.neb.jakehillion.me"
   ];
 
   serviceUser = config.systemd.services."nebula@jakehillion".serviceConfig.User;
