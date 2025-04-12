@@ -63,7 +63,7 @@
                   description = "DHCP pool configuration";
                 };
 
-                reservedIps = lib.mkOption {
+                devices = lib.mkOption {
                   type = lib.types.attrsOf (lib.types.submodule {
                     options = {
                       hostname = lib.mkOption {
@@ -211,7 +211,7 @@
             internetAccess = true;
             trustedNetwork = true;
 
-            reservedIps = {
+            devices = {
               "20" = {
                 hostname = "rooster";
                 fqdn = "rooster.cx.neb.jakehillion.me";
@@ -309,7 +309,7 @@
             internetAccess = true;
             trustedNetwork = true;
 
-            reservedIps = {
+            devices = {
               "2" = {
                 hostname = "bedroom-everything-presence-one";
                 hwAddress = "40:22:d8:e0:1d:50";

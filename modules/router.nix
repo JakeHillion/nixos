@@ -93,10 +93,10 @@ in
       protocolRules = protocol:
         if protocol == "both" then [ "tcp" "udp" ] else [ protocol ];
 
-      # Helper to find IP address for an FQDN from reservedIps
+      # Helper to find IP address for an FQDN from devices
       findIpByFqdn = fqdn:
         let
-          # For each network, search through reservedIps for matching FQDN
+          # For each network, search through devices for matching FQDN
           matches = lib.lists.flatten (lib.attrsets.mapAttrsToList
             (netName: netCfg:
               let
@@ -108,7 +108,7 @@ in
                     else
                       null
                   )
-                  (netCfg.reservedIps or { });
+                  (netCfg.devices or { });
               in
               lib.lists.filter (ip: ip != null) hostMatches
             )
@@ -154,7 +154,7 @@ in
                               else
                                 null
                             )
-                            (netCfg.reservedIps or { });
+                            (netCfg.devices or { });
                           resolvedMatches = lib.lists.filter (ip: ip != null) matches;
                         in
                         if resolvedMatches == [ ] then null else lib.lists.head resolvedMatches
@@ -436,7 +436,7 @@ in
                   }
                 ];
 
-                # Configure DHCP reservations from reservedIps
+                # Configure DHCP reservations from devices
                 reservations = lib.attrsets.mapAttrsToList
                   (id: reservation:
                     let
@@ -456,7 +456,7 @@ in
                   )
                   (lib.attrsets.filterAttrs
                     (id: reservation: reservation.dhcpReservation && reservation.hwAddress != null)
-                    (netCfg.reservedIps or { }));
+                    (netCfg.devices or { }));
               })
               dhcpNetworks;
         };
