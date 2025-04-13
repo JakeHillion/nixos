@@ -42,7 +42,7 @@ in
         do
             hostname=''${path##*/}
 
-            if rev=$(${curl}/bin/curl -s --connect-timeout 15 http://$hostname:30653/current/nixos/system/configurationRevision); then
+            if rev=$(${curl}/bin/curl -s --max-time 15 http://$hostname:30653/current/nixos/system/configurationRevision); then
                 echo "$hostname: $rev (current)"
                 if ${git}/bin/git tag -f "current/$hostname" "$rev"; then
                     ${git}/bin/git push -f origin "current/$hostname"
@@ -53,7 +53,7 @@ in
                 echo "$hostname: failed to reach"
             fi
 
-            if rev=$(${curl}/bin/curl -s --connect-timeout 15 http://$hostname:30653/booted/nixos/system/configurationRevision); then
+            if rev=$(${curl}/bin/curl -s --max-time 15 http://$hostname:30653/booted/nixos/system/configurationRevision); then
                 echo "$hostname: $rev (booted)"
                 if ${git}/bin/git tag -f "booted/$hostname" "$rev"; then
                     ${git}/bin/git push -f origin "booted/$hostname"
