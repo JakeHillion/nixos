@@ -29,9 +29,6 @@
       chmod 1777 /cache/tmp
     '';
 
-    ## CA server
-    custom.ca.service.enable = true;
-
     ### nix only supports build-dir from 2.22. bind mount /tmp to something persistent instead.
     fileSystems."/tmp" = {
       device = "/cache/tmp";

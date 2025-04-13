@@ -355,6 +355,12 @@
                 hwAddress = "30:ed:a0:a1:cb:f4";
                 dhcpReservation = true;
               };
+              "11" = {
+                hostname = "warlock";
+                fqdn = "warlock.cx.neb.jakehillion.me";
+                hwAddress = "e8:ff:1e:d9:73:5a";
+                dhcpReservation = true;
+              };
             };
           };
 

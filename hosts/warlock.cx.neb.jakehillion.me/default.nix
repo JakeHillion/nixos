@@ -10,5 +10,17 @@
 
     custom.defaults = true;
     custom.tang.enable = true;
+
+    ## CA server
+    custom.ca.service.enable = true;
+
+    networking = {
+      vlans = {
+        iot = {
+          id = 2;
+          interface = "enp2s0";
+        };
+      };
+    };
   };
 }

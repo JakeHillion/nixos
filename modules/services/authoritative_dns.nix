@@ -33,7 +33,7 @@ in
             86400 NS ns1.jakehillion.me.
             86400 NS ns2.jakehillion.me.
 
-            ca                                21600 CNAME sodium.pop.neb.jakehillion.me.
+            ca                                21600 CNAME warlock.cx.neb.jakehillion.me.
             frigate                           21600 CNAME ${locations.services.frigate}.
             immich                            21600 CNAME ${locations.services.immich}.
             ollama                            21600 CNAME ${locations.services.ollama}.
