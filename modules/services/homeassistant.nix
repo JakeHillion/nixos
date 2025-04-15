@@ -100,6 +100,7 @@ in
           "smartthings"
           "sonos"
           "sun"
+          "unifi"
           "wake_on_lan"
           "waze_travel_time"
           "wyoming"
