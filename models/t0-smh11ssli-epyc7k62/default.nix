@@ -25,6 +25,14 @@
               devices = [ "/dev/nvme1n1" ];
               path = "/boot1";
             }
+            {
+              devices = [ "/dev/nvme2n1" ];
+              path = "/boot2";
+            }
+            {
+              devices = [ "/dev/nvme3n1" ];
+              path = "/boot3";
+            }
           ];
         };
       };
@@ -39,7 +47,7 @@
       custom.tang = {
         networkingModule = "igb";
         secretFile = "/data/disk_encryption.jwe";
-        devices = [ "disk0-crypt" "disk1-crypt" ];
+        devices = [ "disk0-crypt" "disk1-crypt" "disk2-crypt" "disk3-crypt" ];
       };
 
       # Delegation
