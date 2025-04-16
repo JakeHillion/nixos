@@ -42,11 +42,11 @@ in
             wallpapers                        21600 CNAME phoenix.st.neb.jakehillion.me.
 
             zigbee2mqtt.home                  21600 CNAME router.home.neb.jakehillion.me.
-            graphs.router.home                21600 CNAME router.home.neb.jakehillion.me.
+            graphs.cyclone.gw                 21600 CNAME cyclone.gw.neb.jakehillion.me.
 
-            charlie.kvm                       21600 CNAME router.home.neb.jakehillion.me.
-            hammer.kvm                        21600 CNAME router.home.neb.jakehillion.me.
-            kvm.gendry.jakehillion-terminals  21600 CNAME router.home.neb.jakehillion.me.
+            charlie.kvm                       21600 CNAME cyclone.gw.neb.jakehillion.me.
+            hammer.kvm                        21600 CNAME cyclone.gw.neb.jakehillion.me.
+            kvm.phoenix.st                    21600 CNAME cyclone.gw.neb.jakehillion.me.
 
             deluge.downloads                  21600 CNAME ${locations.services.downloads}.
             prowlarr.downloads                21600 CNAME ${locations.services.downloads}.
