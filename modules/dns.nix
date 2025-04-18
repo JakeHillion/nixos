@@ -62,7 +62,9 @@ in
                   microserver = "172.20.0.2"; # removed 23/12/2024
                   router = "172.20.0.3";
                 };
-                jakehillion-terminals = { gendry = "172.20.0.4"; };
+                jakehillion-terminals = {
+                  gendry = "172.20.0.4"; # removed 18/04/2025
+                };
                 lt = {
                   be = "172.20.0.5";
                   jakehillion-mba-m2-15 = "172.20.0.6";

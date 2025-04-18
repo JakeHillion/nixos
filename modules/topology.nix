@@ -235,12 +235,6 @@
                 hwAddress = "00:c0:b7:6b:f4:34";
                 dhcpReservation = true;
               };
-              "26" = {
-                hostname = "gendry";
-                fqdn = "gendry.jakehillion-terminals.neb.jakehillion.me";
-                hwAddress = "18:c0:4d:35:60:1e";
-                dhcpReservation = true;
-              };
               "27" = {
                 hostname = "phoenix";
                 fqdn = "phoenix.st.neb.jakehillion.me";
@@ -335,7 +329,7 @@
                 dhcpReservation = true;
               };
               "9" = {
-                hostname = "gendry-kvm";
+                hostname = "phoenix-kvm";
                 hwAddress = "48:da:35:6f:d5:e5";
                 dhcpReservation = true;
               };

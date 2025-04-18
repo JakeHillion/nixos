@@ -1,7 +1,6 @@
 let
   users = {
     jake = {
-      gendry = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCw4lgH20nfuchDqvVf0YciqN0GnBw5hfh8KIun5z0P7wlNgVYnCyvPvdIlGf2Nt1z5EGfsMzMLhKDOZkcTMlhupd+j2Er/ZB764uVBGe1n3CoPeasmbIlnamZ12EusYDvQGm2hVJTGQPPp9nKaRxr6ljvTMTNl0KWlWvKP4kec74d28MGgULOPLT3HlAyvUymSULK4lSxFK0l97IVXLa8YwuL5TNFGHUmjoSsi/Q7/CKaqvNh+ib1BYHzHYsuEzaaApnCnfjDBNexHm/AfbI7s+g3XZDcZOORZn6r44dOBNFfwvppsWj3CszwJQYIFeJFuMRtzlC8+kyYxci0+FXHn";
       mbp = "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAyFsYYjLZ/wyw8XUbcmkk6OKt2IqLOnWpRE5gEvm3X0V4IeTOL9F4IL79h7FTsPvi2t9zGBL1hxeTMZHSGfrdWaMJkQp94gA1W30MKXvJ47nEVt0HUIOufGqgTTaAn4BHxlFUBUuS7UxaA4igFpFVoPJed7ZMhMqxg+RWUmBAkcgTWDMgzUx44TiNpzkYlG8cYuqcIzpV2dhGn79qsfUzBMpGJgkxjkGdDEHRk66JXgD/EtVasZvqp5/KLNnOpisKjR88UJKJ6/buV7FLVra4/0hA9JtH9e1ecCfxMPbOeluaxlieEuSXV2oJMbQoPP87+/QriNdi/6QuCHkMDEhyGw==";
       boron = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC7lfShRwA4hycaT4eP1PCQ45jr9JXwrZeOmn/TTLJu0k6x6AClHShYj2HnbBMd9SxIz+pRHtBz7fxBQeDEhorccI6F8jxLPz4mrBiGGJMFvdeOh4sCJ0gIIKFd9vmY1pI7AD0mden7xqCkGIS876aIRCTY32aCbyqID7FNkV7DvTNnxDf+jCszoSIt73PwRCtNyg7aPNsqq6FL3NpzW4Y/jJ9+V+lmPZGUqf6OtgJMzU6KHPN/1VW09K0Buto12h+mIc/IhdRsJ0pnp1wdcFut3kNdr0TeiXQ++KjVKZb8JLw5aPbDTm9To5fJexrGVNoWIAL1I70L5hrjx9gFLBWRmnzDcFO983e9ikkePMqg4t1+gq+mdGJnLyE8paqXn/C0jDxZM9P6dYrAn2dCNb602R2gN6bzyLmICQZDtGRVpN2BsW2kYyJ7T102C3X0c8Bb1yoILDEw3K5z8Xph4QR8K39jUTUGnZHRG9xI2/HsqJg3voGfAj/uDXebxhvVClfviB4BJRr7Ip0Z2OqHaP1kt1JyutnQ+ICm63Xm8c/Wo4Jg2esr74Zkvwdgj9L6/BmivuaP5dZ3OctRtXfqPCadgIfrAET04l9tUoAv1b0kiiZ29+mi4El1RrN2vL4zAoguQlLWPbFmH6sTjVulFY70PalmoC6oiEJUWggE0Lb5iw== jake@boron";
       rooster = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCqISEHUB1s/l1hV+YOj5EKgsNoUR8MukhcJpUqtfI+Xw+TYLStjPizGtAOG5+33VEt5eocw7RvnWLorJ2NPtGs7gaMZWasKvaRrXAiBiCreCCJp/vedHNxNtwa4nMKlW1o6oKStRiSFa53khdz5DmcRnsoxRPPON50JAbMgBAUmaxo6T8q1W3QOZ6kl6hjEBo+vuDHwxV8S7s+cao6OIvUduBeO/4wMYPuPVmI15ICP99vtQPGqGV9j1U8IHOJH2dzmR1SVEZFtfFmskr22wTEAOHU7XMIjFjgUUgWq4yLJSzx+dT6CKjiG/iR7RTSKFZCLxn/JJOlbo7wYWNbf2Ekhc1ujcZHBgmm+4gmZkTmyWqs6JGpdndrP0ae3prL9ZatnMnCobuYoB33j2tUOxdoxXt31j1fzvHuk4V1AUnaSxlWmTfsnpNaH+ngkA2fGlNAeLITXw3VjS/1HBNLC9KmWSF1Feu5nKPqL2CnFtYAsU8xS1wouIz0pDlFFR7xbd4Haw9+bW0G8VsJevnm+wMiziaI6WIknMTGl+De9L2FpY5T0lx0oIWH/uK7P0512ldHP0dTR3FmRfbODQQPvoR3Ryk9A57E+qu+5NP3jXA3SlmWJOnGiqvrwZW2WKCeGsv7PvK1gLw+P8EMrLkQ/cFsVFWfQYgEkBcSno4cywX8EQ== jake@rooster";
@@ -32,7 +31,6 @@ let
           storage = {
             theon = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN59psLVu3/sQORA4x3p8H3ei8MCQlcwX5T+k3kBeBMf root@theon";
           };
-          terminals = { jakehillion = { gendry = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPXM5aDvNv4MTITXAvJWSS2yvr/mbxJE31tgwJtcl38c root@gendry"; }; };
         };
       };
     };
@@ -49,7 +47,6 @@ in
     neb.lt.be
     neb.rig.merlin
     neb.st.phoenix
-    neb.terminals.jakehillion.gendry
   ];
 
   # WiFi Environment Files
