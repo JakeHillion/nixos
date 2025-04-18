@@ -235,12 +235,6 @@
                 hwAddress = "00:c0:b7:6b:f4:34";
                 dhcpReservation = true;
               };
-              "25" = {
-                hostname = "sodium";
-                fqdn = "sodium.pop.neb.jakehillion.me";
-                hwAddress = "d8:3a:dd:c3:d6:2b";
-                dhcpReservation = true;
-              };
               "26" = {
                 hostname = "gendry";
                 fqdn = "gendry.jakehillion-terminals.neb.jakehillion.me";
@@ -323,11 +317,6 @@
               "4" = {
                 hostname = "hallway-wall-tablet";
                 hwAddress = "8c:51:09:20:53:8d";
-                dhcpReservation = true;
-              };
-              "5" = {
-                hostname = "sodium";
-                hwAddress = "d8:3a:dd:c3:d6:2b";
                 dhcpReservation = true;
               };
               "6" = {
