@@ -63,8 +63,8 @@
     # Caddy package
     ## TODO: drop to stable once available
     services.caddy.package = pkgs.unstable.caddy.withPlugins {
-      plugins = [ "github.com/caddy-dns/cloudflare@v0.0.0-20240703190432-89f16b99c18e" ];
-      hash = "sha256-W09nFfBKd+9QEuzV3RYLeNy2CTry1Tz3Vg1U2JPNPPc=";
+      plugins = [ "github.com/caddy-dns/cloudflare@v0.2.1" ];
+      hash = "sha256-saKJatiBZ4775IV2C5JLOmZ4BwHKFtRZan94aS5pO90=";
     };
 
     # Delegation

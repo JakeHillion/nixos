@@ -31,11 +31,6 @@
       "armv7l-linux"
     ];
 
-    boot.kernelPatches = [{
-      name = "error-on-duplicate-dsq";
-      patch = ./error-on-duplicate-dsq.patch;
-    }];
-
     ## General usability
     ### Make podman available for dev tools such as act
     virtualisation = {
