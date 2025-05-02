@@ -100,6 +100,8 @@ in
       filmsPath = "/${zpool_name}/media/films";
       tvPath = "/${zpool_name}/media/tv";
     };
+    systemd.services."container@downloads".after = [ "zfs-mount.service" ];
+    systemd.services."container@downloads".requires = [ "zfs-mount.service" ];
 
     ## Wallpapers
     services.caddy = {
@@ -135,6 +137,10 @@ in
 
     ## Immich
     services.immich.mediaLocation = "/${zpool_name}/media/photos";
+
+    ## Frigate
+    systemd.services."container@frigate".after = [ "zfs-mount.service" ];
+    systemd.services."container@frigate".requires = [ "zfs-mount.service" ];
 
     ## Networking
     networking.useDHCP = lib.mkForce false;
