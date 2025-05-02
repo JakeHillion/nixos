@@ -238,7 +238,7 @@
               "27" = {
                 hostname = "phoenix";
                 fqdn = "phoenix.st.neb.jakehillion.me";
-                hwAddress = "a8:b8:e0:04:17:a5";
+                hwAddress = "f8:f2:1e:1e:b5:74";
                 dhcpReservation = true;
               };
               "28" = {

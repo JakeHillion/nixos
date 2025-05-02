@@ -22,7 +22,17 @@ in
 
       # for tang - no idea why this is needed
       "ip=dhcp"
+
+      "ixgbe.allow_unsupported_sfp=1"
     ];
+    boot.extraModprobeConfig = ''
+      options ixgbe allow_unsupported_sfp=1
+    '';
+
+    boot.kernelPatches = [{
+      name = "ixgbe_fet10g";
+      patch = ../../patches/kernel/ixgbe_fet10g.patch;
+    }];
 
     custom.defaults = true;
     custom.locations.autoServe = true;
@@ -30,7 +40,7 @@ in
 
     custom.tang = {
       enable = true;
-      networkingModule = "igc";
+      networkingModule = "ixgbe";
       secretFile = "/data/disk_encryption.jwe";
       devices = [ "disk0-crypt" "disk1-crypt" ];
     };
@@ -165,6 +175,15 @@ in
           matchConfig.MACAddress = "a8:b8:e0:04:17:a8";
           linkConfig.Name = "eth3";
         };
+
+        "10-sfp0" = {
+          matchConfig.MACAddress = "f8:f2:1e:1e:b5:74";
+          linkConfig.Name = "sfp0";
+        };
+        "10-sfp1" = {
+          matchConfig.MACAddress = "f8:f2:1e:1e:b5:75";
+          linkConfig.Name = "sfp1";
+        };
       };
 
       netdevs = {
@@ -179,7 +198,7 @@ in
 
       networks = {
         "10-lan" = {
-          matchConfig.Name = "eth0";
+          matchConfig.Name = "sfp0";
           networkConfig.DHCP = "ipv4";
           linkConfig.RequiredForOnline = "routable";
 

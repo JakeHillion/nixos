@@ -29,6 +29,9 @@
     };
     users.users.caddy.extraGroups = [ "netdata" ];
 
+    ## Run a persistent iperf3 server
+    services.iperf3.enable = true;
+
     ## Web services and KVM reverse proxies
     services.caddy = {
       enable = true;
