@@ -24,10 +24,10 @@ in
       }];
 
       boot.kernelPackages =
-        if pkgs.linuxPackages.kernelAtLeast "6.12" then pkgs.linuxPackages
+        lib.mkOverride 999 (if pkgs.linuxPackages.kernelAtLeast "6.12" then pkgs.linuxPackages
         else if pkgs.linuxPackages_latest.kernelAtLeast "6.12" then pkgs.linuxPackages_latest
         else if pkgs.unstable.linuxPackages_latest.kernelAtLeast "6.12" then pkgs.unstable.linuxPackages_latest
-        else pkgs.unstable.linuxPackages_testing;
+        else pkgs.unstable.linuxPackages_testing);
     }
 
     (lib.mkIf (cfg.scheduler == "scx_lavd") {
@@ -36,7 +36,7 @@ in
         scheduler = "scx_lavd";
         package = pkgs.runCommand "scx_lavd" { } ''
           mkdir -p $out/bin
-          install ${pkgs.scx.rustscheds}/bin/scx_lavd $out/bin
+          install ${pkgs.unstable.scx.rustscheds}/bin/scx_lavd $out/bin
         '';
       };
     })

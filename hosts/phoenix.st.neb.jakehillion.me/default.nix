@@ -37,6 +37,11 @@ in
 
     custom.users.jake.password = true; # TODO: remove me once booting has stabilised
 
+    custom.sched_ext = {
+      enable = true;
+      scheduler = "scx_lavd";
+    };
+
     ## Filesystems
     boot.kernelPackages = if pkgs.linuxPackages.kernelAtLeast "6.12" then pkgs.linuxPackages else pkgs.linuxPackages_6_12;
 
