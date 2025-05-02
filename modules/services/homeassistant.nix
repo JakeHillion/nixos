@@ -159,19 +159,35 @@ in
 
           bluetooth = { };
 
-          adaptive_lighting = {
-            lights = [
-              "light.bedroom_lamp"
-              "light.bedroom_light"
-              "light.cubby_light"
-              "light.desk_lamp"
-              "light.hallway_light"
-              "light.living_room_lamp"
-              "light.living_room_light"
-              "light.wardrobe_light"
+          adaptive_lighting =
+            let
+              common = {
+                min_sunset_time = "21:00";
+              };
+            in
+            [
+              ({
+                name = "main lights";
+                lights = [
+                  "light.bedroom_lamp"
+                  "light.bedroom_light"
+                  "light.cubby_light"
+                  "light.desk_lamp"
+                  "light.hallway_light"
+                  "light.living_room_lamp"
+                  "light.living_room_light"
+                  "light.wardrobe_light"
+                ];
+              } // common)
+              ({
+                # separate to more vigorously disable and allow the fancy settings
+                name = "hue";
+                lights = [
+                  "light.living_room_hue_lamp"
+                ];
+                detect_non_ha_changes = true;
+              } // common)
             ];
-            min_sunset_time = "21:00";
-          };
 
           sensor = [
             {
