@@ -143,7 +143,10 @@ in
 
     ## Plex
     users.users.plex.extraGroups = [ "mediaaccess" ];
-    services.plex.enable = true;
+    services.plex = {
+      enable = true;
+      package = if lib.versionAtLeast pkgs.plexRaw.version "1.41.2" then pkgs.plex else pkgs.unstable.plex;
+    };
 
     ## Immich
     services.immich.mediaLocation = "/${zpool_name}/media/photos";
