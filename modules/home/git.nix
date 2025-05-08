@@ -9,33 +9,37 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    home-manager.users.jake.programs = {
-      sapling = lib.mkIf (config.custom.user == "jake") {
-        enable = true;
-        userName = "Jake Hillion";
-        userEmail = "jake@hillion.co.uk";
+    home-manager.users.jake = {
+      home.packages = with pkgs; [ git-branchless ];
 
-        extraConfig = {
-          ui = {
-            "merge:interactive" = ":merge3";
+      programs = {
+        sapling = lib.mkIf (config.custom.user == "jake") {
+          enable = true;
+          userName = "Jake Hillion";
+          userEmail = "jake@hillion.co.uk";
+
+          extraConfig = {
+            ui = {
+              "merge:interactive" = ":merge3";
+            };
           };
         };
-      };
 
-      git = lib.mkIf (config.custom.user == "jake") {
-        enable = true;
-        userName = "Jake Hillion";
-        userEmail = "jake@hillion.co.uk";
+        git = lib.mkIf (config.custom.user == "jake") {
+          enable = true;
+          userName = "Jake Hillion";
+          userEmail = "jake@hillion.co.uk";
 
-        extraConfig = {
-          pull = {
-            rebase = true;
-          };
-          merge = {
-            conflictstyle = "diff3";
-          };
-          init = {
-            defaultBranch = "main";
+          extraConfig = {
+            pull = {
+              rebase = true;
+            };
+            merge = {
+              conflictstyle = "diff3";
+            };
+            init = {
+              defaultBranch = "main";
+            };
           };
         };
       };
