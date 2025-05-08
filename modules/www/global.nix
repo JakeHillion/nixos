@@ -30,6 +30,7 @@ in
         "gitea.hillion.co.uk"
         "homeassistant.hillion.co.uk"
         "links.hillion.co.uk"
+        "pastes.hillion.co.uk"
       ])
     ) // {
       "cloudflare/zone_keys.env" = {
@@ -86,6 +87,12 @@ in
         "links.hillion.co.uk".extraConfig = ''
           tls ${./certs/links.hillion.co.uk.pem} ${config.age.secrets."caddy/links.hillion.co.uk.pem".path}
           redir https://matrix.to/#/@jake:hillion.co.uk
+        '';
+        "pastes.hillion.co.uk".extraConfig = ''
+          tls ${./certs/pastes.hillion.co.uk.pem} ${config.age.secrets."caddy/pastes.hillion.co.uk.pem".path}
+          reverse_proxy https://privatebin.neb.jakehillion.me {
+            header_up Host {http.reverse_proxy.upstream.hostport}
+          }
         '';
 
         ## ACME sites

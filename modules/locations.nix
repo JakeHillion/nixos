@@ -31,6 +31,7 @@ in
           mastodon = "";
           matrix = "boron.cx.neb.jakehillion.me";
           ollama = "boron.cx.neb.jakehillion.me";
+          privatebin = "boron.cx.neb.jakehillion.me";
           prometheus = "boron.cx.neb.jakehillion.me";
           restic = "phoenix.st.neb.jakehillion.me";
           tang = [

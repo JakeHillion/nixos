@@ -14,6 +14,13 @@ in
   config = lib.mkIf cfg.enable {
     services.caddy = {
       enable = true;
+
+      globalConfig = ''
+        servers {
+        	trusted_proxies static 172.20.0.0/24
+        }
+      '';
+
       virtualHosts = lib.attrsets.mapAttrs
         (name: value: (value // {
           listenAddresses = [ config.custom.dns.nebula.ipv4 ];

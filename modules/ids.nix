@@ -14,6 +14,7 @@
       nebula-jakehillion = 205;
       immich = 206;
       ollama = 210;
+      privatebin = 211;
 
       ## Consistent People
       jake = 1000;

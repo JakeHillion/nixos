@@ -12,6 +12,7 @@
     ./mastodon/default.nix
     ./matrix.nix
     ./ollama.nix
+    ./privatebin.nix
     ./restic.nix
     ./tang.nix
     ./unifi.nix
