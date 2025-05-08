@@ -57,6 +57,7 @@
           };
 
           "storj" = final.callPackage ./pkgs/storj.nix { };
+          "pbcli" = final.callPackage ./pkgs/pbcli.nix { };
         })
       ];
     in

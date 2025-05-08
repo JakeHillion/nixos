@@ -206,3 +206,7 @@ Note: DNS resolution must be configured separately for proper name resolution wi
 5. Apply on target system with `nixos-rebuild switch`
 
 IMPORTANT: Always run `nix fmt` before committing changes to ensure consistent code formatting.
+
+## File Management and Nix Evaluation
+
+IMPORTANT: When adding new files to the repository, you must run `git add <file>` before Nix commands will recognize them. Nix evaluates the repository based on what Git knows about, not just what's on the filesystem. Files don't need to be committed, but they do need to be added to the Git index for Nix to see them.

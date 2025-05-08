@@ -40,6 +40,10 @@
         htop
         nix
         vim
+
+        (writeShellScriptBin "pastry" ''
+          ${pkgs.pbcli}/bin/pbcli --host https://privatebin.neb.jakehillion.me "$@" | ${pkgs.gnused}/bin/sed 's/privatebin.neb.jakehillion.me/pastes.hillion.co.uk/g'
+        '')
       ];
       variables.EDITOR = "vim";
       shellAliases = {
