@@ -48,12 +48,15 @@
 
       defaultGateway.address = "10.64.50.1";
 
-      interfaces.eth0 = {
-        ipv4 = {
-          addresses = [{
-            address = "10.64.50.20";
-            prefixLength = 24;
-          }];
+      interfaces = {
+        eth0 = {
+          ipv4 = {
+            addresses = [{
+              address = "10.64.50.20";
+              prefixLength = 24;
+            }];
+          };
+          mtu = 9000;
         };
       };
     };

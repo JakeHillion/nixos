@@ -35,6 +35,17 @@
             }
           ];
         };
+
+        kernelParams = [
+          "ixgbe.allow_unsupported_sfp=1"
+        ];
+        extraModprobeConfig = ''
+          options ixgbe allow_unsupported_sfp=1
+        '';
+        kernelPatches = [{
+          name = "ixgbe_fet10g";
+          patch = ../../patches/kernel/ixgbe_fet10g.patch;
+        }];
       };
 
       ## Network interface renaming
@@ -45,7 +56,7 @@
 
       ## Setup but don't enable tang, that depends on the device's location
       custom.tang = {
-        networkingModule = "igb";
+        networkingModule = "ixgbe";
         secretFile = "/data/disk_encryption.jwe";
         devices = [ "disk0-crypt" "disk1-crypt" "disk2-crypt" "disk3-crypt" ];
       };

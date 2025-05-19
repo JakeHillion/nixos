@@ -79,6 +79,14 @@ in
           lighthouses = lib.lists.optionals (!isLighthouse) (builtins.map lookupIpv4 (builtins.attrNames lighthouses));
           relays = lib.lists.optionals (!isRelay) (builtins.map lookupIpv4 relays);
 
+          listen = lib.mkMerge [
+            { host = "[::]"; }
+
+            (lib.mkIf isLighthouse {
+              port = 4242;
+            })
+          ];
+
           staticHostMap = lib.attrsets.mapAttrs' (name: value: lib.attrsets.nameValuePair (lookupIpv4 name) [ value ]) lighthouses;
 
           settings = {

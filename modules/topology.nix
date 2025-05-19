@@ -215,7 +215,7 @@
               "20" = {
                 hostname = "rooster";
                 fqdn = "rooster.cx.neb.jakehillion.me";
-                hwAddress = "ac:1f:6b:e6:60:14";
+                hwAddress = "90:e2:ba:d4:84:24";
                 dhcpReservation = true;
               };
               "21" = {
