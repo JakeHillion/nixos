@@ -9,6 +9,7 @@
       settings.experimental-features = [ "nix-command" "flakes" ];
       settings = {
         auto-optimise-store = true;
+        trusted-users = [ config.custom.user ];
       };
       gc = {
         automatic = true;
