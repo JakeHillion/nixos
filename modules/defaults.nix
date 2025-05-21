@@ -37,6 +37,7 @@
       systemPackages = with pkgs; [
         agenix.packages."${system}".default
         gh
+        ghostty.terminfo
         git
         htop
         nix

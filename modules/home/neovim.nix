@@ -16,11 +16,17 @@ in
       vimAlias = true;
 
       plugins = with pkgs.vimPlugins; [
+        plenary-nvim
+
         a-vim
         dracula-nvim
+        gitlinker-nvim # after plenary-nvim
         telescope-nvim
       ];
       extraLuaConfig = ''
+        -- Early mapleader for default bindings
+        vim.g.mapleader = ","
+
         -- Logical options
         vim.opt.splitright = true
         vim.opt.splitbelow = true
@@ -67,8 +73,29 @@ in
           },
         })
 
-        --  Key bindings
-        vim.g.mapleader = ","
+        -- gitlinker
+        require('gitlinker').setup({
+          callbacks = {
+            ["ssh.gitea.hillion.co.uk"] = function(url_data)
+              url_data.host = "gitea.hillion.co.uk"
+              return
+                  require('gitlinker.hosts').get_gitea_type_url(url_data)
+            end
+          },
+        })
+
+        -- osc52 keyboard
+        vim.g.clipboard = {
+          name = 'OSC 52',
+          copy = {
+            ['+'] = require('vim.ui.clipboard.osc52').copy('+'),
+            ['*'] = require('vim.ui.clipboard.osc52').copy('*'),
+          },
+          paste = {
+            ['+'] = require('vim.ui.clipboard.osc52').paste('+'),
+            ['*'] = require('vim.ui.clipboard.osc52').paste('*'),
+          },
+        }
 
         --- Key bindings: Telescope
         local telescope_builtin = require('telescope.builtin')
