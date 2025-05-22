@@ -221,12 +221,6 @@ in
 
           switch = [
             {
-              name = "rooster.cx.neb.jakehillion.me";
-              platform = "wake_on_lan";
-              mac = "ac:1f:6b:e6:60:14";
-              host = "10.64.50.20";
-            }
-            {
               name = "merlin.rig.neb.jakehillion.me";
               platform = "wake_on_lan";
               mac = "b0:41:6f:13:20:14";
