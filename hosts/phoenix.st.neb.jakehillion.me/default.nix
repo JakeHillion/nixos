@@ -227,7 +227,7 @@ in
       ];
       allowedUDPPorts = lib.mkForce [ ];
       interfaces = {
-        eth0 = {
+        sfp0 = {
           allowedTCPPorts = lib.mkForce [
             32400 # Plex
           ];
