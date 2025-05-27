@@ -43,6 +43,12 @@
     };
     users.users.jake.extraGroups = [ "podman" ];
 
+    ### Mount tracefs to enable tools like scxtop
+    fileSystems."/sys/kernel/tracing" = {
+      device = "tracefs";
+      fsType = "tracefs";
+    };
+
     networking = {
       useDHCP = false;
 
