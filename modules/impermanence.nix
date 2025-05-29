@@ -26,7 +26,21 @@ in
     };
 
     extraDirs = lib.mkOption {
-      type = with lib.types; listOf str;
+      type = with lib.types; listOf (either str (lib.types.submodule {
+        options = {
+          path = lib.mkOption {
+            type = lib.types.str;
+            description = "The target file path (required)";
+          };
+
+          initialContent = lib.mkOption {
+            type = lib.types.nullOr lib.types.path;
+            default = null;
+            description = "Optional path to a file whose contents to seed into `path`";
+          };
+        };
+      }
+      ));
       default = [ ];
     };
 
@@ -102,6 +116,7 @@ in
                   allowOther = false;
 
                   files = (cfg.userExtraFiles.${x} or [ ]) ++
+                    (lib.lists.optionals (config.custom.home.devbox && x == config.custom.user) [ ".local/share/nix/trusted-settings.json" ]) ++
                     (lib.lists.optionals (config.custom.home.devbox && x == config.custom.user) [ ".claude.json" ]);
                   directories = (cfg.userExtraDirs.${x} or [ ]) ++
                     (lib.lists.optionals (config.custom.home.devbox && x == config.custom.user) [ ".claude" ]);
