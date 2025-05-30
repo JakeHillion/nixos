@@ -23,6 +23,9 @@
         ".ssh/id_rsa"
         ".ssh/id_ecdsa"
       ];
+      userExtraDirs.jake = [
+        ".local/share/patatt"
+      ];
     };
 
     # Allow performing emulated builds in QEMU
