@@ -9,6 +9,7 @@
     ./homeassistant.nix
     ./immich.nix
     ./isponsorblocktv.nix
+    ./jellyfin.nix
     ./mastodon/default.nix
     ./matrix.nix
     ./ollama.nix

@@ -70,6 +70,10 @@ in
       dataPath = lib.mkOverride 999 "${cfg.base}/services/ollama";
     };
 
+    services.jellyfin = lib.mkIf config.services.jellyfin.enable {
+      dataDir = lib.mkOverride 999 "${cfg.base}/services/jellyfin";
+    };
+
     environment.persistence = lib.mkMerge [
       {
         "${cfg.base}/system" = {

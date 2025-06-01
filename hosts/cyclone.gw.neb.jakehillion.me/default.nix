@@ -36,6 +36,10 @@
     services.caddy = {
       enable = true;
       virtualHosts = {
+        "jellyfin.jakehillion.me".extraConfig = ''
+          reverse_proxy http://${config.custom.locations.locations.services.jellyfin}:8096
+        '';
+
         "graphs.cyclone.gw.neb.jakehillion.me" = {
           listenAddresses = [ config.custom.dns.nebula.ipv4 ];
           extraConfig = ''

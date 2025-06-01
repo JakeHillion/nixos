@@ -28,6 +28,7 @@ in
           gitea = "boron.cx.neb.jakehillion.me";
           homeassistant = "stinger.pop.neb.jakehillion.me";
           immich = "phoenix.st.neb.jakehillion.me";
+          jellyfin = "phoenix.st.neb.jakehillion.me";
           mastodon = "";
           matrix = "boron.cx.neb.jakehillion.me";
           ollama = "boron.cx.neb.jakehillion.me";

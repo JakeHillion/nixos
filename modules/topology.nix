@@ -268,6 +268,24 @@
                 protocol = "tcp";
               }
               {
+                description = "HTTP";
+                externalPort = 80;
+                internalIP = "10.64.50.1";
+                protocol = "tcp";
+              }
+              {
+                description = "HTTPS";
+                externalPort = 443;
+                internalIP = "10.64.50.1";
+                protocol = "tcp";
+              }
+              {
+                description = "HTTPS";
+                externalPort = 443;
+                internalIP = "10.64.50.1";
+                protocol = "udp";
+              }
+              {
                 description = "Tang";
                 externalPort = 7654;
                 internalIP = "10.64.50.1";

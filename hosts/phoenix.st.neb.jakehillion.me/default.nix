@@ -148,6 +148,9 @@ in
       package = if lib.versionAtLeast pkgs.plexRaw.version "1.41.2" then pkgs.plex else pkgs.unstable.plex;
     };
 
+    ## Jellyfin
+    users.users.jellyfin.extraGroups = [ "mediaaccess" ];
+
     ## Immich
     services.immich.mediaLocation = "/${zpool_name}/media/photos";
 
