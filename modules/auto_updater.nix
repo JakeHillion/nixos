@@ -69,10 +69,10 @@ in
 
         if is_in_main "$booted_sha"; then
           echo "✔ booted-system SHA $booted_sha is in origin/main. Running 'nixos-rebuild switch'..."
-          ${nixos-rebuild}/bin/nixos-rebuild switch
+          ${nixos-rebuild}/bin/nixos-rebuild --flake ".#${config.networking.fqdn}" switch
         else
           echo "✱ booted-system SHA $booted_sha is NOT in origin/main. Running 'nixos-rebuild test'..."
-          ${nixos-rebuild}/bin/nixos-rebuild test
+          ${nixos-rebuild}/bin/nixos-rebuild --flake ".#${config.networking.fqdn}" test
         fi
       '';
     };
