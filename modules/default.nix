@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ./auto_updater.nix
     ./backups/default.nix
     ./ca/default.nix
     ./chia.nix

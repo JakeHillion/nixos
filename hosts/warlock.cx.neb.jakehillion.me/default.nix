@@ -14,6 +14,9 @@
     ## CA server
     custom.ca.service.enable = true;
 
+    ## Test out auto_updater before going global
+    custom.auto_updater.enable = true;
+
     networking = {
       vlans = {
         iot = {
