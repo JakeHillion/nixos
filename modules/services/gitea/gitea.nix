@@ -116,6 +116,11 @@ in
       # proxy locally originating outgoing packets
       iptables  -A OUTPUT -d 138.201.252.214      -t nat -p tcp --dport 22 -j REDIRECT --to-port ${builtins.toString cfg.sshPort}
       ip6tables -A OUTPUT -d 2a01:4f8:173:23d2::2 -t nat -p tcp --dport 22 -j REDIRECT --to-port ${builtins.toString cfg.sshPort}
-    '';
+    '' + (lib.strings.optionalString config.custom.services.gitea.actions.enable ''
+
+      # Redirect container SSH traffic directly to the Gitea SSH port
+      iptables -t nat -A PREROUTING -s 10.108.27.2 -d 138.201.252.214 -p tcp --dport 22 -j REDIRECT --to-port ${toString cfg.sshPort}
+      iptables -A INPUT -s 10.108.27.2 -d 10.108.27.1 -p tcp --dport ${toString cfg.sshPort} -j ACCEPT
+    '');
   };
 }
