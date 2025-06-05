@@ -28,6 +28,9 @@
       ];
     };
 
+    ## Run latest kernel for sched_ext development
+    boot.kernelPackages = pkgs.linuxPackages_latest;
+
     # Allow performing emulated builds in QEMU
     boot.binfmt.emulatedSystems = [
       "aarch64-linux"

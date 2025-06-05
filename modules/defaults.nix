@@ -67,8 +67,7 @@
     services.geoclue2.geoProviderUrl = lib.mkOverride 999 "https://api.beacondb.net/v1/geolocate";
 
     # Caddy package
-    ## TODO: drop to stable once available
-    services.caddy.package = pkgs.unstable.caddy.withPlugins {
+    services.caddy.package = pkgs.caddy.withPlugins {
       plugins = [ "github.com/caddy-dns/cloudflare@v0.2.1" ];
       hash = "sha256-saKJatiBZ4775IV2C5JLOmZ4BwHKFtRZan94aS5pO90=";
     };
