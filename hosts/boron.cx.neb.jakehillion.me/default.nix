@@ -119,13 +119,20 @@
 
     networking = {
       useDHCP = false;
+
       interfaces = {
         enp6s0 = {
           name = "eth0";
-          ipv4.addresses = [{
-            address = "138.201.252.214";
-            prefixLength = 26;
-          }];
+          ipv4.addresses = [
+            {
+              address = "138.201.252.208";
+              prefixLength = 32;
+            }
+            {
+              address = "138.201.252.214";
+              prefixLength = 26;
+            }
+          ];
           ipv6.addresses = [{
             address = "2a01:4f8:173:23d2::2";
             prefixLength = 64;
@@ -142,28 +149,99 @@
       };
     };
 
-    networking.firewall = {
-      allowedTCPPorts = lib.mkForce [ ];
-      allowedUDPPorts = lib.mkForce [ ];
-      interfaces = {
-        eth0 = {
-          allowedTCPPorts = lib.mkForce [
-            22 # SSH
-            3022 # SSH (Gitea) - redirected to 22
-            53 # DNS
-            80 # HTTP 1-2
-            443 # HTTPS 1-2
-            7654 # Tang
-            8080 # Unifi (inform)
-          ];
-          allowedUDPPorts = lib.mkForce [
-            53 # DNS
-            443 # HTTP 3
-            3478 # Unifi STUN
-            4242 # Nebula Lighthouse
-          ];
-        };
-      };
+    networking.firewall.enable = lib.mkForce false;
+    networking.nftables = {
+      enable = true;
+      ruleset = ''
+        ####################################
+        # 1) inet filter table (always run)
+        ####################################
+        table inet filter {
+          chain input {
+            type filter hook input priority 0; policy drop;
+
+            iifname "lo" accept
+            iifname "neb.jh" accept
+            ct state established,related accept
+
+            iifname eth0 ip daddr 138.201.252.214 tcp dport 22      ct state new accept comment "SSH"
+            iifname eth0 ip daddr 138.201.252.214 tcp dport 3022    ct state new accept comment "SSH (Gitea) - redirected to 22"
+            iifname eth0 ip daddr 138.201.252.214 tcp dport 53      ct state new accept comment "DNS (TCP)"
+            iifname eth0 ip daddr 138.201.252.214 tcp dport 80      ct state new accept comment "HTTP 1-2"
+            iifname eth0 ip daddr 138.201.252.214 tcp dport 443     ct state new accept comment "HTTPS 1-2"
+            iifname eth0 ip daddr 138.201.252.214 tcp dport 7654    ct state new accept comment "Tang"
+            iifname eth0 ip daddr 138.201.252.214 tcp dport 8080    ct state new accept comment "Unifi (inform)"
+
+            iifname eth0 ip daddr 138.201.252.214 udp dport 53      ct state new accept comment "DNS (UDP)"
+            iifname eth0 ip daddr 138.201.252.214 udp dport 443     ct state new accept comment "HTTP 3"
+            iifname eth0 ip daddr 138.201.252.214 udp dport 3478    ct state new accept comment "Unifi STUN"
+            iifname eth0 ip daddr 138.201.252.214 udp dport 4242    ct state new accept comment "Nebula Lighthouse"
+
+            ${lib.optionalString
+              (config.custom.services.gitea.enable && config.custom.services.gitea.actions.enable)
+              ''
+                # Redirect container SSH traffic directly to the Gitea SSH port
+                ip saddr 10.108.27.2 ip daddr 10.108.27.1 tcp dport ${toString config.custom.services.gitea.sshPort} accept
+              ''
+            }
+          }
+        }
+
+        #########################################################
+        # 2) nat tables (only if Gitea is enabled)
+        #########################################################
+        ${lib.optionalString config.custom.services.gitea.enable ''
+          # IPv4 nat
+          table ip nat {
+            chain prerouting {
+              type nat hook prerouting priority 0;
+
+              # Redirect incoming SSH on eth0:22 -> Gitea SSH port
+              iifname eth0 tcp dport 22      redirect to :${toString config.custom.services.gitea.sshPort}
+
+              # Redirect incoming SSH on eth0:<gitea_sshPort> -> 22
+              iifname eth0 tcp dport ${toString config.custom.services.gitea.sshPort} redirect to :22
+
+              ${lib.optionalString
+                config.custom.services.gitea.actions.enable
+                ''
+                  # Redirect container traffic: 10.108.27.2 -> 138.201.252.214:22 -> Gitea SSH port
+                  ip saddr 10.108.27.2 ip daddr 138.201.252.214 tcp dport 22 redirect to :${toString config.custom.services.gitea.sshPort}
+                ''
+              }
+            }
+
+            chain output {
+              type nat hook output priority 0;
+
+              # Redirect locally-originating connections to 138.201.252.214:22 -> Gitea SSH port
+              ip daddr 138.201.252.214 tcp dport 22 redirect to :${toString config.custom.services.gitea.sshPort}
+            }
+          }
+
+          # IPv6 nat
+          table ip6 nat {
+            chain prerouting {
+              type nat hook prerouting priority 0;
+
+              # Redirect incoming SSH on eth0:22 -> Gitea SSH port (IPv6)
+              iifname eth0 tcp dport 22      redirect to :${toString config.custom.services.gitea.sshPort}
+
+              # Redirect incoming SSH on eth0:<gitea_sshPort> -> 22 (IPv6)
+              iifname eth0 tcp dport ${toString config.custom.services.gitea.sshPort} redirect to :22
+            }
+
+            chain output {
+              type nat hook output priority 0;
+
+              # Redirect locally-originating connections to 2a01:4f8:173:23d2::2:22 -> Gitea SSH port (IPv6)
+              ip6 daddr 2a01:4f8:173:23d2::2 tcp dport 22 redirect to :${toString config.custom.services.gitea.sshPort}
+            }
+          }
+        ''
+        }
+      '';
     };
   };
 }
+
