@@ -8,9 +8,29 @@ in
 {
   options.custom.auto_updater = {
     enable = lib.mkEnableOption "www-repo";
+
+    allowReboot = lib.mkOption {
+      description = "Automatically reboot when an update changes the kernel.";
+      default = false;
+      type = lib.types.bool;
+    };
+
+    rebootDelay = lib.mkOption {
+      description = "Time to wait before rebooting when kernel changes are detected (in minutes).";
+      default = 15;
+      type = lib.types.ints.unsigned;
+      example = 10;
+    };
   };
 
   config = lib.mkIf cfg.enable {
+    assertions = [
+      {
+        assertion = !cfg.allowReboot || cfg.rebootDelay < 30;
+        message = "auto_updater.rebootDelay must be less than 30 minutes to avoid timer conflicts that could prevent rebooting.";
+      }
+    ];
+
     systemd.tmpfiles.rules = [
       "d ${location} 0755 root root - -"
     ];
@@ -36,45 +56,74 @@ in
         WorkingDirectory = location;
       };
 
-      script = with pkgs; ''
-        if [ ! -d ".git" ] ; then
-            ${git}/bin/git clone ${remote} .
-        fi
+      environment = {
+        ALLOW_REBOOT = if cfg.allowReboot then "1" else "0";
+      };
 
-        current_file="/nix/var/nix/gcroots/current-system/etc/flake-version"
-        booted_file="/nix/var/nix/gcroots/booted-system/etc/flake-version"
+      script =
+        let
+          git = lib.getExe pkgs.git;
+          nixos-rebuild = lib.getExe pkgs.nixos-rebuild;
+          readlink = "${pkgs.coreutils}/bin/readlink";
+          shutdown = "${config.systemd.package}/bin/shutdown";
+        in
+        ''
+          if [ ! -d ".git" ] ; then
+              ${git} clone ${remote} .
+          fi
 
-        if [ ! -f "$current_file" ] || [ ! -f "$booted_file" ]; then
-          echo "Error: missing flake-version file." >&2
-          exit 1
-        fi
+          current_file="/nix/var/nix/gcroots/current-system/etc/flake-version"
+          booted_file="/nix/var/nix/gcroots/booted-system/etc/flake-version"
 
-        current_sha="$(< "$current_file")"
-        booted_sha="$(< "$booted_file")"
+          if [ ! -f "$current_file" ] || [ ! -f "$booted_file" ]; then
+            echo "Error: missing flake-version file." >&2
+            exit 1
+          fi
 
-        ${git}/bin/git fetch origin main
+          current_sha="$(< "$current_file")"
+          booted_sha="$(< "$booted_file")"
 
-        is_in_main() {
-          ${git}/bin/git merge-base --is-ancestor "$1" origin/main
-        }
+          ${git} fetch origin main
 
-        if ! is_in_main "$current_sha"; then
-          echo "✖ current-system SHA $current_sha is NOT in origin/main. No rebuild."
-          exit 0
-        fi
+          is_in_main() {
+            ${git} merge-base --is-ancestor "$1" origin/main
+          }
 
-        echo "✔ current-system SHA $current_sha is in origin/main."
-        ${git}/bin/git switch main
-        ${git}/bin/git pull
+          if ! is_in_main "$current_sha"; then
+            echo "✖ current-system SHA $current_sha is NOT in origin/main. No rebuild."
+            exit 0
+          fi
 
-        if is_in_main "$booted_sha"; then
-          echo "✔ booted-system SHA $booted_sha is in origin/main. Running 'nixos-rebuild switch'..."
-          ${nixos-rebuild}/bin/nixos-rebuild --flake ".#${config.networking.fqdn}" switch
-        else
-          echo "✱ booted-system SHA $booted_sha is NOT in origin/main. Running 'nixos-rebuild test'..."
-          ${nixos-rebuild}/bin/nixos-rebuild --flake ".#${config.networking.fqdn}" test
-        fi
-      '';
+          echo "✔ current-system SHA $current_sha is in origin/main."
+          ${git} switch main
+          ${git} pull
+
+          if ! is_in_main "$booted_sha"; then
+            echo "✱ booted-system SHA $booted_sha is NOT in origin/main. Running 'nixos-rebuild test'..."
+            ${nixos-rebuild} --flake ".#${config.networking.fqdn}" test
+            exit 0
+          fi
+
+          if [ "$ALLOW_REBOOT" != "1" ]; then
+            echo "✔ booted-system SHA $booted_sha is in origin/main. Running 'nixos-rebuild switch'..."
+            ${nixos-rebuild} --flake ".#${config.networking.fqdn}" switch
+            exit 0
+          fi
+
+          echo "✔ booted-system SHA $booted_sha is in origin/main. Running 'nixos-rebuild boot'..."
+          ${nixos-rebuild} --flake ".#${config.networking.fqdn}" boot
+
+          booted="$(${readlink} /run/booted-system/{initrd,kernel,kernel-modules})"
+          built="$(${readlink} /nix/var/nix/profiles/system/{initrd,kernel,kernel-modules})"
+
+          if [ "''${booted}" = "''${built}" ]; then
+            echo "✔ No kernel/initrd changes detected. Switching to new generation..."
+            ${nixos-rebuild} --flake ".#${config.networking.fqdn}" test
+          else
+            echo "⚠ Kernel/initrd changes detected. Rebooting in ${toString cfg.rebootDelay} minutes..."
+            ${shutdown} -r +${toString cfg.rebootDelay}
+          fi
+        '';
     };
   };
 }
