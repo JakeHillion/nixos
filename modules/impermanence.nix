@@ -92,7 +92,7 @@ in
           (lib.lists.optional config.services.caddy.enable "/var/lib/caddy") ++
           (lib.lists.optional config.services.prometheus.enable "/var/lib/${config.services.prometheus.stateDir}") ++
           (lib.lists.optional config.custom.services.isponsorblocktv.enable "${config.custom.services.isponsorblocktv.dataDir}") ++
-          (lib.lists.optional config.services.step-ca.enable "/var/lib/step-ca/db");
+          (lib.lists.optional config.services.step-ca.enable "/var/lib/private/step-ca");
         };
       }
       (lib.mkIf cfg.cache.enable {

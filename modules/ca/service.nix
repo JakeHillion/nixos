@@ -31,7 +31,7 @@ in
 
         db = {
           type = "badgerv2";
-          dataSource = "/var/lib/step-ca/db";
+          dataSource = "/var/lib/private/step-ca/db";
         };
 
         authority = {
