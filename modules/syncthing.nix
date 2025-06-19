@@ -40,6 +40,7 @@ in
                 "jakes-iphone.mob" = "QHG6BBS-UPCFLPE-2OZGDZR-QUSKLVP-NEEEGXG-E6TMAXU-7YUHJ4I-AWLDKAB";
                 "merlin.rig" = "IUCUUDQ-7Q3VCA3-JMUA3GL-UOYWAPM-IE6RT3O-CTSA5VL-HRXEPZD-SSOBKQ2";
                 "phoenix.st" = "65COGEC-WBF67I4-EBM73U3-DQMVOS7-PWM7VMS-M744STW-TQVIO7S-NBP56AV";
+                "rooster.cx" = "YT53NDL-CEBZTYN-SVPSFOQ-GR5JNF6-JWWCZFE-UOKT4HL-QKRCKZ3-T7IZOAE";
               };
           in
           {
@@ -91,6 +92,11 @@ in
                       "merlin.rig"
                       "phoenix.st"
                     ];
+                  };
+
+                  "appdata/supobot" = {
+                    id = "contaminated-ample-demonisation";
+                    devices = allDevices;
                   };
                 };
           };

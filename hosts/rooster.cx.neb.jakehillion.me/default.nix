@@ -37,6 +37,12 @@
       "armv7l-linux"
     ];
 
+    ## Syncthing
+    custom.syncthing = {
+      enable = true;
+      baseDir = "/data/users/jake/sync";
+    };
+
     ## General usability
     ### Make podman available for dev tools such as act
     virtualisation = {
