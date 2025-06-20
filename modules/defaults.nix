@@ -41,6 +41,7 @@
         git
         htop
         nix
+        ripgrep
         vim
 
         (writeShellScriptBin "pastry" ''
