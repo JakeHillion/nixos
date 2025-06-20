@@ -62,7 +62,7 @@ in
 
     (lib.mkIf cfg.devbox {
       custom.impermanence = {
-        userExtraDirs."${config.custom.user}" = [ ".config/gh" ];
+        userExtraDirs."${config.custom.user}" = [ ".config/gh" ".config/tea" ];
       };
 
       home-manager.users."${config.custom.user}" = {
@@ -71,6 +71,7 @@ in
 
           packages = with pkgs; [
             unstable.claude-code
+            tea
           ];
         };
       };
