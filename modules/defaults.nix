@@ -36,6 +36,7 @@
     environment = {
       systemPackages = with pkgs; [
         agenix.packages."${system}".default
+        fd
         gh
         ghostty.terminfo
         git
