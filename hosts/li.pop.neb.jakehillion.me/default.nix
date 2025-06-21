@@ -12,11 +12,8 @@
     custom.defaults = true;
 
     ## Custom Services
+    custom.auto_updater.allowReboot = true;
     custom.locations.autoServe = true;
-    custom.auto_updater = {
-      enable = true;
-      allowReboot = true;
-    };
 
     ## Run a persistent iperf3 server
     services.iperf3.enable = true;
