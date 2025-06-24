@@ -100,6 +100,12 @@
                   description = "DNS servers for this network";
                 };
 
+                ntpServers = lib.mkOption {
+                  type = lib.types.listOf lib.types.str;
+                  default = [ ];
+                  description = "NTP servers for this network";
+                };
+
                 internetAccess = lib.mkOption {
                   type = lib.types.bool;
                   default = true;
@@ -208,6 +214,7 @@
               end = "10.64.50.254";
             };
             dnsServers = [ "1.1.1.1" "8.8.8.8" ];
+            ntpServers = [ "10.64.50.1" ];
             internetAccess = true;
             trustedNetwork = true;
 
@@ -312,6 +319,7 @@
               end = "10.239.19.254";
             };
             dnsServers = [ "1.1.1.1" "8.8.8.8" ];
+            ntpServers = [ "10.239.19.1" ];
             internetAccess = true;
             trustedNetwork = true;
 
@@ -330,6 +338,11 @@
                 hostname = "hallway-wall-tablet";
                 hwAddress = "8c:51:09:20:53:8d";
                 dhcpReservation = true;
+              };
+              "5" = {
+                hostname = "fc-ntp-mini";
+                hwAddress = null;
+                dhcpReservation = false;
               };
               "6" = {
                 hostname = "hammer";

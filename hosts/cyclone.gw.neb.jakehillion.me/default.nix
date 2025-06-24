@@ -32,6 +32,24 @@
     ## Run a persistent iperf3 server
     services.iperf3.enable = true;
 
+    ## NTP server
+    services.chrony = {
+      enable = true;
+      servers = [
+        "10.239.19.5"
+        "pool.ntp.org"
+      ];
+      extraConfig = ''
+        # Allow clients from local networks
+        allow 10.64.50.0/24
+        allow 10.239.19.0/24
+        allow 10.133.145.0/24
+      '';
+    };
+
+    # Disable systemd-timesyncd since we're using chrony
+    services.timesyncd.enable = false;
+
     ## Web services and KVM reverse proxies
     services.caddy = {
       enable = true;

@@ -434,7 +434,10 @@ in
                     data = lib.strings.concatStringsSep ", "
                       (if netCfg.dnsServers != [ ] then netCfg.dnsServers else [ "1.1.1.1" "8.8.8.8" ]);
                   }
-                ];
+                ] ++ (lib.lists.optional (netCfg.ntpServers != [ ]) {
+                  name = "ntp-servers";
+                  data = lib.strings.concatStringsSep ", " netCfg.ntpServers;
+                });
 
                 # Configure DHCP reservations from devices
                 reservations = lib.attrsets.mapAttrsToList
