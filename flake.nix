@@ -58,6 +58,10 @@
 
           "storj" = final.callPackage ./pkgs/storj.nix { };
           "pbcli" = final.callPackage ./pkgs/pbcli.nix { };
+          "caddy-cloudflare" = prev.caddy.withPlugins {
+            plugins = [ "github.com/caddy-dns/cloudflare@v0.2.1" ];
+            hash = "sha256-Gsuo+ripJSgKSYOM9/yl6Kt/6BFCA6BuTDvPdteinAI=";
+          };
         })
       ];
     in
@@ -119,7 +123,17 @@
         };
       };
 
-    } // flake-utils.lib.eachDefaultSystem (system: {
+    } // flake-utils.lib.eachDefaultSystem (system:
+    let
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = getSystemOverlays system { };
+        config = { allowUnfree = true; };
+      };
+    in
+    {
       formatter = nixpkgs.legacyPackages.${system}.nixpkgs-fmt;
+
+      packages.caddy-cloudflare = pkgs.caddy-cloudflare;
     });
 }
