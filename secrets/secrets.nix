@@ -77,6 +77,9 @@ in
   "mastodon/social.hillion.co.uk/vapid_private_key.age".publicKeys = jake_users ++ [ ];
   "mastodon/social.hillion.co.uk/mastodon_at_social.hillion.co.uk.age".publicKeys = jake_users ++ [ ];
 
+  # Attic
+  "attic/environment.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
+
   # Chia Secrets
   "chia/farmer.key.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
 

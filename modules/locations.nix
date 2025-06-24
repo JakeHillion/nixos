@@ -19,6 +19,7 @@ in
     {
       custom.locations.locations = {
         services = {
+          attic = "phoenix.st.neb.jakehillion.me";
           authoritative_dns = [
             "boron.cx.neb.jakehillion.me"
             "router.home.neb.jakehillion.me"

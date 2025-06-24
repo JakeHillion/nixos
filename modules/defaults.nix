@@ -6,11 +6,18 @@
   config = lib.mkIf config.custom.defaults {
     hardware.enableAllFirmware = true;
     nix = {
-      settings.experimental-features = [ "nix-command" "flakes" ];
-      settings = {
-        auto-optimise-store = true;
-        trusted-users = [ config.custom.user ];
-      };
+      settings = lib.mkMerge [
+        {
+          auto-optimise-store = true;
+          experimental-features = [ "nix-command" "flakes" ];
+          trusted-users = [ config.custom.user ];
+        }
+
+        (lib.mkIf config.custom.nebula.enable {
+          extra-substituters = [ "http://attic.neb.jakehillion.me/nixos" ];
+          extra-trusted-public-keys = [ "nixos:npaMjNtbUwWvuv4CEdJ2ev/Q2TRBxL0GduwvlYIc3/0=" ];
+        })
+      ];
       gc = {
         automatic = true;
         dates = "weekly";
