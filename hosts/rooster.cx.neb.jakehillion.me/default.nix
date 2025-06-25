@@ -30,6 +30,10 @@
 
     ## Run latest kernel for sched_ext development
     boot.kernelPackages = pkgs.linuxPackages_latest;
+    boot.kernelPatches = [{
+      name = "drop_old_schedext_kfuncs";
+      patch = ../../patches/kernel/drop_old_schedext_kfuncs.patch;
+    }];
 
     # Allow performing emulated builds in QEMU
     boot.binfmt.emulatedSystems = [
