@@ -192,10 +192,131 @@ Note: DNS resolution must be configured separately for proper name resolution wi
 
 - **Avoid global `with lib;`**: Never use global `with lib;` statements in modules. Instead, use fully qualified names (e.g., `lib.mkOption`, `lib.strings.concatStringsSep`, etc.). This improves code readability and avoids namespace conflicts.
 
+## Service Configuration and Management
+
+### Service Orchestration with locations.autoServe
+
+The repository uses a centralized service orchestration system through `modules/locations.nix` that automatically deploys services to designated hosts.
+
+#### How locations.autoServe Works
+
+1. **Service Registry**: `modules/locations.nix` maintains a mapping of services to their host locations:
+   ```nix
+   services = {
+     attic = "phoenix.st.neb.jakehillion.me";
+     gitea = "boron.cx.neb.jakehillion.me";
+     restic = "phoenix.st.neb.jakehillion.me";
+     # Services can also run on multiple hosts
+     authoritative_dns = [
+       "boron.cx.neb.jakehillion.me"
+       "router.home.neb.jakehillion.me"
+     ];
+   };
+   ```
+
+2. **Automatic Service Activation**: When `custom.locations.autoServe = true` is enabled on a host:
+   - The system compares `config.networking.fqdn` against the service mappings
+   - Services assigned to that host are automatically enabled
+   - Enabled by default in `modules/defaults.nix`
+
+3. **Service Discovery**: Other services can reference locations via:
+   ```nix
+   config.custom.locations.locations.services.servicename
+   ```
+
+#### Service Configuration Patterns
+
+All service modules follow a consistent pattern in `/modules/services/`:
+
+```nix
+{ config, lib, ... }:
+let
+  cfg = config.custom.services.servicename;
+in
+{
+  options.custom.services.servicename = {
+    enable = lib.mkEnableOption "servicename";
+    # service-specific options
+  };
+  
+  config = lib.mkIf cfg.enable {
+    # service configuration
+  };
+}
+```
+
+#### World-Accessible vs Internal Services
+
+**World-Accessible Services** (using `custom.www.global.enable = true`):
+- Managed by `modules/www/global.nix`
+- Use Cloudflare integration and ACME certificates
+- Examples: Gitea, blog, PrivateBin, Matrix
+- Exposed via public domains like `*.hillion.co.uk`
+
+**Internal Services** (using `custom.www.nebula.enable = true`):
+- Managed by `modules/www/nebula.nix`
+- Accessible only via Nebula VPN network
+- Use internal CA for TLS certificates
+- Examples: Restic, Downloads, internal tools
+
+#### Adding a New Service
+
+1. **Create the service module** in `/modules/services/servicename.nix`
+2. **Add to locations.nix**:
+   ```nix
+   services = {
+     # ... existing services
+     servicename = "hostname.domain.tld";
+   };
+   ```
+3. **Configure web access** (if needed):
+   - For world access: Enable `custom.www.global.enable = true`
+   - For internal access: Enable `custom.www.nebula.enable = true`
+4. **Add backup configuration** (if needed) with restic integration
+
+#### Service Integration Points
+
+- **Secrets**: Use agenix for secret management (`/secrets/` directory)
+- **Reverse Proxy**: Caddy handles internal routing and SSL termination
+- **Systemd**: Custom service definitions and timers
+- **Firewall**: Services automatically configure required ports
+- **Backup**: Many services integrate with restic backup system
+- **User Management**: Consistent UID/GID allocation via `config.ids`
+- **Impermanence**: Configure persistent storage paths for service data
+
+#### Impermanence Configuration
+
+For systems using impermanence (ephemeral root filesystem), service data must be explicitly persisted. The repository uses two patterns:
+
+**Pattern 1: Override service data directories (Preferred)**
+```nix
+# In modules/impermanence.nix
+services.matrix-synapse.dataDir = "${cfg.base}/system/var/lib/matrix-synapse";
+services.gitea.stateDir = "${cfg.base}/system/var/lib/gitea";
+services.jellyfin.dataDir = "${cfg.base}/services/jellyfin";
+```
+
+**Pattern 2: Add directories to impermanence bind mounts (Fallback)**
+```nix
+# In modules/impermanence.nix - directories array
+(lib.lists.optional config.services.zigbee2mqtt.enable config.services.zigbee2mqtt.dataDir)
+(lib.lists.optional config.custom.services.unifi.enable "/var/lib/unifi")
+```
+
+**IMPORTANT**: Every new service that stores data must be configured for impermanence using Pattern 1 when possible. Services without configurable data directories fall back to Pattern 2.
+
+**Adding a new service with impermanence:**
+1. Check if the service has a configurable data directory option
+2. If yes, override it to point to `${cfg.base}/system/var/lib/servicename` or `${cfg.base}/services/servicename`
+3. If no, add the default data directory to the impermanence directories list
+4. Use conditional configuration with `lib.mkIf config.services.servicename.enable`
+
 ## Common Errors and Solutions
 
 - **FQDN comparison issues**: When comparing hostnames, use the full FQDN
 - **VLAN interface errors**: Make sure parent interfaces are correctly defined
+- **Service not starting**: Check that the service is properly added to `locations.nix`
+- **Web access issues**: Verify correct `www.global` or `www.nebula` configuration
 
 ## Development Workflow
 

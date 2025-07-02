@@ -16,6 +16,7 @@
       ollama = 210;
       privatebin = 211;
       jellyfin = 216;
+      radicale = 401;
 
       ## Consistent People
       jake = 1000;
@@ -34,6 +35,7 @@
       immich = 206;
       ollama = 210;
       jellyfin = 216;
+      radicale = 401;
 
       ## Consistent Groups
       mediaaccess = 1200;

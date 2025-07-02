@@ -15,6 +15,7 @@
     ./matrix.nix
     ./ollama.nix
     ./privatebin.nix
+    ./radicale.nix
     ./restic.nix
     ./tang.nix
     ./unifi.nix

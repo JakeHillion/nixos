@@ -94,6 +94,17 @@ in
             header_up Host {http.reverse_proxy.upstream.hostport}
           }
         '';
+        "radicale.hillion.co.uk".extraConfig = ''
+          tls {
+            dns cloudflare {
+              zone_token {env.CF_ZONE_TOKEN}
+              api_token {env.CF_API_TOKEN_HILLION_CO_UK}
+            }
+          }
+          reverse_proxy https://radicale.neb.jakehillion.me {
+            header_up Host {http.reverse_proxy.upstream.hostport}
+          }
+        '';
 
         ## ACME sites
         "matrix.hillion.co.uk".extraConfig = ''

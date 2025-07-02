@@ -74,6 +74,10 @@ in
       dataDir = lib.mkOverride 999 "${cfg.base}/services/jellyfin";
     };
 
+    services.radicale = lib.mkIf config.services.radicale.enable {
+      settings.storage.filesystem_folder = lib.mkOverride 999 "${cfg.base}/services/radicale/collections";
+    };
+
     environment.persistence = lib.mkMerge [
       {
         "${cfg.base}/system" = {
