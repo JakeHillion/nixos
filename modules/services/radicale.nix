@@ -21,11 +21,14 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    custom = {
-      backups.radicale.enable = cfg.backup;
-    };
 
     age.secrets = {
+      "backups/radicale/restic/128G" = lib.mkIf cfg.backup {
+        file = ../../secrets/restic/128G.age;
+        owner = "radicale";
+        group = "radicale";
+      };
+
       "radicale/users" = {
         file = ../../secrets/radicale/users.age;
         owner = "radicale";
@@ -36,47 +39,63 @@ in
     users.users.radicale.uid = config.ids.uids.radicale;
     users.groups.radicale.gid = config.ids.gids.radicale;
 
-    services.radicale = {
-      enable = true;
-
-      settings = {
-        server = {
-          hosts = [
-            "127.0.0.1:${toString cfg.port}"
-            "[::1]:${toString cfg.port}"
-          ];
+    services = {
+      restic.backups."radicale" = lib.mkIf cfg.backup {
+        user = "radicale";
+        timerConfig = {
+          OnBootSec = "15m";
+          OnUnitInactiveSec = "30m";
+          RandomizedDelaySec = "5m";
         };
+        repository = "rest:https://restic.neb.jakehillion.me/128G";
+        passwordFile = config.age.secrets."backups/radicale/restic/128G".path;
+        paths = [
+          config.services.radicale.settings.storage.filesystem_folder
+        ];
+      };
 
-        auth = {
-          type = "htpasswd";
-          htpasswd_filename = config.age.secrets."radicale/users".path;
-          htpasswd_encryption = "sha512";
-        };
+      radicale = {
+        enable = true;
 
-        storage = {
-          filesystem_folder = lib.mkDefault "/var/lib/radicale/collections";
-        };
+        settings = {
+          server = {
+            hosts = [
+              "127.0.0.1:${toString cfg.port}"
+              "[::1]:${toString cfg.port}"
+            ];
+          };
 
-        logging = {
-          level = "info";
-        };
+          auth = {
+            type = "htpasswd";
+            htpasswd_filename = config.age.secrets."radicale/users".path;
+            htpasswd_encryption = "sha512";
+          };
 
-        rights = {
-          type = "from_file";
-          file = builtins.toString (pkgs.writeText "radicale-rights" ''
-            # Allow reading and writing principal collection (same as username)
-            [principal]
-            user: .+
-            collection: {user}
-            permissions: RW
+          storage = {
+            filesystem_folder = lib.mkDefault "/var/lib/radicale/collections";
+          };
 
-            # Allow reading and writing calendars and address books that are direct
-            # children of the principal collection
-            [calendars]
-            user: .+
-            collection: {user}/[^/]+
-            permissions: rw
-          '');
+          logging = {
+            level = "info";
+          };
+
+          rights = {
+            type = "from_file";
+            file = builtins.toString (pkgs.writeText "radicale-rights" ''
+              # Allow reading and writing principal collection (same as username)
+              [principal]
+              user: .+
+              collection: {user}
+              permissions: RW
+
+              # Allow reading and writing calendars and address books that are direct
+              # children of the principal collection
+              [calendars]
+              user: .+
+              collection: {user}/[^/]+
+              permissions: rw
+            '');
+          };
         };
       };
     };

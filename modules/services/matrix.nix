@@ -19,11 +19,12 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    custom = {
-      backups.matrix.enable = cfg.backup;
-    };
 
     age.secrets = {
+      "backups/matrix/restic/128G" = lib.mkIf cfg.backup {
+        file = ../../secrets/restic/128G.age;
+      };
+
       "matrix/matrix.hillion.co.uk/macaroon_secret_key" = {
         file = ../../secrets/matrix/matrix.hillion.co.uk/macaroon_secret_key.age;
         owner = "matrix-synapse";
@@ -48,6 +49,12 @@ in
     };
 
     services = {
+      postgresqlBackup = lib.mkIf cfg.backup {
+        enable = true;
+        compression = "none"; # for better diffing
+        databases = [ "matrix-synapse" ];
+      };
+
       postgresql = {
         enable = true;
         initialScript = pkgs.writeText "synapse-init.sql" ''
@@ -57,6 +64,20 @@ in
             LC_COLLATE = "C"
             LC_CTYPE = "C";
         '';
+      };
+
+      restic.backups."matrix" = lib.mkIf cfg.backup {
+        user = "root";
+        timerConfig = {
+          OnCalendar = "03:00";
+          RandomizedDelaySec = "60m";
+        };
+        repository = "rest:https://restic.neb.jakehillion.me/128G";
+        passwordFile = config.age.secrets."backups/matrix/restic/128G".path;
+        paths = [
+          "${config.services.postgresqlBackup.location}/matrix-synapse.sql"
+          config.services.matrix-synapse.dataDir
+        ];
       };
 
       matrix-synapse = {

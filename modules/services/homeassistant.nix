@@ -14,18 +14,61 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    custom = {
-      backups.homeassistant.enable = cfg.backup;
-    };
 
-    age.secrets."homeassistant/secrets.yaml" = {
-      file = ../../secrets/homeassistant/secrets.yaml.age;
-      path = "${config.services.home-assistant.configDir}/secrets.yaml";
-      owner = "hass";
-      group = "hass";
+    age.secrets = {
+      "backups/homeassistant/restic/128G" = lib.mkIf cfg.backup {
+        file = ../../secrets/restic/128G.age;
+        owner = "hass";
+        group = "hass";
+      };
+      "backups/homeassistant/restic/1.6T" = lib.mkIf cfg.backup {
+        file = ../../secrets/restic/1.6T.age;
+        owner = "postgres";
+        group = "postgres";
+      };
+
+      "homeassistant/secrets.yaml" = {
+        file = ../../secrets/homeassistant/secrets.yaml.age;
+        path = "${config.services.home-assistant.configDir}/secrets.yaml";
+        owner = "hass";
+        group = "hass";
+      };
     };
 
     services = {
+      postgresqlBackup = lib.mkIf cfg.backup {
+        enable = true;
+        compression = "none"; # for better diffing
+        databases = [ "homeassistant" ];
+      };
+
+      restic.backups = lib.mkIf cfg.backup {
+        "homeassistant-config" = {
+          user = "hass";
+          timerConfig = {
+            OnCalendar = "03:00";
+            RandomizedDelaySec = "60m";
+          };
+          repository = "rest:https://restic.neb.jakehillion.me/128G";
+          passwordFile = config.age.secrets."backups/homeassistant/restic/128G".path;
+          paths = [
+            config.services.home-assistant.configDir
+          ];
+        };
+        "homeassistant-database" = {
+          user = "postgres";
+          timerConfig = {
+            OnCalendar = "03:00";
+            RandomizedDelaySec = "60m";
+          };
+          repository = "rest:https://restic.neb.jakehillion.me/1.6T";
+          passwordFile = config.age.secrets."backups/homeassistant/restic/1.6T".path;
+          paths = [
+            "${config.services.postgresqlBackup.location}/homeassistant.sql"
+          ];
+        };
+      };
+
       caddy = {
         enable = true;
 

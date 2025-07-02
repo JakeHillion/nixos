@@ -323,10 +323,34 @@ services.jellyfin.dataDir = "${cfg.base}/services/jellyfin";
 1. Make changes to configuration
 2. Format code with `nix fmt`
 3. Test with `nix build` for specific host
-4. Commit changes
+4. Commit changes (see Git Workflow below)
 5. Apply on target system with `nixos-rebuild switch`
 
 IMPORTANT: Always run `nix fmt` before committing changes to ensure consistent code formatting.
+
+### Git Workflow
+
+This repository follows a **single-commit-per-change** workflow:
+
+- **Use `git amend`** (or `git commit --amend`) instead of creating fix commits
+- Every pull request should be a single commit
+- When you need to make fixes or improvements, amend the existing commit rather than creating new ones
+- The repository uses `git-branchless`, so `git amend` is available as a shorthand
+
+**Example workflow:**
+```bash
+# Make initial changes
+git add .
+git commit -m "feat: add new service"
+
+# Need to fix something? Amend instead of new commit
+git add .
+git amend  # or git commit --amend
+
+# Continue amending until the change is complete
+```
+
+This keeps the git history clean with one logical change per commit.
 
 ## File Management and Nix Evaluation
 
