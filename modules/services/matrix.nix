@@ -19,6 +19,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    services.matrix-synapse.dataDir = lib.mkIf config.custom.impermanence.enable "${config.custom.impermanence.base}/system/var/lib/matrix-synapse";
 
     age.secrets = {
       "backups/matrix/restic/128G" = lib.mkIf cfg.backup {

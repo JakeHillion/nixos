@@ -47,35 +47,14 @@ in
         { path = "${cfg.base}/system/etc/ssh/ssh_host_ed25519_key"; type = "ed25519"; }
         { path = "${cfg.base}/system/etc/ssh/ssh_host_rsa_key"; type = "rsa"; bits = 4096; }
       ];
-      matrix-synapse.dataDir = "${cfg.base}/system/var/lib/matrix-synapse";
-      gitea.stateDir = "${cfg.base}/system/var/lib/gitea";
     };
 
     custom.chia = lib.mkIf config.custom.chia.enable {
       path = lib.mkOverride 999 "${cfg.base}/chia";
     };
-    custom.services.frigate = lib.mkIf config.custom.services.frigate.enable {
-      dataPath = lib.mkOverride 999 "${cfg.base}/frigate";
-    };
 
     services.plex = lib.mkIf config.services.plex.enable {
       dataDir = lib.mkOverride 999 "${cfg.base}/plex";
-    };
-
-    services.home-assistant = lib.mkIf config.services.home-assistant.enable {
-      configDir = lib.mkOverride 999 "/data/home-assistant";
-    };
-
-    custom.services.ollama = lib.mkIf config.custom.services.ollama.enable {
-      dataPath = lib.mkOverride 999 "${cfg.base}/services/ollama";
-    };
-
-    services.jellyfin = lib.mkIf config.services.jellyfin.enable {
-      dataDir = lib.mkOverride 999 "${cfg.base}/services/jellyfin";
-    };
-
-    services.radicale = lib.mkIf config.services.radicale.enable {
-      settings.storage.filesystem_folder = lib.mkOverride 999 "${cfg.base}/services/radicale/collections";
     };
 
     environment.persistence = lib.mkMerge [
@@ -87,16 +66,10 @@ in
             "/etc/nixos"
           ] ++
           cfg.extraDirs ++
-          (lib.lists.optional config.services.zigbee2mqtt.enable config.services.zigbee2mqtt.dataDir) ++
           (lib.lists.optional config.services.postgresql.enable config.services.postgresql.dataDir) ++
           (lib.lists.optional config.hardware.bluetooth.enable "/var/lib/bluetooth") ++
-          (lib.lists.optional config.custom.services.unifi.enable "/var/lib/unifi") ++
           (lib.lists.optional (config.virtualisation.oci-containers.containers != { }) "/var/lib/containers") ++
-          (lib.lists.optional config.services.tang.enable "/var/lib/private/tang") ++
-          (lib.lists.optional config.services.caddy.enable "/var/lib/caddy") ++
-          (lib.lists.optional config.services.prometheus.enable "/var/lib/${config.services.prometheus.stateDir}") ++
-          (lib.lists.optional config.custom.services.isponsorblocktv.enable "${config.custom.services.isponsorblocktv.dataDir}") ++
-          (lib.lists.optional config.services.step-ca.enable "/var/lib/private/step-ca");
+          (lib.lists.optional config.services.caddy.enable "/var/lib/caddy");
         };
       }
       (lib.mkIf cfg.cache.enable {

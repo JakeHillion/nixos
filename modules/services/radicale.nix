@@ -72,7 +72,10 @@ in
           };
 
           storage = {
-            filesystem_folder = lib.mkDefault "/var/lib/radicale/collections";
+            filesystem_folder =
+              if config.custom.impermanence.enable
+              then "${config.custom.impermanence.base}/services/radicale/collections"
+              else "/var/lib/radicale/collections";
           };
 
           logging = {

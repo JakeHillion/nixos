@@ -14,6 +14,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ config.services.zigbee2mqtt.dataDir ];
+
     age.secrets."mqtt/zigbee2mqtt.yaml" = {
       file = ../../secrets/mqtt/zigbee2mqtt.age;
       owner = "zigbee2mqtt";

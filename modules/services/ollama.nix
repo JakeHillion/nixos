@@ -14,6 +14,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    custom.services.ollama.dataPath = lib.mkIf config.custom.impermanence.enable (lib.mkOverride 999 "${config.custom.impermanence.base}/services/ollama");
+
     users.users.ollama.uid = config.ids.uids.ollama;
     users.groups.ollama.gid = config.ids.gids.ollama;
 

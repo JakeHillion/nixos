@@ -18,6 +18,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    custom.services.frigate.dataPath = lib.mkIf config.custom.impermanence.enable (lib.mkOverride 999 "${config.custom.impermanence.base}/frigate");
+
     age.secrets."frigate/secrets.env".file = ../../secrets/frigate/secrets.env.age;
 
     services.caddy = {

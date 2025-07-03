@@ -18,6 +18,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    services.gitea.stateDir = lib.mkIf config.custom.impermanence.enable "${config.custom.impermanence.base}/system/var/lib/gitea";
+
     age.secrets = {
       "gitea/mailer_password" = {
         file = ../../../secrets/gitea/mailer_password.age;

@@ -34,6 +34,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ cfg.dataDir ];
+
     environment.systemPackages = [ ctl ];
 
     users.groups.isponsorblocktv = {

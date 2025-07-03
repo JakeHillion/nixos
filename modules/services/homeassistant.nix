@@ -14,6 +14,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    services.home-assistant.configDir = lib.mkIf config.custom.impermanence.enable (lib.mkOverride 999 "/data/home-assistant");
 
     age.secrets = {
       "backups/homeassistant/restic/128G" = lib.mkIf cfg.backup {
