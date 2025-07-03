@@ -32,6 +32,7 @@ in
           jellyfin = "phoenix.st.neb.jakehillion.me";
           mastodon = "";
           matrix = "boron.cx.neb.jakehillion.me";
+          mosquitto = "stinger.pop.neb.jakehillion.me";
           ollama = "boron.cx.neb.jakehillion.me";
           privatebin = "boron.cx.neb.jakehillion.me";
           prometheus = "boron.cx.neb.jakehillion.me";

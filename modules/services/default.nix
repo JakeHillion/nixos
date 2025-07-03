@@ -13,6 +13,7 @@
     ./jellyfin.nix
     ./mastodon/default.nix
     ./matrix.nix
+    ./mosquitto.nix
     ./ollama.nix
     ./privatebin.nix
     ./radicale.nix

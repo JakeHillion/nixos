@@ -44,6 +44,7 @@ in
             restic                            21600 CNAME ${locations.services.restic}.
             wallpapers                        21600 CNAME phoenix.st.neb.jakehillion.me.
 
+            mqtt.home                         21600 CNAME ${locations.services.mosquitto}.
             zigbee2mqtt.home                  21600 CNAME router.home.neb.jakehillion.me.
             graphs.cyclone.gw                 21600 CNAME cyclone.gw.neb.jakehillion.me.
 

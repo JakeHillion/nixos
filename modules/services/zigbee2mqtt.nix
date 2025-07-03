@@ -40,7 +40,7 @@ in
       settings = {
         permit_join = false;
         mqtt = {
-          server = "mqtt://localhost:1883"; # TODO: move MQTT to a separate service and use locations (not inlined)
+          server = "mqtt://mqtt.home.neb.jakehillion.me:1883";
           user = "zigbee2mqtt";
           password = "!${config.age.secrets."mqtt/zigbee2mqtt.yaml".path} password";
         };
@@ -58,23 +58,6 @@ in
       };
     };
 
-    services.mosquitto = {
-      enable = true;
-      listeners = [
-        {
-          users = {
-            zigbee2mqtt = {
-              acl = [ "readwrite #" ];
-              hashedPassword = "$7$101$ZrD6C+b7Xo/fUoGw$Cf/6Xm52Syv2G+5+BqpUWRs+zrTrTvBL9EFzks9q/Q6ZggXVcp+Bi3ZpmQT5Du9+42G30Y7G3hWpYbA8j1ooWg==";
-            };
-            homeassistant = {
-              acl = [ "readwrite #" ];
-              hashedPassword = "$7$101$wGQZPdVdeW7iQFmH$bK/VOR6LXCLJKbb6M4PNeVptocjBAWXCLMtEU5fQNBr0Y5UAWlhVg8UAu4IkIXgnViI51NnhXKykdlWF63VkVQ==";
-            };
-          };
-        }
-      ];
-    };
 
     age.secrets."restic/zigbee2mqtt/1.6T.key" = lib.mkIf cfg.backup {
       file = ../../secrets/restic/1.6T.age;
