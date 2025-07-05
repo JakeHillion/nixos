@@ -33,10 +33,13 @@ in
             if ($r->method eq 'GET') {
               given ($r->uri->path) {
                 when ('/current/nixos/system/configurationRevision') {
-                  $c->send_file_response("/nix/var/nix/gcroots/current-system/etc/flake-version");
+                  $c->send_file_response("/run/current-system/etc/flake-version");
                 }
                 when ('/booted/nixos/system/configurationRevision') {
-                  $c->send_file_response("/nix/var/nix/gcroots/booted-system/etc/flake-version");
+                  $c->send_file_response("/run/booted-system/etc/flake-version");
+                }
+                when ('/nextboot/nixos/system/configurationRevision') {
+                  $c->send_file_response("/nix/var/nix/profiles/system/etc/flake-version");
                 }
                 default {
                   $c->send_error(404);

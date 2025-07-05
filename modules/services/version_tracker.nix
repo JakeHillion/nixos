@@ -60,6 +60,18 @@ in
                 else
                     echo "WARNING: $hostname points to invalid ref!"
                 fi
+
+            else
+                echo "$hostname: failed to reach"
+            fi
+
+            if rev=$(${curl}/bin/curl -s --max-time 15 http://$hostname:30653/nextboot/nixos/system/configurationRevision); then
+                echo "$hostname: $rev (nextboot)"
+                if ${git}/bin/git tag -f "nextboot/$hostname" "$rev"; then
+                    ${git}/bin/git push -f origin "nextboot/$hostname"
+                else
+                    echo "WARNING: $hostname points to invalid ref!"
+                fi
                 
             else
                 echo "$hostname: failed to reach"
