@@ -54,6 +54,7 @@ in
                   "--no-require-git",
                   "--hidden",
                   "--exclude=.sl",
+                  "--exclude=.git",
               },
             },
           },
@@ -69,6 +70,7 @@ in
                 "--no-require-git",
                 "--hidden",
                 "--glob=!.sl",
+                "--glob=!.git",
             },
           },
         })
