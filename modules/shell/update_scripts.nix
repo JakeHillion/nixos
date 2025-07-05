@@ -11,6 +11,14 @@ let
       exec sudo ${pkgs.runtimeShell} "$0" "$@"
     fi
 
+    # Temporarily disable auto_updater to prevent racing
+    echo "Temporarily disabling auto_updater service..."
+    ${pkgs.systemd}/bin/systemctl stop auto_updater.timer 2>/dev/null || true
+    ${pkgs.systemd}/bin/systemctl stop auto_updater.service 2>/dev/null || true
+
+    # Set up trap to re-enable auto_updater on exit
+    trap 'echo "Re-enabling auto_updater service..."; ${pkgs.systemd}/bin/systemctl start auto_updater.timer 2>/dev/null || true' EXIT
+
     if [ -n "$1" ]; then
       BRANCH=$1
     else
