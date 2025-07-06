@@ -48,7 +48,6 @@ in
       # Nebula hosts
       "be.lt.neb.jakehillion.me".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILV3OSUT+cqFqrFHZGfn7/xi5FW3n1qjUFy8zBbYs2Sm";
       "boron.cx.neb.jakehillion.me".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDtcJ7HY/vjtheMV8EN2wlTw1hU53CJebGIeRJcSkzt5";
-      "iceman.tick.neb.jakehillion.me".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFm3XU45HL0/4HcVkxeClMsVumMetukXXv5a2OEOqSwu";
       "li.pop.neb.jakehillion.me".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHQWgcDFL9UZBDKHPiEGepT1Qsc4gz3Pee0/XVHJ6V6u";
       "merlin.rig.neb.jakehillion.me".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN99UrXe3puoW0Jr1bSPRHL6ImLZD9A9sXeE54JFggIC";
       "phoenix.st.neb.jakehillion.me".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBPQcp9MzabvwbViNmILVNfipMUnwV+5okRfhOuV7+Mt";

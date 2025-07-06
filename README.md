@@ -4,7 +4,7 @@
 
 Raspberry Pi images that support headless SSH can be built as follows:
 
-    nix build '.#nixosConfigurations."iceman.tick.neb.jakehillion.me".config.formats.sd-aarch64'
+    nix build '.#nixosConfigurations."li.pop.neb.jakehillion.me".config.formats.sd-aarch64'
 
 Although this will have some support for Nebula it will not be authenticated without further setup. This is because each device generates its own signing key that still needs to be signed by the CA.
 
