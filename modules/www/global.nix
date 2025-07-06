@@ -31,6 +31,7 @@ in
         "homeassistant.hillion.co.uk"
         "links.hillion.co.uk"
         "pastes.hillion.co.uk"
+        "status.jakehillion.me"
       ])
     ) // {
       "cloudflare/zone_keys.env" = {
@@ -102,6 +103,12 @@ in
             }
           }
           reverse_proxy https://radicale.neb.jakehillion.me {
+            header_up Host {http.reverse_proxy.upstream.hostport}
+          }
+        '';
+        "status.jakehillion.me".extraConfig = ''
+          tls ${./certs/status.jakehillion.me.pem} ${config.age.secrets."caddy/status.jakehillion.me.pem".path}
+          reverse_proxy https://status.neb.jakehillion.me {
             header_up Host {http.reverse_proxy.upstream.hostport}
           }
         '';

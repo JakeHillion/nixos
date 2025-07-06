@@ -18,6 +18,7 @@
     ./privatebin.nix
     ./radicale.nix
     ./restic.nix
+    ./status.nix
     ./tang.nix
     ./unifi.nix
     ./version_tracker.nix

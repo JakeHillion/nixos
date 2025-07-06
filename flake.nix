@@ -27,6 +27,9 @@
 
     nixos-generators.url = "github:nix-community/nixos-generators";
     nixos-generators.inputs.nixpkgs.follows = "nixpkgs";
+
+    status-jakehillion-me.url = "git+https://gitea.hillion.co.uk/JakeHillion/status.jakehillion.me.git";
+    status-jakehillion-me.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   description = "Hillion Nix flake";
@@ -44,6 +47,7 @@
     , nixos-hardware
     , nixpkgs
     , nixpkgs-unstable
+    , status-jakehillion-me
     , ...
     }@inputs:
     let

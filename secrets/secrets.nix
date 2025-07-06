@@ -118,6 +118,7 @@ in
   "certs/homeassistant.hillion.co.uk.pem.age".publicKeys = jake_users ++ [ neb.cx.boron ];
   "certs/links.hillion.co.uk.pem.age".publicKeys = jake_users ++ [ neb.cx.boron ];
   "certs/pastes.hillion.co.uk.pem.age".publicKeys = jake_users ++ [ neb.cx.boron ];
+  "certs/status.jakehillion.me.pem.age".publicKeys = jake_users ++ [ neb.cx.boron ];
 
   # Cloudflare
   "cloudflare/zone_keys.env.age".publicKeys = jake_users ++ [ neb.cx.boron ];

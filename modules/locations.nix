@@ -38,6 +38,7 @@ in
           prometheus = "boron.cx.neb.jakehillion.me";
           radicale = "boron.cx.neb.jakehillion.me";
           restic = "phoenix.st.neb.jakehillion.me";
+          status = "boron.cx.neb.jakehillion.me";
           tang = [
             "boron.cx.neb.jakehillion.me"
             "cyclone.gw.neb.jakehillion.me"
