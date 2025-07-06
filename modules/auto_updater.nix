@@ -72,16 +72,16 @@ in
               ${git} clone ${remote} .
           fi
 
-          current_file="/nix/var/nix/gcroots/current-system/etc/flake-version"
-          booted_file="/nix/var/nix/gcroots/booted-system/etc/flake-version"
+          current_file="/run/current-system/etc/flake-version"
+          nextboot_file="/nix/var/nix/profiles/system/etc/flake-version"
 
-          if [ ! -f "$current_file" ] || [ ! -f "$booted_file" ]; then
+          if [ ! -f "$current_file" ] || [ ! -f "$nextboot_file" ]; then
             echo "Error: missing flake-version file." >&2
             exit 1
           fi
 
           current_sha="$(< "$current_file")"
-          booted_sha="$(< "$booted_file")"
+          nextboot_sha="$(< "$nextboot_file")"
 
           ${git} fetch origin main
 
@@ -98,19 +98,19 @@ in
           ${git} switch main
           ${git} pull
 
-          if ! is_in_main "$booted_sha"; then
-            echo "✱ booted-system SHA $booted_sha is NOT in origin/main. Running 'nixos-rebuild test'..."
+          if ! is_in_main "$nextboot_sha"; then
+            echo "✱ next boot system SHA $nextboot_sha is NOT in origin/main. Running 'nixos-rebuild test'..."
             ${nixos-rebuild} --flake ".#${config.networking.fqdn}" test
             exit 0
           fi
 
           if [ "$ALLOW_REBOOT" != "1" ]; then
-            echo "✔ booted-system SHA $booted_sha is in origin/main. Running 'nixos-rebuild switch'..."
+            echo "✔ next boot system SHA $nextboot_sha is in origin/main. Running 'nixos-rebuild switch'..."
             ${nixos-rebuild} --flake ".#${config.networking.fqdn}" switch
             exit 0
           fi
 
-          echo "✔ booted-system SHA $booted_sha is in origin/main. Running 'nixos-rebuild boot'..."
+          echo "✔ next boot system SHA $nextboot_sha is in origin/main. Running 'nixos-rebuild boot'..."
           ${nixos-rebuild} --flake ".#${config.networking.fqdn}" boot
 
           booted="$(${readlink} /run/booted-system/{initrd,kernel,kernel-modules})"
