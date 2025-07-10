@@ -53,11 +53,11 @@ in
   "secrets/wifi/be.lt.neb.jakehillion.me.age".publicKeys = jake_users ++ [ neb.lt.be ];
 
   # Matrix Secrets
-  "secrets/matrix/matrix.hillion.co.uk/macaroon_secret_key.age".publicKeys = jake_users ++ [ neb.cx.boron ];
-  "secrets/matrix/matrix.hillion.co.uk/email.age".publicKeys = jake_users ++ [ neb.cx.boron ];
-  "secrets/matrix/matrix.hillion.co.uk/registration_shared_secret.age".publicKeys = jake_users ++ [ neb.cx.boron ];
+  "modules/services/matrix/matrix.hillion.co.uk/macaroon_secret_key.age".publicKeys = jake_users ++ [ neb.cx.boron ];
+  "modules/services/matrix/matrix.hillion.co.uk/email.age".publicKeys = jake_users ++ [ neb.cx.boron ];
+  "modules/services/matrix/matrix.hillion.co.uk/registration_shared_secret.age".publicKeys = jake_users ++ [ neb.cx.boron ];
 
-  "secrets/matrix/matrix.hillion.co.uk/syncv3_secret.age".publicKeys = jake_users ++ [ neb.cx.boron ];
+  "modules/services/matrix/matrix.hillion.co.uk/syncv3_secret.age".publicKeys = jake_users ++ [ neb.cx.boron ];
 
   # Backups Secrets
   "secrets/restic/128G.age".publicKeys = jake_users ++ [ neb.st.phoenix neb.cx.boron neb.pop.stinger ];
@@ -72,10 +72,10 @@ in
   "secrets/git/git_backups_remotes.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
 
   # Mastodon Secrets
-  "secrets/mastodon/social.hillion.co.uk/otp_secret_file.age".publicKeys = jake_users ++ [ ];
-  "secrets/mastodon/social.hillion.co.uk/secret_key_base.age".publicKeys = jake_users ++ [ ];
-  "secrets/mastodon/social.hillion.co.uk/vapid_private_key.age".publicKeys = jake_users ++ [ ];
-  "secrets/mastodon/social.hillion.co.uk/mastodon_at_social.hillion.co.uk.age".publicKeys = jake_users ++ [ ];
+  "modules/services/mastodon/social.hillion.co.uk/otp_secret_file.age".publicKeys = jake_users ++ [ ];
+  "modules/services/mastodon/social.hillion.co.uk/secret_key_base.age".publicKeys = jake_users ++ [ ];
+  "modules/services/mastodon/social.hillion.co.uk/vapid_private_key.age".publicKeys = jake_users ++ [ ];
+  "modules/services/mastodon/social.hillion.co.uk/mastodon_at_social.hillion.co.uk.age".publicKeys = jake_users ++ [ ];
 
   # Attic
   "secrets/attic/environment.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
@@ -100,13 +100,13 @@ in
   "secrets/deluge/auth.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
 
   # Gitea Secrets
-  "secrets/gitea/lfs_jwt_secret.age".publicKeys = jake_users ++ [ neb.cx.boron ];
-  "secrets/gitea/mailer_password.age".publicKeys = jake_users ++ [ neb.cx.boron ];
-  "secrets/gitea/oauth_jwt_secret.age".publicKeys = jake_users ++ [ neb.cx.boron ];
-  "secrets/gitea/security_secret_key.age".publicKeys = jake_users ++ [ neb.cx.boron ];
-  "secrets/gitea/security_internal_token.age".publicKeys = jake_users ++ [ neb.cx.boron ];
+  "modules/services/gitea/lfs_jwt_secret.age".publicKeys = jake_users ++ [ neb.cx.boron ];
+  "modules/services/gitea/mailer_password.age".publicKeys = jake_users ++ [ neb.cx.boron ];
+  "modules/services/gitea/oauth_jwt_secret.age".publicKeys = jake_users ++ [ neb.cx.boron ];
+  "modules/services/gitea/security_secret_key.age".publicKeys = jake_users ++ [ neb.cx.boron ];
+  "modules/services/gitea/security_internal_token.age".publicKeys = jake_users ++ [ neb.cx.boron ];
 
-  "secrets/gitea/actions/boron.age".publicKeys = jake_users ++ [ neb.cx.boron ];
+  "modules/services/gitea/actions/boron.age".publicKeys = jake_users ++ [ neb.cx.boron ];
 
   # HomeAssistant Secrets
   "secrets/homeassistant/secrets.yaml.age".publicKeys = jake_users ++ [ neb.pop.stinger ];

@@ -56,7 +56,7 @@
       services = {
         gitea.actions = {
           enable = true;
-          tokenSecret = ../../secrets/gitea/actions/boron.age;
+          tokenSecret = ../../modules/services/gitea/actions/boron.age;
         };
       };
     };

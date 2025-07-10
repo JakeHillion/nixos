@@ -11,22 +11,22 @@ in
   config = lib.mkIf cfg.enable {
     age.secrets = {
       "mastodon/otp_secret_file" = {
-        file = ../../../secrets/mastodon/social.hillion.co.uk/otp_secret_file.age;
+        file = ./social.hillion.co.uk/otp_secret_file.age;
         owner = config.services.mastodon.user;
         group = config.services.mastodon.group;
       };
       "mastodon/secret_key_base" = {
-        file = ../../../secrets/mastodon/social.hillion.co.uk/secret_key_base.age;
+        file = ./social.hillion.co.uk/secret_key_base.age;
         owner = config.services.mastodon.user;
         group = config.services.mastodon.group;
       };
       "mastodon/vapid_private_key" = {
-        file = ../../../secrets/mastodon/social.hillion.co.uk/vapid_private_key.age;
+        file = ./social.hillion.co.uk/vapid_private_key.age;
         owner = config.services.mastodon.user;
         group = config.services.mastodon.group;
       };
       "mastodon/mastodon_at_social.hillion.co.uk" = {
-        file = ../../../secrets/mastodon/social.hillion.co.uk/mastodon_at_social.hillion.co.uk.age;
+        file = ./social.hillion.co.uk/mastodon_at_social.hillion.co.uk.age;
         owner = config.services.mastodon.user;
         group = config.services.mastodon.group;
       };

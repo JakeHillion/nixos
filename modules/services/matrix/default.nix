@@ -23,29 +23,29 @@ in
 
     age.secrets = {
       "backups/matrix/restic/128G" = lib.mkIf cfg.backup {
-        file = ../../secrets/restic/128G.age;
+        file = ../../../secrets/restic/128G.age;
       };
 
       "matrix/matrix.hillion.co.uk/macaroon_secret_key" = {
-        file = ../../secrets/matrix/matrix.hillion.co.uk/macaroon_secret_key.age;
+        file = ./matrix.hillion.co.uk/macaroon_secret_key.age;
         owner = "matrix-synapse";
         group = "matrix-synapse";
       };
 
       "matrix/matrix.hillion.co.uk/email" = {
-        file = ../../secrets/matrix/matrix.hillion.co.uk/email.age;
+        file = ./matrix.hillion.co.uk/email.age;
         owner = "matrix-synapse";
         group = "matrix-synapse";
       };
 
       "matrix/matrix.hillion.co.uk/registration_shared_secret" = {
-        file = ../../secrets/matrix/matrix.hillion.co.uk/registration_shared_secret.age;
+        file = ./matrix.hillion.co.uk/registration_shared_secret.age;
         owner = "matrix-synapse";
         group = "matrix-synapse";
       };
 
       "matrix/matrix.hillion.co.uk/syncv3_secret" = {
-        file = ../../secrets/matrix/matrix.hillion.co.uk/syncv3_secret.age;
+        file = ./matrix.hillion.co.uk/syncv3_secret.age;
       };
     };
 

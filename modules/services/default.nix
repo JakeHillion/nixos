@@ -12,7 +12,7 @@
     ./isponsorblocktv.nix
     ./jellyfin.nix
     ./mastodon/default.nix
-    ./matrix.nix
+    ./matrix/default.nix
     ./mosquitto.nix
     ./ollama.nix
     ./privatebin.nix

@@ -22,30 +22,30 @@ in
 
     age.secrets = {
       "gitea/mailer_password" = {
-        file = ../../../secrets/gitea/mailer_password.age;
+        file = ./mailer_password.age;
         owner = config.services.gitea.user;
         group = config.services.gitea.group;
       };
       "gitea/oauth_jwt_secret" = {
-        file = ../../../secrets/gitea/oauth_jwt_secret.age;
+        file = ./oauth_jwt_secret.age;
         owner = config.services.gitea.user;
         group = config.services.gitea.group;
         path = "${config.services.gitea.customDir}/conf/oauth2_jwt_secret";
       };
       "gitea/lfs_jwt_secret" = {
-        file = ../../../secrets/gitea/lfs_jwt_secret.age;
+        file = ./lfs_jwt_secret.age;
         owner = config.services.gitea.user;
         group = config.services.gitea.group;
         path = "${config.services.gitea.customDir}/conf/lfs_jwt_secret";
       };
       "gitea/security_secret_key" = {
-        file = ../../../secrets/gitea/security_secret_key.age;
+        file = ./security_secret_key.age;
         owner = config.services.gitea.user;
         group = config.services.gitea.group;
         path = "${config.services.gitea.customDir}/conf/secret_key";
       };
       "gitea/security_internal_token" = {
-        file = ../../../secrets/gitea/security_internal_token.age;
+        file = ./security_internal_token.age;
         owner = config.services.gitea.user;
         group = config.services.gitea.group;
         path = "${config.services.gitea.customDir}/conf/internal_token";
