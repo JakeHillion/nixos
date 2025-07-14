@@ -6,6 +6,12 @@ in
 {
   options.custom.services.git = {
     enable = lib.mkEnableOption "git service (gitolite)";
+
+    backup = lib.mkOption {
+      default = true;
+      type = lib.types.bool;
+      description = "Enable backups to restic";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -28,6 +34,28 @@ in
       group = "git";
       adminPubkey = "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBOe6YuPo5/FsWaOWR4JHVrF9XQkeT4JE7TUici5ELQK/3/ngTL64JdRnVsf91piLQGyNRI3z2h18qGHQG+z55Zo= jake@merlin";
     };
+
+    # Backup configuration
+    age.secrets."backups/git/restic/128G" = lib.mkIf cfg.backup {
+      file = ../../secrets/restic/128G.age;
+      owner = config.services.gitolite.user;
+      group = config.services.gitolite.group;
+    };
+
+    services.restic.backups."git" = lib.mkIf cfg.backup {
+      user = config.services.gitolite.user;
+      repository = "rest:https://restic.neb.jakehillion.me/128G";
+      passwordFile = config.age.secrets."backups/git/restic/128G".path;
+      paths = [
+        "${config.services.gitolite.dataDir}/repositories"
+      ];
+      timerConfig = {
+        OnBootSec = "15m";
+        OnUnitInactiveSec = "10m";
+        RandomizedDelaySec = "5m";
+      };
+    };
+
 
   };
 }
