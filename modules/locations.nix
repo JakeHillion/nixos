@@ -26,6 +26,7 @@ in
           ];
           downloads = "phoenix.st.neb.jakehillion.me";
           frigate = "phoenix.st.neb.jakehillion.me";
+          git = "boron.cx.neb.jakehillion.me";
           gitea = "boron.cx.neb.jakehillion.me";
           homeassistant = "stinger.pop.neb.jakehillion.me";
           immich = "phoenix.st.neb.jakehillion.me";

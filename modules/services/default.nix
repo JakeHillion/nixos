@@ -6,6 +6,7 @@
     ./authoritative_dns.nix
     ./downloads.nix
     ./frigate.nix
+    ./git.nix
     ./gitea/default.nix
     ./homeassistant.nix
     ./immich.nix
