@@ -64,6 +64,7 @@ in
 
           directories = [
             "/etc/nixos"
+            "/var/lib/systemd/timers" # persistent timer "stamp" files, e.g. "stamp-nix-gc.timer"
           ] ++
           cfg.extraDirs ++
           (lib.lists.optional config.services.postgresql.enable config.services.postgresql.dataDir) ++
