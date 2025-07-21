@@ -130,6 +130,9 @@ in
   "secrets/sway/timewall/merlin.rig.neb.jakehillion.me.toml.age".publicKeys = jake_users ++ [ neb.rig.merlin ];
   "secrets/sway/timewall/be.lt.neb.jakehillion.me.toml.age".publicKeys = jake_users ++ [ neb.lt.be ];
 
+  # Merlin boot control
+  "hosts/merlin.rig.neb.jakehillion.me/homeassistant-api-token.age".publicKeys = jake_users ++ [ neb.rig.merlin ];
+
   # Radicale secrets
   "secrets/radicale/users.age".publicKeys = jake_users ++ [ neb.cx.boron ];
 }

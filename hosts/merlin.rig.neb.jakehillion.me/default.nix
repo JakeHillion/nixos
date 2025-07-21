@@ -99,5 +99,66 @@
         };
       };
     };
+
+    # Boot control service for Windows/NixOS selection via Home Assistant
+    age.secrets."merlin/homeassistant-api-token" = {
+      file = ./homeassistant-api-token.age;
+      owner = "root";
+      group = "root";
+    };
+
+    systemd.services.boot-control = {
+      description = "Boot Control Service - Check Home Assistant for Windows boot preference";
+      wantedBy = [ "multi-user.target" ];
+      after = [ "network-online.target" "auto_updater.service" ];
+      wants = [ "network-online.target" ];
+      requires = [ "auto_updater.service" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = false;
+        User = "root";
+        EnvironmentFile = config.age.secrets."merlin/homeassistant-api-token".path;
+      };
+      script = ''
+        set -euo pipefail
+
+        # Home Assistant API endpoint
+        HASS_URL="https://homeassistant.hillion.co.uk"
+        API_ENDPOINT="$HASS_URL/api/states/input_boolean.merlin_boot_windows"
+
+        echo "Checking Home Assistant boot preference..."
+        
+        # Query the input_boolean state with retries
+        for i in {1..5}; do
+          if RESPONSE=$(${pkgs.curl}/bin/curl -s -f -H "Authorization: Bearer $HASS_API_TOKEN" "$API_ENDPOINT" 2>/dev/null); then
+            break
+          else
+            echo "Attempt $i failed, retrying in 5 seconds..."
+            sleep 5
+          fi
+        done
+
+        if [ -z "''${RESPONSE:-}" ]; then
+          echo "Failed to reach Home Assistant after 5 attempts, skipping boot control"
+          exit 0
+        fi
+
+        # Parse the state using jq
+        STATE=$(echo "$RESPONSE" | ${pkgs.jq}/bin/jq -r '.state')
+        
+        if [ "$STATE" = "on" ]; then
+          echo "Home Assistant indicates Windows boot requested"
+          
+          # Set Windows as next boot option
+          echo "Setting Windows as next boot target..."
+          ${pkgs.systemd}/bin/bootctl set-oneshot "auto-windows"
+          
+          echo "Rebooting to Windows..."
+          ${pkgs.systemd}/bin/systemctl reboot
+        else
+          echo "Home Assistant indicates NixOS boot (state: $STATE), continuing with NixOS"
+        fi
+      '';
+    };
   };
 }

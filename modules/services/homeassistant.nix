@@ -261,6 +261,10 @@ in
               name = "Set house to sleep mode";
               icon = "mdi:sleep";
             };
+            merlin_boot_windows = {
+              name = "Boot Merlin to Windows next startup";
+              icon = "mdi:microsoft-windows";
+            };
           };
 
           switch = [
