@@ -340,17 +340,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1751804071,
-        "narHash": "sha256-qAakznngrDI2Z07EWOccVKWV0sEu6TE2sG/FXTptDHc=",
-        "ref": "refs/heads/main",
-        "rev": "9f524ead021c657034d216778b2441e81f746c02",
-        "revCount": 9,
-        "type": "git",
-        "url": "https://gitea.hillion.co.uk/JakeHillion/status.jakehillion.me.git"
+        "lastModified": 1753139053,
+        "narHash": "sha256-4YXdnQ0fc8zV8rB2KhnmMvUavd/kickBAKQj+qp9gIo=",
+        "rev": "e4aaeb2f12acee8f5cfd0c5ef3f61c13578a8747",
+        "type": "tarball",
+        "url": "https://gitea.hillion.co.uk/api/v1/repos/JakeHillion/status.jakehillion.me/archive/e4aaeb2f12acee8f5cfd0c5ef3f61c13578a8747.tar.gz"
       },
       "original": {
-        "type": "git",
-        "url": "https://gitea.hillion.co.uk/JakeHillion/status.jakehillion.me.git"
+        "type": "tarball",
+        "url": "https://gitea.hillion.co.uk/JakeHillion/status.jakehillion.me/archive/main.tar.gz"
       }
     },
     "systems": {
