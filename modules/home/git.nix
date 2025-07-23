@@ -40,6 +40,12 @@ in
             init = {
               defaultBranch = "main";
             };
+            sendemail = {
+              smtpserver = "smtp-auth.mythic-beasts.com";
+              smtpuser = "jake@hillion.co.uk";
+              smtpencryption = "tls";
+              smtpserverport = "587";
+            };
           };
         };
       };
