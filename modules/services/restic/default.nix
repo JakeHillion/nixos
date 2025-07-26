@@ -96,6 +96,14 @@ in
                 RandomizedDelaySec = "20m";
               };
             }
+            {
+              repo = "aws-eu-central-2";
+              timerConfig = {
+                OnBootSec = "30m";
+                OnUnitInactiveSec = "60m";
+                RandomizedDelaySec = "20m";
+              };
+            }
           ];
         };
 
@@ -148,6 +156,10 @@ in
         "1.6T-backblaze" = {
           environmentFile = config.age.secrets."restic/1.6T-backblaze.env".path;
         };
+
+        "aws-eu-central-2" = {
+          environmentFile = config.age.secrets."restic/aws-eu-central-2.env".path;
+        };
       };
     };
   };
@@ -155,20 +167,22 @@ in
   config = lib.mkIf cfg.enable {
     age.secrets = {
       "restic/128G.key" = {
-        file = ../../secrets/restic/128G.age;
+        file = ../../../secrets/restic/128G.age;
         owner = "restic";
         group = "restic";
       };
-      "restic/128G-wasabi.env".file = ../../secrets/restic/128G-wasabi.env.age;
-      "restic/128G-backblaze.env".file = ../../secrets/restic/128G-backblaze.env.age;
+      "restic/128G-wasabi.env".file = ../../../secrets/restic/128G-wasabi.env.age;
+      "restic/128G-backblaze.env".file = ../../../secrets/restic/128G-backblaze.env.age;
 
       "restic/1.6T.key" = {
-        file = ../../secrets/restic/1.6T.age;
+        file = ../../../secrets/restic/1.6T.age;
         owner = "restic";
         group = "restic";
       };
-      "restic/1.6T-wasabi.env".file = ../../secrets/restic/1.6T-wasabi.env.age;
-      "restic/1.6T-backblaze.env".file = ../../secrets/restic/1.6T-backblaze.env.age;
+      "restic/1.6T-wasabi.env".file = ../../../secrets/restic/1.6T-wasabi.env.age;
+      "restic/1.6T-backblaze.env".file = ../../../secrets/restic/1.6T-backblaze.env.age;
+
+      "restic/aws-eu-central-2.env".file = ./aws-eu-central-2.env.age;
     };
 
     services.restic.server = {

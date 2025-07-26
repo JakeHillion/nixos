@@ -18,7 +18,7 @@
     ./ollama.nix
     ./privatebin.nix
     ./radicale.nix
-    ./restic.nix
+    ./restic/default.nix
     ./status.nix
     ./tang.nix
     ./unifi.nix
