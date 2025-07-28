@@ -30,6 +30,12 @@ in
             type = nullOr str;
           };
 
+          packSize = lib.mkOption {
+            default = null;
+            type = lib.types.nullOr lib.types.int;
+            description = "Pack size for restic operations. If null, no pack size argument is added.";
+          };
+
           forgetConfig = lib.mkOption {
             default = null;
             type = nullOr (submodule {
@@ -64,6 +70,7 @@ in
         "128G" = {
           path = "${cfg.path}/128G";
           passwordFile = config.age.secrets."restic/128G.key".path;
+          packSize = 16;
 
           forgetConfig = {
             timerConfig = {
@@ -98,10 +105,13 @@ in
             }
             {
               repo = "aws-eu-central-2";
+              # delibarately rare uploads to makes packs more likely to be full
+              # as we can't repack on this data storage. timed to suit the
+              # cutoff for the deep archive move.
               timerConfig = {
-                OnBootSec = "30m";
-                OnUnitInactiveSec = "60m";
-                RandomizedDelaySec = "20m";
+                OnCalendar = "23:00 UTC";
+                RandomizedDelaySec = "30m";
+                Persistent = true;
               };
             }
           ];
@@ -110,6 +120,7 @@ in
         "1.6T" = {
           path = "${cfg.path}/1.6T";
           passwordFile = config.age.secrets."restic/1.6T.key".path;
+          packSize = 64;
 
           forgetConfig = {
             timerConfig = {
@@ -159,6 +170,7 @@ in
 
         "aws-eu-central-2" = {
           environmentFile = config.age.secrets."restic/aws-eu-central-2.env".path;
+          packSize = 128;
         };
       };
     };
@@ -237,6 +249,8 @@ in
 
                   ${pkgs.restic}/bin/restic forget ${lib.strings.concatStringsSep " " repo_cfg.forgetConfig.opts} \
                     --prune \
+                    --repack-small \
+                    ${lib.optionalString (repo_cfg.packSize != null) "--pack-size ${toString repo_cfg.packSize}"} \
                     --retry-lock 30m
                 '';
               }
@@ -272,6 +286,7 @@ in
 
                 ${pkgs.restic}/bin/restic copy \
                     --from-repo ${from_repo.cfg.path} \
+                    ${lib.optionalString (to_repo.cfg.packSize != null) "--pack-size ${toString to_repo.cfg.packSize}"} \
                     --retry-lock 30m
               '';
             }
