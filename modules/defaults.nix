@@ -43,6 +43,7 @@
     environment = {
       systemPackages = with pkgs; [
         agenix.packages."${system}".default
+        btop
         fd
         gh
         ghostty.terminfo
