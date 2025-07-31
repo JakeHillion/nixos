@@ -88,6 +88,14 @@ in
 
           clones = [
             {
+              repo = "1.6T";
+              timerConfig = {
+                OnBootSec = "30m";
+                OnUnitInactiveSec = "60m";
+                RandomizedDelaySec = "20m";
+              };
+            }
+            {
               repo = "128G-wasabi";
               timerConfig = {
                 OnBootSec = "30m";
