@@ -114,6 +114,17 @@ in
                 Persistent = true;
               };
             }
+            {
+              repo = "aws-us-east-1";
+              # delibarately rare uploads to makes packs more likely to be full
+              # as we can't repack on this data storage. timed to suit the
+              # cutoff for the deep archive move.
+              timerConfig = {
+                OnCalendar = "23:00 UTC";
+                RandomizedDelaySec = "30m";
+                Persistent = true;
+              };
+            }
           ];
         };
 
@@ -172,6 +183,10 @@ in
           environmentFile = config.age.secrets."restic/aws-eu-central-2.env".path;
           packSize = 128;
         };
+        "aws-us-east-1" = {
+          environmentFile = config.age.secrets."restic/aws-us-east-1.env".path;
+          packSize = 128;
+        };
       };
     };
   };
@@ -195,6 +210,7 @@ in
       "restic/1.6T-backblaze.env".file = ../../../secrets/restic/1.6T-backblaze.env.age;
 
       "restic/aws-eu-central-2.env".file = ./aws-eu-central-2.env.age;
+      "restic/aws-us-east-1.env".file = ./aws-us-east-1.env.age;
     };
 
     services.restic.server = {

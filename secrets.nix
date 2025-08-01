@@ -69,6 +69,7 @@ in
   "secrets/restic/1.6T-backblaze.env.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
 
   "modules/services/restic/aws-eu-central-2.env.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
+  "modules/services/restic/aws-us-east-1.env.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
 
   "secrets/git/git_backups_ecdsa.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
   "secrets/git/git_backups_remotes.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
