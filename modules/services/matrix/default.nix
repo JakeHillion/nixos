@@ -22,8 +22,8 @@ in
     services.matrix-synapse.dataDir = lib.mkIf config.custom.impermanence.enable "${config.custom.impermanence.base}/system/var/lib/matrix-synapse";
 
     age.secrets = {
-      "backups/matrix/restic/128G" = lib.mkIf cfg.backup {
-        file = ../../../secrets/restic/128G.age;
+      "backups/matrix/restic/mig29" = lib.mkIf cfg.backup {
+        file = ../../../secrets/restic/mig29.age;
       };
 
       "matrix/matrix.hillion.co.uk/macaroon_secret_key" = {
@@ -73,8 +73,8 @@ in
           OnCalendar = "03:00";
           RandomizedDelaySec = "60m";
         };
-        repository = "rest:https://restic.neb.jakehillion.me/128G";
-        passwordFile = config.age.secrets."backups/matrix/restic/128G".path;
+        repository = "rest:https://restic.neb.jakehillion.me/mig29";
+        passwordFile = config.age.secrets."backups/matrix/restic/mig29".path;
         paths = [
           "${config.services.postgresqlBackup.location}/matrix-synapse.sql"
           config.services.matrix-synapse.dataDir

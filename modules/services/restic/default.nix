@@ -67,9 +67,9 @@ in
       });
 
       default = {
-        "128G" = {
-          path = "${cfg.path}/128G";
-          passwordFile = config.age.secrets."restic/128G.key".path;
+        "mig29" = {
+          path = "${cfg.path}/mig29";
+          passwordFile = config.age.secrets."restic/mig29.key".path;
           packSize = 16;
 
           forgetConfig = {
@@ -88,23 +88,7 @@ in
 
           clones = [
             {
-              repo = "1.6T";
-              timerConfig = {
-                OnBootSec = "30m";
-                OnUnitInactiveSec = "60m";
-                RandomizedDelaySec = "20m";
-              };
-            }
-            {
-              repo = "128G-wasabi";
-              timerConfig = {
-                OnBootSec = "30m";
-                OnUnitInactiveSec = "60m";
-                RandomizedDelaySec = "20m";
-              };
-            }
-            {
-              repo = "128G-backblaze";
+              repo = "b52";
               timerConfig = {
                 OnBootSec = "30m";
                 OnUnitInactiveSec = "60m";
@@ -136,9 +120,9 @@ in
           ];
         };
 
-        "1.6T" = {
-          path = "${cfg.path}/1.6T";
-          passwordFile = config.age.secrets."restic/1.6T.key".path;
+        "b52" = {
+          path = "${cfg.path}/b52";
+          passwordFile = config.age.secrets."restic/b52.key".path;
           packSize = 64;
 
           forgetConfig = {
@@ -155,6 +139,7 @@ in
 
           clones = [
             {
+              # TODO: remove me after enabling AWS
               repo = "1.6T-wasabi";
               timerConfig = {
                 OnBootSec = "30m";
@@ -163,6 +148,7 @@ in
               };
             }
             {
+              # TODO: remove me after enabling AWS
               repo = "1.6T-backblaze";
               timerConfig = {
                 OnBootSec = "30m";
@@ -173,15 +159,8 @@ in
           ];
         };
 
-        "128G-wasabi" = {
-          environmentFile = config.age.secrets."restic/128G-wasabi.env".path;
-        };
         "1.6T-wasabi" = {
           environmentFile = config.age.secrets."restic/1.6T-wasabi.env".path;
-        };
-
-        "128G-backblaze" = {
-          environmentFile = config.age.secrets."restic/128G-backblaze.env".path;
         };
         "1.6T-backblaze" = {
           environmentFile = config.age.secrets."restic/1.6T-backblaze.env".path;
@@ -201,24 +180,23 @@ in
 
   config = lib.mkIf cfg.enable {
     age.secrets = {
-      "restic/128G.key" = {
-        file = ../../../secrets/restic/128G.age;
+      "restic/mig29.key" = {
+        file = ../../../secrets/restic/mig29.age;
         owner = "restic";
         group = "restic";
       };
-      "restic/128G-wasabi.env".file = ../../../secrets/restic/128G-wasabi.env.age;
-      "restic/128G-backblaze.env".file = ../../../secrets/restic/128G-backblaze.env.age;
 
-      "restic/1.6T.key" = {
-        file = ../../../secrets/restic/1.6T.age;
+      "restic/b52.key" = {
+        file = ../../../secrets/restic/b52.age;
         owner = "restic";
         group = "restic";
       };
-      "restic/1.6T-wasabi.env".file = ../../../secrets/restic/1.6T-wasabi.env.age;
-      "restic/1.6T-backblaze.env".file = ../../../secrets/restic/1.6T-backblaze.env.age;
 
       "restic/aws-eu-central-2.env".file = ./aws-eu-central-2.env.age;
       "restic/aws-us-east-1.env".file = ./aws-us-east-1.env.age;
+
+      "restic/1.6T-wasabi.env".file = ../../../secrets/restic/1.6T-wasabi.env.age;
+      "restic/1.6T-backblaze.env".file = ../../../secrets/restic/1.6T-backblaze.env.age;
     };
 
     services.restic.server = {

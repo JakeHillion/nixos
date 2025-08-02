@@ -9,8 +9,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    age.secrets."immich/restic/1.6T.key" = {
-      file = ../../secrets/restic/1.6T.age;
+    age.secrets."immich/restic/b52.key" = {
+      file = ../../secrets/restic/b52.age;
       owner = "immich";
       group = "immich";
     };
@@ -34,9 +34,9 @@ in
     };
 
     services.restic.backups."immich" = {
-      repository = "rest:https://restic.neb.jakehillion.me/1.6T";
+      repository = "rest:https://restic.neb.jakehillion.me/b52";
       user = "immich";
-      passwordFile = config.age.secrets."immich/restic/1.6T.key".path;
+      passwordFile = config.age.secrets."immich/restic/b52.key".path;
 
       timerConfig = {
         OnBootSec = "60m";

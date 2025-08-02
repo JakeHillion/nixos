@@ -36,16 +36,16 @@ in
     };
 
     # Backup configuration
-    age.secrets."backups/git/restic/128G" = lib.mkIf cfg.backup {
-      file = ../../secrets/restic/128G.age;
+    age.secrets."backups/git/restic/mig29" = lib.mkIf cfg.backup {
+      file = ../../secrets/restic/mig29.age;
       owner = config.services.gitolite.user;
       group = config.services.gitolite.group;
     };
 
     services.restic.backups."git" = lib.mkIf cfg.backup {
       user = config.services.gitolite.user;
-      repository = "rest:https://restic.neb.jakehillion.me/128G";
-      passwordFile = config.age.secrets."backups/git/restic/128G".path;
+      repository = "rest:https://restic.neb.jakehillion.me/mig29";
+      passwordFile = config.age.secrets."backups/git/restic/mig29".path;
       paths = [
         "${config.services.gitolite.dataDir}/repositories"
       ];

@@ -60,16 +60,14 @@ in
   "modules/services/matrix/matrix.hillion.co.uk/syncv3_secret.age".publicKeys = jake_users ++ [ neb.cx.boron ];
 
   # Backups Secrets
-  "secrets/restic/128G.age".publicKeys = jake_users ++ [ neb.st.phoenix neb.cx.boron neb.pop.stinger ];
-  "secrets/restic/128G-wasabi.env.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
-  "secrets/restic/128G-backblaze.env.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
-
-  "secrets/restic/1.6T.age".publicKeys = jake_users ++ [ neb.st.phoenix neb.home.router neb.pop.stinger ];
-  "secrets/restic/1.6T-wasabi.env.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
-  "secrets/restic/1.6T-backblaze.env.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
+  "secrets/restic/mig29.age".publicKeys = jake_users ++ [ neb.st.phoenix neb.cx.boron neb.pop.stinger ];
+  "secrets/restic/b52.age".publicKeys = jake_users ++ [ neb.st.phoenix neb.home.router neb.pop.stinger ];
 
   "modules/services/restic/aws-eu-central-2.env.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
   "modules/services/restic/aws-us-east-1.env.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
+
+  "secrets/restic/1.6T-wasabi.env.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
+  "secrets/restic/1.6T-backblaze.env.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
 
   "secrets/git/git_backups_ecdsa.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
   "secrets/git/git_backups_remotes.age".publicKeys = jake_users ++ [ neb.st.phoenix ];

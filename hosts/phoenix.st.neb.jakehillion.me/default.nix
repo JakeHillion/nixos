@@ -130,14 +130,14 @@ in
       };
     };
 
-    age.secrets."restic/wallpapers/1.6T".file = ../../secrets/restic/1.6T.age;
+    age.secrets."restic/wallpapers/b52".file = ../../secrets/restic/b52.age;
     services.restic.backups."wallpapers" = {
       timerConfig = {
         OnCalendar = "03:00";
         RandomizedDelaySec = "60m";
       };
-      repository = "rest:https://restic.neb.jakehillion.me/1.6T";
-      passwordFile = config.age.secrets."restic/wallpapers/1.6T".path;
+      repository = "rest:https://restic.neb.jakehillion.me/b52";
+      passwordFile = config.age.secrets."restic/wallpapers/b52".path;
       paths = [ "/${zpool_name}/media/wallpapers" ];
     };
 

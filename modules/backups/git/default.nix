@@ -17,7 +17,7 @@ in
   config = lib.mkIf cfg.enable {
     age.secrets."git/git_backups_ecdsa".file = ../../../secrets/git/git_backups_ecdsa.age;
     age.secrets."git/git_backups_remotes".file = ../../../secrets/git/git_backups_remotes.age;
-    age.secrets."git-backups/restic/128G".file = ../../../secrets/restic/128G.age;
+    age.secrets."git-backups/restic/mig29".file = ../../../secrets/restic/mig29.age;
 
     systemd.services.backup-git = {
       description = "Git repo backup service.";
@@ -31,7 +31,7 @@ in
         LoadCredential = [
           "id_ecdsa:${config.age.secrets."git/git_backups_ecdsa".path}"
           "repos_file:${config.age.secrets."git/git_backups_remotes".path}"
-          "restic_password:${config.age.secrets."git-backups/restic/128G".path}"
+          "restic_password:${config.age.secrets."git-backups/restic/mig29".path}"
         ];
       };
 
@@ -73,7 +73,7 @@ in
 
         # Backup to Restic
         ${pkgs.restic}/bin/restic \
-          -r rest:https://restic.neb.jakehillion.me/128G \
+          -r rest:https://restic.neb.jakehillion.me/mig29 \
           --cache-dir .restic --exclude .restic \
            backup .
 

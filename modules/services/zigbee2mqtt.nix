@@ -59,15 +59,15 @@ in
     };
 
 
-    age.secrets."restic/zigbee2mqtt/1.6T.key" = lib.mkIf cfg.backup {
-      file = ../../secrets/restic/1.6T.age;
+    age.secrets."restic/zigbee2mqtt/b52.key" = lib.mkIf cfg.backup {
+      file = ../../secrets/restic/b52.age;
       owner = "zigbee2mqtt";
     };
 
     services.restic.backups."zigbee2mqtt" = lib.mkIf cfg.backup {
-      repository = "rest:https://restic.neb.jakehillion.me/1.6T";
+      repository = "rest:https://restic.neb.jakehillion.me/b52";
       user = "zigbee2mqtt";
-      passwordFile = config.age.secrets."restic/zigbee2mqtt/1.6T.key".path;
+      passwordFile = config.age.secrets."restic/zigbee2mqtt/b52.key".path;
 
       timerConfig = {
         OnBootSec = "15m";

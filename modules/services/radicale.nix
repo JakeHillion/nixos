@@ -23,8 +23,8 @@ in
   config = lib.mkIf cfg.enable {
 
     age.secrets = {
-      "backups/radicale/restic/128G" = lib.mkIf cfg.backup {
-        file = ../../secrets/restic/128G.age;
+      "backups/radicale/restic/mig29" = lib.mkIf cfg.backup {
+        file = ../../secrets/restic/mig29.age;
         owner = "radicale";
         group = "radicale";
       };
@@ -47,8 +47,8 @@ in
           OnUnitInactiveSec = "30m";
           RandomizedDelaySec = "5m";
         };
-        repository = "rest:https://restic.neb.jakehillion.me/128G";
-        passwordFile = config.age.secrets."backups/radicale/restic/128G".path;
+        repository = "rest:https://restic.neb.jakehillion.me/mig29";
+        passwordFile = config.age.secrets."backups/radicale/restic/mig29".path;
         paths = [
           config.services.radicale.settings.storage.filesystem_folder
         ];

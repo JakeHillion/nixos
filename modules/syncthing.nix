@@ -105,13 +105,13 @@ in
 
     (lib.mkIf cfg.backups.enable {
       age.secrets = {
-        "restic/syncthing/128G.key" = {
-          file = ../secrets/restic/128G.age;
+        "restic/syncthing/mig29.key" = {
+          file = ../secrets/restic/mig29.age;
           owner = "jake";
           group = "users";
         };
-        "restic/syncthing/1.6T.key" = {
-          file = ../secrets/restic/1.6T.age;
+        "restic/syncthing/b52.key" = {
+          file = ../secrets/restic/b52.age;
           owner = "jake";
           group = "users";
         };
@@ -125,10 +125,10 @@ in
           ];
         in
         {
-          "syncthing-128G" = {
-            repository = "rest:https://restic.neb.jakehillion.me/128G";
+          "syncthing-mig29" = {
+            repository = "rest:https://restic.neb.jakehillion.me/mig29";
             user = "jake";
-            passwordFile = config.age.secrets."restic/syncthing/128G.key".path;
+            passwordFile = config.age.secrets."restic/syncthing/mig29.key".path;
 
             timerConfig = {
               OnBootSec = "10m";
@@ -142,10 +142,10 @@ in
               "${cfg.baseDir}/*/.stfolder"
             ] ++ rareBackups;
           };
-          "syncthing-1.6T" = {
-            repository = "rest:https://restic.neb.jakehillion.me/1.6T";
+          "syncthing-b52" = {
+            repository = "rest:https://restic.neb.jakehillion.me/b52";
             user = "jake";
-            passwordFile = config.age.secrets."restic/syncthing/1.6T.key".path;
+            passwordFile = config.age.secrets."restic/syncthing/b52.key".path;
 
             timerConfig = {
               OnBootSec = "30m";

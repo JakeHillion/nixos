@@ -17,13 +17,13 @@ in
     services.home-assistant.configDir = lib.mkIf config.custom.impermanence.enable (lib.mkOverride 999 "/data/home-assistant");
 
     age.secrets = {
-      "backups/homeassistant/restic/128G" = lib.mkIf cfg.backup {
-        file = ../../secrets/restic/128G.age;
+      "backups/homeassistant/restic/mig29" = lib.mkIf cfg.backup {
+        file = ../../secrets/restic/mig29.age;
         owner = "hass";
         group = "hass";
       };
-      "backups/homeassistant/restic/1.6T" = lib.mkIf cfg.backup {
-        file = ../../secrets/restic/1.6T.age;
+      "backups/homeassistant/restic/b52" = lib.mkIf cfg.backup {
+        file = ../../secrets/restic/b52.age;
         owner = "postgres";
         group = "postgres";
       };
@@ -50,8 +50,8 @@ in
             OnCalendar = "03:00";
             RandomizedDelaySec = "60m";
           };
-          repository = "rest:https://restic.neb.jakehillion.me/128G";
-          passwordFile = config.age.secrets."backups/homeassistant/restic/128G".path;
+          repository = "rest:https://restic.neb.jakehillion.me/mig29";
+          passwordFile = config.age.secrets."backups/homeassistant/restic/mig29".path;
           paths = [
             config.services.home-assistant.configDir
           ];
@@ -62,8 +62,8 @@ in
             OnCalendar = "03:00";
             RandomizedDelaySec = "60m";
           };
-          repository = "rest:https://restic.neb.jakehillion.me/1.6T";
-          passwordFile = config.age.secrets."backups/homeassistant/restic/1.6T".path;
+          repository = "rest:https://restic.neb.jakehillion.me/b52";
+          passwordFile = config.age.secrets."backups/homeassistant/restic/b52".path;
           paths = [
             "${config.services.postgresqlBackup.location}/homeassistant.sql"
           ];
