@@ -58,6 +58,7 @@
           enable = true;
           tokenSecret = ../../modules/services/gitea/actions/boron.age;
         };
+        zookeeper.enable = true;
       };
     };
 

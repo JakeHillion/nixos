@@ -24,5 +24,6 @@
     ./unifi.nix
     ./version_tracker.nix
     ./zigbee2mqtt.nix
+    ./zookeeper.nix
   ];
 }

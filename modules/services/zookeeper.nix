@@ -1,0 +1,65 @@
+{ config, lib, ... }:
+
+let
+  cfg = config.custom.services.zookeeper;
+in
+{
+  options.custom.services.zookeeper = {
+    enable = lib.mkEnableOption "zookeeper";
+
+    servers = lib.mkOption {
+      readOnly = true;
+      type = with lib.types; attrsOf (nullOr str);
+      description = "Map from ZooKeeper server ID to hostname. Use null for removed servers.";
+
+      default = {
+        "1" = "boron.cx.neb.jakehillion.me";
+        "2" = "warlock.cx.neb.jakehillion.me";
+        "3" = "li.pop.neb.jakehillion.me";
+      };
+    };
+  };
+
+  config = lib.mkIf cfg.enable (
+    let
+      # Get active servers from the ID mapping (filter out nulls)
+      activeServers = lib.filterAttrs (id: hostname: hostname != null) cfg.servers;
+
+      # Function to lookup FQDN in DNS config
+      lookupFqdn = fqdn: lib.attrsets.attrByPath (lib.reverseList (lib.splitString "." fqdn)) null config.custom.dns.authoritative.ipv4;
+
+      # Find the current server ID by looking up hostname
+      currentId = lib.lists.findFirst
+        (id: cfg.servers.${id} == config.networking.fqdn)
+        (throw "Host ${config.networking.fqdn} not found in zookeeper servers")
+        (lib.attrNames cfg.servers);
+
+      # Generate server list for ZooKeeper configuration using Nebula IPs
+      servers = lib.concatStringsSep "\n" (
+        lib.mapAttrsToList
+          (id: hostname:
+            let nebulaIp = lookupFqdn hostname;
+            in "server.${id}=${nebulaIp}:2888:3888")
+          activeServers
+      );
+    in
+    {
+      services.zookeeper = {
+        enable = true;
+        id = lib.toInt currentId;
+        dataDir = lib.mkIf config.custom.impermanence.enable
+          "${config.custom.impermanence.base}/system/var/lib/zookeeper";
+
+        inherit servers;
+
+        extraConf = ''
+          clientPortAddress=${config.custom.dns.nebula.ipv4}
+
+          tickTime=2000
+          initLimit=10
+          syncLimit=5
+        '';
+      };
+    }
+  );
+}
