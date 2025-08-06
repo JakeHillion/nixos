@@ -9,6 +9,7 @@
     ./git.nix
     ./gitea/default.nix
     ./homeassistant.nix
+    ./homebox.nix
     ./immich.nix
     ./isponsorblocktv.nix
     ./jellyfin.nix

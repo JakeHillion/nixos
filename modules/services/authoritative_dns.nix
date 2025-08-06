@@ -36,6 +36,7 @@ in
             attic                             21600 CNAME ${locations.services.attic}.
             ca                                21600 CNAME warlock.cx.neb.jakehillion.me.
             frigate                           21600 CNAME ${locations.services.frigate}.
+            homebox                           21600 CNAME ${locations.services.homebox}.
             immich                            21600 CNAME ${locations.services.immich}.
             ollama                            21600 CNAME ${locations.services.ollama}.
             privatebin                        21600 CNAME ${locations.services.privatebin}.
