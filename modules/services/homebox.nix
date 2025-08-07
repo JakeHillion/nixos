@@ -11,8 +11,6 @@ in
   config = lib.mkIf cfg.enable {
     age.secrets."homebox/restic/mig29.key" = {
       file = ../../secrets/restic/mig29.age;
-      owner = "homebox";
-      group = "homebox";
     };
 
     users.users.homebox.uid = config.ids.uids.homebox;
@@ -31,18 +29,24 @@ in
       };
     };
 
+    services.postgresqlBackup = {
+      enable = true;
+      compression = "none"; # for better diffing
+      databases = [ "homebox" ];
+    };
+
     services.restic.backups."homebox" = {
-      repository = "rest:https://restic.neb.jakehillion.me/mig29";
-      user = "homebox";
-      passwordFile = config.age.secrets."homebox/restic/mig29.key".path;
-
+      user = "root";
       timerConfig = {
-        OnBootSec = "60m";
-        OnUnitInactiveSec = "30m";
-        RandomizedDelaySec = "5m";
+        OnCalendar = "03:00";
+        RandomizedDelaySec = "60m";
       };
-
-      paths = [ config.services.homebox.settings.HBOX_STORAGE_DATA ];
+      repository = "rest:https://restic.neb.jakehillion.me/mig29";
+      passwordFile = config.age.secrets."homebox/restic/mig29.key".path;
+      paths = [
+        "${config.services.postgresqlBackup.location}/homebox.sql"
+        config.services.homebox.settings.HBOX_STORAGE_DATA
+      ];
     };
 
     services.homebox = {
