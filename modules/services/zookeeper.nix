@@ -85,6 +85,7 @@ in
           inherit servers;
 
           extraConf = ''
+            admin.serverPort=0
             clientPortAddress=${config.custom.dns.nebula.ipv4}
 
             tickTime=2000
