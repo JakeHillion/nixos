@@ -51,6 +51,7 @@ in
           ];
           unifi = "boron.cx.neb.jakehillion.me";
           version_tracker = [ "boron.cx.neb.jakehillion.me" ];
+          zigbee2mqtt = "stinger.pop.neb.jakehillion.me";
         };
       };
     }

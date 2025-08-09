@@ -91,7 +91,7 @@ in
   "secrets/version_tracker/ssh.key.age".publicKeys = jake_users ++ [ neb.cx.boron ];
 
   # Home Automation secrets
-  "secrets/mqtt/zigbee2mqtt.age".publicKeys = jake_users ++ [ neb.home.router ];
+  "secrets/mqtt/zigbee2mqtt.age".publicKeys = jake_users ++ [ neb.pop.stinger ];
   "secrets/mqtt/homeassistant.age".publicKeys = jake_users ++ [ ];
 
   # Wireguard Secrets

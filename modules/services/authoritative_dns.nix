@@ -47,7 +47,7 @@ in
             wallpapers                        21600 CNAME phoenix.st.neb.jakehillion.me.
 
             mqtt.home                         21600 CNAME ${locations.services.mosquitto}.
-            zigbee2mqtt.home                  21600 CNAME router.home.neb.jakehillion.me.
+            zigbee2mqtt.home                  21600 CNAME ${locations.services.zigbee2mqtt}.
             graphs.cyclone.gw                 21600 CNAME cyclone.gw.neb.jakehillion.me.
 
             charlie.kvm                       21600 CNAME cyclone.gw.neb.jakehillion.me.

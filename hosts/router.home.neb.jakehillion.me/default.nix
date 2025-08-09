@@ -43,8 +43,5 @@
 
     ## Run a persistent iperf3 server
     services.iperf3.enable = true;
-
-    ## Zigbee2Mqtt
-    custom.services.zigbee2mqtt.enable = true;
   };
 }
