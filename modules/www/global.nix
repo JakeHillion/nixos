@@ -27,6 +27,7 @@ in
       builtins.listToAttrs (builtins.map mkSecret [
         "hillion.co.uk"
         "blog.hillion.co.uk"
+        "git.hillion.co.uk"
         "gitea.hillion.co.uk"
         "homeassistant.hillion.co.uk"
         "links.hillion.co.uk"
@@ -109,6 +110,13 @@ in
         "status.jakehillion.me".extraConfig = ''
           tls ${./certs/status.jakehillion.me.pem} ${config.age.secrets."caddy/status.jakehillion.me.pem".path}
           reverse_proxy https://status.neb.jakehillion.me {
+            header_up Host {http.reverse_proxy.upstream.hostport}
+          }
+        '';
+
+        "git.hillion.co.uk".extraConfig = ''
+          tls ${./certs/git.hillion.co.uk.pem} ${config.age.secrets."caddy/git.hillion.co.uk.pem".path}
+          reverse_proxy https://cgit.git.neb.jakehillion.me {
             header_up Host {http.reverse_proxy.upstream.hostport}
           }
         '';

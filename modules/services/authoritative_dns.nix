@@ -54,6 +54,8 @@ in
             hammer.kvm                        21600 CNAME cyclone.gw.neb.jakehillion.me.
             kvm.phoenix.st                    21600 CNAME cyclone.gw.neb.jakehillion.me.
 
+            cgit.git                          21600 CNAME ${locations.services.git}.
+
             deluge.downloads                  21600 CNAME ${locations.services.downloads}.
             prowlarr.downloads                21600 CNAME ${locations.services.downloads}.
             radarr.downloads                  21600 CNAME ${locations.services.downloads}.
