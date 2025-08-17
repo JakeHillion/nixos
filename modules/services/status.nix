@@ -20,12 +20,18 @@ in
       wantedBy = [ "multi-user.target" ];
       after = [ "network.target" ];
 
+      environment = {
+        RUST_LOG = "info";
+      };
+
       serviceConfig = {
         Type = "exec";
         DynamicUser = true;
         ExecStart = "${status-jakehillion-me.packages.${pkgs.system}.default}/bin/status-jakehillion-me --port ${toString cfg.port}";
         Restart = "always";
-        RestartSec = "5s";
+        RestartSec = "1s";
+        StartLimitIntervalSec = "60s";
+        StartLimitBurst = "5";
 
         # Security
         NoNewPrivileges = true;
