@@ -27,10 +27,9 @@
       };
     };
 
-    # BeeLink GTi14 has stability issues on >=6.12 (and probably a bit before).
-    # Pin to the last LTS for now, even though the performance is quite bad on
-    # this hardware.
-    boot.kernelPackages = pkgs.linuxPackages_6_6;
+    # BeeLink GTi14 has stability issues on 6.12 (and probably a bit before).
+    # Pin to the latest kernel for now, as the current default (LTS) is 6.12.
+    boot.kernelPackages = pkgs.linuxPackages_latest;
 
     custom.defaults = true;
     custom.locations.autoServe = true;
