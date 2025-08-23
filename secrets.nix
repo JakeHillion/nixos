@@ -111,6 +111,7 @@ in
 
   # HomeAssistant Secrets
   "secrets/homeassistant/secrets.yaml.age".publicKeys = jake_users ++ [ neb.pop.stinger ];
+  "modules/services/homeassistant/pdu_password.age".publicKeys = [ neb.pop.stinger ];
 
   # Web certificates
   "secrets/certs/hillion.co.uk.pem.age".publicKeys = jake_users ++ [ neb.cx.boron ];

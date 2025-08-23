@@ -1,0 +1,100 @@
+#!/usr/bin/env -S nix shell nixpkgs#expect nixpkgs#inetutils --command expect
+
+# PDU Switch Control Script
+# Usage: pdu_switch_control.expect <switch_number> <action> <password>
+# switch_number: 1-8 (outlet number on PDU)
+# action: on|off|reboot
+# password: PDU password
+
+if {$argc != 3} {
+    puts "Usage: $argv0 <switch_number> <action> <password>"
+    puts "  switch_number: 1-8 (outlet number)"
+    puts "  action: on|off|reboot"
+    puts "  password: PDU password"
+    exit 1
+}
+
+set switch_number [lindex $argv 0]
+set action [lindex $argv 1]
+set password [lindex $argv 2]
+
+# Validate switch number
+if {$switch_number < 1 || $switch_number > 8} {
+    puts "Error: switch_number must be between 1 and 8"
+    exit 1
+}
+
+# Validate action and set control option
+switch $action {
+    "on" {
+        set control_option "1"
+    }
+    "off" {
+        set control_option "2"
+    }
+    "reboot" {
+        set control_option "3"
+    }
+    default {
+        puts "Error: action must be on, off, or reboot"
+        exit 1
+    }
+}
+
+set timeout 20
+
+spawn telnet 10.64.50.24
+
+expect "User Name : "
+send "ap7921\r"
+
+expect "Password  : "
+send "$password\r"
+
+# 1- Device Manager
+expect "> "
+send "1\r"
+
+# 2- Outlet Management
+expect "> "
+send "2\r"
+
+# 1- Outlet Control/Configuration
+expect "> "
+send "1\r"
+
+# Select the specified outlet (switch_number)
+expect "> "
+send "$switch_number\r"
+
+# 1- Control Outlet
+expect "> "
+send "1\r"
+
+# Send the control option (1=On, 2=Off, 3=Reboot)
+expect "> "
+send "$control_option\r"
+
+# Enter 'YES' to continue or <ENTER> to cancel
+expect "Enter 'YES' to continue or <ENTER> to cancel : "
+send "YES\r"
+expect "Press <ENTER> to continue..."
+send "\r"
+
+# Navigate back (ESC * 5)
+expect "> "
+send "\x1b"
+expect "> "
+send "\x1b"
+expect "> "
+send "\x1b"
+expect "> "
+send "\x1b"
+expect "> "
+send "\x1b"
+
+# 4- Logout
+expect "> "
+send "4\r"
+
+puts "Successfully sent $action command to outlet $switch_number"

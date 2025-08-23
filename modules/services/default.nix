@@ -7,19 +7,19 @@
     ./downloads.nix
     ./frigate.nix
     ./git.nix
-    ./gitea/default.nix
-    ./homeassistant.nix
+    ./gitea
+    ./homeassistant
     ./homebox.nix
     ./immich.nix
     ./isponsorblocktv.nix
     ./jellyfin.nix
-    ./mastodon/default.nix
-    ./matrix/default.nix
+    ./mastodon
+    ./matrix
     ./mosquitto.nix
     ./ollama.nix
     ./privatebin.nix
     ./radicale.nix
-    ./restic/default.nix
+    ./restic
     ./status.nix
     ./tang.nix
     ./unifi.nix

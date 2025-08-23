@@ -18,19 +18,25 @@ in
 
     age.secrets = {
       "backups/homeassistant/restic/mig29" = lib.mkIf cfg.backup {
-        file = ../../secrets/restic/mig29.age;
+        file = ../../../secrets/restic/mig29.age;
         owner = "hass";
         group = "hass";
       };
       "backups/homeassistant/restic/b52" = lib.mkIf cfg.backup {
-        file = ../../secrets/restic/b52.age;
+        file = ../../../secrets/restic/b52.age;
         owner = "postgres";
         group = "postgres";
       };
 
       "homeassistant/secrets.yaml" = {
-        file = ../../secrets/homeassistant/secrets.yaml.age;
+        file = ../../../secrets/homeassistant/secrets.yaml.age;
         path = "${config.services.home-assistant.configDir}/secrets.yaml";
+        owner = "hass";
+        group = "hass";
+      };
+
+      "homeassistant/pdu_password" = {
+        file = ./pdu_password.age;
         owner = "hass";
         group = "hass";
       };
@@ -275,6 +281,67 @@ in
               host = "10.64.50.28";
             }
           ];
+
+          command_line =
+            let
+              pduWrapper = pkgs.writeShellScript "pdu_control_wrapper" ''
+                set -euo pipefail
+
+                # Shell wrapper for PDU control that reads the password and calls the expect script
+                # Usage: pdu_control_wrapper.sh <outlet_number> <on|off>
+
+                if [ $# -ne 2 ]; then
+                    echo "Usage: $0 <outlet_number> <on|off>" >&2
+                    exit 1
+                fi
+
+                outlet_number="$1"
+                action="$2"
+
+                # Add inetutils to PATH for telnet command
+                export PATH="${pkgs.inetutils}/bin:$PATH"
+
+                # Call the expect script using expect directly
+                exec ${pkgs.expect}/bin/expect ${./pdu_switch_control.expect} "$outlet_number" "$action" "$(cat ${config.age.secrets."homeassistant/pdu_password".path})"
+              '';
+            in
+            [
+              {
+                switch = {
+                  name = "Phoenix ST";
+                  command_on = "${pduWrapper} 1 on";
+                  command_off = "${pduWrapper} 1 off";
+                };
+              }
+              {
+                switch = {
+                  name = "Rooster CX";
+                  command_on = "${pduWrapper} 2 on";
+                  command_off = "${pduWrapper} 2 off";
+                };
+              }
+              {
+                switch = {
+                  name = "Stinger POP";
+                  command_on = "${pduWrapper} 3 on";
+                  command_off = "${pduWrapper} 3 off";
+                };
+              }
+              {
+                switch = {
+                  name = "Warlock CX";
+                  command_on = "${pduWrapper} 4 on";
+                  command_off = "${pduWrapper} 4 off";
+                };
+              }
+              {
+                switch = {
+                  name = "Theon Storage";
+                  command_on = "${pduWrapper} 5 on";
+                  command_off = "${pduWrapper} 5 off";
+                };
+              }
+            ];
 
           # UI managed expansions
           automation = "!include automations.yaml";
