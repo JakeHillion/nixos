@@ -83,6 +83,7 @@ in
                 };
                 st = {
                   phoenix = "172.20.0.11";
+                  sundown = "172.20.0.19";
                 };
                 storage = {
                   theon = "172.20.0.12";
