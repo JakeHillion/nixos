@@ -38,6 +38,12 @@
 
     custom.auto_updater.allowReboot = true;
 
+    custom.sched_ext = {
+      enable = true;
+      scheduler = "scx_lavd";
+    };
+    services.scx.extraArgs = [ "--powersave" ];
+
     custom.impermanence.enable = true;
   };
 }
