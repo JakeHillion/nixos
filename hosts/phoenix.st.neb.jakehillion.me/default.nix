@@ -117,11 +117,11 @@ in
     services.caddy = {
       enable = true;
 
-      virtualHosts."wallpapers.neb.jakehillion.me" = {
+      virtualHosts."wallpapers.${config.ogygia.domain}" = {
         listenAddresses = [ config.custom.dns.nebula.ipv4 ];
         extraConfig = ''
           tls {
-            ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
+            ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
           }
 
           root * /${zpool_name}/media/wallpapers
@@ -136,7 +136,7 @@ in
         OnCalendar = "03:00";
         RandomizedDelaySec = "60m";
       };
-      repository = "rest:https://restic.neb.jakehillion.me/b52";
+      repository = "rest:https://restic.${config.ogygia.domain}/b52";
       passwordFile = config.age.secrets."restic/wallpapers/b52".path;
       paths = [ "/${zpool_name}/media/wallpapers" ];
     };

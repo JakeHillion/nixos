@@ -25,13 +25,13 @@ in
     services.caddy = {
       enable = true;
 
-      virtualHosts."frigate.neb.jakehillion.me" = {
+      virtualHosts."frigate.${config.ogygia.domain}" = {
         listenAddresses = [ config.custom.dns.nebula.ipv4 ];
         extraConfig = ''
           reverse_proxy unix///run/nginx-frigate/nginx.sock
 
           tls {
-            ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
+            ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
           }
         '';
       };
@@ -88,14 +88,14 @@ in
           users.groups.frigate.gid = hostConfig.ids.gids.frigate;
 
           users.users.nginx.extraGroups = [ "frigate" ];
-          services.nginx.virtualHosts."frigate.neb.jakehillion.me".listen = lib.mkForce [
+          services.nginx.virtualHosts."frigate.${hostConfig.ogygia.domain}".listen = lib.mkForce [
             { addr = "unix:/run/nginx-frigate/nginx.sock"; }
           ];
 
           services.frigate = {
             enable = true;
             package = pkgs.frigate;
-            hostname = "frigate.neb.jakehillion.me";
+            hostname = "frigate.${hostConfig.ogygia.domain}";
 
             settings = {
               auth.enabled = false;

@@ -30,7 +30,7 @@ in
             devices = lib.attrsets.mapAttrs
               (name: value: {
                 id = value;
-                addresses = [ "tcp://${name}.neb.jakehillion.me:22000" ];
+                addresses = [ "tcp://${name}.${config.ogygia.domain}:22000" ];
               })
               {
                 "be.lt" = "QKNSUEX-XGJIDH3-5DM5MFY-7ES5AVO-ERJ447V-RKS553C-3PGMIJI-Y4YRZAF";
@@ -126,7 +126,7 @@ in
         in
         {
           "syncthing-mig29" = {
-            repository = "rest:https://restic.neb.jakehillion.me/mig29";
+            repository = "rest:https://restic.${config.ogygia.domain}/mig29";
             user = "jake";
             passwordFile = config.age.secrets."restic/syncthing/mig29.key".path;
 
@@ -143,7 +143,7 @@ in
             ] ++ rareBackups;
           };
           "syncthing-b52" = {
-            repository = "rest:https://restic.neb.jakehillion.me/b52";
+            repository = "rest:https://restic.${config.ogygia.domain}/b52";
             user = "jake";
             passwordFile = config.age.secrets."restic/syncthing/b52.key".path;
 

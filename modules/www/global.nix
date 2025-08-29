@@ -92,7 +92,7 @@ in
         '';
         "pastes.hillion.co.uk".extraConfig = ''
           tls ${./certs/pastes.hillion.co.uk.pem} ${config.age.secrets."caddy/pastes.hillion.co.uk.pem".path}
-          reverse_proxy https://privatebin.neb.jakehillion.me {
+          reverse_proxy https://privatebin.${config.ogygia.domain} {
             header_up Host {http.reverse_proxy.upstream.hostport}
           }
         '';
@@ -103,20 +103,20 @@ in
               api_token {env.CF_API_TOKEN_HILLION_CO_UK}
             }
           }
-          reverse_proxy https://radicale.neb.jakehillion.me {
+          reverse_proxy https://radicale.${config.ogygia.domain} {
             header_up Host {http.reverse_proxy.upstream.hostport}
           }
         '';
         "status.jakehillion.me".extraConfig = ''
           tls ${./certs/status.jakehillion.me.pem} ${config.age.secrets."caddy/status.jakehillion.me.pem".path}
-          reverse_proxy https://status.neb.jakehillion.me {
+          reverse_proxy https://status.${config.ogygia.domain} {
             header_up Host {http.reverse_proxy.upstream.hostport}
           }
         '';
 
         "git.hillion.co.uk".extraConfig = ''
           tls ${./certs/git.hillion.co.uk.pem} ${config.age.secrets."caddy/git.hillion.co.uk.pem".path}
-          reverse_proxy https://cgit.git.neb.jakehillion.me {
+          reverse_proxy https://cgit.git.${config.ogygia.domain} {
             header_up Host {http.reverse_proxy.upstream.hostport}
           }
         '';

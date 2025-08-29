@@ -28,6 +28,9 @@
     nixos-generators.url = "github:nix-community/nixos-generators";
     nixos-generators.inputs.nixpkgs.follows = "nixpkgs";
 
+    ogygia.url = "github:JakeHillion/ogygia-nix";
+    ogygia.inputs.nixpkgs.follows = "nixpkgs";
+
     status-jakehillion-me.url = "https://gitea.hillion.co.uk/JakeHillion/status.jakehillion.me/archive/main.tar.gz";
     status-jakehillion-me.inputs.nixpkgs.follows = "nixpkgs";
   };
@@ -47,6 +50,7 @@
     , nixos-hardware
     , nixpkgs
     , nixpkgs-unstable
+    , ogygia
     , status-jakehillion-me
     , ...
     }@inputs:
@@ -66,6 +70,7 @@
             plugins = [ "github.com/caddy-dns/cloudflare@v0.2.1" ];
             hash = "sha256-S1JN7brvH2KIu7DaDOH1zij3j8hWLLc0HdnUc+L89uU=";
           };
+          "ogygia" = ogygia.packages.${final.system}.ogygia;
         })
       ];
     in
@@ -90,6 +95,7 @@
                 disko.nixosModules.disko
                 impermanence.nixosModules.impermanence
                 nixos-generators.nixosModules.all-formats
+                ogygia.nixosModules.default
 
                 home-manager-pick.nixosModules.default
                 {

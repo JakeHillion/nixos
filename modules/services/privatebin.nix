@@ -36,7 +36,7 @@ in
 
     custom.www.nebula = {
       enable = true;
-      virtualHosts."privatebin.neb.jakehillion.me".extraConfig = ''
+      virtualHosts."privatebin.${config.ogygia.domain}".extraConfig = ''
         root * ${config.services.privatebin.package}
         encode gzip zstd
 

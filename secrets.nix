@@ -50,7 +50,7 @@ in
   ];
 
   # WiFi Environment Files
-  "secrets/wifi/be.lt.neb.jakehillion.me.age".publicKeys = jake_users ++ [ neb.lt.be ];
+  "secrets/wifi/be.lt.${config.ogygia.domain}.age".publicKeys = jake_users ++ [ neb.lt.be ];
 
   # Matrix Secrets
   "modules/services/matrix/matrix.hillion.co.uk/macaroon_secret_key.age".publicKeys = jake_users ++ [ neb.cx.boron ];
@@ -130,11 +130,11 @@ in
   "secrets/frigate/secrets.env.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
 
   # Desktop secrets
-  "secrets/sway/timewall/merlin.rig.neb.jakehillion.me.toml.age".publicKeys = jake_users ++ [ neb.rig.merlin ];
-  "secrets/sway/timewall/be.lt.neb.jakehillion.me.toml.age".publicKeys = jake_users ++ [ neb.lt.be ];
+  "secrets/sway/timewall/merlin.rig.${config.ogygia.domain}.toml.age".publicKeys = jake_users ++ [ neb.rig.merlin ];
+  "secrets/sway/timewall/be.lt.${config.ogygia.domain}.toml.age".publicKeys = jake_users ++ [ neb.lt.be ];
 
   # Merlin boot control
-  "hosts/merlin.rig.neb.jakehillion.me/homeassistant-api-token.age".publicKeys = jake_users ++ [ neb.rig.merlin ];
+  "hosts/merlin.rig.${config.ogygia.domain}/homeassistant-api-token.age".publicKeys = jake_users ++ [ neb.rig.merlin ];
 
   # Radicale secrets
   "secrets/radicale/users.age".publicKeys = jake_users ++ [ neb.cx.boron ];

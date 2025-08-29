@@ -47,7 +47,7 @@ in
           OnUnitInactiveSec = "30m";
           RandomizedDelaySec = "5m";
         };
-        repository = "rest:https://restic.neb.jakehillion.me/mig29";
+        repository = "rest:https://restic.${config.ogygia.domain}/mig29";
         passwordFile = config.age.secrets."backups/radicale/restic/mig29".path;
         paths = [
           config.services.radicale.settings.storage.filesystem_folder
@@ -103,11 +103,11 @@ in
       };
     };
 
-    services.caddy.virtualHosts."radicale.neb.jakehillion.me" = {
+    services.caddy.virtualHosts."radicale.${config.ogygia.domain}" = {
       listenAddresses = [ "::1" config.custom.dns.nebula.ipv4 ];
       extraConfig = ''
         tls {
-          ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
+          ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
         }
 
         reverse_proxy http://127.0.0.1:${toString cfg.port}

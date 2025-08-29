@@ -38,7 +38,7 @@ in
 
     custom.www.nebula = {
       enable = true;
-      virtualHosts."ollama.neb.jakehillion.me".extraConfig = ''
+      virtualHosts."ollama.${config.ogygia.domain}".extraConfig = ''
         reverse_proxy http://127.0.0.1:${toString config.services.ollama.port}
       '';
     };

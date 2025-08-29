@@ -28,7 +28,7 @@ in
         enable = true;
 
         # attic-client rejects my self-signed CA. Use http for now as it's over nebula anyway.
-        virtualHosts."http://attic.neb.jakehillion.me" = {
+        virtualHosts."http://attic.${config.ogygia.domain}" = {
           listenAddresses = [ config.custom.dns.nebula.ipv4 ];
           extraConfig = ''
             reverse_proxy http://localhost:${toString cfg.port}
@@ -51,8 +51,8 @@ in
         settings = {
           listen = "127.0.0.1:${toString cfg.port}";
 
-          allowed-hosts = [ "attic.neb.jakehillion.me" ];
-          api-endpoint = "http://attic.neb.jakehillion.me/";
+          allowed-hosts = [ "attic.${config.ogygia.domain}" ];
+          api-endpoint = "http://attic.${config.ogygia.domain}/";
 
           database.url = "postgresql:///attic?host=/run/postgresql&user=atticd";
 

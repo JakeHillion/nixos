@@ -22,7 +22,7 @@ in
 
     custom.www.nebula = {
       enable = true;
-      virtualHosts."homebox.neb.jakehillion.me" = {
+      virtualHosts."homebox.${config.ogygia.domain}" = {
         extraConfig = ''
           reverse_proxy http://localhost:7745
         '';
@@ -41,7 +41,7 @@ in
         OnCalendar = "03:00";
         RandomizedDelaySec = "60m";
       };
-      repository = "rest:https://restic.neb.jakehillion.me/mig29";
+      repository = "rest:https://restic.${config.ogygia.domain}/mig29";
       passwordFile = config.age.secrets."homebox/restic/mig29.key".path;
       paths = [
         "${config.services.postgresqlBackup.location}/homebox.sql"

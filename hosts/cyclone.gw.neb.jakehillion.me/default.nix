@@ -58,38 +58,38 @@
           reverse_proxy http://${config.custom.locations.locations.services.jellyfin}:8096
         '';
 
-        "graphs.cyclone.gw.neb.jakehillion.me" = {
+        "graphs.cyclone.gw.${config.ogygia.domain}" = {
           listenAddresses = [ config.custom.dns.nebula.ipv4 ];
           extraConfig = ''
             tls {
-              ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
+              ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
             }
             reverse_proxy unix///run/netdata/netdata.sock
           '';
         };
-        "hammer.kvm.neb.jakehillion.me" = {
+        "hammer.kvm.${config.ogygia.domain}" = {
           listenAddresses = [ config.custom.dns.nebula.ipv4 ];
           extraConfig = ''
             tls {
-              ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
+              ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
             }
             reverse_proxy http://10.239.19.6
           '';
         };
-        "charlie.kvm.neb.jakehillion.me" = {
+        "charlie.kvm.${config.ogygia.domain}" = {
           listenAddresses = [ config.custom.dns.nebula.ipv4 ];
           extraConfig = ''
             tls {
-              ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
+              ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
             }
             reverse_proxy http://10.239.19.7
           '';
         };
-        "kvm.phoenix.st.neb.jakehillion.me" = {
+        "kvm.phoenix.st.${config.ogygia.domain}" = {
           listenAddresses = [ config.custom.dns.nebula.ipv4 ];
           extraConfig = ''
             tls {
-              ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
+              ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
             }
             reverse_proxy http://10.239.19.9
           '';

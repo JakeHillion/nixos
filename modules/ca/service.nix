@@ -27,7 +27,7 @@ in
         crt = "/data/system/ca/intermediate.crt";
         key = "/data/system/ca/intermediate.pem";
 
-        dnsNames = [ "ca.neb.jakehillion.me" ];
+        dnsNames = [ "ca.${config.ogygia.domain}" ];
 
         logger = { format = "text"; };
 

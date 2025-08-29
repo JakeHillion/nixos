@@ -198,7 +198,7 @@
     custom.topology = {
       home = {
         description = "Home Network";
-        routerDevice = "cyclone.gw.neb.jakehillion.me";
+        routerDevice = "cyclone.gw.${config.ogygia.domain}";
         wanInterface = "enp2s0";
         wanMacAddress = "b4:fb:e4:b0:90:3c";
         staticWanIP = "185.240.111.53";
@@ -221,19 +221,19 @@
             devices = {
               "20" = {
                 hostname = "rooster";
-                fqdn = "rooster.cx.neb.jakehillion.me";
+                fqdn = "rooster.cx.${config.ogygia.domain}";
                 hwAddress = "90:e2:ba:d4:84:24";
                 dhcpReservation = true;
               };
               "21" = {
                 hostname = "warlock";
-                fqdn = "warlock.cx.neb.jakehillion.me";
+                fqdn = "warlock.cx.${config.ogygia.domain}";
                 hwAddress = "e8:ff:1e:d9:73:5a";
                 dhcpReservation = true;
               };
               "22" = {
                 hostname = "theon";
-                fqdn = "theon.storage.neb.jakehillion.me";
+                fqdn = "theon.storage.${config.ogygia.domain}";
                 hwAddress = "00:1e:06:49:06:1e";
                 dhcpReservation = true;
               };
@@ -244,19 +244,19 @@
               };
               "27" = {
                 hostname = "phoenix";
-                fqdn = "phoenix.st.neb.jakehillion.me";
+                fqdn = "phoenix.st.${config.ogygia.domain}";
                 hwAddress = "f8:f2:1e:1e:b5:74";
                 dhcpReservation = true;
               };
               "28" = {
                 hostname = "merlin";
-                fqdn = "merlin.rig.neb.jakehillion.me";
+                fqdn = "merlin.rig.${config.ogygia.domain}";
                 hwAddress = "b0:41:6f:13:20:14";
                 dhcpReservation = true;
               };
               "29" = {
                 hostname = "stinger";
-                fqdn = "stinger.pop.neb.jakehillion.me";
+                fqdn = "stinger.pop.${config.ogygia.domain}";
                 hwAddress = "7c:83:34:be:30:dd";
                 dhcpReservation = true;
               };
@@ -265,7 +265,7 @@
               {
                 description = "Plex";
                 externalPort = 32400;
-                fqdn = "phoenix.st.neb.jakehillion.me";
+                fqdn = "phoenix.st.${config.ogygia.domain}";
                 protocol = "tcp";
               }
               {
@@ -371,7 +371,7 @@
               };
               "11" = {
                 hostname = "warlock";
-                fqdn = "warlock.cx.neb.jakehillion.me";
+                fqdn = "warlock.cx.${config.ogygia.domain}";
                 hwAddress = "e8:ff:1e:d9:73:5a";
                 dhcpReservation = true;
               };

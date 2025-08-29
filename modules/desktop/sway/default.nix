@@ -12,7 +12,7 @@ in
     custom.desktop.timewall = {
       enable = true;
       wallpaper = pkgs.fetchurl {
-        url = "https://wallpapers.neb.jakehillion.me/JetsonCreative/24_Hour_Cityscapes/24hr-CatalinaAvalonRight.heic";
+        url = "https://wallpapers.${config.ogygia.domain}/JetsonCreative/24_Hour_Cityscapes/24hr-CatalinaAvalonRight.heic";
         sha256 = "08dd78b75e909a9caad5902938da5d7dba46c453d14394b7d203d7a3c0b494b6";
       };
     };

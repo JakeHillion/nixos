@@ -4,13 +4,13 @@ let
   cfg = config.custom.nebula;
 
   lighthouses = {
-    "boron.cx.neb.jakehillion.me" = "boron.cx.jakehillion.me:4242";
-    "cyclone.gw.neb.jakehillion.me" = "home.jakehillion.me:4242";
-    "li.pop.neb.jakehillion.me" = "home.scott.hillion.co.uk:4242";
+    "boron.cx.${config.ogygia.domain}" = "boron.cx.jakehillion.me:4242";
+    "cyclone.gw.${config.ogygia.domain}" = "home.jakehillion.me:4242";
+    "li.pop.${config.ogygia.domain}" = "home.scott.hillion.co.uk:4242";
   };
   relays = [
-    "boron.cx.neb.jakehillion.me"
-    "cyclone.gw.neb.jakehillion.me"
+    "boron.cx.${config.ogygia.domain}"
+    "cyclone.gw.${config.ogygia.domain}"
   ];
 
   serviceUser = config.systemd.services."nebula@jakehillion".serviceConfig.User;

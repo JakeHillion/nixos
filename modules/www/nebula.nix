@@ -26,7 +26,7 @@ in
           listenAddresses = [ config.custom.dns.nebula.ipv4 ];
           extraConfig = ''
             tls {
-              ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
+              ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
             }
           '' + value.extraConfig;
         }))

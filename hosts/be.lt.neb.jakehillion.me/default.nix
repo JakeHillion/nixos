@@ -23,10 +23,10 @@
     };
 
     ## WiFi
-    age.secrets."wifi/be.lt.neb.jakehillion.me".file = ../../secrets/wifi/be.lt.neb.jakehillion.me.age;
+    age.secrets."wifi/be.lt.${config.ogygia.domain}".file = ../../secrets/wifi/be.lt.${config.ogygia.domain}.age;
     networking.wireless = {
       enable = true;
-      secretsFile = config.age.secrets."wifi/be.lt.neb.jakehillion.me".path;
+      secretsFile = config.age.secrets."wifi/be.lt.${config.ogygia.domain}".path;
 
       networks = {
         "Hillion WPA3 Network".pskRaw = "ext:HILLION_WPA3_NETWORK_PSK";

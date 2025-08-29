@@ -21,20 +21,20 @@ in
     services.caddy = {
       enable = true;
 
-      virtualHosts."immich.neb.jakehillion.me" = {
+      virtualHosts."immich.${config.ogygia.domain}" = {
         listenAddresses = [ config.custom.dns.nebula.ipv4 ];
         extraConfig = ''
           reverse_proxy http://localhost:${toString config.services.immich.port}
 
           tls {
-            ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
+            ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
           }
         '';
       };
     };
 
     services.restic.backups."immich" = {
-      repository = "rest:https://restic.neb.jakehillion.me/b52";
+      repository = "rest:https://restic.${config.ogygia.domain}/b52";
       user = "immich";
       passwordFile = config.age.secrets."immich/restic/b52.key".path;
 

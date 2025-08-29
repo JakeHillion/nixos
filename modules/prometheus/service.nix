@@ -27,7 +27,7 @@ in
               let
                 hosts = builtins.map
                   (
-                    x: "${lib.concatStringsSep "." (lib.take 2 (lib.splitString "." x))}.neb.jakehillion.me"
+                    x: "${lib.concatStringsSep "." (lib.take 2 (lib.splitString "." x))}.${config.ogygia.domain}"
                   )
                   (builtins.attrNames (builtins.readDir ../../hosts));
               in
@@ -39,13 +39,13 @@ in
 
     services.caddy = {
       enable = true;
-      virtualHosts."prometheus.neb.jakehillion.me" = {
+      virtualHosts."prometheus.${config.ogygia.domain}" = {
         listenAddresses = [ config.custom.dns.nebula.ipv4 ];
         extraConfig = ''
           reverse_proxy http://localhost:9090
 
           tls {
-            ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
+            ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
           }
         '';
       };

@@ -56,7 +56,7 @@ in
             OnCalendar = "03:00";
             RandomizedDelaySec = "60m";
           };
-          repository = "rest:https://restic.neb.jakehillion.me/mig29";
+          repository = "rest:https://restic.${config.ogygia.domain}/mig29";
           passwordFile = config.age.secrets."backups/homeassistant/restic/mig29".path;
           paths = [
             config.services.home-assistant.configDir
@@ -68,7 +68,7 @@ in
             OnCalendar = "03:00";
             RandomizedDelaySec = "60m";
           };
-          repository = "rest:https://restic.neb.jakehillion.me/b52";
+          repository = "rest:https://restic.${config.ogygia.domain}/b52";
           passwordFile = config.age.secrets."backups/homeassistant/restic/b52".path;
           paths = [
             "${config.services.postgresqlBackup.location}/homeassistant.sql"
@@ -84,7 +84,7 @@ in
             listenAddresses = [ "10.239.19.8" ];
             extraConfig = ''
               tls {
-                ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
+                ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
               }
 
               @blocked not remote_ip 10.239.19.4
@@ -98,7 +98,7 @@ in
             listenAddresses = [ "10.64.50.29" ];
             extraConfig = ''
               tls {
-                ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
+                ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
               }
               reverse_proxy http://localhost:8123
             '';
@@ -275,7 +275,7 @@ in
 
           switch = [
             {
-              name = "merlin.rig.neb.jakehillion.me";
+              name = "merlin.rig.${config.ogygia.domain}";
               platform = "wake_on_lan";
               mac = "b0:41:6f:13:20:14";
               host = "10.64.50.28";

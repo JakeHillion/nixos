@@ -209,11 +209,11 @@ in
 
     services.caddy = {
       enable = true;
-      virtualHosts."restic.neb.jakehillion.me" = {
+      virtualHosts."restic.${config.ogygia.domain}" = {
         listenAddresses = [ "::1" config.custom.dns.nebula.ipv4 ];
         extraConfig = ''
           tls {
-            ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
+            ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
           }
 
           reverse_proxy http://localhost:8000

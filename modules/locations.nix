@@ -19,39 +19,39 @@ in
     {
       custom.locations.locations = {
         services = {
-          attic = "phoenix.st.neb.jakehillion.me";
+          attic = "phoenix.st.${config.ogygia.domain}";
           authoritative_dns = [
-            "boron.cx.neb.jakehillion.me"
-            "router.home.neb.jakehillion.me"
+            "boron.cx.${config.ogygia.domain}"
+            "router.home.${config.ogygia.domain}"
           ];
-          downloads = "phoenix.st.neb.jakehillion.me";
-          frigate = "phoenix.st.neb.jakehillion.me";
-          git = "boron.cx.neb.jakehillion.me";
-          gitea = "boron.cx.neb.jakehillion.me";
-          homeassistant = "stinger.pop.neb.jakehillion.me";
-          homebox = "boron.cx.neb.jakehillion.me";
-          immich = "phoenix.st.neb.jakehillion.me";
-          jellyfin = "phoenix.st.neb.jakehillion.me";
+          downloads = "phoenix.st.${config.ogygia.domain}";
+          frigate = "phoenix.st.${config.ogygia.domain}";
+          git = "boron.cx.${config.ogygia.domain}";
+          gitea = "boron.cx.${config.ogygia.domain}";
+          homeassistant = "stinger.pop.${config.ogygia.domain}";
+          homebox = "boron.cx.${config.ogygia.domain}";
+          immich = "phoenix.st.${config.ogygia.domain}";
+          jellyfin = "phoenix.st.${config.ogygia.domain}";
           mastodon = "";
-          matrix = "boron.cx.neb.jakehillion.me";
-          mosquitto = "stinger.pop.neb.jakehillion.me";
-          ollama = "boron.cx.neb.jakehillion.me";
-          privatebin = "boron.cx.neb.jakehillion.me";
-          prometheus = "boron.cx.neb.jakehillion.me";
-          radicale = "boron.cx.neb.jakehillion.me";
-          restic = "phoenix.st.neb.jakehillion.me";
-          status = "boron.cx.neb.jakehillion.me";
+          matrix = "boron.cx.${config.ogygia.domain}";
+          mosquitto = "stinger.pop.${config.ogygia.domain}";
+          ollama = "boron.cx.${config.ogygia.domain}";
+          privatebin = "boron.cx.${config.ogygia.domain}";
+          prometheus = "boron.cx.${config.ogygia.domain}";
+          radicale = "boron.cx.${config.ogygia.domain}";
+          restic = "phoenix.st.${config.ogygia.domain}";
+          status = "boron.cx.${config.ogygia.domain}";
           tang = [
-            "boron.cx.neb.jakehillion.me"
-            "cyclone.gw.neb.jakehillion.me"
-            "li.pop.neb.jakehillion.me"
-            "router.home.neb.jakehillion.me"
-            "stinger.pop.neb.jakehillion.me"
-            "warlock.cx.neb.jakehillion.me"
+            "boron.cx.${config.ogygia.domain}"
+            "cyclone.gw.${config.ogygia.domain}"
+            "li.pop.${config.ogygia.domain}"
+            "router.home.${config.ogygia.domain}"
+            "stinger.pop.${config.ogygia.domain}"
+            "warlock.cx.${config.ogygia.domain}"
           ];
-          unifi = "boron.cx.neb.jakehillion.me";
-          version_tracker = [ "boron.cx.neb.jakehillion.me" ];
-          zigbee2mqtt = "stinger.pop.neb.jakehillion.me";
+          unifi = "boron.cx.${config.ogygia.domain}";
+          version_tracker = [ "boron.cx.${config.ogygia.domain}" ];
+          zigbee2mqtt = "stinger.pop.${config.ogygia.domain}";
         };
       };
     }

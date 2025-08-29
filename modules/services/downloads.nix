@@ -38,14 +38,14 @@ in
 
       virtualHosts = builtins.listToAttrs (builtins.map
         (x: {
-          name = "${x}.downloads.neb.jakehillion.me";
+          name = "${x}.downloads.${config.ogygia.domain}";
           value = {
             listenAddresses = [ config.custom.dns.nebula.ipv4 ];
             extraConfig = ''
               reverse_proxy unix//${cfg.metadataPath}/caddy/caddy.sock
 
               tls {
-                ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
+                ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
               }
             '';
           };
@@ -155,7 +155,7 @@ in
           };
           networking = {
             nameservers = [ "1.1.1.1" "8.8.8.8" ];
-            hosts = { "127.0.0.1" = builtins.map (x: "${x}.downloads.neb.jakehillion.me") [ "prowlarr" "sonarr" "radarr" "deluge" ]; };
+            hosts = { "127.0.0.1" = builtins.map (x: "${x}.downloads.${hostConfig.ogygia.domain}") [ "prowlarr" "sonarr" "radarr" "deluge" ]; };
           };
 
           services = {
@@ -202,7 +202,7 @@ in
               enable = true;
               virtualHosts = builtins.listToAttrs (builtins.map
                 (x: {
-                  name = "http://${x.name}.downloads.neb.jakehillion.me";
+                  name = "http://${x.name}.downloads.${hostConfig.ogygia.domain}";
                   value = {
                     listenAddresses = [ "127.0.0.1" "unix///var/lib/caddy/caddy.sock" ];
                     extraConfig = "reverse_proxy http://localhost:${toString x.port}";

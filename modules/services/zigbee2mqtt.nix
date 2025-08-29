@@ -24,11 +24,11 @@ in
     services.caddy = {
       enable = true;
 
-      virtualHosts."zigbee2mqtt.home.neb.jakehillion.me" = {
+      virtualHosts."zigbee2mqtt.home.${config.ogygia.domain}" = {
         listenAddresses = [ config.custom.dns.nebula.ipv4 ];
         extraConfig = ''
           tls {
-            ca https://ca.neb.jakehillion.me:8443/acme/acme/directory
+            ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
           }
           reverse_proxy http://127.0.0.1:15606
         '';
@@ -40,7 +40,7 @@ in
       settings = {
         permit_join = false;
         mqtt = {
-          server = "mqtt://mqtt.home.neb.jakehillion.me:1883";
+          server = "mqtt://mqtt.home.${config.ogygia.domain}:1883";
           user = "zigbee2mqtt";
           password = "!${config.age.secrets."mqtt/zigbee2mqtt.yaml".path} password";
         };
@@ -49,7 +49,7 @@ in
         };
         frontend = {
           port = 15606;
-          url = "http://zigbee2mqtt.home.neb.jakehillion.me";
+          url = "http://zigbee2mqtt.home.${config.ogygia.domain}";
         };
         homeassistant = true;
         advanced = {
@@ -65,7 +65,7 @@ in
     };
 
     services.restic.backups."zigbee2mqtt" = lib.mkIf cfg.backup {
-      repository = "rest:https://restic.neb.jakehillion.me/b52";
+      repository = "rest:https://restic.${config.ogygia.domain}/b52";
       user = "zigbee2mqtt";
       passwordFile = config.age.secrets."restic/zigbee2mqtt/b52.key".path;
 

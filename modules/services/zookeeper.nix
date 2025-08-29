@@ -13,9 +13,9 @@ in
       description = "Map from ZooKeeper server ID to hostname. Use null for removed servers.";
 
       default = {
-        "1" = "boron.cx.neb.jakehillion.me";
-        "2" = "warlock.cx.neb.jakehillion.me";
-        "3" = "li.pop.neb.jakehillion.me";
+        "1" = "boron.cx.${config.ogygia.domain}";
+        "2" = "warlock.cx.${config.ogygia.domain}";
+        "3" = "li.pop.${config.ogygia.domain}";
       };
     };
 

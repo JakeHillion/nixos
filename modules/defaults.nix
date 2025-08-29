@@ -4,6 +4,11 @@
   options.custom.defaults = lib.mkEnableOption "defaults";
 
   config = lib.mkIf config.custom.defaults {
+    ogygia = {
+      enable = true;
+      domain = "neb.jakehillion.me";
+    };
+
     hardware.enableAllFirmware = true;
     nix = {
       settings = lib.mkMerge [
@@ -14,7 +19,7 @@
         }
 
         (lib.mkIf config.custom.nebula.enable {
-          extra-substituters = [ "http://attic.neb.jakehillion.me/nixos" ];
+          extra-substituters = [ "http://attic.${config.ogygia.domain}/nixos" ];
           extra-trusted-public-keys = [ "nixos:npaMjNtbUwWvuv4CEdJ2ev/Q2TRBxL0GduwvlYIc3/0=" ];
         })
       ];
@@ -50,11 +55,12 @@
         git
         htop
         nix
+        ogygia
         ripgrep
         vim
 
         (writeShellScriptBin "pastry" ''
-          ${pkgs.pbcli}/bin/pbcli --host https://privatebin.neb.jakehillion.me "$@" | ${pkgs.gnused}/bin/sed 's/privatebin.neb.jakehillion.me/pastes.hillion.co.uk/g'
+          ${pkgs.pbcli}/bin/pbcli --host https://privatebin.${config.ogygia.domain} "$@" | ${pkgs.gnused}/bin/sed 's/privatebin.${config.ogygia.domain}/pastes.hillion.co.uk/g'
         '')
       ];
       variables.EDITOR = "vim";

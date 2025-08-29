@@ -18,11 +18,11 @@ in
           makeRecords = type: s: (lib.concatStringsSep "\n" (lib.collect builtins.isString (lib.mapAttrsRecursive (path: value: "${lib.concatStringsSep "." (lib.reverseList path)} 86400 ${type} ${value}") s)));
         in
         {
-          "neb.jakehillion.me".data = ''
-            $ORIGIN neb.jakehillion.me.
+          "${config.ogygia.domain}".data = ''
+            $ORIGIN ${config.ogygia.domain}.
             $TTL 86400
 
-            neb.jakehillion.me. IN SOA ns1.jakehillion.me. hostmaster.jakehillion.me. (
+            ${config.ogygia.domain}. IN SOA ns1.jakehillion.me. hostmaster.jakehillion.me. (
                 1           ;Serial
                 7200        ;Refresh
                 3600        ;Retry
@@ -34,7 +34,7 @@ in
             86400 NS ns2.jakehillion.me.
 
             attic                             21600 CNAME ${locations.services.attic}.
-            ca                                21600 CNAME warlock.cx.neb.jakehillion.me.
+            ca                                21600 CNAME warlock.cx.${config.ogygia.domain}.
             frigate                           21600 CNAME ${locations.services.frigate}.
             homebox                           21600 CNAME ${locations.services.homebox}.
             immich                            21600 CNAME ${locations.services.immich}.
@@ -44,15 +44,15 @@ in
             radicale                          21600 CNAME ${locations.services.radicale}.
             restic                            21600 CNAME ${locations.services.restic}.
             status                            21600 CNAME ${locations.services.status}.
-            wallpapers                        21600 CNAME phoenix.st.neb.jakehillion.me.
+            wallpapers                        21600 CNAME phoenix.st.${config.ogygia.domain}.
 
             mqtt.home                         21600 CNAME ${locations.services.mosquitto}.
             zigbee2mqtt.home                  21600 CNAME ${locations.services.zigbee2mqtt}.
-            graphs.cyclone.gw                 21600 CNAME cyclone.gw.neb.jakehillion.me.
+            graphs.cyclone.gw                 21600 CNAME cyclone.gw.${config.ogygia.domain}.
 
-            charlie.kvm                       21600 CNAME cyclone.gw.neb.jakehillion.me.
-            hammer.kvm                        21600 CNAME cyclone.gw.neb.jakehillion.me.
-            kvm.phoenix.st                    21600 CNAME cyclone.gw.neb.jakehillion.me.
+            charlie.kvm                       21600 CNAME cyclone.gw.${config.ogygia.domain}.
+            hammer.kvm                        21600 CNAME cyclone.gw.${config.ogygia.domain}.
+            kvm.phoenix.st                    21600 CNAME cyclone.gw.${config.ogygia.domain}.
 
             cgit.git                          21600 CNAME ${locations.services.git}.
 

@@ -90,7 +90,7 @@ in
 
       services.restic.backups."git" = lib.mkIf cfg.backup {
         user = config.services.gitolite.user;
-        repository = "rest:https://restic.neb.jakehillion.me/mig29";
+        repository = "rest:https://restic.${config.ogygia.domain}/mig29";
         passwordFile = config.age.secrets."backups/git/restic/mig29".path;
         paths = [
           "${config.services.gitolite.dataDir}/repositories"
@@ -123,7 +123,7 @@ in
       # Nebula reverse proxy configuration
       custom.www.nebula = {
         enable = true;
-        virtualHosts."cgit.git.neb.jakehillion.me" = {
+        virtualHosts."cgit.git.${config.ogygia.domain}" = {
           extraConfig = ''
             # Serve static assets
             handle /cgit.css {
@@ -144,7 +144,7 @@ in
                   env DOCUMENT_ROOT ${cgitPackage}/cgit
                   env SCRIPT_NAME /cgit.cgi
                   env CGIT_CONFIG ${cgitConfig}
-                  env HTTP_HOST cgit.git.neb.jakehillion.me
+                  env HTTP_HOST cgit.git.${config.ogygia.domain}
                 }
               }
             }
