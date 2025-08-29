@@ -34,6 +34,9 @@ let
       ${pkgs.git}/bin/git switch --detach origin/$BRANCH
     fi
 
+    echo 'Building configuration...'
+    nix build --no-link --print-out-paths '.#nixosConfigurations."${config.networking.fqdn}".config.system.build.toplevel' |& ${pkgs.nix-output-monitor}/bin/nom
+
     if ! ${pkgs.nixos-rebuild}/bin/nixos-rebuild --flake "/etc/nixos#${config.networking.fqdn}" test; then
       echo "WARNING: \`nixos-rebuild test' failed!"
     fi
