@@ -68,6 +68,16 @@ in
           shutdown = "${config.systemd.package}/bin/shutdown";
         in
         ''
+          # Check for update lock file and exit early if it exists
+          LOCK_FILE="/run/nixos-update.lock"
+          if [ -f "$LOCK_FILE" ]; then
+            # Verify the lock file was created by root for security
+            if [ "$(stat -c %U "$LOCK_FILE" 2>/dev/null)" = "root" ]; then
+              echo "Update lock file exists, manual update in progress. Exiting gracefully."
+              exit 0
+            fi
+          fi
+
           if [ ! -d ".git" ] ; then
               ${git} clone ${remote} .
           fi
