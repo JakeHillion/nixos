@@ -22,7 +22,6 @@ in
           attic = "phoenix.st.${config.ogygia.domain}";
           authoritative_dns = [
             "boron.cx.${config.ogygia.domain}"
-            "router.home.${config.ogygia.domain}"
           ];
           downloads = "phoenix.st.${config.ogygia.domain}";
           frigate = "phoenix.st.${config.ogygia.domain}";
@@ -45,7 +44,6 @@ in
             "boron.cx.${config.ogygia.domain}"
             "cyclone.gw.${config.ogygia.domain}"
             "li.pop.${config.ogygia.domain}"
-            "router.home.${config.ogygia.domain}"
             "stinger.pop.${config.ogygia.domain}"
             "warlock.cx.${config.ogygia.domain}"
           ];
