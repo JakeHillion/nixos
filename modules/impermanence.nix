@@ -1,7 +1,13 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   cfg = config.custom.impermanence;
+  usesVarLibPrivate = builtins.any
+    (dir: lib.strings.hasPrefix "/var/lib/private/"
+      (if builtins.isString dir then dir else dir.directory or dir.dirPath or ""))
+    (lib.lists.flatten (lib.attrsets.mapAttrsToList
+      (path: cfg: cfg.directories or [ ])
+      config.environment.persistence));
 in
 {
   options.custom.impermanence = {
@@ -112,21 +118,31 @@ in
       in
       builtins.listToAttrs (builtins.map mkUser cfg.users);
 
-    systemd.tmpfiles.rules =
-      (lib.lists.optional
-        (builtins.any
-          (dir: lib.strings.hasPrefix "/var/lib/private/"
-            (if builtins.isString dir then dir else dir.directory or dir.dirPath or ""))
-          (lib.lists.flatten (lib.attrsets.mapAttrsToList
-            (path: cfg: cfg.directories or [ ])
-            config.environment.persistence)))
-        "d /var/lib/private 0700 root root - -") ++
-      lib.lists.flatten (builtins.map
-        (user:
-          let details = config.users.users.${user}; in [
-            "d ${cfg.base}/users/${user} 0700 ${user} ${details.group} - -"
-            "L ${details.home}/local - ${user} ${details.group} - ${cfg.base}/users/${user}"
-          ])
-        cfg.users);
+    systemd.tmpfiles.rules = lib.lists.flatten (builtins.map
+      (user:
+        let details = config.users.users.${user}; in [
+          "d ${cfg.base}/users/${user} 0700 ${user} ${details.group} - -"
+          "L ${details.home}/local - ${user} ${details.group} - ${cfg.base}/users/${user}"
+        ])
+      cfg.users);
+
+    systemd.services.fix-var-lib-private-permissions = lib.mkIf usesVarLibPrivate {
+      description = "Fix /var/lib/private permissions";
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = "${lib.getExe' pkgs.coreutils "chmod"} 0700 /var/lib/private";
+        User = "root";
+      };
+    };
+
+    systemd.timers.fix-var-lib-private-permissions = lib.mkIf usesVarLibPrivate {
+      description = "Fix /var/lib/private permissions every 30 seconds";
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnBootSec = "30s";
+        OnUnitActiveSec = "30s";
+        Unit = "fix-var-lib-private-permissions.service";
+      };
+    };
   };
 }
