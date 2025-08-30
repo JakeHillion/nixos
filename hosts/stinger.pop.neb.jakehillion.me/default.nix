@@ -15,7 +15,6 @@
     custom.defaults = true;
     custom.locations.autoServe = true;
     custom.impermanence.enable = true;
-    custom.services.isponsorblocktv.enable = true;
 
     custom.tang = {
       enable = true;

@@ -11,7 +11,6 @@
     ./homeassistant
     ./homebox.nix
     ./immich.nix
-    ./isponsorblocktv.nix
     ./jellyfin.nix
     ./mastodon
     ./matrix

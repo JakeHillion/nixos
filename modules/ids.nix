@@ -9,7 +9,6 @@
       gitea = 186;
       node-exporter = 188;
       step-ca = 198;
-      isponsorblocktv = 199;
       frigate = 200;
       nebula-jakehillion = 205;
       immich = 206;
@@ -30,7 +29,6 @@
       gitea = 186;
       node-exporter = 188;
       step-ca = 198;
-      isponsorblocktv = 199;
       frigate = 200;
       nebula-jakehillion = 205;
       immich = 206;
