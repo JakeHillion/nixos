@@ -14,6 +14,7 @@ let
         neb = {
           cx = {
             boron = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDtcJ7HY/vjtheMV8EN2wlTw1hU53CJebGIeRJcSkzt5 root@boron";
+            rooster = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEVOycZ4M9JYWtKnMeHwUgtJ1H+cECHE+67n1JDCLGle root@rooster";
           };
           gw = {
             cyclone = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJM3XMKyjK4gYWkZ2byGewWiNI0RfVXK/wynv7bKzMmJ root@cyclone";
@@ -50,7 +51,7 @@ in
   ];
 
   # WiFi Environment Files
-  "secrets/wifi/be.lt.${config.ogygia.domain}.age".publicKeys = jake_users ++ [ neb.lt.be ];
+  "secrets/wifi/be.lt.neb.jakehillion.me.age".publicKeys = jake_users ++ [ neb.lt.be ];
 
   # Matrix Secrets
   "modules/services/matrix/matrix.hillion.co.uk/macaroon_secret_key.age".publicKeys = jake_users ++ [ neb.cx.boron ];
@@ -130,12 +131,15 @@ in
   "secrets/frigate/secrets.env.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
 
   # Desktop secrets
-  "secrets/sway/timewall/merlin.rig.${config.ogygia.domain}.toml.age".publicKeys = jake_users ++ [ neb.rig.merlin ];
-  "secrets/sway/timewall/be.lt.${config.ogygia.domain}.toml.age".publicKeys = jake_users ++ [ neb.lt.be ];
+  "secrets/sway/timewall/merlin.rig.neb.jakehillion.me.toml.age".publicKeys = jake_users ++ [ neb.rig.merlin ];
+  "secrets/sway/timewall/be.lt.neb.jakehillion.me.toml.age".publicKeys = jake_users ++ [ neb.lt.be ];
 
   # Merlin boot control
-  "hosts/merlin.rig.${config.ogygia.domain}/homeassistant-api-token.age".publicKeys = jake_users ++ [ neb.rig.merlin ];
+  "hosts/merlin.rig.neb.jakehillion.me/homeassistant-api-token.age".publicKeys = jake_users ++ [ neb.rig.merlin ];
 
   # Radicale secrets
   "secrets/radicale/users.age".publicKeys = jake_users ++ [ neb.cx.boron ];
+
+  # Home configuration secrets
+  "secrets/home/smtp-password.age".publicKeys = jake_users ++ [ neb.rig.merlin neb.cx.boron neb.cx.rooster ];
 }

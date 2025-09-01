@@ -8,6 +8,7 @@ in
   imports = [
     ./git.nix
     ./neovim.nix
+    ./neomutt.nix
     ./tmux/default.nix
   ];
 
@@ -78,6 +79,9 @@ in
           ];
         };
       };
+
+      # Enable neomutt for devboxes
+      custom.home.neomutt.enable = true;
     })
   ];
 }
