@@ -65,6 +65,9 @@ in
         userExtraDirs."${config.custom.user}" = [ ".config/gh" ".config/tea" ];
       };
 
+      # Enable hydroxide service for devboxes
+      custom.services.hydroxide.enable = true;
+
       home-manager.users."${config.custom.user}" = {
         home = {
           inherit stateVersion;

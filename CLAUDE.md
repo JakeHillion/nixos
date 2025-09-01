@@ -355,3 +355,5 @@ This keeps the git history clean with one logical change per commit.
 ## File Management and Nix Evaluation
 
 IMPORTANT: When adding new files to the repository, you must run `git add <file>` before Nix commands will recognize them. Nix evaluates the repository based on what Git knows about, not just what's on the filesystem. Files don't need to be committed, but they do need to be added to the Git index for Nix to see them.
+- Don't commit stuff.
+- Never run `git add .` again.
