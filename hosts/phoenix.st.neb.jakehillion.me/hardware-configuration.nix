@@ -37,8 +37,8 @@
 
   fileSystems."/mnt/d3" =
     {
-      device = "/dev/disk/by-uuid/edbcd0a3-98d9-4963-a03d-fec11b49c901";
-      fsType = "bcachefs";
+      device = "/dev/disk/by-uuid/a9fde6bc-f8ea-49b5-a2b4-47b0221f50c3";
+      fsType = "xfs";
       options = [ "noatime" "nofail" "x-systemd.device-timeout=0" ];
     };
 
