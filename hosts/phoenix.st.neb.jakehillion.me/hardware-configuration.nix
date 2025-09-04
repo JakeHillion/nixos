@@ -44,8 +44,8 @@
 
   fileSystems."/mnt/d4" =
     {
-      device = "/dev/disk/by-uuid/41144b91-a02b-423e-8053-e62fc92c1461";
-      fsType = "bcachefs";
+      device = "/dev/disk/by-uuid/5d86032e-74ea-4465-9a2f-e5ec9f321f21";
+      fsType = "xfs";
       options = [ "noatime" "nofail" "x-systemd.device-timeout=0" ];
     };
 
