@@ -61,7 +61,13 @@ in
   "modules/services/matrix/matrix.hillion.co.uk/syncv3_secret.age".publicKeys = jake_users ++ [ neb.cx.boron ];
 
   # Backups Secrets
-  "secrets/restic/mig29.age".publicKeys = jake_users ++ [ neb.st.phoenix neb.cx.boron neb.pop.stinger ];
+  "secrets/restic/mig29.age".publicKeys = [
+    neb.cx.boron
+    neb.cx.rooster
+    neb.pop.stinger
+    neb.rig.merlin
+    neb.st.phoenix
+  ];
   "secrets/restic/b52.age".publicKeys = jake_users ++ [ neb.st.phoenix neb.home.router neb.pop.stinger ];
 
   "modules/services/restic/aws-eu-central-2.env.age".publicKeys = jake_users ++ [ neb.st.phoenix ];

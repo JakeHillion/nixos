@@ -18,6 +18,12 @@ in
 {
   options.custom.home.neomutt = {
     enable = lib.mkEnableOption "neomutt email client with OfflineIMAP";
+
+    backup = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Enable backups to restic";
+    };
   };
 
   config = lib.mkIf config.custom.home.neomutt.enable {
@@ -25,6 +31,12 @@ in
     age.secrets.smtp-password = {
       file = ../../secrets/home/smtp-password.age;
       mode = "400";
+      owner = config.custom.user;
+    };
+
+    # Configure restic backup secret
+    age.secrets."restic/neomutt/mig29.key" = lib.mkIf config.custom.home.neomutt.backup {
+      file = ../../secrets/restic/mig29.age;
       owner = config.custom.user;
     };
     home-manager.users.jake = {
@@ -56,6 +68,12 @@ in
 
           offlineimap = {
             enable = true;
+            postSyncHookCommand = lib.mkIf config.custom.home.neomutt.backup ''
+              ${pkgs.restic}/bin/restic \
+                --repo rest:https://restic.${config.ogygia.domain}/mig29 \
+                --password-file ${config.age.secrets."restic/neomutt/mig29.key".path} \
+                backup ${maildirBasePath} \
+                --retry-lock 30s'';
             extraConfig.account = {
               autorefresh = "1";
             };
