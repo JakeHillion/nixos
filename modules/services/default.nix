@@ -10,7 +10,7 @@
     ./gitea
     ./homeassistant
     ./homebox.nix
-    ./hydroxide.nix
+    ./protonmail-bridge.nix
     ./immich.nix
     ./jellyfin.nix
     ./mastodon

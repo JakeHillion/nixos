@@ -38,7 +38,7 @@ in
 
           imap = {
             host = "127.0.0.1";
-            port = config.custom.services.hydroxide.imapPort;
+            port = config.custom.services.protonmail-bridge.imapPort;
             tls.enable = false;
           };
 
@@ -56,7 +56,9 @@ in
 
           offlineimap = {
             enable = true;
-            postSyncHookCommand = "${pkgs.notmuch}/bin/notmuch new";
+            extraConfig.account = {
+              autorefresh = "1";
+            };
             extraConfig.remote = {
               remotepasseval = "get_password_personal()";
               folderfilter = "lambda f: f != 'All Mail'";
@@ -90,12 +92,11 @@ in
           import subprocess
           
           def get_password_personal():
-              path = "${if config.custom.impermanence.enable then "${config.custom.impermanence.base}/users/jake/.config/hydroxide/bridge-password" else "~/.config/hydroxide/bridge-password"}"
+              path = "${if config.custom.impermanence.enable then "${config.custom.impermanence.base}/users/jake/.config/protonmail-bridge/bridge-password" else "~/.config/protonmail-bridge/bridge-password"}"
               return subprocess.check_output(f"${pkgs.coreutils}/bin/cat {path}", shell=True).decode().strip()
         '';
         extraConfig.general = {
           metadata = if config.custom.impermanence.enable then "${config.custom.impermanence.base}/users/jake/.local/share/offlineimap" else "~/.local/share/offlineimap";
-          autorefresh = "1";
         };
       };
 
@@ -138,7 +139,6 @@ in
         };
       };
 
-      home.packages = with pkgs; [ notmuch ];
     };
   };
 }

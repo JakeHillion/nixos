@@ -66,8 +66,8 @@ in
         userExtraDirs."${config.custom.user}" = [ ".config/gh" ".config/tea" ];
       };
 
-      # Enable hydroxide service for devboxes
-      custom.services.hydroxide.enable = true;
+      # Enable protonmail-bridge service for devboxes
+      custom.services.protonmail-bridge.enable = true;
 
       home-manager.users."${config.custom.user}" = {
         home = {
