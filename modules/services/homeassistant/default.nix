@@ -159,195 +159,126 @@ in
           adaptive_lighting
         ];
 
-        config = {
-          default_config = { };
+        config = lib.mkMerge [
+          {
+            default_config = { };
 
-          homeassistant = {
-            auth_providers = [
-              { type = "homeassistant"; }
-              {
-                type = "trusted_networks";
-                trusted_networks = [ "10.239.19.4/32" ];
-                trusted_users = {
-                  "10.239.19.4" = "fb4979873ecb480d9e3bb336250fa344";
-                };
-                allow_bypass_login = true;
-              }
-            ];
-          };
-
-          recorder = {
-            db_url = "postgresql://@/homeassistant";
-          };
-
-          http = {
-            use_x_forwarded_for = true;
-            trusted_proxies = with config.custom.dns.authoritative; [
-              "::1"
-              ipv4.me.jakehillion.neb.cx.boron
-            ];
-          };
-
-          google_assistant = {
-            project_id = "homeassistant-8de41";
-            service_account = {
-              client_email = "!secret google_assistant_service_account_client_email";
-              private_key = "!secret google_assistant_service_account_private_key";
-            };
-            report_state = true;
-            expose_by_default = true;
-            exposed_domains = [ "light" ];
-            entity_config = {
-              "input_boolean.sleep_mode" = { };
-            };
-          };
-          homekit = [{
-            filter = {
-              include_domains = [ "light" ];
-            };
-          }];
-
-          bluetooth = { };
-
-          adaptive_lighting =
-            let
-              common = {
-                min_sunset_time = "21:00";
-              };
-            in
-            [
-              ({
-                name = "main lights";
-                lights = [
-                  "light.bedroom_lamp"
-                  "light.bedroom_light"
-                  "light.cubby_light"
-                  "light.desk_lamp"
-                  "light.hallway_light"
-                  "light.living_room_lamp"
-                  "light.living_room_light"
-                  "light.wardrobe_light"
-                ];
-              } // common)
-              ({
-                # separate to more vigorously disable and allow the fancy settings
-                name = "hue";
-                lights = [
-                  "light.living_room_hue_lamp"
-                ];
-                detect_non_ha_changes = true;
-              } // common)
-            ];
-
-          sensor = [
-            {
-              # Time/Date (for automations)
-              platform = "time_date";
-              display_options = [
-                "date"
-                "date_time_iso"
+            homeassistant = {
+              auth_providers = [
+                { type = "homeassistant"; }
+                {
+                  type = "trusted_networks";
+                  trusted_networks = [ "10.239.19.4/32" ];
+                  trusted_users = {
+                    "10.239.19.4" = "fb4979873ecb480d9e3bb336250fa344";
+                  };
+                  allow_bypass_login = true;
+                }
               ];
-            }
+            };
 
-            {
-              # Living Room Temperature
-              platform = "statistics";
-              name = "Living Room temperature (rolling average)";
-              entity_id = "sensor.living_room_environment_sensor_temperature";
-              state_characteristic = "average_linear";
-              unique_id = "e86198a8-88f4-4822-95cb-3ec7b2662395";
-              max_age = {
-                minutes = 5;
+            recorder = {
+              db_url = "postgresql://@/homeassistant";
+            };
+
+            http = {
+              use_x_forwarded_for = true;
+              trusted_proxies = with config.custom.dns.authoritative; [
+                "::1"
+                ipv4.me.jakehillion.neb.cx.boron
+              ];
+            };
+
+            google_assistant = {
+              project_id = "homeassistant-8de41";
+              service_account = {
+                client_email = "!secret google_assistant_service_account_client_email";
+                private_key = "!secret google_assistant_service_account_private_key";
               };
-            }
-          ];
-
-          input_boolean = {
-            sleep_mode = {
-              name = "Set house to sleep mode";
-              icon = "mdi:sleep";
+              report_state = true;
+              expose_by_default = true;
+              exposed_domains = [ "light" ];
+              entity_config = {
+                "input_boolean.sleep_mode" = { };
+              };
             };
-            merlin_boot_windows = {
-              name = "Boot Merlin to Windows next startup";
-              icon = "mdi:microsoft-windows";
-            };
-          };
+            homekit = [{
+              filter = {
+                include_domains = [ "light" ];
+              };
+            }];
 
-          switch = [
-            {
-              name = "merlin.rig.${config.ogygia.domain}";
-              platform = "wake_on_lan";
-              mac = "b0:41:6f:13:20:14";
-              host = "10.64.50.28";
-            }
-          ];
+            bluetooth = { };
 
-          command_line =
-            let
-              pduWrapper = pkgs.writeShellScript "pdu_control_wrapper" ''
-                set -euo pipefail
-
-                # Shell wrapper for PDU control that reads the password and calls the expect script
-                # Usage: pdu_control_wrapper.sh <outlet_number> <on|off>
-
-                if [ $# -ne 2 ]; then
-                    echo "Usage: $0 <outlet_number> <on|off>" >&2
-                    exit 1
-                fi
-
-                outlet_number="$1"
-                action="$2"
-
-                # Add inetutils to PATH for telnet command
-                export PATH="${pkgs.inetutils}/bin:$PATH"
-
-                # Call the expect script using expect directly
-                exec ${pkgs.expect}/bin/expect ${./pdu_switch_control.expect} "$outlet_number" "$action" "$(cat ${config.age.secrets."homeassistant/pdu_password".path})"
-              '';
-            in
-            [
-              {
-                switch = {
-                  name = "Phoenix ST";
-                  command_on = "${pduWrapper} 1 on";
-                  command_off = "${pduWrapper} 1 off";
+            adaptive_lighting =
+              let
+                common = {
+                  min_sunset_time = "21:00";
                 };
-              }
+              in
+              [
+                ({
+                  name = "main lights";
+                  lights = [
+                    "light.bedroom_lamp"
+                    "light.bedroom_light"
+                    "light.cubby_light"
+                    "light.desk_lamp"
+                    "light.hallway_light"
+                    "light.living_room_lamp"
+                    "light.living_room_light"
+                    "light.wardrobe_light"
+                  ];
+                } // common)
+                ({
+                  # separate to more vigorously disable and allow the fancy settings
+                  name = "hue";
+                  lights = [
+                    "light.living_room_hue_lamp"
+                  ];
+                  detect_non_ha_changes = true;
+                } // common)
+              ];
+
+            sensor = [
               {
-                switch = {
-                  name = "Rooster CX";
-                  command_on = "${pduWrapper} 2 on";
-                  command_off = "${pduWrapper} 2 off";
-                };
+                # Time/Date (for automations)
+                platform = "time_date";
+                display_options = [
+                  "date"
+                  "date_time_iso"
+                ];
               }
+
               {
-                switch = {
-                  name = "Stinger POP";
-                  command_on = "${pduWrapper} 3 on";
-                  command_off = "${pduWrapper} 3 off";
-                };
-              }
-              {
-                switch = {
-                  name = "Warlock CX";
-                  command_on = "${pduWrapper} 4 on";
-                  command_off = "${pduWrapper} 4 off";
-                };
-              }
-              {
-                switch = {
-                  name = "Theon Storage";
-                  command_on = "${pduWrapper} 5 on";
-                  command_off = "${pduWrapper} 5 off";
+                # Living Room Temperature
+                platform = "statistics";
+                name = "Living Room temperature (rolling average)";
+                entity_id = "sensor.living_room_environment_sensor_temperature";
+                state_characteristic = "average_linear";
+                unique_id = "e86198a8-88f4-4822-95cb-3ec7b2662395";
+                max_age = {
+                  minutes = 5;
                 };
               }
             ];
 
-          # UI managed expansions
-          automation = "!include automations.yaml";
-          script = "!include scripts.yaml";
-          scene = "!include scenes.yaml";
-        };
+            input_boolean = {
+              sleep_mode = {
+                name = "Set house to sleep mode";
+                icon = "mdi:sleep";
+              };
+            };
+
+
+            # UI managed expansions
+            automation = "!include automations.yaml";
+            script = "!include scripts.yaml";
+            scene = "!include scenes.yaml";
+          }
+
+          (import ./servers.nix { inherit config pkgs lib; })
+        ];
       };
     };
   };
