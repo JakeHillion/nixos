@@ -23,21 +23,39 @@
       devices = [ "disk0-crypt" ];
     };
 
+
     hardware = {
       bluetooth.enable = true;
     };
 
     # Networking
     networking = {
-      interfaces.enp1s0.name = "eth0";
+      interfaces.enp1s0 = {
+        name = "eth0";
+        ipv4.addresses = [
+          {
+            address = "10.64.50.29";
+            prefixLength = 24;
+          }
+        ];
+      };
+      defaultGateway = "10.64.50.1";
       vlans = {
         iot = {
           id = 2;
           interface = "eth0";
         };
       };
+      interfaces.iot = {
+        ipv4.addresses = [
+          {
+            address = "10.239.19.8";
+            prefixLength = 24;
+          }
+        ];
+      };
     };
-    networking.nameservers = lib.mkForce [ ]; # Trust the DHCP nameservers
+    networking.nameservers = lib.mkForce [ "1.1.1.1" "8.8.8.8" ];
 
     networking.firewall = {
       allowedTCPPorts = lib.mkForce [
