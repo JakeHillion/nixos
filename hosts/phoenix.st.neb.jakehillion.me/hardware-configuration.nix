@@ -51,8 +51,8 @@
 
   fileSystems."/mnt/d5" =
     {
-      device = "/dev/disk/by-uuid/d3961f79-83a7-4c7e-88f0-2a6838ccaa69";
-      fsType = "bcachefs";
+      device = "/dev/disk/by-uuid/27e10e91-fbcc-4c67-9edd-0965a7f77da4";
+      fsType = "xfs";
       options = [ "noatime" "nofail" "x-systemd.device-timeout=0" ];
     };
 
