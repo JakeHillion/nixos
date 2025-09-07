@@ -7,6 +7,7 @@
     ./downloads.nix
     ./frigate.nix
     ./git.nix
+    ./git-sync.nix
     ./gitea
     ./homeassistant
     ./homebox.nix

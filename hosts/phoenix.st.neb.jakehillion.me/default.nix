@@ -103,6 +103,9 @@ in
       extraRepos = [ "https://gitea.hillion.co.uk/JakeHillion/nixos.git" ];
     };
 
+    ## Git Sync
+    custom.services.git-sync.enable = true;
+
     ## Downloads
     custom.services.downloads = {
       metadataPath = "/${zpool_name}/downloads/metadata";
