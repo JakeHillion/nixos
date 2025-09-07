@@ -55,7 +55,26 @@
         ];
       };
     };
-    networking.nameservers = lib.mkForce [ "1.1.1.1" "8.8.8.8" ];
+    # Use local dnsmasq as caching resolver
+    networking.nameservers = lib.mkForce [ "127.0.0.1" ];
+
+    # Configure dnsmasq as local caching DNS resolver
+    services.dnsmasq = {
+      enable = true;
+      settings = {
+        # Use external DNS servers for upstream resolution
+        server = [ "1.1.1.1" "8.8.8.8" ];
+        # Cache settings - larger cache for better performance
+        cache-size = 10000;
+        # Only bind to localhost to prevent external access
+        listen-address = "127.0.0.1";
+        bind-interfaces = true;
+        # Don't read /etc/resolv.conf
+        no-resolv = true;
+        # Log queries for debugging (remove if not needed)
+        log-queries = true;
+      };
+    };
 
     networking.firewall = {
       allowedTCPPorts = lib.mkForce [
