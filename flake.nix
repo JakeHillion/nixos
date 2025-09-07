@@ -68,7 +68,7 @@
           "pbcli" = final.callPackage ./pkgs/pbcli.nix { };
           "caddy-cloudflare" = prev.caddy.withPlugins {
             plugins = [ "github.com/caddy-dns/cloudflare@v0.2.1" ];
-            hash = "sha256-S1JN7brvH2KIu7DaDOH1zij3j8hWLLc0HdnUc+L89uU=";
+            hash = "sha256-p9AIi6MSWm0umUB83HPQoU8SyPkX5pMx989zAi8d/74=";
           };
           "ogygia" = ogygia.packages.${final.system}.ogygia;
         })
