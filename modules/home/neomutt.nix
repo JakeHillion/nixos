@@ -155,6 +155,17 @@ in
           # Sorting - newest first
           sort = "reverse-date-received";
         };
+
+        extraConfig = ''
+          # HTML email viewing with w3m
+          alternative_order text/plain text/enriched text/html
+          auto_view text/html
+
+          # Define mailcap for HTML viewing
+          set mailcap_path = ${pkgs.writeText "mailcap" ''
+            text/html; ${lib.getExe pkgs.w3m} -I %{charset} -T text/html -dump; copiousoutput;
+          ''}
+        '';
       };
 
     };
