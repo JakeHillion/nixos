@@ -70,7 +70,7 @@ in
     systemd.tmpfiles.rules = [
       "d ${cfg.path} 0700 chia chia - -"
       "d ${cfg.path}/.chia 0700 chia chia - -"
-    ];
+    ] ++ (lib.lists.map (plotDir: "d ${plotDir} 0755 chia chia - -") cfg.plotDirectories);
 
     networking.firewall = lib.mkIf cfg.openFirewall {
       allowedTCPPorts = [ 8444 ];
