@@ -11,6 +11,18 @@ in
       default = false;
       description = "Whether to automatically configure network interfaces based on topology";
     };
+
+    extraForwardRules = lib.mkOption {
+      type = lib.types.lines;
+      default = "";
+      description = "Extra nftables rules to add to the forward chain";
+    };
+
+    extraNatRules = lib.mkOption {
+      type = lib.types.lines;
+      default = "";
+      description = "Extra nftables rules to add to the NAT postrouting chain";
+    };
   };
 
   config =
@@ -285,6 +297,9 @@ in
                       "ip daddr ${rule.internalIP} ${rule.protocol} dport ${toString rule.externalPort} counter accept comment \"${rule.description}\""
                   ) (lib.lists.filter (rule: rule != null) getAllPortForwardingRules))
                 }
+
+                # Extra forward rules
+                ${cfg.extraForwardRules}
               }
             }
 
@@ -333,6 +348,9 @@ in
 
                 # Masquerade outgoing WAN traffic
                 oifname "${locationCfg.wanInterface}" masquerade
+
+                # Extra NAT rules
+                ${cfg.extraNatRules}
               }
             }
           '';

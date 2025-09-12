@@ -275,6 +275,12 @@
                 protocol = "tcp";
               }
               {
+                description = "WireGuard";
+                externalPort = 51820;
+                internalIP = "10.64.50.1";
+                protocol = "udp";
+              }
+              {
                 description = "HTTP";
                 externalPort = 80;
                 internalIP = "10.64.50.1";

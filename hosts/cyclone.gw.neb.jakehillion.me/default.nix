@@ -16,7 +16,37 @@
     custom.users.jake.password = true;
 
     ## Use the network topology abstraction
-    custom.router.auto = true;
+    custom.router = {
+      auto = true;
+      extraForwardRules = ''
+        # WireGuard VPN forwarding rules
+        iifname "wg0" oifname "enp2s0" accept comment "WireGuard to WAN"
+        iifname "enp2s0" oifname "wg0" ct state related,established accept comment "WAN to WireGuard established"
+      '';
+      extraNatRules = ''
+        # WireGuard NAT masquerading
+        iifname "wg0" oifname "enp2s0" masquerade comment "WireGuard NAT"
+      '';
+    };
+
+    ## WireGuard VPN Server
+    networking.wireguard.interfaces."wg0" = {
+      ips = [ "10.200.0.1/24" ];
+      listenPort = 51820;
+      privateKeyFile = "/data/wireguard/wg0-private";
+      generatePrivateKeyFile = true;
+      peers = [
+        {
+          publicKey = "AeCCmn+x3wEGCTMBtkfe17G+nJ7enOgvbWoj+a3lZQA=";
+          allowedIPs = [ "10.200.0.2/32" ];
+        }
+      ];
+    };
+
+    # Ensure WireGuard directory exists on persistent storage
+    systemd.tmpfiles.rules = [
+      "d /data/wireguard 0700 root root -"
+    ];
 
     ## Netdata
     services.netdata = {
