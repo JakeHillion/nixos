@@ -47,7 +47,16 @@
     boot.initrd.postDeviceCommands = lib.mkAfter ''
       btrfs subvolume delete /cache/system
       btrfs subvolume snapshot /cache/empty_snapshot /cache/system
+
+      btrfs subvolume delete /cache/tmp
+      btrfs subvolume snapshot /cache/empty_snapshot /cache/tmp
+      chmod 1777 /cache/tmp
     '';
+    nix = {
+      settings = {
+        build-dir = "/cache/tmp/";
+      };
+    };
 
     ## Custom Services
     custom = {
