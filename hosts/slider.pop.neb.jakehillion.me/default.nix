@@ -9,6 +9,7 @@
     system.stateVersion = "25.05";
 
     custom.defaults = true;
+    custom.auto_updater.allowReboot = true;
     custom.locations.autoServe = true;
 
     custom.tang.enable = true;
