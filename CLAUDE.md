@@ -357,3 +357,4 @@ This keeps the git history clean with one logical change per commit.
 IMPORTANT: When adding new files to the repository, you must run `git add <file>` before Nix commands will recognize them. Nix evaluates the repository based on what Git knows about, not just what's on the filesystem. Files don't need to be committed, but they do need to be added to the Git index for Nix to see them.
 - Don't commit stuff.
 - Never run `git add .` again.
+- When creating secrets, place them directly next to the module that uses them where appropriate. This includes API keys, SSH keys specific to the module, and so on. Secrets that are more generic like Restic shared passwords can still be placed in secrets/.

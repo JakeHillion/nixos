@@ -1,0 +1,179 @@
+{ config, pkgs, lib, ... }:
+
+let
+  cfg = config.custom.services.nix-builder;
+in
+{
+  options.custom.services.nix-builder = {
+    enable = lib.mkEnableOption "nix-builder";
+
+    interval = lib.mkOption {
+      type = lib.types.str;
+      default = "1h";
+      description = "How often to run the builder after inactivity (systemd time format)";
+    };
+
+    atticCache = lib.mkOption {
+      type = lib.types.str;
+      default = "nixos";
+      description = "Name of the attic cache to push to";
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
+    age.secrets."attic/client-token".file = ./client-token.age;
+
+    systemd.services.nix-builder = {
+      description = "Nix Builder Service";
+      serviceConfig = {
+        Type = "oneshot";
+        DynamicUser = true;
+        CacheDirectory = "nix-builder";
+        WorkingDirectory = "%C/nix-builder";
+        LoadCredential = "attic-token:${config.age.secrets."attic/client-token".path}";
+        PrivateTmp = true;
+        ProtectSystem = "strict";
+        ProtectHome = true;
+        NoNewPrivileges = true;
+      };
+
+      environment = {
+        HOME = "%C/nix-builder";
+      };
+
+      script = ''
+        set -euo pipefail
+
+        REPO_URL="gitea.hillion.co.uk/JakeHillion/nixos.git"
+        REPO_DIR="nixos-repo"
+        CURRENT_ARCH="${pkgs.stdenv.hostPlatform.system}"
+
+        echo "[>] Starting nix-builder run"
+
+        # Track build results
+        BUILD_FAILURES=()
+        BUILD_SUCCESSES=()
+
+        # Configure attic client
+        ${pkgs.attic-client}/bin/attic login nixos http://attic.${config.ogygia.domain}/ "$(cat "$CREDENTIALS_DIRECTORY/attic-token")"
+
+        # Clone or update repository
+        if [[ ! -d "$REPO_DIR" ]]; then
+          echo "[↓] Cloning repository..."
+          ${pkgs.git}/bin/git clone "https://$REPO_URL" "$REPO_DIR"
+          cd "$REPO_DIR"
+        else
+          echo "[↻] Updating repository..."
+          cd "$REPO_DIR"
+          ${pkgs.git}/bin/git remote set-url origin "https://$REPO_URL"
+          ${pkgs.git}/bin/git fetch origin --prune
+        fi
+
+        # Get all remote branches
+        REMOTE_BRANCHES=$(${pkgs.git}/bin/git branch -r | ${pkgs.gnugrep}/bin/grep -v 'HEAD' | ${pkgs.gnused}/bin/sed 's/origin\///' | ${pkgs.coreutils}/bin/tr -d ' ')
+
+        for branch in $REMOTE_BRANCHES; do
+          echo "[•] Processing branch: $branch"
+
+          # Switch to detached head at remote branch
+          ${pkgs.git}/bin/git switch --detach "origin/$branch"
+
+          # Get all packages for current architecture
+          echo "[•] Getting packages for $CURRENT_ARCH..."
+          if ! PACKAGES=$(${pkgs.nix}/bin/nix flake show --json 2>/dev/null | ${pkgs.jq}/bin/jq -r ".packages.\"$CURRENT_ARCH\" // {} | keys[]"); then
+            echo "Failed to get packages for branch $branch"
+            exit 1
+          fi
+
+          # Get nixosConfigurations for current architecture
+          echo "[•] Getting nixosConfigurations for $CURRENT_ARCH..."
+          if ! ALL_NIXOS_CONFIGS=$(${pkgs.nix}/bin/nix flake show --json 2>/dev/null | ${pkgs.jq}/bin/jq -r ".nixosConfigurations // {} | keys[]"); then
+            echo "Failed to get nixosConfigurations for branch $branch"
+            exit 1
+          fi
+
+          # Filter by checking system files
+          NIXOS_CONFIGS=""
+          for config in $ALL_NIXOS_CONFIGS; do
+            if [[ -f "hosts/$config/system" ]] && [[ "$(cat "hosts/$config/system")" == "$CURRENT_ARCH" ]]; then
+              NIXOS_CONFIGS="$NIXOS_CONFIGS $config"
+            fi
+          done
+
+          # Build packages first
+          PACKAGE_ARGS=()
+          for package in $PACKAGES; do
+            PACKAGE_ARGS+=(".#packages.$CURRENT_ARCH.\"$package\"")
+          done
+
+          # Add nixosConfigurations (already filtered by architecture)
+          CONFIG_ARGS=()
+          for config in $NIXOS_CONFIGS; do
+            CONFIG_ARGS+=(".#nixosConfigurations.\"$config\".config.system.build.toplevel")
+          done
+
+          # Combine all buildable targets
+          ALL_ARGS=("''${PACKAGE_ARGS[@]}" "''${CONFIG_ARGS[@]}")
+
+          if [[ ''${#ALL_ARGS[@]} -eq 0 ]]; then
+            echo "[!] No targets to build for branch $branch"
+            continue
+          fi
+
+          echo "[•] Building ''${#ALL_ARGS[@]} targets"
+          if ${pkgs.nix}/bin/nix build \
+            --quiet \
+            --no-link \
+            --print-out-paths \
+            "''${ALL_ARGS[@]}" \
+          | ${pkgs.attic-client}/bin/attic push --stdin nixos; then
+            echo "[+] Successfully built and uploaded branch $branch"
+            BUILD_SUCCESSES+=("$branch")
+          else
+            st=("''${PIPESTATUS[@]}")
+            if (( st[1] != 0 )); then
+              echo "[x] Attic push failed for branch $branch"
+              exit 1
+            else
+              echo "[!] Build failed for branch $branch"
+              BUILD_FAILURES+=("$branch")
+            fi
+          fi
+        done
+
+        # Report results
+        echo ""
+        if [[ ''${#BUILD_SUCCESSES[@]} -gt 0 ]]; then
+          echo "[•] Successful builds:"
+          for branch in "''${BUILD_SUCCESSES[@]}"; do
+            echo "  ✓ $branch"
+          done
+          echo ""
+        fi
+        if [[ ''${#BUILD_FAILURES[@]} -gt 0 ]]; then
+          echo "[•] Failed builds:"
+          for branch in "''${BUILD_FAILURES[@]}"; do
+            echo "  ✗ $branch"
+          done
+          echo ""
+        fi
+
+        echo ""
+        echo "[>] nix-builder run completed: ''${#BUILD_SUCCESSES[@]} successes, ''${#BUILD_FAILURES[@]} failures"
+      '';
+    };
+
+    systemd.timers.nix-builder = {
+      description = "Nix Builder Timer";
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnBootSec = "30m";
+        OnUnitInactiveSec = cfg.interval;
+        RandomizedDelaySec = "10m";
+      };
+    };
+
+    # Allow nix-builder to use nix daemon
+    nix.settings.trusted-users = [ "nix-builder" ];
+  };
+}

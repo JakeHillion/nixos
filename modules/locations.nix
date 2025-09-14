@@ -34,6 +34,10 @@ in
           mastodon = "";
           matrix = "boron.cx.${config.ogygia.domain}";
           mosquitto = "stinger.pop.${config.ogygia.domain}";
+          nix-builder = [
+            "slider.pop.${config.ogygia.domain}"
+            "boron.cx.${config.ogygia.domain}"
+          ];
           ollama = "boron.cx.${config.ogygia.domain}";
           privatebin = "boron.cx.${config.ogygia.domain}";
           prometheus = "boron.cx.${config.ogygia.domain}";

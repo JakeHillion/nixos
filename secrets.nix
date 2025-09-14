@@ -25,6 +25,7 @@ let
           lt = { be = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILV3OSUT+cqFqrFHZGfn7/xi5FW3n1qjUFy8zBbYs2Sm root@be"; };
           pop = {
             li = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHQWgcDFL9UZBDKHPiEGepT1Qsc4gz3Pee0/XVHJ6V6u root@li";
+            slider = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFABZxZAYPVqQ4+ZShrOvPopUrWHrnj47BnFJJwjdpwD root@slider";
             stinger = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID28NGGSaK1OtpQkQnYqSZWSahX25uboiHwhsYQoKKbL root@stinger";
           };
           rig = { merlin = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN99UrXe3puoW0Jr1bSPRHL6ImLZD9A9sXeE54JFggIC root@merlin"; };
@@ -87,6 +88,9 @@ in
 
   # Attic
   "secrets/attic/environment.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
+
+  # Nix Builder
+  "modules/services/nix-builder/client-token.age".publicKeys = [ neb.cx.boron neb.pop.slider ];
 
   # Chia Secrets
   "secrets/chia/farmer.key.age".publicKeys = jake_users ++ [ neb.st.phoenix ];

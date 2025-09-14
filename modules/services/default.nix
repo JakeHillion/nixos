@@ -17,6 +17,7 @@
     ./mastodon
     ./matrix
     ./mosquitto.nix
+    ./nix-builder
     ./ollama.nix
     ./privatebin.nix
     ./radicale.nix
