@@ -88,6 +88,9 @@ in
                 rig = {
                   merlin = "172.20.0.10";
                 };
+                skunk = {
+                  darkstar = "172.20.0.23";
+                };
                 st = {
                   phoenix = "172.20.0.11";
                   sundown = "172.20.0.19";
