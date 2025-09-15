@@ -95,7 +95,11 @@ in
           # Filter by checking system files
           NIXOS_CONFIGS=""
           for config in $ALL_NIXOS_CONFIGS; do
-            if [[ -f "hosts/$config/system" ]] && [[ "$(cat "hosts/$config/system")" == "$CURRENT_ARCH" ]]; then
+            if ! SYSTEM=$(${pkgs.nix}/bin/nix eval --raw ".#nixosConfigurations.\"$config\".pkgs.system"); then
+              echo "Failed to get system for configuration $config"
+              exit 1
+            fi
+            if [[ "$SYSTEM" == "$CURRENT_ARCH" ]]; then
               NIXOS_CONFIGS="$NIXOS_CONFIGS $config"
             fi
           done
