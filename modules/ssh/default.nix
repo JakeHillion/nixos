@@ -49,12 +49,16 @@ in
       # Nebula hosts
       "be.lt.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILV3OSUT+cqFqrFHZGfn7/xi5FW3n1qjUFy8zBbYs2Sm";
       "boron.cx.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDtcJ7HY/vjtheMV8EN2wlTw1hU53CJebGIeRJcSkzt5";
+      "cyclone.gw.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJM3XMKyjK4gYWkZ2byGewWiNI0RfVXK/wynv7bKzMmJ";
       "li.pop.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHQWgcDFL9UZBDKHPiEGepT1Qsc4gz3Pee0/XVHJ6V6u";
       "merlin.rig.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN99UrXe3puoW0Jr1bSPRHL6ImLZD9A9sXeE54JFggIC";
       "phoenix.st.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE9AAAAIBPQcp9MzabvwbViNmILVNfipMUnwV+5okRfhOuV7+Mt";
+      "rooster.cx.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEVOycZ4M9JYWtKnMeHwUgtJ1H+cECHE+67n1JDCLGle";
       "router.home.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAlCj/i2xprN6h0Ik2tthOJQy6Qwq3Ony73+yfbHYTFu";
+      "slider.pop.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFABZxZAYPVqQ4+ZShrOvPopUrWHrnj47BnFJJwjdpwD";
       "stinger.pop.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID28NGGSaK1OtpQkQnYqSZWSahX25uboiHwhsYQoKKbL";
       "theon.storage.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN59psLVu3/sQORA4x3p8H3ei8MCQlcwX5T+k3kBeBMf";
+      "warlock.cx.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAPwB61OXWt+hpCV+T68MHTk06NptNBRgUTr/44Q6itT";
 
       # CNAME records
       "restic.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE9AAAAIBPQcp9MzabvwbViNmILVNfipMUnwV+5okRfhOuV7+Mt";
