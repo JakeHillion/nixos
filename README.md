@@ -12,7 +12,14 @@ This command should be run on a Linux machine with an aarch64 processor or binfm
 
 ### Building on another system
 
-Some systems are very slow at rebuilding themselves, with one example being Boron struggling to build Mongo. Currently I have no centralised build process so we don't have signed images. This process works:
+Some systems are very slow at rebuilding themselves, with one example being Boron struggling to build Mongo. There are two approaches:
+
+**Remote builders** (builds on remote machine):
+
+    nix build '.#nixosConfigurations."hondo.gw.neb.jakehillion.me".config.system.build.toplevel' \
+        --builders 'jake@slider.pop.neb.jakehillion.me aarch64-linux /data/users/jake/.ssh/id_ecdsa'
+
+**Manual transfer** (build locally, transfer result):
 
     STORE_PATH=`nix build --no-link --print-out-paths '.#nixosConfigurations."boron.cx.neb.jakehillion.me".config.system.build.toplevel'`
     nix-store --export $(nix-store --query --requisites $STORE_PATH) | zstd > closure.nar.zst

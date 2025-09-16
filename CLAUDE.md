@@ -146,6 +146,20 @@ For example:
 nix build '.#nixosConfigurations."cyclone.gw.neb.jakehillion.me".config.system.build.toplevel'
 ```
 
+### Remote Building
+
+For systems that are slow to build or have different architectures, use remote builders:
+
+```bash
+nix build '.#nixosConfigurations."hondo.gw.neb.jakehillion.me".config.system.build.toplevel' \
+    --builders 'jake@slider.pop.neb.jakehillion.me aarch64-linux /data/users/jake/.ssh/id_ecdsa'
+```
+
+Requirements:
+- SSH key access to remote machine
+- User in `trusted-users` on both machines
+- SSH host keys configured in `modules/ssh/default.nix`
+
 ## Common Tasks
 
 ### Adding a New Host

@@ -9,7 +9,7 @@
       domain = "neb.jakehillion.me";
     };
 
-    hardware.enableAllFirmware = true;
+    hardware.enableAllFirmware = lib.mkDefault true;
     nix = {
       settings = lib.mkMerge [
         {
@@ -47,7 +47,7 @@
 
     environment = {
       systemPackages = with pkgs; [
-        agenix.packages."${system}".default
+        #agenix.packages."${system}".default
         btop
         fd
         gh

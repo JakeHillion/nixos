@@ -57,6 +57,7 @@ in
                 };
                 gw = {
                   cyclone = "172.20.0.18";
+                  hondo = "172.20.0.22";
                 };
                 home = {
                   microserver = "172.20.0.2"; # removed 23/12/2024
