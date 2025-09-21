@@ -70,7 +70,10 @@ in
         fi
 
         # Get all remote branches
-        REMOTE_BRANCHES=$(${pkgs.git}/bin/git branch -r | ${pkgs.gnugrep}/bin/grep -v 'HEAD' | ${pkgs.gnused}/bin/sed 's/origin\///' | ${pkgs.coreutils}/bin/tr -d ' ')
+        REMOTE_BRANCHES=$(\
+          ${pkgs.git}/bin/git for-each-ref --sort=-committerdate refs/remotes/ --format='%(refname:short)' \
+          | ${pkgs.gnugrep}/bin/grep -v 'origin$' \
+          | ${pkgs.gnused}/bin/sed 's|origin/||')
 
         for branch in $REMOTE_BRANCHES; do
           echo "[•] Processing branch: $branch"
