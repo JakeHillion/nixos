@@ -2,6 +2,12 @@
 
 let
   cfg = config.custom.services.nix-builder;
+
+  # Gitea configuration
+  giteaUrl = "gitea.hillion.co.uk";
+  giteaOwner = "JakeHillion";
+  giteaRepo = "nixos";
+  contextName = "nix-builder (${pkgs.stdenv.hostPlatform.system})";
 in
 {
   options.custom.services.nix-builder = {
@@ -22,6 +28,7 @@ in
 
   config = lib.mkIf cfg.enable {
     age.secrets."attic/client-token".file = ./client-token.age;
+    age.secrets."nix-builder/gitea-token".file = ./gitea-token.age;
 
     systemd.services.nix-builder = {
       description = "Nix Builder Service";
@@ -30,7 +37,10 @@ in
         DynamicUser = true;
         CacheDirectory = "nix-builder";
         WorkingDirectory = "%C/nix-builder";
-        LoadCredential = "attic-token:${config.age.secrets."attic/client-token".path}";
+        LoadCredential = [
+          "attic-token:${config.age.secrets."attic/client-token".path}"
+          "gitea-token:${config.age.secrets."nix-builder/gitea-token".path}"
+        ];
         PrivateTmp = true;
         ProtectSystem = "strict";
         ProtectHome = true;
@@ -47,8 +57,32 @@ in
         REPO_URL="gitea.hillion.co.uk/JakeHillion/nixos.git"
         REPO_DIR="nixos-repo"
         CURRENT_ARCH="${pkgs.stdenv.hostPlatform.system}"
+        GITEA_URL="${giteaUrl}"
+        GITEA_OWNER="${giteaOwner}"
+        GITEA_REPO="${giteaRepo}"
+        CONTEXT_NAME="${contextName}"
+        GITEA_TOKEN="$(cat "$CREDENTIALS_DIRECTORY/gitea-token")"
 
         echo "[>] Starting nix-builder run"
+
+        # Function to update commit status in Gitea
+        update_commit_status() {
+          local commit_sha="$1"
+          local state="$2"
+          local description="$3"
+
+          echo "[•] Updating commit status: $commit_sha -> $state: $description"
+
+          ${pkgs.curl}/bin/curl -s -X POST \
+            "https://$GITEA_URL/api/v1/repos/$GITEA_OWNER/$GITEA_REPO/statuses/$commit_sha" \
+            -H "Authorization: token $GITEA_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"context\": \"$CONTEXT_NAME\",
+              \"description\": \"$description\",
+              \"state\": \"$state\"
+            }" || echo "[!] Failed to update commit status for $commit_sha"
+        }
 
         # Track build results
         BUILD_FAILURES=()
@@ -80,6 +114,13 @@ in
 
           # Switch to detached head at remote branch
           ${pkgs.git}/bin/git switch --detach "origin/$branch"
+
+          # Get current commit SHA for status updates
+          COMMIT_SHA=$(${pkgs.git}/bin/git rev-parse HEAD)
+          echo "[•] Commit SHA: $COMMIT_SHA"
+
+          # Set status to pending
+          update_commit_status "$COMMIT_SHA" "pending" "Build started"
 
           # Get all packages for current architecture
           echo "[•] Getting packages for $CURRENT_ARCH..."
@@ -136,14 +177,17 @@ in
           | ${pkgs.attic-client}/bin/attic push --stdin nixos; then
             echo "[+] Successfully built and uploaded branch $branch"
             BUILD_SUCCESSES+=("$branch")
+            update_commit_status "$COMMIT_SHA" "success" "Build completed successfully"
           else
             st=("''${PIPESTATUS[@]}")
             if (( st[1] != 0 )); then
               echo "[x] Attic push failed for branch $branch"
+              update_commit_status "$COMMIT_SHA" "failure" "Attic push failed"
               exit 1
             else
               echo "[!] Build failed for branch $branch"
               BUILD_FAILURES+=("$branch")
+              update_commit_status "$COMMIT_SHA" "failure" "Build failed"
             fi
           fi
         done

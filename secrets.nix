@@ -91,6 +91,7 @@ in
 
   # Nix Builder
   "modules/services/nix-builder/client-token.age".publicKeys = [ neb.cx.boron neb.pop.slider ];
+  "modules/services/nix-builder/gitea-token.age".publicKeys = [ neb.cx.boron neb.pop.slider ];
 
   # Chia Secrets
   "secrets/chia/farmer.key.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
