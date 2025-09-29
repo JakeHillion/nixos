@@ -31,6 +31,7 @@ in
         "gitea.hillion.co.uk"
         "homeassistant.hillion.co.uk"
         "links.hillion.co.uk"
+        "openhab.hillion.co.uk"
         "pastes.hillion.co.uk"
         "status.jakehillion.me"
       ])
@@ -81,6 +82,10 @@ in
         "homeassistant.hillion.co.uk".extraConfig = ''
           tls ${./certs/homeassistant.hillion.co.uk.pem} ${config.age.secrets."caddy/homeassistant.hillion.co.uk.pem".path}
           reverse_proxy http://${locations.services.homeassistant}:8123
+        '';
+        "openhab.hillion.co.uk".extraConfig = ''
+          tls ${./certs/openhab.hillion.co.uk.pem} ${config.age.secrets."caddy/openhab.hillion.co.uk.pem".path}
+          reverse_proxy http://${locations.services.openhab}:8080
         '';
         "gitea.hillion.co.uk".extraConfig = ''
           tls ${./certs/gitea.hillion.co.uk.pem} ${config.age.secrets."caddy/gitea.hillion.co.uk.pem".path}

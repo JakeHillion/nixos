@@ -18,6 +18,7 @@
     ./matrix
     ./mosquitto.nix
     ./nix-builder
+    ./openhab
     ./ollama.nix
     ./privatebin.nix
     ./radicale.nix

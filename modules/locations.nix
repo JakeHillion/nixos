@@ -34,6 +34,7 @@ in
           mastodon = "";
           matrix = "boron.cx.${config.ogygia.domain}";
           mosquitto = "stinger.pop.${config.ogygia.domain}";
+          openhab = "stinger.pop.${config.ogygia.domain}";
           nix-builder = [
             "slider.pop.${config.ogygia.domain}"
             "boron.cx.${config.ogygia.domain}"
