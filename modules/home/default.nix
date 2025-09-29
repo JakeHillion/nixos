@@ -9,6 +9,7 @@ in
     ./git.nix
     ./neovim.nix
     ./neomutt.nix
+    ./nix-trusted-settings.nix
     ./tmux/default.nix
   ];
 
@@ -68,6 +69,19 @@ in
 
       # Enable protonmail-bridge service for devboxes
       custom.services.protonmail-bridge.enable = true;
+
+      # Configure nix trusted settings for cachix
+      custom.home.nix-trusted-settings = {
+        enable = true;
+        substituters = [
+          "https://ogygia.cachix.org"
+          "https://sched-ext.cachix.org"
+        ];
+        trustedPublicKeys = [
+          "ogygia.cachix.org-1:xb4bnMPeWgSP81Xs0Vl7ZU4Ez7Ul65qp/EoZ40pDaWo="
+          "sched-ext.cachix.org-1:dtoM9QOUUqJs3JkmSgVoKYp9cLY0BrupOqp4DVz35/g="
+        ];
+      };
 
       home-manager.users."${config.custom.user}" = {
         home = {
