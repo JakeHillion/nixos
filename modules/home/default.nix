@@ -89,6 +89,7 @@ in
 
           packages = with pkgs; [
             unstable.claude-code
+            unstable.codex
             tea
           ];
         };
