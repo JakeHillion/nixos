@@ -63,7 +63,7 @@
 
     ## Spotify
     services.pipewire.enable = lib.mkForce false;
-    hardware.pulseaudio.enable = true;
+    services.pulseaudio.enable = true;
     users.users.jake.extraGroups = [ "audio" ];
 
     home-manager.users.jake.services.spotifyd = {
