@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, nixpkgs-unstable, ... }:
 
 let
   zpool_name = "practical-defiant-coffee";
@@ -7,7 +7,12 @@ in
   imports = [
     ./disko.nix
     ./hardware-configuration.nix
+    # Override nixos-containers module to unstable version for downloads.nix compatibility
+    # Note: downloads.nix was previously overriding this globally, moved here to phoenix where downloads actually runs
+    "${nixpkgs-unstable}/nixos/modules/virtualisation/nixos-containers.nix"
   ];
+
+  disabledModules = [ "virtualisation/nixos-containers.nix" ];
 
   config = {
     system.stateVersion = "24.05";

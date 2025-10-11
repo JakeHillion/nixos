@@ -1,11 +1,9 @@
-{ config, pkgs, lib, nixpkgs-unstable, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   cfg = config.custom.services.downloads;
 in
 {
-  imports = [ "${nixpkgs-unstable}/nixos/modules/virtualisation/nixos-containers.nix" ];
-  disabledModules = [ "virtualisation/nixos-containers.nix" ];
 
   options.custom.services.downloads = {
     enable = lib.mkEnableOption "downloads";
