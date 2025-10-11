@@ -107,7 +107,7 @@ in
         "--resolv-conf=off"
         "--network-namespace-path=/run/netns/downloads"
       ];
-      copyResolvConf = false;
+      # copyResolvConf = false; # Temporarily commented out - upstreaming in https://github.com/NixOS/nixpkgs/pull/450979
 
       bindMounts = {
         "/var/lib/caddy" = { hostPath = "${cfg.metadataPath}/caddy"; isReadOnly = false; };
