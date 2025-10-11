@@ -17,11 +17,20 @@ in
     age.secrets."attic/environment" = {
       file = ../../secrets/attic/environment.age;
     };
-    systemd.services.atticd.serviceConfig.ExecStartPre = "+${pkgs.writeShellScript "chown-attic" ''
-      set -euo pipefail
-      ${pkgs.coreutils}/bin/install -d -o atticd -g atticd ${config.services.atticd.settings.storage.path}
-      ${pkgs.coreutils}/bin/chown -R atticd:atticd ${config.services.atticd.settings.storage.path}
-    ''}";
+
+    users.users.atticd = {
+      isSystemUser = true;
+      group = "atticd";
+      uid = config.ids.uids.atticd;
+    };
+
+    users.groups.atticd = {
+      gid = config.ids.gids.atticd;
+    };
+
+    systemd.services.atticd.serviceConfig = {
+      DynamicUser = lib.mkForce false;
+    };
 
     services = {
       caddy = {
@@ -46,6 +55,8 @@ in
 
       atticd = {
         enable = true;
+        user = "atticd";
+        group = "atticd";
         environmentFile = config.age.secrets."attic/environment".path;
 
         settings = {
