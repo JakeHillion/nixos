@@ -2,7 +2,6 @@
 
 let
   cfg = config.custom.hostinfo;
-  rev = config.system.configurationRevision;
   zkCfg = config.custom.services.zookeeper;
 in
 {
@@ -34,13 +33,13 @@ in
             if ($r->method eq 'GET') {
               given ($r->uri->path) {
                 when ('/current/nixos/system/configurationRevision') {
-                  $c->send_file_response("/run/current-system/etc/flake-version");
+                  $c->send_file_response("/run/current-system/sw/share/ogygia/build-revision");
                 }
                 when ('/booted/nixos/system/configurationRevision') {
-                  $c->send_file_response("/run/booted-system/etc/flake-version");
+                  $c->send_file_response("/run/booted-system/sw/share/ogygia/build-revision");
                 }
                 when ('/nextboot/nixos/system/configurationRevision') {
-                  $c->send_file_response("/nix/var/nix/profiles/system/etc/flake-version");
+                  $c->send_file_response("/nix/var/nix/profiles/system/sw/share/ogygia/build-revision");
                 }
                 default {
                   $c->send_error(404);
@@ -96,7 +95,7 @@ in
 
           def read_version_file(path):
               """Read version from flake-version file"""
-              version_file = Path(path) / "etc" / "flake-version"
+              version_file = Path(path) / "sw" / "share" / "ogygia" / "build-revision"
               try:
                   return version_file.read_text().strip()
               except Exception as e:
@@ -214,13 +213,6 @@ in
         DynamicUser = true;
         Restart = "always";
         RestartSec = "10s";
-      };
-    };
-
-    environment.etc = {
-      flake-version = {
-        source = builtins.toFile "flake-version" "${if rev == null then "dirty" else rev}";
-        mode = "0444";
       };
     };
   };
