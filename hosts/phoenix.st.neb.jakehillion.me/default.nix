@@ -61,6 +61,13 @@ in
       extraPools = [ zpool_name ];
     };
 
+    # Remove network-online.target dependency from ZFS import to break systemd ordering cycle.
+    # The ZFS encryption key is stored on the LUKS-encrypted /data filesystem (unlocked via Tang
+    # in initramfs), so no network is needed for ZFS import.
+    systemd.services."zfs-import-${zpool_name}" = {
+      unitConfig.Wants = lib.mkForce "systemd-udev-settle.service";
+    };
+
     services.btrfs.autoScrub = {
       enable = true;
       interval = "Tue, 02:00";
