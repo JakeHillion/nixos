@@ -31,6 +31,12 @@
     # Pin to the latest kernel for now, as the current default (LTS) is 6.12.
     boot.kernelPackages = pkgs.linuxPackages_latest;
 
+    # Lockless peek patch for sched_ext testing
+    boot.kernelPatches = [{
+      name = "scx_lockless_peek";
+      patch = ../../patches/kernel/scx_lockless_peek.patch;
+    }];
+
     custom.defaults = true;
     custom.locations.autoServe = true;
     custom.home.devbox = true;
