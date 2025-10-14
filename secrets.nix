@@ -15,6 +15,7 @@ let
           cx = {
             boron = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDtcJ7HY/vjtheMV8EN2wlTw1hU53CJebGIeRJcSkzt5 root@boron";
             rooster = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEVOycZ4M9JYWtKnMeHwUgtJ1H+cECHE+67n1JDCLGle root@rooster";
+            warlock = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAPwB61OXWt+hpCV+T68MHTk06NptNBRgUTr/44Q6itT root@warlock";
           };
           gw = {
             cyclone = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJM3XMKyjK4gYWkZ2byGewWiNI0RfVXK/wynv7bKzMmJ root@cyclone";
@@ -77,7 +78,7 @@ in
   "secrets/restic/1.6T-wasabi.env.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
   "secrets/restic/1.6T-backblaze.env.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
 
-  "secrets/git/git_backups_ecdsa.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
+  "secrets/git/git_backups_ecdsa.age".publicKeys = jake_users ++ [ neb.st.phoenix neb.cx.warlock ];
   "secrets/git/git_backups_remotes.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
 
   # Mastodon Secrets
