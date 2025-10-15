@@ -82,11 +82,11 @@ in
               ${git} clone ${remote} .
           fi
 
-          current_file="/run/current-system/etc/flake-version"
-          nextboot_file="/nix/var/nix/profiles/system/etc/flake-version"
+          current_file="/run/current-system/sw/share/ogygia/build-revision"
+          nextboot_file="/nix/var/nix/profiles/system/sw/share/ogygia/build-revision"
 
           if [ ! -f "$current_file" ] || [ ! -f "$nextboot_file" ]; then
-            echo "Error: missing flake-version file." >&2
+            echo "Error: missing build-revision file." >&2
             exit 1
           fi
 
