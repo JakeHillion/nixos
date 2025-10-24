@@ -108,6 +108,13 @@ in
           ${git} switch main
           ${git} pull
 
+          repo_sha="$(${git} rev-parse HEAD)"
+
+          if [ "$repo_sha" = "$current_sha" ] && [ "$repo_sha" = "$nextboot_sha" ]; then
+            echo "✔ Already on correct commit. Nothing to do."
+            exit 0
+          fi
+
           if ! is_in_main "$nextboot_sha"; then
             echo "✱ next boot system SHA $nextboot_sha is NOT in origin/main. Running 'nixos-rebuild test'..."
             ${nixos-rebuild} --flake ".#${config.networking.fqdn}" test
