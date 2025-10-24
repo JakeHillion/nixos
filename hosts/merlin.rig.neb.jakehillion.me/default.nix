@@ -58,6 +58,16 @@
     # Allow performing aarch64 builds in QEMU
     boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
+    ## Podman
+    virtualisation = {
+      containers.enable = true;
+      podman = {
+        enable = true;
+        dockerCompat = true;
+        dockerSocket.enable = true;
+      };
+    };
+
     ## Udisks
     services.udisks2.enable = true;
 
