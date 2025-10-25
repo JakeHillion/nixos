@@ -392,6 +392,22 @@
         "type": "github"
       }
     },
+    "qnaplcd-menu": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1751390449,
+        "narHash": "sha256-7Uacz9fUJgm2jJ3ueLhYSVQ30OI74qy8+oZbt6r80dg=",
+        "owner": "stephenhouser",
+        "repo": "QnapLCD-Menu",
+        "rev": "a7b314e256e4c501351cfa0ab432681c9bc1613c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "stephenhouser",
+        "repo": "QnapLCD-Menu",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "agenix": "agenix",
@@ -406,6 +422,7 @@
         "nixpkgs": "nixpkgs",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "ogygia": "ogygia",
+        "qnaplcd-menu": "qnaplcd-menu",
         "status-jakehillion-me": "status-jakehillion-me"
       }
     },

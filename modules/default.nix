@@ -18,6 +18,7 @@
     ./nebula/default.nix
     ./oci-containers/default.nix
     ./prometheus/default.nix
+    ./qnap-display.nix
     ./router.nix
     ./sched_ext.nix
     ./services/default.nix

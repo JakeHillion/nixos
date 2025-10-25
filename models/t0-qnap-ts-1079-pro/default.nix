@@ -19,5 +19,8 @@
 
     # Delegation
     custom.impermanence.enable = true;
+
+    # QNAP LCD Display
+    custom.qnap-display.enable = true;
   };
 }

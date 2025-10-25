@@ -33,6 +33,9 @@
 
     status-jakehillion-me.url = "https://gitea.hillion.co.uk/JakeHillion/status.jakehillion.me/archive/main.tar.gz";
     status-jakehillion-me.inputs.nixpkgs.follows = "nixpkgs";
+
+    qnaplcd-menu.url = "github:stephenhouser/QnapLCD-Menu";
+    qnaplcd-menu.flake = false;
   };
 
   description = "Hillion Nix flake";
@@ -51,6 +54,7 @@
     , nixpkgs
     , nixpkgs-unstable
     , ogygia
+    , qnaplcd-menu
     , status-jakehillion-me
     , ...
     }@inputs:
@@ -71,6 +75,7 @@
             hash = "sha256-p9AIi6MSWm0umUB83HPQoU8SyPkX5pMx989zAi8d/74=";
           };
           "ogygia" = ogygia.packages.${final.system}.ogygia;
+          "qnaplcd" = final.callPackage ./pkgs/qnaplcd.nix { inherit qnaplcd-menu; };
         })
       ];
     in
