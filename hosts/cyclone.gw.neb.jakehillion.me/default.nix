@@ -22,10 +22,18 @@
         # WireGuard VPN forwarding rules
         iifname "wg0" oifname "enp2s0" accept comment "WireGuard to WAN"
         iifname "enp2s0" oifname "wg0" ct state related,established accept comment "WAN to WireGuard established"
+
+        # Nebula VPN forwarding rules
+        iifname "neb.jh" oifname "enp2s0" accept comment "Nebula to WAN"
+        iifname "enp2s0" oifname "neb.jh" ct state related,established accept comment "WAN to Nebula established"
+
       '';
       extraNatRules = ''
         # WireGuard NAT masquerading
         iifname "wg0" oifname "enp2s0" masquerade comment "WireGuard NAT"
+
+        # Nebula NAT masquerading
+        iifname "neb.jh" oifname "enp2s0" masquerade comment "Nebula NAT"
       '';
     };
 
