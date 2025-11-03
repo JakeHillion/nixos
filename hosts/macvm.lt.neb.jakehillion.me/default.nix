@@ -9,7 +9,10 @@
     system.stateVersion = "24.11";
 
     custom.defaults = true;
-    custom.impermanence.enable = true;
+    custom.impermanence = {
+      enable = true;
+      userExtraFiles.jake = [ ".ssh/id_ecdsa" ".ssh/id_rsa" ];
+    };
 
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
