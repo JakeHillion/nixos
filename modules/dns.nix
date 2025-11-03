@@ -68,6 +68,7 @@ in
                 lt = {
                   be = "172.20.0.5";
                   jakehillion-mba-m2-15 = "172.20.0.6";
+                  macvm = "172.20.0.22";
                 };
                 mob = {
                   jakes-ipad = "172.20.0.17";
