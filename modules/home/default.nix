@@ -74,10 +74,12 @@ in
       custom.home.nix-trusted-settings = {
         enable = true;
         substituters = [
+          "https://hearthd.cachix.org"
           "https://ogygia.cachix.org"
           "https://sched-ext.cachix.org"
         ];
         trustedPublicKeys = [
+          "hearthd.cachix.org-1:Lt/GTziCLrilXymMR1tEX1TZkv5ZEqF6JKfyS5aGEqY="
           "ogygia.cachix.org-1:xb4bnMPeWgSP81Xs0Vl7ZU4Ez7Ul65qp/EoZ40pDaWo="
           "sched-ext.cachix.org-1:dtoM9QOUUqJs3JkmSgVoKYp9cLY0BrupOqp4DVz35/g="
         ];
