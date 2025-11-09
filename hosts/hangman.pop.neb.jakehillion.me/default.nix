@@ -57,6 +57,11 @@
           publicKey = "KGaJnfagLsFWrCQAWmfCv202Bc8jAM2JCu5mvIKTiTI=";
           allowedIPs = [ "10.188.151.3/32" ];
         }
+        {
+          # 🐼-iphone
+          publicKey = "uzmfbEq9v5u+fyPnSZxt7pCFyOQ4UmG5MKBb+LwH4TQ=";
+          allowedIPs = [ "10.188.151.4/32" ];
+        }
       ];
     };
 
