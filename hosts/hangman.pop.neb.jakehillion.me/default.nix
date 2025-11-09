@@ -16,6 +16,30 @@
     # Tang/Clevis configuration for disk encryption
     custom.tang.enable = true;
 
+    # Unbound DNS resolver for WireGuard clients and local system
+    services.unbound = {
+      enable = true;
+      settings = {
+        server = {
+          interface = [ "127.0.0.1" "10.188.151.1" ];
+          access-control = [ "127.0.0.0/8 allow" "10.188.151.0/24 allow" ];
+
+          # Enable DNSSEC validation
+          module-config = ''"validator iterator"'';
+          auto-trust-anchor-file = "/var/lib/unbound/root.key";
+
+          # Privacy and security settings
+          hide-identity = true;
+          hide-version = true;
+          qname-minimisation = true;
+
+          # Performance
+          prefetch = true;
+          prefetch-key = true;
+        };
+      };
+    };
+
     # WireGuard VPN Server
     networking.wireguard.interfaces."wg0" = {
       ips = [ "10.188.151.1/24" ];
@@ -70,6 +94,10 @@
 
             # Allow WireGuard
             udp dport 21372 counter accept comment "WireGuard"
+
+            # Allow DNS from WireGuard clients
+            iifname "wg0" udp dport 53 counter accept comment "DNS from WireGuard"
+            iifname "wg0" tcp dport 53 counter accept comment "DNS from WireGuard"
 
             # Drop everything else
             counter drop
