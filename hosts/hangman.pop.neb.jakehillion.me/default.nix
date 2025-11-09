@@ -48,8 +48,14 @@
       generatePrivateKeyFile = true;
       peers = [
         {
+          # Jake's MacBook Air
           publicKey = "16vCVIC95WmDsqMi0gb/EwoU0pA3z/kx81ZFd0ngRW4=";
           allowedIPs = [ "10.188.151.2/32" ];
+        }
+        {
+          # Jake's iPhone 17 Pro Max
+          publicKey = "KGaJnfagLsFWrCQAWmfCv202Bc8jAM2JCu5mvIKTiTI=";
+          allowedIPs = [ "10.188.151.3/32" ];
         }
       ];
     };
