@@ -72,7 +72,7 @@
           "pbcli" = final.callPackage ./pkgs/pbcli.nix { };
           "caddy-cloudflare" = prev.caddy.withPlugins {
             plugins = [ "github.com/caddy-dns/cloudflare@v0.2.1" ];
-            hash = "sha256-p9AIi6MSWm0umUB83HPQoU8SyPkX5pMx989zAi8d/74=";
+            hash = "sha256-3NTI1fMlkpDB2Q/Q/CznEafscypEjJAOmTfAqWhHK1w=";
           };
           "ogygia" = ogygia.packages.${final.system}.ogygia;
           "qnaplcd" = final.callPackage ./pkgs/qnaplcd.nix { inherit qnaplcd-menu; };
