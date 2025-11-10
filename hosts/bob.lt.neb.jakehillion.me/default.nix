@@ -11,6 +11,13 @@
     custom.defaults = true;
     custom.home.devbox = true;
     custom.home.neomutt.backup = false;
+    custom.sched_ext = {
+      enable = true;
+      scheduler = "scx_lavd";
+    };
+
+    ## Run latest kernel for sched_ext
+    boot.kernelPackages = pkgs.linuxPackages_latest;
 
     ## Impermanence
     custom.impermanence = {
