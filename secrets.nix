@@ -23,7 +23,10 @@ let
           home = {
             router = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAlCj/i2xprN6h0Ik2tthOJQy6Qwq3Ony73+yfbHYTFu root@router";
           };
-          lt = { be = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILV3OSUT+cqFqrFHZGfn7/xi5FW3n1qjUFy8zBbYs2Sm root@be"; };
+          lt = {
+            be = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILV3OSUT+cqFqrFHZGfn7/xi5FW3n1qjUFy8zBbYs2Sm root@be";
+            bob = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBZHzsley+mbIio2UHmmraS0lHnYTwAKb3aOCfi/veoZ root@bob";
+          };
           pop = {
             li = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHQWgcDFL9UZBDKHPiEGepT1Qsc4gz3Pee0/XVHJ6V6u root@li";
             slider = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFABZxZAYPVqQ4+ZShrOvPopUrWHrnj47BnFJJwjdpwD root@slider";
@@ -48,12 +51,14 @@ in
     neb.gw.cyclone
     neb.home.router
     neb.lt.be
+    neb.lt.bob
     neb.rig.merlin
     neb.st.phoenix
   ];
 
   # WiFi Environment Files
   "secrets/wifi/be.lt.neb.jakehillion.me.age".publicKeys = jake_users ++ [ neb.lt.be ];
+  "secrets/wifi/bob.lt.neb.jakehillion.me.age".publicKeys = jake_users ++ [ neb.lt.bob ];
 
   # Matrix Secrets
   "modules/services/matrix/matrix.hillion.co.uk/macaroon_secret_key.age".publicKeys = jake_users ++ [ neb.cx.boron ];
@@ -142,10 +147,6 @@ in
   # Frigate secrets
   "secrets/frigate/secrets.env.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
 
-  # Desktop secrets
-  "secrets/sway/timewall/merlin.rig.neb.jakehillion.me.toml.age".publicKeys = jake_users ++ [ neb.rig.merlin ];
-  "secrets/sway/timewall/be.lt.neb.jakehillion.me.toml.age".publicKeys = jake_users ++ [ neb.lt.be ];
-
   # Merlin boot control
   "hosts/merlin.rig.neb.jakehillion.me/homeassistant-api-token.age".publicKeys = jake_users ++ [ neb.rig.merlin ];
 
@@ -153,5 +154,5 @@ in
   "secrets/radicale/users.age".publicKeys = jake_users ++ [ neb.cx.boron ];
 
   # Home configuration secrets
-  "secrets/home/smtp-password.age".publicKeys = jake_users ++ [ neb.rig.merlin neb.cx.boron neb.cx.rooster ];
+  "secrets/home/smtp-password.age".publicKeys = jake_users ++ [ neb.rig.merlin neb.cx.boron neb.cx.rooster neb.lt.bob ];
 }

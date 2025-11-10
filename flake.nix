@@ -85,7 +85,7 @@
           fqdns = builtins.attrNames (builtins.readDir ./hosts);
           mkHost = fqdn:
             let
-              system = builtins.readFile ./hosts/${fqdn}/system;
+              system = nixpkgs.lib.strings.trim (builtins.readFile ./hosts/${fqdn}/system);
               func = if builtins.pathExists ./hosts/${fqdn}/unstable then nixpkgs-unstable.lib.nixosSystem else nixpkgs.lib.nixosSystem;
               home-manager-pick = if builtins.pathExists ./hosts/${fqdn}/unstable then home-manager-unstable else home-manager;
             in
