@@ -34,6 +34,7 @@ in
               })
               {
                 "be.lt" = "QKNSUEX-XGJIDH3-5DM5MFY-7ES5AVO-ERJ447V-RKS553C-3PGMIJI-Y4YRZAF";
+                "bob.lt" = "J5BTK7J-4UV6EBD-K45UNV4-UGZ57YN-2PWNBPW-IO2IJ24-VB23JFV-EBCH6A7";
                 "boron.cx" = "LX5YKSC-SV22B4A-ESU7YPL-AANIT55-OVT3UJN-3FKNKUF-E7AOTOW-MMPNJQL";
                 "jakehillion-mba-m2-15.lt" = "7NAXX6J-4RRJD6B-NP5LG3L-LUIGASI-OXLPS3H-ACLCXBA-RZNSRXN-CXMFZQC";
                 "jakes-ipad.mob" = "QPNNJBC-SZQG4ZH-J7R4M2B-YUY6DLH-DFP6HBS-ASPKR5S-CARCET3-OBJAGAI";
@@ -81,7 +82,7 @@ in
 
                   "media/audiobooks" = {
                     id = "spherical-tagged-muenster";
-                    devices = [ "jakehillion-mba-m2-15.lt" "phoenix.st" ];
+                    devices = [ "bob.lt" "jakehillion-mba-m2-15.lt" "phoenix.st" ];
                   };
 
                   "appdata/zotero" = {

@@ -38,6 +38,12 @@
 
     security.sudo.wheelNeedsPassword = lib.mkForce true;
 
+    ## Syncthing
+    custom.syncthing = {
+      enable = true;
+      baseDir = "/data/users/jake/sync";
+    };
+
     ## Networking
     networking.firewall = {
       allowedTCPPorts = lib.mkForce [
