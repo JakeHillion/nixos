@@ -32,8 +32,10 @@
       };
     };
 
-    ## User
+    ## Desktop
     custom.users.jake.password = true;
+    custom.desktop.sway.enable = true;
+
     security.sudo.wheelNeedsPassword = lib.mkForce true;
 
     ## Networking

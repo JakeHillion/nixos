@@ -6,6 +6,16 @@ in
 {
   options.custom.desktop.sway = {
     enable = lib.mkEnableOption "sway";
+    extraConfig = lib.mkOption {
+      type = lib.types.lines;
+      default = "";
+      description = "Extra configuration to append to the Sway config file";
+    };
+    greeterRotation = lib.mkOption {
+      type = lib.types.nullOr (lib.types.enum [ "90" "180" "270" "normal" "flipped" "flipped-90" "flipped-180" "flipped-270" ]);
+      default = null;
+      description = "Rotation transformation for the greeter display (uses wlr-randr transform values)";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -71,8 +81,17 @@ in
 
         sleep_all_displays = cmd_all_displays "off";
         wake_all_displays = cmd_all_displays "on";
+
+        rotate_displays = lib.optionalString (cfg.greeterRotation != null) ''
+          # Apply rotation to all displays
+          ${lib.getExe pkgs.wlr-randr} --json \
+            | ${lib.getExe pkgs.jq} -r '.[].name' \
+            | xargs -I{} ${lib.getExe pkgs.wlr-randr} --output {} --transform ${cfg.greeterRotation}
+        '';
       in
       "${pkgs.dbus}/bin/dbus-run-session ${lib.getExe pkgs.cage} ${lib.escapeShellArgs config.programs.regreet.cageArgs} -- ${pkgs.writeShellScript "sleepy_regreet" ''
+      ${rotate_displays}
+
       ${lib.getExe pkgs.swayidle} -w \
         timeout 300 "${sleep_all_displays}" \
         resume "${wake_all_displays}" &
@@ -121,7 +140,11 @@ in
           set $term "${alacritty}/bin/alacritty"
           set $tmux "${tmux}/bin/tmux"
 
-        '' + builtins.readFile ./config;
+        '' + builtins.readFile ./config + lib.optionalString (cfg.extraConfig != "") ''
+
+          ### Extra configuration
+          ${cfg.extraConfig}
+        '';
       };
     };
   };
