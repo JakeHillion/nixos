@@ -10,6 +10,7 @@
     ./defaults.nix
     ./desktop/default.nix
     ./dns.nix
+    ./games
     ./home/default.nix
     ./hostinfo.nix
     ./ids.nix
