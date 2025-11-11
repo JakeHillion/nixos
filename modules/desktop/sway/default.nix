@@ -132,10 +132,37 @@ in
                 fi
             done
           '';
+
+          status_command = pkgs.writeShellScript "sway_status" (
+            if config.custom.laptop then ''
+              # Get battery information using acpi
+              BATTERY_INFO=$(${pkgs.acpi}/bin/acpi -b 2>/dev/null | head -1)
+              if [ -n "$BATTERY_INFO" ]; then
+                BATTERY_CAPACITY=$(echo "$BATTERY_INFO" | ${pkgs.gnugrep}/bin/grep -oE '[0-9]+%' | head -1 | tr -d '%')
+                BATTERY_STATUS=$(echo "$BATTERY_INFO" | cut -d: -f2 | cut -d, -f1 | tr -d ' ')
+
+                # Set battery icon based on status and level
+                if [ "$BATTERY_STATUS" = "Charging" ]; then
+                  BATTERY_ICON="⚡"
+                elif [ "$BATTERY_CAPACITY" -lt 20 ]; then
+                  BATTERY_ICON="🪫"
+                else
+                  BATTERY_ICON="🔋"
+                fi
+
+                echo "$BATTERY_ICON$BATTERY_CAPACITY | $(date +'%Y-%m-%d %X')"
+              else
+                date +'%Y-%m-%d %X'
+              fi
+            '' else ''
+              date +'%Y-%m-%d %X'
+            ''
+          );
         in
         ''
           ### Configure binary paths from the Nix store
           set $config_watcher "${config_watcher}"
+          set $status_command "${status_command}"
           set $swaylock "${swaylock-effects}/bin/swaylock"
           set $term "${alacritty}/bin/alacritty"
           set $tmux "${tmux}/bin/tmux"
