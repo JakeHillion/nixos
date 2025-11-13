@@ -36,6 +36,11 @@
 
       networks = {
         "Hillion WPA3 Network".pskRaw = "ext:HILLION_WPA3_NETWORK_PSK";
+        "Jake’s iPhone" = {
+          pskRaw = "ext:JAKES_IPHONE_PSK";
+          authProtocols = [ "WPA-PSK" ];
+          priority = -10;
+        };
       };
     };
 
