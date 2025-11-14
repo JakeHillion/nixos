@@ -51,7 +51,7 @@ in
         source ${nix-direnv}/share/nix-direnv/direnvrc
       '';
 
-      promptInit = with pkgs; lib.strings.optionalString config.custom.laptop ''
+      promptInit = with pkgs; if config.custom.laptop then ''
         # Battery status in prompt for laptops
         function battery_prompt() {
           local battery_info=$(${pkgs.acpi}/bin/acpi -b 2>/dev/null | head -1)
@@ -70,9 +70,10 @@ in
           fi
         }
 
-        # Add battery to left prompt
         setopt PROMPT_SUBST
         PROMPT='$(battery_prompt)%n@%m:%~/ > '
+      '' else ''
+        PROMPT='%n@%m:%~/ > '
       '';
     };
   };
