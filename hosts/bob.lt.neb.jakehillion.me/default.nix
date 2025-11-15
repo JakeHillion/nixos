@@ -39,6 +39,9 @@
       };
     };
 
+    ## iPhone wired hotspot
+    services.usbmuxd.enable = true;
+
     ## Desktop
     custom.users.jake.password = true;
     custom.desktop.sway.enable = true;
