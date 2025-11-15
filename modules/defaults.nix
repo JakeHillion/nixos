@@ -57,6 +57,7 @@
         nix
         ogygia
         ripgrep
+        tree
         vim
 
         (writeShellScriptBin "pastry" ''
