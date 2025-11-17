@@ -9,6 +9,7 @@
     ./git.nix
     ./git-sync.nix
     ./gitea
+    ./hearthd
     ./homeassistant
     ./homebox.nix
     ./protonmail-bridge.nix

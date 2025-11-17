@@ -31,6 +31,9 @@
     ogygia.url = "github:JakeHillion/ogygia-nix";
     ogygia.inputs.nixpkgs.follows = "nixpkgs";
 
+    hearthd.url = "github:JakeHillion/hearthd";
+    hearthd.inputs.nixpkgs.follows = "nixpkgs";
+
     status-jakehillion-me.url = "https://gitea.hillion.co.uk/JakeHillion/status.jakehillion.me/archive/main.tar.gz";
     status-jakehillion-me.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -46,6 +49,7 @@
     , darwin
     , disko
     , flake-utils
+    , hearthd
     , home-manager
     , home-manager-unstable
     , impermanence
@@ -98,6 +102,7 @@
 
                 agenix.nixosModules.default
                 disko.nixosModules.disko
+                hearthd.nixosModules.default
                 impermanence.nixosModules.impermanence
                 nixos-generators.nixosModules.all-formats
                 ogygia.nixosModules.default

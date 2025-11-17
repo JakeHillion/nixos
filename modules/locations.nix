@@ -27,6 +27,7 @@ in
           frigate = "phoenix.st.${config.ogygia.domain}";
           git = "boron.cx.${config.ogygia.domain}";
           gitea = "boron.cx.${config.ogygia.domain}";
+          hearthd = "stinger.pop.${config.ogygia.domain}";
           homeassistant = "stinger.pop.${config.ogygia.domain}";
           homebox = "boron.cx.${config.ogygia.domain}";
           immich = "phoenix.st.${config.ogygia.domain}";
