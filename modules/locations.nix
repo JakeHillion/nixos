@@ -39,7 +39,7 @@ in
             "slider.pop.${config.ogygia.domain}"
             "boron.cx.${config.ogygia.domain}"
           ];
-          ollama = "boron.cx.${config.ogygia.domain}";
+          ollama = "merlin.rig.${config.ogygia.domain}";
           privatebin = "boron.cx.${config.ogygia.domain}";
           prometheus = "boron.cx.${config.ogygia.domain}";
           radicale = "boron.cx.${config.ogygia.domain}";

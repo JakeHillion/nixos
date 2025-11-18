@@ -11,6 +11,12 @@ in
       type = lib.types.str;
       default = "/var/lib/ollama";
     };
+
+    models = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      description = "Ollama models to pre-pull and keep available.";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -23,6 +29,10 @@ in
 
     services.ollama = {
       enable = true;
+      package = pkgs.ollama-rocm;
+      acceleration = "rocm";
+      rocmOverrideGfx = "11.0.0";
+
       home = cfg.dataPath;
       host = "[::]"; # not clear why this is necessary when reverse proxied
 
@@ -30,17 +40,24 @@ in
       group = "ollama";
 
       # TODO: This downloads models with `ollama pull` but doesn't delete them when removed. This should be fixed.
-      loadModels = [
-        "phi4:14b"
-        "deepseek-r1:32b"
+      loadModels = cfg.models;
+    };
+
+    hardware.graphics = {
+      enable = true;
+      extraPackages = with pkgs; [
+        rocmPackages.clr.icd
+        rocmPackages.rocm-runtime
       ];
     };
 
     custom.www.nebula = {
       enable = true;
-      virtualHosts."ollama.${config.ogygia.domain}".extraConfig = ''
-        reverse_proxy http://127.0.0.1:${toString config.services.ollama.port}
-      '';
+      virtualHosts."http://ollama.${config.ogygia.domain}" = {
+        extraConfig = ''
+          reverse_proxy http://127.0.0.1:${toString config.services.ollama.port}
+        '';
+      };
     };
   };
 }
