@@ -11,9 +11,62 @@
     custom.defaults = true;
     custom.profiles.devbox.enable = true;
     custom.home.neomutt.backup = false;
+
+    custom.home.opencode = {
+      enable = true;
+      includeLocalProvider = true;
+      providers = {
+        merlin = {
+          name = "Merlin";
+          baseURL = "http://ollama.${config.ogygia.domain}:11434/v1";
+          models = {
+            "qwen2.5-coder:14b" = {
+              id = "ollama_chat/qwen2.5-coder:14b";
+              displayName = "Qwen2.5 Coder 14B";
+            };
+            "deepseek-coder-v2:16b" = {
+              id = "ollama_chat/deepseek-coder-v2:16b";
+              displayName = "DeepSeek Coder V2 16B";
+            };
+          };
+        };
+        rooster = {
+          name = "Rooster";
+          baseURL = "http://ollama.${config.ogygia.domain}:11434/v1";
+          models = {
+            "qwen2.5-coder:14b" = {
+              id = "ollama_chat/qwen2.5-coder:14b";
+              displayName = "Qwen2.5 Coder 14B";
+            };
+            "deepseek-coder-v2:16b" = {
+              id = "ollama_chat/deepseek-coder-v2:16b";
+              displayName = "DeepSeek Coder V2 16B";
+            };
+          };
+        };
+      };
+    };
     custom.sched_ext = {
       enable = true;
       scheduler = "scx_lavd";
+    };
+
+    custom.services.ollama = {
+      enable = true;
+      models = [
+        "qwen2.5-coder:7b"
+      ];
+      providers.bob-local = {
+        name = "Bob Local";
+        baseURL = "http://localhost:11434/v1";
+        models = {
+          "qwen2.5-coder:7b" = {
+            id = "ollama_chat/qwen2.5-coder:7b";
+            displayName = "Qwen2.5 Coder 7B";
+          };
+        };
+        visibility = "local";
+      };
     };
 
     ## Run latest kernel for sched_ext

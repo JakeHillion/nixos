@@ -39,7 +39,10 @@ in
             "slider.pop.${config.ogygia.domain}"
             "boron.cx.${config.ogygia.domain}"
           ];
-          ollama = "merlin.rig.${config.ogygia.domain}";
+          ollama = [
+            "merlin.rig.${config.ogygia.domain}"
+            "rooster.cx.${config.ogygia.domain}"
+          ];
           privatebin = "boron.cx.${config.ogygia.domain}";
           prometheus = "boron.cx.${config.ogygia.domain}";
           radicale = "boron.cx.${config.ogygia.domain}";
@@ -63,10 +66,11 @@ in
       {
         custom.services = lib.mapAttrsRecursive
           (path: value: {
-            enable =
+            enable = lib.mkOverride 1100 (
               if builtins.isList value
               then builtins.elem config.networking.fqdn value
-              else config.networking.fqdn == value;
+              else config.networking.fqdn == value
+            );
           })
           cfg.locations.services;
       })

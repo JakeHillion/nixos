@@ -17,6 +17,47 @@ in
       default = [ ];
       description = "Ollama models to pre-pull and keep available.";
     };
+
+    providers = lib.mkOption {
+      type = lib.types.attrsOf (lib.types.submodule {
+        options = {
+          name = lib.mkOption {
+            type = lib.types.str;
+            description = "Display name for the provider";
+          };
+
+          baseURL = lib.mkOption {
+            type = lib.types.str;
+            description = "Base URL for the Ollama API";
+          };
+
+          models = lib.mkOption {
+            type = lib.types.attrsOf (lib.types.submodule {
+              options = {
+                id = lib.mkOption {
+                  type = lib.types.str;
+                  description = "Model ID for OpenCode (e.g., ollama_chat/qwen2.5-coder:14b)";
+                };
+                displayName = lib.mkOption {
+                  type = lib.types.str;
+                  description = "Human-readable model name";
+                };
+              };
+            });
+            default = {};
+            description = "Models available from this provider";
+          };
+
+          visibility = lib.mkOption {
+            type = lib.types.enum [ "global" "local" ];
+            default = "global";
+            description = "Whether this provider is accessible network-wide (global) or only localhost (local)";
+          };
+        };
+      });
+      default = {};
+      description = "Ollama provider configurations for consumption by other services";
+    };
   };
 
   config = lib.mkIf cfg.enable {

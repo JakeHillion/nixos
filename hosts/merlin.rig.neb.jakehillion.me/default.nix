@@ -41,10 +41,61 @@
     custom.locations.autoServe = true;
     custom.profiles.devbox.enable = true;
 
-    custom.services.ollama.models = [
-      "deepseek-coder-v2:16b"
-      "qwen2.5-coder:14b"
-    ];
+    custom.home.opencode = {
+      enable = true;
+      providers = {
+        merlin = {
+          name = "Merlin";
+          baseURL = "http://ollama.${config.ogygia.domain}:11434/v1";
+          models = {
+            "qwen2.5-coder:14b" = {
+              id = "ollama_chat/qwen2.5-coder:14b";
+              displayName = "Qwen2.5 Coder 14B";
+            };
+            "deepseek-coder-v2:16b" = {
+              id = "ollama_chat/deepseek-coder-v2:16b";
+              displayName = "DeepSeek Coder V2 16B";
+            };
+          };
+        };
+        rooster = {
+          name = "Rooster";
+          baseURL = "http://ollama.${config.ogygia.domain}:11434/v1";
+          models = {
+            "qwen2.5-coder:14b" = {
+              id = "ollama_chat/qwen2.5-coder:14b";
+              displayName = "Qwen2.5 Coder 14B";
+            };
+            "deepseek-coder-v2:16b" = {
+              id = "ollama_chat/deepseek-coder-v2:16b";
+              displayName = "DeepSeek Coder V2 16B";
+            };
+          };
+        };
+      };
+    };
+
+    custom.services.ollama = {
+      models = [
+        "deepseek-coder-v2:16b"
+        "qwen2.5-coder:14b"
+      ];
+      providers.merlin = {
+        name = "Merlin";
+        baseURL = "http://ollama.${config.ogygia.domain}:11434/v1";
+        models = {
+          "qwen2.5-coder:14b" = {
+            id = "ollama_chat/qwen2.5-coder:14b";
+            displayName = "Qwen2.5 Coder 14B";
+          };
+          "deepseek-coder-v2:16b" = {
+            id = "ollama_chat/deepseek-coder-v2:16b";
+            displayName = "DeepSeek Coder V2 16B";
+          };
+        };
+        visibility = "global";
+      };
+    };
 
     custom.users.jake.password = true;
     security.sudo.wheelNeedsPassword = lib.mkForce true;
