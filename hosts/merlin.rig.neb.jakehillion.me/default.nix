@@ -14,6 +14,7 @@
 
     boot.kernelParams = [
       "ip=dhcp"
+      "amdgpu.runpm=0"  # Disable runtime power management for headless operation
     ];
     boot.initrd = {
       availableKernelModules = [ "igc" ];
