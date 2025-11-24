@@ -22,6 +22,7 @@
     ./ollama.nix
     ./privatebin.nix
     ./radicale.nix
+    ./renovate
     ./restic
     ./status.nix
     ./tang.nix

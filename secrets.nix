@@ -156,6 +156,9 @@ in
   # Radicale secrets
   "secrets/radicale/users.age".publicKeys = jake_users ++ [ neb.cx.boron ];
 
+  # Renovate secrets
+  "modules/services/renovate/environment.age".publicKeys = jake_users ++ [ neb.cx.boron ];
+
   # Home configuration secrets
   "secrets/home/smtp-password.age".publicKeys = jake_users ++ [ neb.rig.merlin neb.cx.boron neb.cx.rooster neb.lt.bob ];
 }
