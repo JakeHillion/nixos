@@ -39,7 +39,7 @@
 
     custom.defaults = true;
     custom.locations.autoServe = true;
-    custom.home.devbox = true;
+    custom.profiles.devbox.enable = true;
 
     custom.services.ollama.models = [
       "deepseek-coder-v2:16b"

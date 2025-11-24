@@ -102,10 +102,8 @@ in
                 persistence."${cfg.base}/users/${x}" = {
                   allowOther = false;
 
-                  files = (cfg.userExtraFiles.${x} or [ ]) ++
-                    (lib.lists.optionals (config.custom.home.devbox && x == config.custom.user) [ ".claude.json" ]);
-                  directories = (cfg.userExtraDirs.${x} or [ ]) ++
-                    (lib.lists.optionals (config.custom.home.devbox && x == config.custom.user) [ ".claude" ".codex" ]);
+                  files = cfg.userExtraFiles.${x} or [ ];
+                  directories = cfg.userExtraDirs.${x} or [ ];
                 };
 
                 sessionVariables = lib.attrsets.optionalAttrs homeCfg.programs.zoxide.enable { _ZO_DATA_DIR = "${cfg.base}/users/${x}/.local/share/zoxide"; };

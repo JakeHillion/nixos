@@ -20,6 +20,7 @@
     ./nebula
     ./oci-containers
     ./prometheus
+    ./profiles
     ./qnap-display.nix
     ./router.nix
     ./sched_ext.nix
