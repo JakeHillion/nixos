@@ -237,4 +237,7 @@ bar {
 # Disable borders on terminals
 for_window [app_id="Alacritty"] border none
 
+# Hide title bar for Firefox
+for_window [app_id="firefox"] border pixel 1
+
 include /etc/sway/config.d/*

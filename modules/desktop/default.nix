@@ -5,5 +5,6 @@
     ./awesome
     ./sway
     ./timewall.nix
+    ./firefox.nix
   ];
 }

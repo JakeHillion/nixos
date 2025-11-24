@@ -101,6 +101,9 @@ in
 
     programs.sway.enable = true;
 
+    # Enable Firefox for desktop environment
+    custom.desktop.firefox.enable = true;
+
     home-manager.users."jake" = {
       programs.alacritty = {
         enable = true;
