@@ -28,7 +28,7 @@
     nixos-generators.url = "github:nix-community/nixos-generators";
     nixos-generators.inputs.nixpkgs.follows = "nixpkgs";
 
-    ogygia.url = "github:JakeHillion/ogygia-nix";
+    ogygia.url = "github:JakeHillion/ogygia-nix/cli-status-zookeeper";
     ogygia.inputs.nixpkgs.follows = "nixpkgs";
 
     hearthd.url = "github:JakeHillion/hearthd";

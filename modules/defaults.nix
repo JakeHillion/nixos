@@ -4,11 +4,6 @@
   options.custom.defaults = lib.mkEnableOption "defaults";
 
   config = lib.mkIf config.custom.defaults {
-    ogygia = {
-      enable = true;
-      domain = "neb.jakehillion.me";
-    };
-
     hardware.enableAllFirmware = true;
     nix = {
       settings = lib.mkMerge [
@@ -95,6 +90,7 @@
     custom.hostinfo.enable = true;
     custom.locations.autoServe = true;
     custom.nebula.enable = true;
+    custom.ogygia.enable = true;
     custom.prometheus.client.enable = true;
     custom.shell.enable = true;
     custom.ssh.enable = true;
