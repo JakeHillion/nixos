@@ -34,6 +34,8 @@ in
       ];
     };
 
+    custom.home.opencode.enable = true;
+
     home-manager.users.${user} = {
       home = {
         packages = with pkgs; [
