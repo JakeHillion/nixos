@@ -97,8 +97,8 @@
               inherit system;
               specialArgs = inputs;
               modules = [
-                ./hosts/${fqdn}/default.nix
-                ./modules/default.nix
+                ./hosts/${fqdn}
+                ./modules
 
                 agenix.nixosModules.default
                 disko.nixosModules.disko

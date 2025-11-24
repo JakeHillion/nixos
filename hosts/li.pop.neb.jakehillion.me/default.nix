@@ -2,7 +2,7 @@
 
 {
   imports = [
-    "${nixos-hardware}/raspberry-pi/4/default.nix"
+    "${nixos-hardware}/raspberry-pi/4"
     ./hardware-configuration.nix
   ];
 

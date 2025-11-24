@@ -3,35 +3,35 @@
 {
   imports = [
     ./auto_updater.nix
-    ./backups/default.nix
-    ./ca/default.nix
+    ./backups
+    ./ca
     ./chia.nix
     ./compressed_ram.nix
     ./defaults.nix
-    ./desktop/default.nix
+    ./desktop
     ./dns.nix
     ./games
-    ./home/default.nix
+    ./home
     ./hostinfo.nix
     ./ids.nix
     ./impermanence.nix
     ./laptop.nix
     ./locations.nix
-    ./nebula/default.nix
-    ./oci-containers/default.nix
-    ./prometheus/default.nix
+    ./nebula
+    ./oci-containers
+    ./prometheus
     ./qnap-display.nix
     ./router.nix
     ./sched_ext.nix
-    ./services/default.nix
-    ./shell/default.nix
-    ./ssh/default.nix
+    ./services
+    ./shell
+    ./ssh
     ./storj.nix
     ./syncthing.nix
-    ./tang/default.nix
+    ./tang
     ./topology.nix
     ./users.nix
-    ./www/default.nix
+    ./www
   ];
 
   options.custom = {

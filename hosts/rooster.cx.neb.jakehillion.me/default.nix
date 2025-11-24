@@ -2,7 +2,7 @@
 
 {
   imports = [
-    ../../models/t0-smh11ssli-epyc7k62/default.nix
+    ../../models/t0-smh11ssli-epyc7k62
   ];
 
   config = {

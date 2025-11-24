@@ -2,7 +2,7 @@
 
 {
   imports = [
-    ../../models/t0-qnap-ts-1079-pro/default.nix
+    ../../models/t0-qnap-ts-1079-pro
   ];
 
   config = {

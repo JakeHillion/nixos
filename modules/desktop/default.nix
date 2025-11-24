@@ -2,8 +2,8 @@
 
 {
   imports = [
-    ./awesome/default.nix
-    ./sway/default.nix
+    ./awesome
+    ./sway
     ./timewall.nix
   ];
 }

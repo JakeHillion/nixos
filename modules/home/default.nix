@@ -10,7 +10,7 @@ in
     ./neovim.nix
     ./neomutt.nix
     ./nix-trusted-settings.nix
-    ./tmux/default.nix
+    ./tmux
   ];
 
   options.custom.home = {

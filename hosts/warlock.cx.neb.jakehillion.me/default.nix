@@ -2,7 +2,7 @@
 
 {
   imports = [
-    ../../models/t0-beelink-eq14/default.nix
+    ../../models/t0-beelink-eq14
   ];
 
   config = {

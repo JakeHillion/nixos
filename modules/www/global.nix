@@ -5,7 +5,7 @@ let
   locations = config.custom.locations.locations;
 in
 {
-  imports = [ "${nixpkgs-unstable}/nixos/modules/services/web-servers/caddy/default.nix" ];
+  imports = [ "${nixpkgs-unstable}/nixos/modules/services/web-servers/caddy" ];
   disabledModules = [ "services/web-servers/caddy/default.nix" ];
 
   options.custom.www.global = {

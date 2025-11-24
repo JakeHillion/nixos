@@ -2,7 +2,7 @@
 
 {
   imports = [
-    ../../models/t0-topton-1u-10g/default.nix
+    ../../models/t0-topton-1u-10g
   ];
 
   config = {
