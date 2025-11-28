@@ -30,17 +30,19 @@
 
       userExtraFiles.jake = [
         ".ssh/id_ecdsa"
+        ".ssh/id_rsa"
       ];
     };
 
     ## WiFi
-    age.secrets."wifi/bob.lt.${config.ogygia.domain}".file = ../../secrets/wifi/bob.lt.${config.ogygia.domain}.age;
+    age.secrets."wifi".file = ./wifi.env.age;
     networking.wireless = {
       enable = true;
-      secretsFile = config.age.secrets."wifi/bob.lt.${config.ogygia.domain}".path;
+      secretsFile = config.age.secrets."wifi".path;
 
       networks = {
         "Hillion WPA3 Network".pskRaw = "ext:HILLION_WPA3_NETWORK_PSK";
+        "some-windburned-bisection".pskRaw = "ext:STARLINK_PSK";
         "Jake’s iPhone" = {
           pskRaw = "ext:JAKES_IPHONE_PSK";
           authProtocols = [ "WPA-PSK" ];
