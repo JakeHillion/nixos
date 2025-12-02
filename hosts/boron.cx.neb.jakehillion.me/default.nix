@@ -52,9 +52,12 @@
       btrfs subvolume snapshot /cache/empty_snapshot /cache/tmp
       chmod 1777 /cache/tmp
     '';
+    systemd.tmpfiles.rules = [
+      "d /cache/tmp/nix-builds 0700 root root -"
+    ];
     nix = {
       settings = {
-        build-dir = "/cache/tmp/";
+        build-dir = "/cache/tmp/nix-builds/";
       };
     };
 
