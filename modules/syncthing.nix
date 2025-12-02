@@ -100,6 +100,16 @@ in
                     id = "contaminated-ample-demonisation";
                     devices = allDevices;
                   };
+
+                  "appdata/claude" = {
+                    id = "periodical-disjoint-pier";
+                    devices = [
+                      "bob.lt"
+                      "maverick.cx"
+                      "merlin.rig"
+                      "rooster.cx"
+                    ];
+                  };
                 };
           };
       };
