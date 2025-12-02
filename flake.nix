@@ -31,7 +31,7 @@
     ogygia.url = "github:JakeHillion/ogygia-nix";
     ogygia.inputs.nixpkgs.follows = "nixpkgs";
 
-    hearthd.url = "github:JakeHillion/hearthd";
+    hearthd.url = "github:JakeHillion/hearthd/claude/fix-systemd-ci-builds-01EpVMnxTpuMy4wd2aS7iUb5";
     hearthd.inputs.nixpkgs.follows = "nixpkgs";
 
     status-jakehillion-me.url = "https://gitea.hillion.co.uk/JakeHillion/status.jakehillion.me/archive/main.tar.gz";
