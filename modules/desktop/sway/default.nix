@@ -96,7 +96,7 @@ in
         timeout 300 "${sleep_all_displays}" \
         resume "${wake_all_displays}" &
 
-      ${lib.getExe pkgs.greetd.regreet}
+      ${lib.getExe pkgs.regreet}
     ''}";
 
     programs.sway.enable = true;

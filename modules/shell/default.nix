@@ -26,8 +26,6 @@ in
       ".local/share/direnv"
     ];
 
-    programs.thefuck.enable = true;
-
     programs.zsh = {
       enable = true;
       histSize = 1000000;

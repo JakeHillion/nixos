@@ -51,7 +51,7 @@ in
           port = 15606;
           url = "http://zigbee2mqtt.home.${config.ogygia.domain}";
         };
-        homeassistant = true;
+        homeassistant.enabled = true;
         advanced = {
           channel = 15;
         };

@@ -97,6 +97,8 @@ in
             package = pkgs.frigate;
             hostname = "frigate.${hostConfig.ogygia.domain}";
 
+            checkConfig = false; # the Nix sandbox that checks this on the builder can't see the environment variable that makes the config valid
+
             settings = {
               auth.enabled = false;
 

@@ -45,7 +45,7 @@ in
       passwordFile = config.age.secrets."homebox/restic/mig29.key".path;
       paths = [
         "${config.services.postgresqlBackup.location}/homebox.sql"
-        config.services.homebox.settings.HBOX_STORAGE_DATA
+        (lib.removePrefix "file://" config.services.homebox.settings.HBOX_STORAGE_CONN_STRING)
       ];
     };
 
@@ -57,7 +57,7 @@ in
         HBOX_WEB_HOST = "127.0.0.1";
         HBOX_OPTIONS_ALLOW_REGISTRATION = "true";
       } // lib.optionalAttrs config.custom.impermanence.enable {
-        HBOX_STORAGE_DATA = "${config.custom.impermanence.base}/services/homebox";
+        HBOX_STORAGE_CONN_STRING = "file://${config.custom.impermanence.base}/services/homebox";
       };
     };
   };

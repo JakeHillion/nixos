@@ -27,10 +27,12 @@ in
 
         git = lib.mkIf (config.custom.user == "jake") {
           enable = true;
-          userName = "Jake Hillion";
-          userEmail = "jake@hillion.co.uk";
 
-          extraConfig = {
+          settings = {
+            user = {
+              name = "Jake Hillion";
+              email = "jake@hillion.co.uk";
+            };
             pull = {
               rebase = true;
             };
