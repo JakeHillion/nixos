@@ -19,6 +19,11 @@
     ## Run latest kernel for sched_ext
     boot.kernelPackages = pkgs.linuxPackages_latest;
 
+    # Extra packages
+    environment.systemPackages = with pkgs; [
+      vlc # for using the inbuilt KVM
+    ];
+
     ## Impermanence
     custom.impermanence = {
       enable = true;
