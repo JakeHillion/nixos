@@ -48,16 +48,13 @@
       btrfs subvolume delete /cache/system
       btrfs subvolume snapshot /cache/empty_snapshot /cache/system
 
-      btrfs subvolume delete /cache/tmp
-      btrfs subvolume snapshot /cache/empty_snapshot /cache/tmp
-      chmod 1777 /cache/tmp
+      btrfs subvolume delete /cache/nix-builds
+      btrfs subvolume snapshot /cache/empty_snapshot /cache/nix-builds
+      chmod 0700 /cache/nix-builds
     '';
-    systemd.tmpfiles.rules = [
-      "d /cache/tmp/nix-builds 0700 root root -"
-    ];
     nix = {
       settings = {
-        build-dir = "/cache/tmp/nix-builds/";
+        build-dir = "/cache/nix-builds/";
       };
     };
 
