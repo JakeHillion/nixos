@@ -37,6 +37,7 @@ in
           "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBFsFvYZApd8HBhtsGtCTivMDEKLidKRs7MpMbEIxXnbMTKyh3QsBUr4HZHoTex0kj/ZrdqifrZhaDrJeGzN8i3o= jake@bob.lt"
           "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBC0uKIvvvkzrOcS7AcamsQRFId+bqPwUC9IiUIsiH5oWX1ReiITOuEo+TL9YMII5RyyfJFeu2ZP9moNuZYlE7Bs= jake@jake-mbp"
           "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBOe6YuPo5/FsWaOWR4JHVrF9XQkeT4JE7TUici5ELQK/3/ngTL64JdRnVsf91piLQGyNRI3z2h18qGHQG+z55Zo= jake@merlin.rig"
+          "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBIz2CF69dwLg0IsuS7qoFL0TdOe0voalnKk6Xwk6ETL1rrzBUa7ZyZ7Pbb+2733BxSGCCGhdfzWI2/KO0FaH3xU= jake@maverick"
           "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBNkDPYq9jw7hP2NqHxHv0/HQ0VfE0P4ABF3pzLK8B2lAHrItn0d3HMimxyBvVFfugccTRelVyjC+trNGwMjWN+A= jake@rooster"
         ];
       } else { };

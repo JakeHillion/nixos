@@ -52,8 +52,9 @@ in
               neb = {
                 cx = {
                   boron = "172.20.0.1";
-                  warlock = "172.20.0.15";
+                  maverick = "172.20.0.25";
                   rooster = "172.20.0.16";
+                  warlock = "172.20.0.15";
                 };
                 gw = {
                   cyclone = "172.20.0.18";

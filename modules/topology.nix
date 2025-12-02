@@ -242,6 +242,12 @@
                 hwAddress = "00:c0:b7:6b:f4:34";
                 dhcpReservation = true;
               };
+              "26" = {
+                hostname = "maverick";
+                fqdn = "maverick.cx.${config.ogygia.domain}";
+                hwAddress = "38:05:25:34:02:34";
+                dhcpReservation = true;
+              };
               "27" = {
                 hostname = "phoenix";
                 fqdn = "phoenix.st.${config.ogygia.domain}";
