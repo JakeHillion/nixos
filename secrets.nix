@@ -73,6 +73,7 @@ in
   "secrets/restic/mig29.age".publicKeys = [
     neb.cx.boron
     neb.cx.rooster
+    neb.cx.maverick
     neb.pop.stinger
     neb.rig.merlin
     neb.st.phoenix
@@ -162,5 +163,11 @@ in
   "modules/services/renovate/environment.age".publicKeys = jake_users ++ [ neb.cx.boron ];
 
   # Home configuration secrets
-  "secrets/home/smtp-password.age".publicKeys = jake_users ++ [ neb.rig.merlin neb.cx.boron neb.cx.rooster neb.lt.bob ];
+  "secrets/home/smtp-password.age".publicKeys = jake_users ++ [
+    neb.cx.boron
+    neb.cx.maverick
+    neb.cx.rooster
+    neb.lt.bob
+    neb.rig.merlin
+  ];
 }
