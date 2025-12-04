@@ -33,6 +33,13 @@
       baseDir = "/data/users/jake/sync";
     };
 
+    ## Tailscale
+    services.tailscale = {
+      enable = true;
+      extraSetFlags = [ "--netfilter-mode=off" ];
+      disableTaildrop = true;
+    };
+
     ## General usability
     ### Make podman available for dev tools such as act
     virtualisation = {
