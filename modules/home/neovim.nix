@@ -86,6 +86,58 @@ in
           },
         })
 
+        -- LSP Configuration
+        -- Check if a command is available in PATH
+        local function is_executable(cmd)
+          return vim.fn.executable(cmd) == 1
+        end
+
+        -- Set up keybindings when any LSP attaches (shared across all LSP servers)
+        vim.api.nvim_create_autocmd('LspAttach', {
+          callback = function(args)
+            local bufnr = args.buf
+            -- Enable completion triggered by <c-x><c-o>
+            vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+
+            -- Keybindings for LSP functions
+            local bufopts = { noremap=true, silent=true, buffer=bufnr }
+            vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
+            vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+            vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
+            vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
+            vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
+            vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, bufopts)
+            vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
+            vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+          end
+        })
+
+        -- Configure basedpyright if available
+        if is_executable('basedpyright-langserver') then
+          vim.lsp.config.basedpyright = {
+            cmd = { 'basedpyright-langserver', '--stdio' },
+            filetypes = { 'python' },
+            root_markers = { 'pyproject.toml', 'setup.py', 'setup.cfg', 'requirements.txt', 'Pipfile', 'pyrightconfig.json' },
+            settings = {
+              basedpyright = {
+                analysis = {
+                  autoSearchPaths = true,
+                  useLibraryCodeForTypes = true,
+                  diagnosticMode = "openFilesOnly",
+                }
+              }
+            }
+          }
+
+          -- Enable basedpyright for Python files
+          vim.api.nvim_create_autocmd('FileType', {
+            pattern = 'python',
+            callback = function()
+              vim.lsp.enable('basedpyright')
+            end
+          })
+        end
+
         -- osc52 keyboard
         vim.g.clipboard = {
           name = 'OSC 52',
