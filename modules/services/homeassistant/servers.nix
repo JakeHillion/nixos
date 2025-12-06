@@ -81,6 +81,12 @@ in
       mac = "b0:41:6f:13:20:14";
       host = "10.64.50.28";
     }
+    {
+      name = "maverick.cx.${config.ogygia.domain}";
+      platform = "wake_on_lan";
+      mac = "38:05:25:34:02:34";
+      host = "10.64.50.26";
+    }
   ];
 
   input_boolean = {
