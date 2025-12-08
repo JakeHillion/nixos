@@ -4,7 +4,7 @@
   imports = [
     ./attic.nix
     ./authoritative_dns.nix
-    ./downloads.nix
+    ./downloads
     ./frigate.nix
     ./git.nix
     ./git-sync.nix

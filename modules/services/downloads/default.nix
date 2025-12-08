@@ -25,9 +25,9 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    age.secrets."wireguard/downloads".file = ../../secrets/wireguard/downloads.age;
-    age.secrets."deluge/auth" = {
-      file = ../../secrets/deluge/auth.age;
+    age.secrets."downloads/wireguard".file = ./wireguard.age;
+    age.secrets."downloads/deluge_auth" = {
+      file = ./deluge_auth.age;
       owner = "deluge";
     };
 
@@ -53,7 +53,7 @@ in
 
     ## Wireguard
     networking.wireguard.interfaces."downloads" = {
-      privateKeyFile = config.age.secrets."wireguard/downloads".path;
+      privateKeyFile = config.age.secrets."downloads/wireguard".path;
       ips = [ "10.2.0.2/32" ];
       peers = [
         {
@@ -120,7 +120,7 @@ in
         "/media/films" = { hostPath = cfg.filmsPath; isReadOnly = false; };
         "/media/tv" = { hostPath = cfg.tvPath; isReadOnly = false; };
 
-        "/run/agenix/deluge/auth".hostPath = config.age.secrets."deluge/auth".path;
+        "/run/agenix/downloads/deluge_auth".hostPath = config.age.secrets."downloads/deluge_auth".path;
       };
 
       config = (hostConfig: ({ config, pkgs, ... }: {
@@ -174,7 +174,7 @@ in
               group = "mediaaccess";
 
               dataDir = "/var/lib/deluge";
-              authFile = "/run/agenix/deluge/auth";
+              authFile = "/run/agenix/downloads/deluge_auth";
 
               declarative = true;
               config = {
