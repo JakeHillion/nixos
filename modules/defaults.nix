@@ -7,6 +7,11 @@
     ogygia = {
       enable = true;
       domain = "neb.jakehillion.me";
+
+      zookeeper = {
+        enable = true;
+        endpoints = config.custom.services.zookeeper.clientHosts;
+      };
     };
 
     hardware.enableAllFirmware = true;
