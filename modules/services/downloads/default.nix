@@ -142,16 +142,8 @@ in
             members = [ "radarr" "sonarr" "deluge" ];
           };
 
-          systemd.services.setup-loopback = {
-            description = "Setup container loopback adapter.";
-            before = [ "network.target" ];
-
-            serviceConfig.Type = "oneshot";
-            serviceConfig.RemainAfterExit = true;
-
-            script = with pkgs; "${iproute2}/bin/ip link set up lo";
-          };
           networking = {
+            firewall.enable = false; # interferes with NAT-PMP
             nameservers = [ "1.1.1.1" "8.8.8.8" ];
             hosts = { "127.0.0.1" = builtins.map (x: "${x}.downloads.${hostConfig.ogygia.domain}") [ "prowlarr" "sonarr" "radarr" "deluge" ]; };
           };
@@ -211,6 +203,59 @@ in
                 { name = "prowlarr"; port = 9696; }
                 { name = "deluge"; port = config.services.deluge.web.port; }
               ]);
+            };
+          };
+
+          systemd.services = {
+            setup-loopback = {
+              description = "Setup container loopback adapter.";
+              before = [ "network.target" ];
+
+              serviceConfig.Type = "oneshot";
+              serviceConfig.RemainAfterExit = true;
+
+              script = with pkgs; "${iproute2}/bin/ip link set up lo";
+            };
+
+            deluge-natpmp = {
+              description = "Configure a NAT-PMP port and configure Deluge with it.";
+              after = [ "network-online.target" ];
+              wantedBy = [ "multi-user.target" ];
+
+              serviceConfig.User = "deluge";
+              serviceConfig.Group = "nogroup";
+
+              script = with pkgs; ''
+                #!/usr/bin/env bash
+                set -euo pipefail
+
+                # Deluge connection details
+                DELUGE_DAEMON="${toString config.services.deluge.web.port}"
+
+                OLD_PORT=""
+
+                while true; do
+                  # Ask Proton for a TCP mapping (internal port 1, external random, 60s lifetime)
+                  out="$(${libnatpmp}/bin/natpmpc -a 1 0 tcp 60 -g 10.2.0.1 2>/dev/null || true)"
+
+                  # Parse: "Mapped public port 53186 protocol TCP to local port 1 lifetime 60"
+                  port="$(${gawk}/bin/awk '/Mapped public port/ {print $4; exit}' <<<"$out")"
+
+                  if [[ -n "$port" && "$port" != "$OLD_PORT" ]]; then
+                    echo "Got ProtonVPN forwarded port: $port – updating Deluge"
+
+                    ${deluged}/bin/deluge-console \
+                      "config --set random_port False ; \
+                       config --set listen_ports ($port,$port)"
+
+                    OLD_PORT="$port"
+                  else
+                    echo "Port unchanged, no-op"
+                  fi
+
+                  sleep 45
+                done
+              '';
             };
           };
         };
