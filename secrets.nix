@@ -116,7 +116,7 @@ in
   "secrets/mqtt/homeassistant.age".publicKeys = jake_users ++ [ ];
 
   # Wireguard Secrets
-  "secrets/wireguard/downloads.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
+  "secrets/wireguard/downloads.age".publicKeys = [ neb.st.phoenix ];
 
   # Deluge Secrets
   "secrets/deluge/auth.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
