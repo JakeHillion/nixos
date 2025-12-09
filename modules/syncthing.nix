@@ -139,6 +139,11 @@ in
             "${cfg.baseDir}/archive"
             "${cfg.baseDir}/media/audiobooks"
           ];
+          fullExcludes = [
+            "${cfg.baseDir}/.st"
+            "${cfg.baseDir}/*/.stfolder"
+            "${cfg.baseDir}/media/travel-shows"
+          ];
         in
         {
           "syncthing-mig29" = {
@@ -153,10 +158,7 @@ in
             };
 
             paths = [ cfg.baseDir ];
-            exclude = [
-              "${cfg.baseDir}/.st"
-              "${cfg.baseDir}/*/.stfolder"
-            ] ++ rareBackups;
+            exclude = rareBackups ++ fullExcludes;
           };
           "syncthing-b52" = {
             repository = "rest:https://restic.${config.ogygia.domain}/b52";
@@ -170,6 +172,7 @@ in
             };
 
             paths = [ cfg.baseDir ];
+            exclude = fullExcludes;
           };
         };
     })
