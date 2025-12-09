@@ -48,6 +48,7 @@
           authProtocols = [ "WPA-PSK" ];
           priority = -10;
         };
+        "Plaza Premium Lounge".pskRaw = "ext:PLAZA_PREMIUM_PSK";
       };
     };
 
