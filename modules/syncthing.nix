@@ -85,6 +85,10 @@ in
                     id = "spherical-tagged-muenster";
                     devices = [ "bob.lt" "jakehillion-mba-m2-15.lt" "phoenix.st" ];
                   };
+                  "media/travel-shows" = {
+                    id = "amylaceous-directionless-methyl";
+                    devices = [ "bob.lt" "phoenix.st" ];
+                  };
 
                   "appdata/zotero" = {
                     id = "sustainable-horizontal-skating";
