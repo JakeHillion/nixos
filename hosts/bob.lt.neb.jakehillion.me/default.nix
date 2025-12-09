@@ -34,6 +34,10 @@
       ];
     };
 
+    ## Bluetoooth
+    hardware.bluetooth.enable = true;
+    services.blueman.enable = true;
+
     ## WiFi
     age.secrets."wifi".file = ./wifi.env.age;
     networking.wireless = {
