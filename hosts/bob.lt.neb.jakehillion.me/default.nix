@@ -48,11 +48,18 @@
       networks = {
         "Hillion WPA3 Network".pskRaw = "ext:HILLION_WPA3_NETWORK_PSK";
         "some-windburned-bisection".pskRaw = "ext:STARLINK_PSK";
+        "instructional-blank-cursor" = {
+          pskRaw = "ext:TRAVEL_PSK";
+          hidden = true;
+          priority = 10;
+        };
+
         "Jake’s iPhone" = {
           pskRaw = "ext:JAKES_IPHONE_PSK";
           authProtocols = [ "WPA-PSK" ];
           priority = -10;
         };
+
         "Plaza Premium Lounge".pskRaw = "ext:PLAZA_PREMIUM_PSK";
         "ANA WiFi Service" = { };
       };
