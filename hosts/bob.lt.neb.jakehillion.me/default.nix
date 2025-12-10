@@ -22,6 +22,7 @@
     # Extra packages
     environment.systemPackages = with pkgs; [
       vlc # for using the inbuilt KVM
+      obsidian
     ];
 
     ## Impermanence
