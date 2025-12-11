@@ -19,6 +19,7 @@
     ./matrix
     ./mosquitto.nix
     ./nix-builder
+    ./offline-youtube
     ./ollama.nix
     ./privatebin.nix
     ./radicale.nix

@@ -114,6 +114,11 @@ in
                       "rooster.cx"
                     ];
                   };
+
+                  "media/offline-youtube" = {
+                    id = "receding-accidental-leprosy";
+                    devices = [ "bob.lt" "phoenix.st" ];
+                  };
                 };
           };
       };
@@ -143,6 +148,7 @@ in
             "${cfg.baseDir}/.st"
             "${cfg.baseDir}/*/.stfolder"
             "${cfg.baseDir}/media/travel-shows"
+            "${cfg.baseDir}/media/offline-youtube"
           ];
         in
         {

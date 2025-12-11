@@ -169,4 +169,7 @@ in
     neb.lt.bob
     neb.rig.merlin
   ];
+
+  # Offline YouTube secrets
+  "modules/services/offline-youtube/playlist.env.age".publicKeys = [ neb.st.phoenix ];
 }
