@@ -62,6 +62,7 @@
 
         "Plaza Premium Lounge".pskRaw = "ext:PLAZA_PREMIUM_PSK";
         "ANA WiFi Service" = { };
+        "lfevents".pskRaw = "ext:LFEVENTS_PSK";
       };
     };
 
