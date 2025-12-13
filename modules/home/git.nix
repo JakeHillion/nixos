@@ -10,7 +10,7 @@ in
 
   config = lib.mkIf cfg.enable {
     home-manager.users.jake = {
-      home.packages = with pkgs; [ git-branchless ];
+      home.packages = with pkgs; [ git-branchless jujutsu ];
 
       programs = {
         sapling = lib.mkIf (config.custom.user == "jake") {
@@ -21,6 +21,19 @@ in
           extraConfig = {
             ui = {
               "merge:interactive" = ":merge3";
+            };
+          };
+        };
+
+        jujutsu = lib.mkIf (config.custom.user == "jake") {
+          enable = true;
+          settings = {
+            user = {
+              name = "Jake Hillion";
+              email = "jake@hillion.co.uk";
+            };
+            ui = {
+              default-command = "log";
             };
           };
         };

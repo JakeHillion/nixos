@@ -21,7 +21,6 @@
       neovim
       nix
       ripgrep
-      sapling
     ];
   };
 }
