@@ -1,0 +1,82 @@
+name: commit-validation
+
+on:
+  pull_request:
+  pull_request_target:
+
+jobs:
+  validate-single-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          fetch-depth: 3
+
+      - name: Validate single commit with Change-Id
+        run: |
+          set -euo pipefail
+
+          # Get base and head refs
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD="${{ github.event.pull_request.head.sha }}"
+
+          echo "=== Commit Validation ==="
+          echo "Base: $BASE"
+          echo "Head: $HEAD"
+          echo ""
+
+          # Count commits in the PR
+          COMMIT_COUNT=$(git rev-list --count "$BASE".."$HEAD")
+          echo "Number of commits in this PR: $COMMIT_COUNT"
+
+          if [ "$COMMIT_COUNT" -ne 1 ]; then
+            echo "❌ FAILED: Branch must have exactly 1 commit"
+            echo ""
+            echo "This PR has $COMMIT_COUNT commits, but exactly 1 is required."
+            echo ""
+            echo "Commits in this PR:"
+            git log --oneline "$BASE".."$HEAD"
+            echo ""
+
+            # Get the first commit after base (closest to main) and the last commit (HEAD)
+            FIRST_COMMIT=$(git rev-list "$BASE".."$HEAD" | tail -n 1)
+            LAST_COMMIT="$HEAD"
+
+            echo "To fix this, squash all commits into one using jj:"
+            echo "  jj squash --from $FIRST_COMMIT --into $LAST_COMMIT"
+            echo ""
+            exit 1
+          fi
+
+          echo "✓ Branch has exactly 1 commit"
+          echo ""
+
+          # Get the commit object
+          COMMIT_OBJECT=$(git cat-file -p HEAD)
+
+          echo "Commit object:"
+          echo "---"
+          echo "$COMMIT_OBJECT"
+          echo "---"
+          echo ""
+
+          # Check for change-id header (lowercase, in the commit object headers)
+          if ! echo "$COMMIT_OBJECT" | grep -q '^change-id '; then
+            echo "❌ FAILED: Commit must contain a 'change-id' header"
+            echo ""
+            echo "The commit object must include a 'change-id' header field."
+            echo "This is automatically added by jj (Jujutsu) but not by git."
+            echo ""
+            echo "To fix this, please submit commits using jj instead of git:"
+            echo "  jj commit -m 'your commit message'"
+            echo ""
+            echo "Or amend your existing commit with jj:"
+            echo "  jj describe -m 'your commit message'"
+            echo ""
+            echo "The change-id header will be automatically added by jj."
+            exit 1
+          fi
+
+          echo "✓ Commit contains change-id header"
+          echo ""
+          echo "=== All validation checks passed ==="
