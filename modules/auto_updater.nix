@@ -120,9 +120,9 @@ in
           fi
 
           echo "✔ current-system SHA $current_sha is in origin/main."
-          ${jj} edit main@origin
+          ${jj} new main@origin
 
-          repo_sha="$(${jj} log -r @ --no-graph -T 'commit_id')"
+          repo_sha="$(${jj} log -r 'main@origin' --no-graph -T 'commit_id')"
 
           if [ "$repo_sha" = "$current_sha" ] && [ "$repo_sha" = "$nextboot_sha" ]; then
             echo "✔ Already on correct commit. Nothing to do."
