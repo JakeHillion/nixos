@@ -80,16 +80,15 @@ in
             fi
           fi
 
-          # Clean up old git directory if present
-          if [ -d ".git" ] ; then
-              echo "Found old .git directory, removing contents to migrate to jj..."
-              rm -rf .git
-              # Remove all files to start fresh
-              find . -maxdepth 1 ! -name '.' ! -name '..' -exec rm -rf {} +
-          fi
-
-          if [ ! -d ".jj" ] ; then
-              ${jj} git clone --no-colocate ${remote} .
+          if [ ! -d ".jj" ] && [ ! -d ".git" ]; then
+              echo "Initializing new jj repository with git colocation..."
+              ${jj} git clone ${remote} .
+          elif [ ! -d ".jj" ] && [ -d ".git" ]; then
+              echo "Initializing jj from existing git repository..."
+              ${jj} git init
+          elif [ -d ".jj" ] && [ ! -d ".git" ]; then
+              echo "Enabling git colocation for existing jj repository..."
+              ${jj} git colocation enable
           fi
  
           current_file="/run/current-system/sw/share/ogygia/build-revision"
