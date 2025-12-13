@@ -51,6 +51,8 @@ in
       after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
 
+      path = [ pkgs.git ];
+
       serviceConfig = {
         Type = "oneshot";
         WorkingDirectory = location;
@@ -62,7 +64,7 @@ in
 
       script =
         let
-          git = lib.getExe pkgs.git;
+          jj = lib.getExe pkgs.jujutsu;
           nixos-rebuild = lib.getExe pkgs.nixos-rebuild;
           readlink = "${pkgs.coreutils}/bin/readlink";
           shutdown = "${config.systemd.package}/bin/shutdown";
@@ -78,10 +80,18 @@ in
             fi
           fi
 
-          if [ ! -d ".git" ] ; then
-              ${git} clone ${remote} .
+          # Clean up old git directory if present
+          if [ -d ".git" ] ; then
+              echo "Found old .git directory, removing contents to migrate to jj..."
+              rm -rf .git
+              # Remove all files to start fresh
+              find . -maxdepth 1 ! -name '.' ! -name '..' -exec rm -rf {} +
           fi
 
+          if [ ! -d ".jj" ] ; then
+              ${jj} git clone --no-colocate ${remote} .
+          fi
+ 
           current_file="/run/current-system/sw/share/ogygia/build-revision"
           nextboot_file="/nix/var/nix/profiles/system/sw/share/ogygia/build-revision"
 
@@ -93,10 +103,15 @@ in
           current_sha="$(< "$current_file")"
           nextboot_sha="$(< "$nextboot_file")"
 
-          ${git} fetch origin main
+          ${jj} git fetch --remote origin
 
           is_in_main() {
-            ${git} merge-base --is-ancestor "$1" origin/main
+            local ref="$1"
+            # Try checking if it's a commit hash in main
+            ${jj} log -r "main@origin & $ref" --no-graph -T 'commit_id' 2>/dev/null | grep -q . && return 0
+            # Try checking if it's a change-id in main
+            ${jj} log -r "main@origin & change_id($ref)" --no-graph -T 'commit_id' 2>/dev/null | grep -q . && return 0
+            return 1
           }
 
           if ! is_in_main "$current_sha"; then
@@ -105,10 +120,9 @@ in
           fi
 
           echo "✔ current-system SHA $current_sha is in origin/main."
-          ${git} switch main
-          ${git} pull
+          ${jj} edit main@origin
 
-          repo_sha="$(${git} rev-parse HEAD)"
+          repo_sha="$(${jj} log -r @ --no-graph -T 'commit_id')"
 
           if [ "$repo_sha" = "$current_sha" ] && [ "$repo_sha" = "$nextboot_sha" ]; then
             echo "✔ Already on correct commit. Nothing to do."

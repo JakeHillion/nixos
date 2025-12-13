@@ -44,13 +44,8 @@ let
       fi
 
       cd /etc/nixos
-      if [ "$BRANCH" = "main" ]; then
-        ${pkgs.git}/bin/git switch $BRANCH
-        ${pkgs.git}/bin/git pull
-      else
-        ${pkgs.git}/bin/git fetch
-        ${pkgs.git}/bin/git switch --detach origin/$BRANCH
-      fi
+      ${pkgs.jujutsu}/bin/jj git fetch --remote origin
+      ${pkgs.jujutsu}/bin/jj edit $BRANCH@origin
 
       echo 'Building configuration...'
       nix build --no-link --print-out-paths '.#nixosConfigurations."${config.networking.fqdn}".config.system.build.toplevel' |& ${pkgs.nix-output-monitor}/bin/nom
@@ -97,11 +92,10 @@ let
         local branches
         local -a branch_list
 
-        # Try to get remote branches from git ls-remote
-        if branches=$(${pkgs.git}/bin/git ls-remote --heads origin 2>/dev/null); then
-          # Parse the output to extract branch names
-          branch_list=($(echo "$branches" | ${pkgs.gawk}/bin/awk '{print $2}' | ${pkgs.gnused}/bin/sed 's|refs/heads/||'))
-          _describe 'git branches' branch_list
+        # Try to get remote branches from jj
+        if branches=$(${pkgs.jujutsu}/bin/jj branch list --all-remotes 2>/dev/null | ${pkgs.gnugrep}/bin/grep '@origin' | ${pkgs.gawk}/bin/awk '{print $1}' | ${pkgs.gnused}/bin/sed 's/@origin$//' 2>/dev/null); then
+          branch_list=($(echo "$branches"))
+          _describe 'remote branches' branch_list
         fi
       }
 
