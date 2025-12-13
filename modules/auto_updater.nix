@@ -107,10 +107,10 @@ in
 
           is_in_main() {
             local ref="$1"
-            # Try checking if it's a commit hash in main
-            ${jj} log -r "main@origin & $ref" --no-graph -T 'commit_id' 2>/dev/null | grep -q . && return 0
-            # Try checking if it's a change-id in main
-            ${jj} log -r "main@origin & change_id($ref)" --no-graph -T 'commit_id' 2>/dev/null | grep -q . && return 0
+            # Try checking if it's a commit hash in main's ancestry
+            ${jj} log -r "ancestors(main@origin) & $ref" --no-graph --limit 1 -T 'commit_id' 2>/dev/null | grep -q . && return 0
+            # Try checking if it's a change-id in main's ancestry
+            ${jj} log -r "ancestors(main@origin) & change_id($ref)" --no-graph --limit 1 -T 'commit_id' 2>/dev/null | grep -q . && return 0
             return 1
           }
 
