@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+      <key>Label</key>
+      <string>me.jakehillion.nebula-service</string>
+
+      <key>ProgramArguments</key>
+      <array>
+          <string>/nix/store/rsd5vrbdc4vf2m9qnwqcpp0v58qcqwk5-nebula-1.9.7/bin/nebula</string>
+          <string>-config</string>
+          <string>/etc/nebula/config.yml</string>
+      </array>
+
+      <key>RunAtLoad</key>
+      <true/>
+
+      <key>KeepAlive</key>
+      <dict>
+          <key>SuccessfulExit</key>
+          <false/>
+          <key>NetworkState</key>
+          <true/>
+      </dict>
+
+      <key>ThrottleInterval</key>
+      <integer>10</integer>
+
+      <key>StandardOutPath</key>
+      <string>/tmp/nebula-service.out</string>
+      <key>StandardErrorPath</key>
+      <string>/tmp/nebula-service.err</string>
+
+      <key>UserName</key>
+      <string>root</string>
+      <key>GroupName</key>
+      <string>wheel</string>
+  </dict>
+</plist>
