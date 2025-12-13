@@ -32,6 +32,9 @@ in
               name = "Jake Hillion";
               email = "jake@hillion.co.uk";
             };
+            templates = {
+              git_push_bookmark = "\"jj/\" ++ change_id.short()";
+            };
             ui = {
               default-command = "log";
             };
