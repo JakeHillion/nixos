@@ -8,15 +8,13 @@ in
   options.custom.profiles.devbox.enable = lib.mkEnableOption "Devbox profile";
 
   config = lib.mkIf cfg.enable {
-    custom.impermanence = {
-      userExtraFiles.${user} = [ ".claude.json" ];
-      userExtraDirs.${user} = [
-        ".claude"
-        ".codex"
-        ".config/gh"
-        ".config/tea"
-      ];
-    };
+    custom.impermanence.userExtraDirs.${user} = [
+      ".codex"
+      ".config/gh"
+      ".config/tea"
+    ];
+
+    custom.home.claude.enable = true;
 
     custom.services.protonmail-bridge.enable = true;
 
