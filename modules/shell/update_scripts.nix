@@ -45,7 +45,7 @@ let
 
       cd /etc/nixos
       ${pkgs.jujutsu}/bin/jj git fetch --remote origin
-      ${pkgs.jujutsu}/bin/jj edit $BRANCH@origin
+      ${pkgs.jujutsu}/bin/jj new $BRANCH@origin
 
       echo 'Building configuration...'
       nix build --no-link --print-out-paths '.#nixosConfigurations."${config.networking.fqdn}".config.system.build.toplevel' |& ${pkgs.nix-output-monitor}/bin/nom
