@@ -387,6 +387,11 @@
                 hwAddress = "e8:ff:1e:d9:73:5a";
                 dhcpReservation = true;
               };
+              "12" = {
+                hostname = "argus";
+                hwAddress = "48:da:35:6f:0f:a8";
+                dhcpReservation = true;
+              };
             };
           };
 

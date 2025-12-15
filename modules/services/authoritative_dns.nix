@@ -50,6 +50,7 @@ in
             zigbee2mqtt.home                  21600 CNAME ${locations.services.zigbee2mqtt}.
             graphs.cyclone.gw                 21600 CNAME cyclone.gw.${config.ogygia.domain}.
 
+            argus.kvm                         21600 CNAME cyclone.gw.${config.ogygia.domain}.
             charlie.kvm                       21600 CNAME cyclone.gw.${config.ogygia.domain}.
             hammer.kvm                        21600 CNAME cyclone.gw.${config.ogygia.domain}.
             kvm.phoenix.st                    21600 CNAME cyclone.gw.${config.ogygia.domain}.

@@ -97,6 +97,15 @@
             reverse_proxy unix///run/netdata/netdata.sock
           '';
         };
+        "argus.kvm.${config.ogygia.domain}" = {
+          listenAddresses = [ config.custom.dns.nebula.ipv4 ];
+          extraConfig = ''
+            tls {
+              ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
+            }
+            reverse_proxy http://10.239.19.12
+          '';
+        };
         "hammer.kvm.${config.ogygia.domain}" = {
           listenAddresses = [ config.custom.dns.nebula.ipv4 ];
           extraConfig = ''
