@@ -38,6 +38,9 @@ in
             ui = {
               default-command = "log";
             };
+            aliases = {
+              submit-stack = [ "git" "push" "--change" "trunk()..@-" ];
+            };
           };
         };
 
