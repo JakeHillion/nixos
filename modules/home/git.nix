@@ -37,6 +37,7 @@ in
             };
             ui = {
               default-command = "log";
+              pager = "${lib.getExe pkgs.less} -FRX";
             };
             aliases = {
               submit-stack = [ "git" "push" "--change" "trunk()..@-" ];
