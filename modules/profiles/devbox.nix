@@ -8,6 +8,12 @@ in
   options.custom.profiles.devbox.enable = lib.mkEnableOption "Devbox profile";
 
   config = lib.mkIf cfg.enable {
+    custom.services.nix-prefetch-repos = {
+      enable = true;
+      reposPath = "/data/users/${user}/repos";
+      user = user;
+    };
+
     custom.impermanence.userExtraDirs.${user} = [
       ".codex"
       ".config/gh"

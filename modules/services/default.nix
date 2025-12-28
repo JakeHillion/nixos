@@ -19,6 +19,7 @@
     ./matrix
     ./mosquitto.nix
     ./nix-builder
+    ./nix-prefetch-repos.nix
     ./offline-youtube
     ./ollama.nix
     ./privatebin.nix
