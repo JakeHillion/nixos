@@ -28,6 +28,11 @@ let
       ip = config.custom.dns.authoritative.ipv4.me.jakehillion.neb.storage.theon;
       outlet = 5;
     };
+    maverick_cx = {
+      name = "Maverick CX";
+      ip = config.custom.dns.authoritative.ipv4.me.jakehillion.neb.cx.maverick;
+      outlet = 7;
+    };
   };
 
   pduWrapper = pkgs.writeShellScript "pdu_control_wrapper" ''
