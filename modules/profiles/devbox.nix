@@ -5,9 +5,9 @@ let
   user = config.custom.user;
 in
 {
-  options.custom.profiles.devbox.enable = lib.mkEnableOption "Devbox profile";
+  options.custom.profiles.devbox = lib.mkEnableOption "devbox profile";
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf cfg {
     custom.services.nix-prefetch-repos = {
       enable = true;
       reposPath = "/data/users/${user}/repos";

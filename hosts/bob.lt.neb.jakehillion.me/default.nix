@@ -9,7 +9,7 @@
     system.stateVersion = "25.05";
 
     custom.defaults = true;
-    custom.profiles.devbox.enable = true;
+    custom.profiles.devbox = true;
     custom.home.neomutt.backup = false;
     custom.sched_ext = {
       enable = true;
