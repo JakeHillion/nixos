@@ -7,7 +7,7 @@
 
   config = {
     ## Laptop configuration
-    custom.laptop = true;
+    custom.profiles.laptop = true;
 
     ## Boot
     boot.loader.systemd-boot.enable = true;

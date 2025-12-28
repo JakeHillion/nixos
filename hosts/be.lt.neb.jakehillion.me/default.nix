@@ -12,7 +12,7 @@
     boot.loader.efi.canTouchEfiVariables = true;
 
     custom.defaults = true;
-    custom.laptop = true;
+    custom.profiles.laptop = true;
 
     ## Impermanence
     custom.impermanence = {

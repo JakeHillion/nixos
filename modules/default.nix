@@ -15,7 +15,6 @@
     ./hostinfo.nix
     ./ids.nix
     ./impermanence.nix
-    ./laptop.nix
     ./locations.nix
     ./nebula
     ./oci-containers

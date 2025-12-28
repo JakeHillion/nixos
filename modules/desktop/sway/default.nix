@@ -137,7 +137,7 @@ in
           '';
 
           status_command = pkgs.writeShellScript "sway_status" (
-            if config.custom.laptop then ''
+            if config.custom.profiles.laptop then ''
               # Get battery information using acpi
               BATTERY_INFO=$(${pkgs.acpi}/bin/acpi -b 2>/dev/null | head -1)
               if [ -n "$BATTERY_INFO" ]; then

@@ -49,7 +49,7 @@ in
         source ${nix-direnv}/share/nix-direnv/direnvrc
       '';
 
-      promptInit = with pkgs; if config.custom.laptop then ''
+      promptInit = with pkgs; if config.custom.profiles.laptop then ''
         # Battery status in prompt for laptops
         function battery_prompt() {
           local battery_info=$(${pkgs.acpi}/bin/acpi -b 2>/dev/null | head -1)
