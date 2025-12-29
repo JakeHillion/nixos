@@ -15,8 +15,9 @@ in
     };
 
     home-manager.users.${user} = {
-      # Deploy Nix skill to personal skills directory
+      # Deploy skills to personal skills directory
       home.file.".claude/skills/nix/SKILL.md".source = ./nix-skill/SKILL.md;
+      home.file.".claude/skills/jj/SKILL.md".source = ./jj-skill/SKILL.md;
     };
   };
 }
