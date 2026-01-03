@@ -25,6 +25,10 @@ in
               acl = [ "readwrite #" ];
               hashedPassword = "$7$101$wGQZPdVdeW7iQFmH$bK/VOR6LXCLJKbb6M4PNeVptocjBAWXCLMtEU5fQNBr0Y5UAWlhVg8UAu4IkIXgnViI51NnhXKykdlWF63VkVQ==";
             };
+            hearthd = {
+              acl = [ "readwrite #" ];
+              hashedPassword = "$7$101$zLBwMViF1og2s1kE$pXDLn4Z7Kta8/iItuJCXGpzqwqjSomzUxoUwSTV1zj26Sr2pRdNCbJMov6wlIk8MO3Ia8lUSHBxf/ss9QrjIkw==";
+            };
           };
         }
       ];

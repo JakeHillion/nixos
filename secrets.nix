@@ -135,6 +135,7 @@ in
 
   # hearthd Secrets
   "modules/services/hearthd/locations.toml.age".publicKeys = [ neb.pop.stinger ];
+  "modules/services/hearthd/mqtt.toml.age".publicKeys = [ neb.pop.stinger ];
 
   # Web certificates
   "secrets/certs/hillion.co.uk.pem.age".publicKeys = jake_users ++ [ neb.cx.boron ];
