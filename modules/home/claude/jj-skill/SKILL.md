@@ -14,7 +14,7 @@ Common commands:
 - `jj log` - show commit history
 - `jj diff --git` - show changes (use --git for readable diffs)
 - `jj new` - create a new empty change on top
-- `jj describe -m "message"` - set/update commit description
+- `jj describe -m "message"` - set/update commit description. use `jj commit -m "message"` if attempting to describe the unnamed commit at the top to ensure there is still a new empty change on top after.
 - `jj squash` - squash working copy into parent
 - `jj git push` - push to remote
 - `jj git fetch` - fetch from remote
