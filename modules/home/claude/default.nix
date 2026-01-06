@@ -18,6 +18,7 @@ in
       # Deploy skills to personal skills directory
       home.file.".claude/skills/nix/SKILL.md".source = ./nix-skill/SKILL.md;
       home.file.".claude/skills/jj/SKILL.md".source = ./jj-skill/SKILL.md;
+      home.file.".claude/skills/commit/SKILL.md".source = ./commit-skill/SKILL.md;
     };
   };
 }

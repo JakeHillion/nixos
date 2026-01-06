@@ -1,6 +1,6 @@
 ---
 name: jj
-description: Use when performing VCS operations in a directory with a .jj directory.
+description: Use when running git commands, committing, pushing, pulling, or checking status in a jj repository.
 ---
 
 # Jujutsu Version Control
