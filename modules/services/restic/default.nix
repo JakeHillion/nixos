@@ -139,6 +139,28 @@ in
 
           clones = [
             {
+              repo = "aws-eu-central-2";
+              # delibarately rare uploads to makes packs more likely to be full
+              # as we can't repack on this data storage. timed to suit the
+              # cutoff for the deep archive move.
+              timerConfig = {
+                OnCalendar = "23:00 UTC";
+                RandomizedDelaySec = "30m";
+                Persistent = true;
+              };
+            }
+            {
+              repo = "aws-us-east-1";
+              # delibarately rare uploads to makes packs more likely to be full
+              # as we can't repack on this data storage. timed to suit the
+              # cutoff for the deep archive move.
+              timerConfig = {
+                OnCalendar = "23:00 UTC";
+                RandomizedDelaySec = "30m";
+                Persistent = true;
+              };
+            }
+            {
               # TODO: remove me after enabling AWS
               repo = "1.6T-wasabi";
               timerConfig = {
