@@ -1,13 +1,35 @@
 {
-  "environment": {
-    "persistence": [
-      "/cache/system",
-      "/data/system"
-    ]
-  },
   "fileSystems": {
     "/data": {
       "neededForBoot": true
     }
+  },
+  "systemd": {
+    "mounts": [
+      {
+        "what": "/data/system/etc/nixos",
+        "where": "/etc/nixos"
+      },
+      {
+        "what": "/data/system/var/lib/systemd/timers",
+        "where": "/var/lib/systemd/timers"
+      },
+      {
+        "what": "/cache/system/var/backup/postgresql",
+        "where": "/var/backup/postgresql"
+      },
+      {
+        "what": "/data/users/jake/.local/share/direnv",
+        "where": "/home/jake/.local/share/direnv"
+      },
+      {
+        "what": "tmpfs",
+        "where": "/run/initramfs"
+      },
+      {
+        "what": "tmpfs",
+        "where": "/run/wrappers"
+      }
+    ]
   }
 }

@@ -22,7 +22,7 @@ in
       keep-outputs = true;
       keep-derivations = true;
     };
-    custom.impermanence.userExtraDirs.jake = [
+    custom.impermanence.users.jake.directories = [
       ".local/share/direnv"
     ];
 

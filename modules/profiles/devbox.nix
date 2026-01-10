@@ -18,7 +18,7 @@ in
       user = user;
     };
 
-    custom.impermanence.userExtraDirs.${user} = [
+    custom.impermanence.users.${user}.directories = [
       ".codex"
       ".config/gh"
       ".config/tea"

@@ -1,14 +1,30 @@
 {
-  "fileSystems": {
-    "/var/lib/postgresql/17": {
-      "device": "/data/system/var/lib/postgresql/17",
-      "fsType": "auto",
-      "options": [
-        "x-systemd.requires-mounts-for=/data/system",
-        "bind",
-        "X-fstrim.notrim",
-        "x-gvfs-hide"
-      ]
-    }
+  "systemd": {
+    "mounts": [
+      {
+        "what": "/data/system/etc/nixos",
+        "where": "/etc/nixos"
+      },
+      {
+        "what": "/data/system/var/lib/systemd/timers",
+        "where": "/var/lib/systemd/timers"
+      },
+      {
+        "what": "/data/system/var/lib/postgresql/17",
+        "where": "/var/lib/postgresql/17"
+      },
+      {
+        "what": "/data/users/jake/.local/share/direnv",
+        "where": "/home/jake/.local/share/direnv"
+      },
+      {
+        "what": "tmpfs",
+        "where": "/run/initramfs"
+      },
+      {
+        "what": "tmpfs",
+        "where": "/run/wrappers"
+      }
+    ]
   }
 }

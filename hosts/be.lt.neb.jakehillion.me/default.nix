@@ -18,7 +18,7 @@
     custom.impermanence = {
       enable = true;
 
-      userExtraFiles.jake = [
+      users.jake.files = [
         ".ssh/id_ecdsa_sk_keys"
       ];
     };

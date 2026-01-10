@@ -12,8 +12,8 @@ in
       home.packages = [ pkgs.unstable.opencode ];
     };
 
-    custom.impermanence = lib.mkIf config.custom.impermanence.enable {
-      userExtraDirs.${user} = [ ".local/share/opencode" ];
-    };
+    custom.impermanence.users.${user}.directories = lib.mkIf config.custom.impermanence.enable [
+      ".local/share/opencode"
+    ];
   };
 }

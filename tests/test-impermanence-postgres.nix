@@ -1,4 +1,4 @@
-# Test PostgreSQL persistence - verifies bind mount is created
+# Test PostgreSQL persistence - verifies mounts
 { testLib, lib, ... }:
 
 let
@@ -11,15 +11,10 @@ let
     }];
   };
 
-  pgDataDir = config.config.services.postgresql.dataDir;
-  pgFs = config.config.fileSystems.${pgDataDir};
+  # Extract just the essential mount info
+  simplifyMount = m: { what = m.what; where = m.where; };
 
 in
 {
-  # The actual system state: a bind mount from /data/system/... to the dataDir
-  fileSystems.${pgDataDir} = {
-    device = pgFs.device;
-    fsType = pgFs.fsType;
-    options = pgFs.options;
-  };
+  systemd.mounts = map simplifyMount config.config.systemd.mounts;
 }

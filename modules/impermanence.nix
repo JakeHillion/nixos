@@ -2,6 +2,7 @@
 
 let
   cfg = config.custom.impermanence;
+  userNames = builtins.attrNames cfg.users;
 in
 {
   options.custom.impermanence = {
@@ -11,6 +12,7 @@ in
       type = lib.types.str;
       default = "/data";
     };
+
     cache = {
       enable = lib.mkEnableOption "impermanence.cache";
       path = lib.mkOption {
@@ -19,27 +21,53 @@ in
       };
     };
 
-    extraDirs = lib.mkOption {
+    # Renamed from extraDirs - primary option for system directories
+    directories = lib.mkOption {
       type = with lib.types; listOf str;
       default = [ ];
+      description = "System directories to persist";
     };
 
+    # Restructured to match upstream impermanence API
     users = lib.mkOption {
-      type = with lib.types; listOf str;
-      default = [ "root" config.custom.user ];
-    };
-
-    userExtraFiles = lib.mkOption {
-      type = with lib.types; attrsOf (listOf str);
+      type = lib.types.attrsOf (lib.types.submodule {
+        options = {
+          directories = lib.mkOption {
+            type = with lib.types; listOf str;
+            default = [ ];
+            description = "User directories to persist (relative to home)";
+          };
+          files = lib.mkOption {
+            type = with lib.types; listOf str;
+            default = [ ];
+            description = "User files to persist (relative to home)";
+          };
+        };
+      });
       default = { };
-    };
-    userExtraDirs = lib.mkOption {
-      type = with lib.types; attrsOf (listOf str);
-      default = { };
+      description = "Per-user persistence configuration";
     };
   };
 
   config = lib.mkIf cfg.enable {
+    # Add base directories as defaults
+    custom.impermanence.directories = lib.mkBefore ([
+      "/etc/nixos"
+      "/var/lib/systemd/timers"
+    ] ++
+    (lib.lists.optional config.services.postgresql.enable config.services.postgresql.dataDir) ++
+    (lib.lists.optional config.hardware.bluetooth.enable "/var/lib/bluetooth") ++
+    (lib.lists.optional (config.virtualisation.oci-containers.containers != { }) "/var/lib/containers") ++
+    (lib.lists.optional config.services.caddy.enable "/var/lib/caddy") ++
+    (lib.lists.optional config.services.tailscale.enable "/var/lib/tailscale") ++
+    (lib.lists.optional config.services.unbound.enable "/var/lib/unbound"));
+
+    # Ensure root and custom.user have default entries
+    custom.impermanence.users = {
+      root = lib.mkDefault { };
+      ${config.custom.user} = lib.mkDefault { };
+    };
+
     fileSystems.${cfg.base}.neededForBoot = true;
 
     services = {
@@ -57,98 +85,111 @@ in
       dataDir = lib.mkOverride 999 "${cfg.base}/plex";
     };
 
-    environment.persistence = lib.mkMerge [
-      {
-        "${cfg.base}/system" = {
-          hideMounts = true;
-
-          directories = [
-            "/etc/nixos"
-            "/var/lib/systemd/timers" # persistent timer "stamp" files, e.g. "stamp-nix-gc.timer"
-          ] ++
-          cfg.extraDirs ++
-          (lib.lists.optional config.services.postgresql.enable config.services.postgresql.dataDir) ++
-          (lib.lists.optional config.hardware.bluetooth.enable "/var/lib/bluetooth") ++
-          (lib.lists.optional (config.virtualisation.oci-containers.containers != { }) "/var/lib/containers") ++
-          (lib.lists.optional config.services.caddy.enable "/var/lib/caddy") ++
-          (lib.lists.optional config.services.tailscale.enable "/var/lib/tailscale") ++
-          (lib.lists.optional config.services.unbound.enable "/var/lib/unbound");
-        };
-      }
-      (lib.mkIf cfg.cache.enable {
-        "${cfg.cache.path}/system" = {
-          hideMounts = true;
-
-          directories = (lib.lists.optional config.services.postgresqlBackup.enable config.services.postgresqlBackup.location);
-        };
-      })
-    ];
-
-    home-manager.users =
+    systemd =
       let
-        mkUser = (x:
-          let
-            homeCfg = config.home-manager.users."${x}";
-          in
-          {
-            name = x;
-            value = {
-              home = {
-                persistence."${cfg.base}/users/${x}" = {
-                  allowOther = false;
-
-                  files = cfg.userExtraFiles.${x} or [ ];
-                  directories = cfg.userExtraDirs.${x} or [ ];
-                };
-
-                sessionVariables = lib.attrsets.optionalAttrs homeCfg.programs.zoxide.enable { _ZO_DATA_DIR = "${cfg.base}/users/${x}/.local/share/zoxide"; };
-              };
-
-              programs = {
-                zsh.history.path = lib.mkOverride 999 "${cfg.base}/users/${x}/.zsh_history";
-              };
-            };
-          });
+        # Cache directories to persist
+        cacheDirs = lib.lists.optional config.services.postgresqlBackup.enable config.services.postgresqlBackup.location;
       in
-      builtins.listToAttrs (builtins.map mkUser cfg.users);
+      {
+        mounts =
+          # System directories
+          (builtins.map
+            (d: {
+              what = "${cfg.base}/system${d}";
+              where = d;
+              type = "none";
+              options = "bind,x-gvfs-hide";
+              wantedBy = [ "local-fs.target" ];
+              before = [ "local-fs.target" ];
+              unitConfig.DefaultDependencies = false;
+            })
+            cfg.directories) ++
+          # Cache directories
+          (lib.lists.optionals cfg.cache.enable (builtins.map
+            (d: {
+              what = "${cfg.cache.path}/system${d}";
+              where = d;
+              type = "none";
+              options = "bind,x-gvfs-hide";
+              wantedBy = [ "local-fs.target" ];
+              before = [ "local-fs.target" ];
+              unitConfig.DefaultDependencies = false;
+            })
+            cacheDirs)) ++
+          # User directories
+          (lib.lists.flatten (builtins.map
+            (user:
+              let
+                userCfg = config.users.users.${user};
+                userHome = userCfg.home;
+                dirs = cfg.users.${user}.directories or [ ];
+              in
+              builtins.map
+                (d: {
+                  what = "${cfg.base}/users/${user}/${d}";
+                  where = "${userHome}/${d}";
+                  type = "none";
+                  options = "bind,x-gvfs-hide";
+                  wantedBy = [ "local-fs.target" ];
+                  before = [ "local-fs.target" ];
+                  unitConfig.DefaultDependencies = false;
+                })
+                dirs)
+            userNames));
 
-    systemd = {
-      tmpfiles.rules = lib.lists.flatten (builtins.map
-        (user:
-          let details = config.users.users.${user}; in [
-            "d ${cfg.base}/users/${user} 0700 ${user} ${details.group} - -"
-            "L ${details.home}/local - ${user} ${details.group} - ${cfg.base}/users/${user}"
-          ])
-        cfg.users);
-    } // (lib.foldl' lib.recursiveUpdate { } (builtins.map
-      (subdir:
-        let
-          usesPrivateDir = builtins.any
-            (dir: lib.strings.hasPrefix "/var/${subdir}/private/"
-              (if builtins.isString dir then dir else dir.directory or dir.dirPath or ""))
-            (lib.lists.flatten (lib.attrsets.mapAttrsToList
-              (path: cfg: cfg.directories or [ ])
-              config.environment.persistence));
-        in
-        {
-          services."fix-var-${subdir}-private-permissions" = lib.mkIf usesPrivateDir {
-            description = "Fix /var/${subdir}/private permissions";
-            serviceConfig = {
-              Type = "oneshot";
-              ExecStart = "${lib.getExe' pkgs.coreutils "chmod"} 0700 /var/${subdir}/private";
-              User = "root";
-            };
-          };
+        tmpfiles.rules =
+          # User directories and files
+          (lib.lists.flatten (builtins.map
+            (user:
+              let
+                details = config.users.users.${user};
+                files = cfg.users.${user}.files or [ ];
+              in
+              [
+                # Create per-user nix profile directory (required for home-manager)
+                "d /nix/var/nix/profiles/per-user/${user} 0755 ${user} ${details.group} - -"
+                "d ${cfg.base}/users/${user} 0700 ${user} ${details.group} - -"
+                "L ${details.home}/local - ${user} ${details.group} - ${cfg.base}/users/${user}"
+              ] ++
+              (builtins.map (f: "L ${details.home}/${f} - ${user} ${details.group} - ${cfg.base}/users/${user}/${f}") files))
+            userNames));
 
-          timers."fix-var-${subdir}-private-permissions" = lib.mkIf usesPrivateDir {
-            description = "Fix /var/${subdir}/private permissions every 30 seconds";
-            wantedBy = [ "timers.target" ];
-            timerConfig = {
-              OnBootSec = "30s";
-              OnUnitActiveSec = "30s";
-              Unit = "fix-var-${subdir}-private-permissions.service";
-            };
-          };
-        }) [ "lib" "cache" ]));
+        services = lib.foldl' lib.recursiveUpdate { } (builtins.map
+          (subdir:
+            let
+              usesPrivateDir = builtins.any
+                (dir: lib.strings.hasPrefix "/var/${subdir}/private/" dir)
+                cfg.directories;
+            in
+            {
+              "fix-var-${subdir}-private-permissions" = lib.mkIf usesPrivateDir {
+                description = "Fix /var/${subdir}/private permissions";
+                serviceConfig = {
+                  Type = "oneshot";
+                  ExecStart = "${lib.getExe' pkgs.coreutils "chmod"} 0700 /var/${subdir}/private";
+                  User = "root";
+                };
+              };
+            }) [ "lib" "cache" ]);
+
+        timers = lib.foldl' lib.recursiveUpdate { } (builtins.map
+          (subdir:
+            let
+              usesPrivateDir = builtins.any
+                (dir: lib.strings.hasPrefix "/var/${subdir}/private/" dir)
+                cfg.directories;
+            in
+            {
+              "fix-var-${subdir}-private-permissions" = lib.mkIf usesPrivateDir {
+                description = "Fix /var/${subdir}/private permissions every 30 seconds";
+                wantedBy = [ "timers.target" ];
+                timerConfig = {
+                  OnBootSec = "30s";
+                  OnUnitActiveSec = "30s";
+                  Unit = "fix-var-${subdir}-private-permissions.service";
+                };
+              };
+            }) [ "lib" "cache" ]);
+      };
   };
 }

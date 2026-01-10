@@ -143,10 +143,8 @@ in
     };
 
     # Impermanence configuration
-    custom.impermanence.userExtraDirs = {
-      ${config.custom.user} = [
-        ".mozilla"
-      ];
-    };
+    custom.impermanence.users.${config.custom.user}.directories = [
+      ".mozilla"
+    ];
   };
 }

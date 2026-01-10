@@ -9,7 +9,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/lib/private/step-ca" ];
+    custom.impermanence.directories = lib.mkIf config.custom.impermanence.enable [ "/var/lib/private/step-ca" ];
 
     users.users.step-ca.uid = config.ids.uids.step-ca;
     users.groups.step-ca.gid = config.ids.gids.step-ca;

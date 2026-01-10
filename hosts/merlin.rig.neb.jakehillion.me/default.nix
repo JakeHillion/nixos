@@ -53,7 +53,7 @@
     ## Impermanence
     custom.impermanence = {
       enable = true;
-      userExtraFiles.jake = [ ".ssh/id_ecdsa" ];
+      users.jake.files = [ ".ssh/id_ecdsa" ];
     };
 
     ## Video drivers when docked

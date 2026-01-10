@@ -19,13 +19,15 @@
     ## Impermanence
     custom.impermanence = {
       enable = true;
-      userExtraFiles.jake = [
-        ".ssh/id_rsa"
-        ".ssh/id_ecdsa"
-      ];
-      userExtraDirs.jake = [
-        ".local/share/patatt"
-      ];
+      users.jake = {
+        files = [
+          ".ssh/id_rsa"
+          ".ssh/id_ecdsa"
+        ];
+        directories = [
+          ".local/share/patatt"
+        ];
+      };
     };
 
     ## Run latest kernel for sched_ext development

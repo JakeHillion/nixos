@@ -20,8 +20,6 @@
     home-manager-unstable.url = "github:nix-community/home-manager";
     home-manager-unstable.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
-    impermanence.url = "github:nix-community/impermanence/master";
-
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -52,7 +50,6 @@
     , hearthd
     , home-manager
     , home-manager-unstable
-    , impermanence
     , nixos-generators
     , nixos-hardware
     , nixpkgs

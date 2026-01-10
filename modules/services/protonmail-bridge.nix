@@ -48,7 +48,7 @@ in
   config = lib.mkIf cfg.enable {
     environment.systemPackages = [ protonmail-bridgectl ];
 
-    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/lib/private/protonmail-bridge" ];
+    custom.impermanence.directories = lib.mkIf config.custom.impermanence.enable [ "/var/lib/private/protonmail-bridge" ];
 
 
     systemd.services.protonmail-bridge = {

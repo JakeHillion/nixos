@@ -9,9 +9,9 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    custom.impermanence = lib.mkIf config.custom.impermanence.enable {
-      userExtraFiles.${user} = [ ".claude.json" ];
-      userExtraDirs.${user} = [ ".claude" ];
+    custom.impermanence.users.${user} = lib.mkIf config.custom.impermanence.enable {
+      files = [ ".claude.json" ];
+      directories = [ ".claude" ];
     };
 
     home-manager.users.${user} = {

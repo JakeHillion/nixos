@@ -9,7 +9,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/lib/${config.services.prometheus.stateDir}" ];
+    custom.impermanence.directories = lib.mkIf config.custom.impermanence.enable [ "/var/lib/${config.services.prometheus.stateDir}" ];
 
     services.prometheus = {
       enable = true;

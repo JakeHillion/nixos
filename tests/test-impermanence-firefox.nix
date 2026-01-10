@@ -1,4 +1,4 @@
-# Test Firefox persistence - verifies bindfs mount in activation script
+# Test Firefox persistence - verifies mounts and tmpfiles
 { testLib, lib, ... }:
 
 let
@@ -11,8 +11,11 @@ let
     }];
   };
 
+  # Extract just the essential mount info
+  simplifyMount = m: { what = m.what; where = m.where; };
+
 in
 {
-  home-manager.users.jake.home.activation.createAndMountPersistentStoragePaths.data =
-    config.config.home-manager.users.jake.home.activation.createAndMountPersistentStoragePaths.data;
+  systemd.mounts = map simplifyMount config.config.systemd.mounts;
+  systemd.tmpfiles.rules = config.config.systemd.tmpfiles.rules;
 }

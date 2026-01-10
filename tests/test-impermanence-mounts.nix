@@ -8,11 +8,16 @@ let
     modules = [{
       custom.impermanence.enable = true;
       custom.impermanence.cache.enable = true;
+      services.postgresqlBackup.enable = true;
+      services.postgresqlBackup.databases = [ "test" ];
     }];
   };
+
+  # Extract just the essential mount info
+  simplifyMount = m: { what = m.what; where = m.where; };
 
 in
 {
   fileSystems."/data".neededForBoot = config.config.fileSystems."/data".neededForBoot;
-  environment.persistence = builtins.attrNames config.config.environment.persistence;
+  systemd.mounts = map simplifyMount config.config.systemd.mounts;
 }

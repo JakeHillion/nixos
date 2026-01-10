@@ -75,7 +75,7 @@ in
       file = ./environment.age;
     };
 
-    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/cache/private/renovate" ];
+    custom.impermanence.directories = lib.mkIf config.custom.impermanence.enable [ "/var/cache/private/renovate" ];
 
     systemd.services.renovate = {
       description = "Renovate Bot - Automated dependency updates for Gitea repositories";

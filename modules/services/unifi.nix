@@ -15,7 +15,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ cfg.dataDir ];
+    custom.impermanence.directories = lib.mkIf config.custom.impermanence.enable [ cfg.dataDir ];
 
     # Fix dynamically allocated user and group ids
     users.users.unifi.uid = config.ids.uids.unifi;

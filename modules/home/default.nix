@@ -22,16 +22,24 @@ in
   config = lib.mkMerge [
     (lib.mkIf cfg.defaults {
       home-manager = {
-        users.root.home = {
-          inherit stateVersion;
+        users.root = {
+          home = {
+            inherit stateVersion;
 
-          ## Set an empty ZSH config and defer to the global one
-          file.".zshrc".text = "";
+            ## Set an empty ZSH config and defer to the global one
+            file.".zshrc".text = "";
+          };
+
+          programs.zsh.history.path = lib.mkIf config.custom.impermanence.enable
+            (lib.mkOverride 999 "${config.custom.impermanence.base}/users/root/.zsh_history");
         };
 
         users."${config.custom.user}" = {
           home = {
             inherit stateVersion;
+            sessionVariables = lib.attrsets.optionalAttrs config.custom.impermanence.enable {
+              _ZO_DATA_DIR = "${config.custom.impermanence.base}/users/${config.custom.user}/.local/share/zoxide";
+            };
           };
 
           services = {
@@ -43,7 +51,11 @@ in
               enable = true;
               options = [ "--cmd cd" ];
             };
-            zsh.enable = true;
+            zsh = {
+              enable = true;
+              history.path = lib.mkIf config.custom.impermanence.enable
+                (lib.mkOverride 999 "${config.custom.impermanence.base}/users/${config.custom.user}/.zsh_history");
+            };
 
             htop = {
               enable = true;

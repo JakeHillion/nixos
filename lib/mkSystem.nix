@@ -10,15 +10,9 @@
     inputs.agenix.nixosModules.default
     inputs.disko.nixosModules.disko
     inputs.hearthd.nixosModules.default
-    inputs.impermanence.nixosModules.impermanence
     inputs.nixos-generators.nixosModules.all-formats
     inputs.ogygia.nixosModules.default
 
     home-manager.nixosModules.default
-    {
-      home-manager.sharedModules = [
-        inputs.impermanence.nixosModules.home-manager.impermanence
-      ];
-    }
   ];
 }
