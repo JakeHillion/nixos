@@ -8,6 +8,10 @@ in
   options.custom.profiles.devbox = lib.mkEnableOption "devbox profile";
 
   config = lib.mkIf cfg {
+    environment.systemPackages = with pkgs; [
+      jq # handy and claude always tries to invoke it
+    ];
+
     custom.services.nix-prefetch-repos = {
       enable = true;
       reposPath = "/data/users/${user}/repos";
