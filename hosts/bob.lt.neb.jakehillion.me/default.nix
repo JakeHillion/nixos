@@ -48,6 +48,7 @@
       networks = {
         "Hillion WPA3 Network".pskRaw = "ext:HILLION_WPA3_NETWORK_PSK";
         "some-windburned-bisection".pskRaw = "ext:STARLINK_PSK";
+        "Hyperoptic Fibre D584 5ghz".pskRaw = "ext:HYPEROPTIC_PSK";
         "instructional-blank-cursor" = {
           pskRaw = "ext:TRAVEL_PSK";
           priority = 10;
