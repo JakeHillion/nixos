@@ -15,11 +15,11 @@ let
 
   stripNix = name: lib.removeSuffix ".nix" name;
 
-  # Build attrset of testName -> output
+  # Build attrset of testName -> output (normalized to remove store path hashes)
   testOutputs = lib.mapAttrs'
     (fileName: _: {
       name = stripNix fileName;
-      value = import ./${fileName} { inherit testLib pkgs lib inputs system; };
+      value = testLib.normalizeStorePaths (import ./${fileName} { inherit testLib pkgs lib inputs system; });
     })
     testFileNames;
 

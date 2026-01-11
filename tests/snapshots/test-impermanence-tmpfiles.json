@@ -28,7 +28,7 @@
         "L+ /nix/var/nix/gcroots/current-system - - - - /run/current-system",
         "f /root/.nix-channels - - - - https://channels.nixos.org/nixos-25.11 nixos\\n",
         "d /lib64 0755 root root - -",
-        "L+ /lib64/ld-linux-x86-64.so.2 - - - - /nix/store/5bb9c8r7a5hxxmlf5zx36q8aihc94kdx-stub-ld-x86_64-unknown-linux-musl",
+        "L+ /lib64/ld-linux-x86-64.so.2 - - - - /nix/store/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
         "r /lib/ld-linux.so.2 - - - - -"
       ]
     }

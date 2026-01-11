@@ -26,9 +26,9 @@ let
   runTestFile = fileName:
     let
       testName = stripNix fileName;
-      actual = import ./${fileName} {
+      actual = testLib.normalizeStorePaths (import ./${fileName} {
         inherit testLib pkgs lib inputs system;
-      };
+      });
       expected = loadSnapshot testName;
     in
     if actual == expected
