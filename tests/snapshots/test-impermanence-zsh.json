@@ -1,0 +1,24 @@
+{
+  "home-manager": {
+    "users": {
+      "jake": {
+        "programs": {
+          "zsh": {
+            "history": {
+              "path": "/data/users/jake/.zsh_history"
+            }
+          }
+        }
+      },
+      "root": {
+        "programs": {
+          "zsh": {
+            "history": {
+              "path": "/data/users/root/.zsh_history"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "environment": {
+    "persistence": [
+      "/data/system"
+    ]
+  },
+  "fileSystems": {
+    "/data": {
+      "neededForBoot": true
+    }
+  }
+}

@@ -82,8 +82,11 @@
           "qnaplcd" = final.callPackage ./pkgs/qnaplcd.nix { inherit qnaplcd-menu; };
         })
       ];
+      mkSystem = import ./lib/mkSystem.nix { inherit inputs; };
     in
     {
+      inherit mkSystem;
+
       nixosConfigurations =
         let
           fqdns = builtins.attrNames (builtins.readDir ./hosts);
@@ -96,23 +99,8 @@
             func {
               inherit system;
               specialArgs = inputs;
-              modules = [
+              modules = mkSystem.modules home-manager-pick ++ [
                 ./hosts/${fqdn}
-                ./modules
-
-                agenix.nixosModules.default
-                disko.nixosModules.disko
-                hearthd.nixosModules.default
-                impermanence.nixosModules.impermanence
-                nixos-generators.nixosModules.all-formats
-                ogygia.nixosModules.default
-
-                home-manager-pick.nixosModules.default
-                {
-                  home-manager.sharedModules = [
-                    impermanence.nixosModules.home-manager.impermanence
-                  ];
-                }
 
                 ({ config, lib, ... }: {
                   system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
@@ -143,7 +131,32 @@
         };
       };
 
-    } // flake-utils.lib.eachDefaultSystem (system:
+    } // flake-utils.lib.eachSystem [ "x86_64-linux" ] (
+      system:
+      let
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = getSystemOverlays system { };
+          config = { allowUnfree = true; };
+        };
+      in
+      {
+        # NixOS module tests
+        checks = import ./tests {
+          inherit pkgs system inputs;
+          lib = nixpkgs.lib;
+        };
+
+        # App to auto-generate all snapshots: `nix run .#generate-snapshots`
+        apps.generate-snapshots = {
+          type = "app";
+          program = "${import ./tests/generate-snapshots.nix {
+            inherit pkgs system inputs;
+            lib = nixpkgs.lib;
+          }}/bin/generate-snapshots";
+        };
+      }
+    ) // flake-utils.lib.eachDefaultSystem (system:
     let
       pkgs = import nixpkgs {
         inherit system;
