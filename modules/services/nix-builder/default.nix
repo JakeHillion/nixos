@@ -113,6 +113,8 @@ in
           echo "[•] Processing branch: $branch"
 
           # Switch to detached head at remote branch
+          ${pkgs.git}/bin/git reset --hard HEAD
+          ${pkgs.git}/bin/git clean -xffd
           ${pkgs.git}/bin/git switch --detach "origin/$branch"
 
           # Get current commit SHA for status updates
