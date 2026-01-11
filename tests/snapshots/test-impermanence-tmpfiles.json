@@ -2,10 +2,34 @@
   "systemd": {
     "tmpfiles": {
       "rules": [
+        "d /data/nebula 0775 nebula-jakehillion nebula-jakehillion - -",
+        "d /data/nebula 0775 nebula-jakehillion nebula-jakehillion - -",
         "d /data/users/root 0700 root root - -",
         "L /root/local - root root - /data/users/root",
         "d /data/users/jake 0700 jake users - -",
-        "L /home/jake/local - jake users - /data/users/jake"
+        "L /home/jake/local - jake users - /data/users/jake",
+        "d /etc/nixos 0755 root root - -",
+        "d /run/keys 0750 root 96",
+        "z /run/keys 0750 root 96",
+        "d  /run/lock                          0755 root root - -",
+        "d  /var/db                            0755 root root - -",
+        "L  /var/lock                          -    -    -    - ../run/lock",
+        "d  /nix/var                           0755 root root - -",
+        "L+ /nix/var/nix/gcroots/booted-system 0755 root root - /run/booted-system",
+        "R! /etc/group.lock                    -    -    -    - -",
+        "R! /etc/passwd.lock                   -    -    -    - -",
+        "R! /etc/shadow.lock                   -    -    -    - -",
+        "R! /nix/var/nix/gcroots/tmp           -    -    -    - -",
+        "R! /nix/var/nix/temproots             -    -    -    - -",
+        "d /run/binfmt 0755 -",
+        "D /var/empty 0555 root root -",
+        "h /var/empty - - - - +i",
+        "d /nix/var/nix/gcroots -",
+        "L+ /nix/var/nix/gcroots/current-system - - - - /run/current-system",
+        "f /root/.nix-channels - - - - https://channels.nixos.org/nixos-25.11 nixos\\n",
+        "d /lib64 0755 root root - -",
+        "L+ /lib64/ld-linux-x86-64.so.2 - - - - /nix/store/5bb9c8r7a5hxxmlf5zx36q8aihc94kdx-stub-ld-x86_64-unknown-linux-musl",
+        "r /lib/ld-linux.so.2 - - - - -"
       ]
     }
   }

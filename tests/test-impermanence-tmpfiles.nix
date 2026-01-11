@@ -10,12 +10,7 @@ let
     }];
   };
 
-  # Filter to just impermanence-generated rules
-  isImpermanenceRule = rule:
-    lib.hasPrefix "d /data/users" rule ||
-    (lib.hasPrefix "L /" rule && lib.hasInfix "/local" rule);
-
 in
 {
-  systemd.tmpfiles.rules = lib.filter isImpermanenceRule config.config.systemd.tmpfiles.rules;
+  systemd.tmpfiles.rules = config.config.systemd.tmpfiles.rules;
 }
