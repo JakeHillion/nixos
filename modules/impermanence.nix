@@ -63,7 +63,6 @@ in
           hideMounts = true;
 
           directories = [
-            "/etc/nixos"
             "/var/lib/systemd/timers" # persistent timer "stamp" files, e.g. "stamp-nix-gc.timer"
           ] ++
           cfg.extraDirs ++

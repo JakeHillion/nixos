@@ -8,7 +8,6 @@
         "L /root/local - root root - /data/users/root",
         "d /data/users/jake 0700 jake users - -",
         "L /home/jake/local - jake users - /data/users/jake",
-        "d /etc/nixos 0755 root root - -",
         "d /run/keys 0750 root 96",
         "z /run/keys 0750 root 96",
         "d  /run/lock                          0755 root root - -",

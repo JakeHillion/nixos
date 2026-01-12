@@ -16,6 +16,7 @@ let
     {
       libraries = [ pkgs.qnaplcd pkgs.python3Packages.humanize ];
     } ''
+    import json
     import sys
     import time
     import qnaplcd
@@ -29,6 +30,7 @@ let
     PORT = '/dev/ttyS1'
     PORT_SPEED = 1200
     HOSTNAME = "${shortHostname}"
+    FLAKE_URL = "git+https://gitea.hillion.co.uk/JakeHillion/nixos"
 
     lcd = None
     lcd_timer = None
@@ -44,32 +46,33 @@ let
 
 
     def get_commit_date(revision):
-        """Get commit date from git repository"""
-        git_cmd = [
-            'git', '-C', '/etc/nixos',
-            'show', '-s', '--format=%ci', revision
+        """Get commit date from Nix flake metadata"""
+        cmd = [
+            'nix', 'flake', 'metadata', '--json',
+            f'{FLAKE_URL}?rev={revision}'
         ]
         result = subprocess.run(
-            git_cmd,
+            cmd,
             capture_output=True,
             text=True,
-            timeout=5
+            timeout=30
         )
 
         if result.returncode != 0:
-            err = f"Git failed: {result.returncode}"
+            err = f"Nix flake metadata failed: {result.returncode}"
             print(f"{err}\nstdout: {result.stdout}", file=sys.stderr)
             print(f"stderr: {result.stderr}", file=sys.stderr)
             return None
 
-        # Parse commit date (format: 2025-10-25 12:34:56 +0000)
-        output = result.stdout.strip()
-        date_time_str = ' '.join(output.split()[:2])
-        return datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S')
+        data = json.loads(result.stdout)
+        timestamp = data.get('lastModified')
+        if timestamp:
+            return datetime.fromtimestamp(timestamp)
+        return None
 
 
     def read_build_info():
-        """Read build revision and date from git repository"""
+        """Read build revision and date from Nix flake metadata"""
         build_file = Path("/run/current-system/sw/share/ogygia/build-revision")
 
         try:
@@ -201,13 +204,7 @@ in
       wantedBy = [ "multi-user.target" ];
       after = [ "network.target" ];
 
-      path = [ pkgs.git ];
-
-      environment = {
-        GIT_CONFIG_COUNT = "1";
-        GIT_CONFIG_KEY_0 = "safe.directory";
-        GIT_CONFIG_VALUE_0 = "/etc/nixos";
-      };
+      path = [ pkgs.nix ];
 
       serviceConfig = {
         ExecStart = "${lcd-display}";
@@ -227,7 +224,7 @@ in
         PrivateTmp = true;
         ProtectSystem = "strict";
         ProtectHome = true;
-        ReadOnlyPaths = [ "/run/current-system" "/etc/nixos" ];
+        ReadOnlyPaths = [ "/run/current-system" ];
       };
     };
 

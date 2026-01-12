@@ -41,7 +41,7 @@ in
       };
 
       shellAliases = {
-        "nixos-rebuild" = "nixos-rebuild --flake \"/etc/nixos#${config.networking.fqdn}\"";
+        "nixos-rebuild" = "nixos-rebuild --flake \"git+https://gitea.hillion.co.uk/JakeHillion/nixos?ref=main#${config.networking.fqdn}\"";
       };
 
       interactiveShellInit = with pkgs; ''

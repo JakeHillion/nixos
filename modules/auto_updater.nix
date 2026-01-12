@@ -2,7 +2,7 @@
 
 let
   cfg = config.custom.auto_updater;
-  location = "/etc/nixos";
+  location = "/var/lib/auto-updater";
   remote = "https://gitea.hillion.co.uk/JakeHillion/nixos.git";
 in
 {
@@ -31,10 +31,6 @@ in
       }
     ];
 
-    systemd.tmpfiles.rules = [
-      "d ${location} 0755 root root - -"
-    ];
-
     systemd.timers.auto_updater = {
       wantedBy = [ "timers.target" ];
       timerConfig = {
@@ -55,6 +51,7 @@ in
 
       serviceConfig = {
         Type = "oneshot";
+        StateDirectory = "auto-updater";
         WorkingDirectory = location;
       };
 

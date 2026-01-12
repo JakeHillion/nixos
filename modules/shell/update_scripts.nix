@@ -2,6 +2,8 @@
 
 let
   cfg = config.custom.shell.update_scripts;
+  remote = "https://gitea.hillion.co.uk/JakeHillion/nixos.git";
+  flakeUrl = "git+https://gitea.hillion.co.uk/JakeHillion/nixos";
 
   update = pkgs.stdenv.mkDerivation {
     name = "update";
@@ -43,14 +45,12 @@ let
         BRANCH=main
       fi
 
-      cd /etc/nixos
-      ${pkgs.jujutsu}/bin/jj git fetch --remote origin
-      ${pkgs.jujutsu}/bin/jj new $BRANCH@origin
+      FLAKE_REF="${flakeUrl}?ref=$BRANCH#${config.networking.fqdn}"
 
-      echo 'Building configuration...'
-      nix build --no-link --print-out-paths '.#nixosConfigurations."${config.networking.fqdn}".config.system.build.toplevel' |& ${pkgs.nix-output-monitor}/bin/nom
+      echo "Building configuration from $BRANCH..."
+      nix build --no-link --print-out-paths "${flakeUrl}?ref=$BRANCH#nixosConfigurations.\"${config.networking.fqdn}\".config.system.build.toplevel" |& ${pkgs.nix-output-monitor}/bin/nom
 
-      if ! ${pkgs.nixos-rebuild}/bin/nixos-rebuild --flake "/etc/nixos#${config.networking.fqdn}" test; then
+      if ! ${pkgs.nixos-rebuild}/bin/nixos-rebuild --flake "$FLAKE_REF" test; then
         echo "WARNING: \`nixos-rebuild test' failed!"
       fi
 
@@ -63,7 +63,7 @@ let
         esac
       done
 
-      ${pkgs.nixos-rebuild}/bin/nixos-rebuild --flake "/etc/nixos#${config.networking.fqdn}" boot
+      ${pkgs.nixos-rebuild}/bin/nixos-rebuild --flake "$FLAKE_REF" boot
 
       while true; do
         read -p "Would you like to reboot now? " yn
@@ -92,8 +92,8 @@ let
         local branches
         local -a branch_list
 
-        # Try to get remote branches from jj
-        if branches=$(${pkgs.jujutsu}/bin/jj branch list --all-remotes 2>/dev/null | ${pkgs.gnugrep}/bin/grep '@origin' | ${pkgs.gawk}/bin/awk '{print $1}' | ${pkgs.gnused}/bin/sed 's/@origin$//' 2>/dev/null); then
+        # Get remote branches via git ls-remote
+        if branches=$(${pkgs.git}/bin/git ls-remote --heads ${remote} 2>/dev/null | ${pkgs.gawk}/bin/awk -F'/' '{print $NF}' 2>/dev/null); then
           branch_list=($(echo "$branches"))
           _describe 'remote branches' branch_list
         fi
