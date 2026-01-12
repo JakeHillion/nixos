@@ -160,32 +160,7 @@ in
                 Persistent = true;
               };
             }
-            {
-              # TODO: remove me after enabling AWS
-              repo = "1.6T-wasabi";
-              timerConfig = {
-                OnBootSec = "30m";
-                OnUnitInactiveSec = "60m";
-                RandomizedDelaySec = "20m";
-              };
-            }
-            {
-              # TODO: remove me after enabling AWS
-              repo = "1.6T-backblaze";
-              timerConfig = {
-                OnBootSec = "30m";
-                OnUnitInactiveSec = "60m";
-                RandomizedDelaySec = "20m";
-              };
-            }
           ];
-        };
-
-        "1.6T-wasabi" = {
-          environmentFile = config.age.secrets."restic/1.6T-wasabi.env".path;
-        };
-        "1.6T-backblaze" = {
-          environmentFile = config.age.secrets."restic/1.6T-backblaze.env".path;
         };
 
         "aws-eu-central-2" = {
@@ -216,9 +191,6 @@ in
 
       "restic/aws-eu-central-2.env".file = ./aws-eu-central-2.env.age;
       "restic/aws-us-east-1.env".file = ./aws-us-east-1.env.age;
-
-      "restic/1.6T-wasabi.env".file = ../../../secrets/restic/1.6T-wasabi.env.age;
-      "restic/1.6T-backblaze.env".file = ../../../secrets/restic/1.6T-backblaze.env.age;
     };
 
     services.restic.server = {
