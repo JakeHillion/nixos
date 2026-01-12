@@ -17,6 +17,7 @@
     ./jellyfin.nix
     ./mastodon
     ./matrix
+    ./mautrix-discord
     ./mosquitto.nix
     ./nix-builder
     ./nix-prefetch-repos.nix

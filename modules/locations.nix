@@ -34,6 +34,7 @@ in
           jellyfin = "phoenix.st.${config.ogygia.domain}";
           mastodon = "";
           matrix = "boron.cx.${config.ogygia.domain}";
+          mautrix_discord = "warlock.cx.${config.ogygia.domain}";
           mosquitto = "stinger.pop.${config.ogygia.domain}";
           nix-builder = [
             "slider.pop.${config.ogygia.domain}"

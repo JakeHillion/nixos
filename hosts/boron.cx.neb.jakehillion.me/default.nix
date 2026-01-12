@@ -67,6 +67,7 @@
           enable = true;
           tokenSecret = ../../modules/services/gitea/actions/boron.age;
         };
+        matrix.mautrix_discord = true;
         zookeeper.enable = true;
       };
     };

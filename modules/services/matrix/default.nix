@@ -16,6 +16,12 @@ in
       default = true;
       type = lib.types.bool;
     };
+
+    mautrix_discord = lib.mkOption {
+      default = false;
+      type = lib.types.bool;
+      description = "Load mautrix-discord bridge registration";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -46,6 +52,12 @@ in
 
       "matrix/matrix.hillion.co.uk/syncv3_secret" = {
         file = ./matrix.hillion.co.uk/syncv3_secret.age;
+      };
+
+      "mautrix-discord/registration.yaml" = lib.mkIf cfg.mautrix_discord {
+        file = ../mautrix-discord/registration.yaml.age;
+        owner = "matrix-synapse";
+        group = "matrix-synapse";
       };
     };
 
@@ -133,9 +145,9 @@ in
           ];
           suppress_key_server_warning = true;
           dynamic_thumbnails = true;
-          app_service_config_files = lib.mkIf cfg.heisenbridge [
-            "/var/lib/heisenbridge/registration.yml"
-          ];
+          app_service_config_files =
+            (lib.optional cfg.heisenbridge "/var/lib/heisenbridge/registration.yml") ++
+            (lib.optional cfg.mautrix_discord config.age.secrets."mautrix-discord/registration.yaml".path);
         };
       };
 

@@ -75,6 +75,7 @@ in
     neb.cx.boron
     neb.cx.rooster
     neb.cx.maverick
+    neb.cx.warlock
     neb.pop.stinger
     neb.rig.merlin
     neb.st.phoenix
@@ -173,4 +174,13 @@ in
 
   # Offline YouTube secrets
   "modules/services/offline-youtube/playlist.env.age".publicKeys = [ neb.st.phoenix ];
+
+  # mautrix-discord bridge
+  "modules/services/mautrix-discord/registration.yaml.age".publicKeys = jake_users ++ [
+    neb.cx.boron # Synapse needs registration
+    neb.cx.warlock # Bridge needs registration
+  ];
+  "modules/services/mautrix-discord/environment.age".publicKeys = jake_users ++ [
+    neb.cx.warlock # Bridge needs tokens
+  ];
 }
