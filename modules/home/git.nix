@@ -42,6 +42,7 @@ in
             aliases = {
               submit-stack = [ "git" "push" "--change" "trunk()..@-" ];
               newt = [ "util" "exec" "--" "bash" "-c" "jj git fetch && jj new 'trunk()'" "" ];
+              rpull = [ "util" "exec" "--" "bash" "-c" "jj git fetch && jj rebase -d 'trunk()'" ];
             };
           };
         };
