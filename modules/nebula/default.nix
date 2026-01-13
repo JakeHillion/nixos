@@ -112,8 +112,10 @@ in
           };
 
           firewall = {
-            inbound = [{ host = "any"; port = "any"; proto = "any"; }];
             outbound = [{ host = "any"; port = "any"; proto = "any"; }];
+            inbound = [
+              { groups = [ "legacy-full-access" ]; port = "any"; proto = "any"; }
+            ];
           };
         };
       };
