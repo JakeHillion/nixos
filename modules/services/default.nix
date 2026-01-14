@@ -21,6 +21,7 @@
     ./mosquitto.nix
     ./nix-builder
     ./nix-prefetch-repos.nix
+    ./nix-remote-builder.nix
     ./offline-youtube
     ./ollama.nix
     ./privatebin.nix

@@ -50,6 +50,21 @@ in
 
     custom.home.opencode.enable = true;
 
+    # Remote builder for aarch64-linux builds
+    nix.distributedBuilds = true;
+    nix.settings.builders-use-substitutes = true;
+
+    nix.buildMachines = [{
+      hostName = "slider.pop.${config.ogygia.domain}";
+      system = "aarch64-linux";
+      protocol = "ssh-ng";
+      maxJobs = 4;
+      speedFactor = 1;
+      supportedFeatures = [ "nixos-test" "big-parallel" "kvm" ];
+      sshUser = "nix-builder";
+      sshKey = "${config.custom.impermanence.base}/system/etc/ssh/ssh_host_ed25519_key";
+    }];
+
     home-manager.users.${user} = {
       home = {
         packages = with pkgs; [

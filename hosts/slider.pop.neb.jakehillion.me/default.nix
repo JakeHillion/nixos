@@ -14,6 +14,17 @@
 
     custom.tang.enable = true;
 
+    # Accept remote builds from devboxes
+    custom.services.nix-remote-builder = {
+      enable = true;
+      authorizedHosts = [
+        "maverick.cx.neb.jakehillion.me"
+        "rooster.cx.neb.jakehillion.me"
+        "bob.lt.neb.jakehillion.me"
+        "merlin.rig.neb.jakehillion.me"
+      ];
+    };
+
     # Networking
     networking = {
       interfaces.eth0 = {
