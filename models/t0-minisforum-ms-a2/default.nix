@@ -31,7 +31,7 @@
 
       ## Setup but don't enable tang, that depends on the device's location
       custom.tang = {
-        networkingModule = "r8169";
+        networkingModule = "i40e";
         secretFile = "/data/disk_encryption.jwe";
         devices = [ "disk0-crypt" "disk1-crypt" ];
       };
@@ -43,9 +43,9 @@
     (lib.mkIf config.custom.tang.enable {
       boot.kernelParams =
         let
-          ifcfg = builtins.head config.networking.interfaces.enp3s0.ipv4.addresses;
+          ifcfg = builtins.head config.networking.interfaces.enp5s0f1np1.ipv4.addresses;
         in
-        [ "ip=${ifcfg.address}::${config.networking.defaultGateway.address}:255.255.255.0:${config.networking.hostName}:enp3s0:none" ];
+        [ "ip=${ifcfg.address}::${config.networking.defaultGateway.address}:255.255.255.0:${config.networking.hostName}:enp5s0f1np1:none" ];
     })
   ];
 }

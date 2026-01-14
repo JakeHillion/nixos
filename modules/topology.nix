@@ -242,12 +242,6 @@
                 hwAddress = "00:c0:b7:6b:f4:34";
                 dhcpReservation = true;
               };
-              "26" = {
-                hostname = "maverick";
-                fqdn = "maverick.cx.${config.ogygia.domain}";
-                hwAddress = "38:05:25:34:02:34";
-                dhcpReservation = true;
-              };
               "27" = {
                 hostname = "phoenix";
                 fqdn = "phoenix.st.${config.ogygia.domain}";
@@ -264,6 +258,12 @@
                 hostname = "stinger";
                 fqdn = "stinger.pop.${config.ogygia.domain}";
                 hwAddress = "7c:83:34:be:30:dd";
+                dhcpReservation = true;
+              };
+              "30" = {
+                hostname = "maverick";
+                fqdn = "maverick.cx.${config.ogygia.domain}";
+                hwAddress = "38:05:25:34:02:37";
                 dhcpReservation = true;
               };
             };

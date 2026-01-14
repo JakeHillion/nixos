@@ -58,10 +58,10 @@
       defaultGateway.address = "10.64.50.1";
 
       interfaces = {
-        enp3s0 = {
+        enp5s0f1np1 = {
           ipv4 = {
             addresses = [{
-              address = "10.64.50.26";
+              address = "10.64.50.30";
               prefixLength = 24;
             }];
           };
