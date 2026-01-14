@@ -22,6 +22,12 @@ in
       type = lib.types.bool;
       description = "Load mautrix-discord bridge registration";
     };
+
+    mautrix_meta = lib.mkOption {
+      default = false;
+      type = lib.types.bool;
+      description = "Load mautrix-meta bridge registration";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -56,6 +62,12 @@ in
 
       "mautrix-discord/registration.yaml" = lib.mkIf cfg.mautrix_discord {
         file = ../mautrix-discord/registration.yaml.age;
+        owner = "matrix-synapse";
+        group = "matrix-synapse";
+      };
+
+      "mautrix-meta/registration.yaml" = lib.mkIf cfg.mautrix_meta {
+        file = ../mautrix-meta/registration.yaml.age;
         owner = "matrix-synapse";
         group = "matrix-synapse";
       };
@@ -147,7 +159,8 @@ in
           dynamic_thumbnails = true;
           app_service_config_files =
             (lib.optional cfg.heisenbridge "/var/lib/heisenbridge/registration.yml") ++
-            (lib.optional cfg.mautrix_discord config.age.secrets."mautrix-discord/registration.yaml".path);
+            (lib.optional cfg.mautrix_discord config.age.secrets."mautrix-discord/registration.yaml".path) ++
+            (lib.optional cfg.mautrix_meta config.age.secrets."mautrix-meta/registration.yaml".path);
         };
       };
 

@@ -18,6 +18,7 @@
     ./mastodon
     ./matrix
     ./mautrix-discord
+    ./mautrix-meta
     ./mosquitto.nix
     ./nix-builder
     ./nix-prefetch-repos.nix

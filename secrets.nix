@@ -183,4 +183,13 @@ in
   "modules/services/mautrix-discord/environment.age".publicKeys = jake_users ++ [
     neb.cx.warlock # Bridge needs tokens
   ];
+
+  # mautrix-meta bridge
+  "modules/services/mautrix-meta/registration.yaml.age".publicKeys = jake_users ++ [
+    neb.cx.boron # Synapse needs registration
+    neb.cx.warlock # Bridge needs registration
+  ];
+  "modules/services/mautrix-meta/environment.age".publicKeys = jake_users ++ [
+    neb.cx.warlock # Bridge needs tokens
+  ];
 }

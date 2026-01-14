@@ -69,7 +69,7 @@ in
       settings = {
         homeserver = {
           domain = "hillion.co.uk";
-          address = "http://boron.cx.${config.ogygia.domain}:8008";
+          address = "https://matrix.hillion.co.uk";
         };
         appservice = {
           hostname = "0.0.0.0";
