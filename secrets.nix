@@ -183,4 +183,12 @@ in
   "modules/services/mautrix-discord/environment.age".publicKeys = jake_users ++ [
     neb.cx.warlock # Bridge needs tokens
   ];
+
+  # Cachix private cache credentials
+  "modules/profiles/devbox-cachix-netrc.age".publicKeys = jake_users ++ [
+    neb.cx.maverick
+    neb.cx.rooster
+    neb.lt.bob
+    neb.rig.merlin
+  ];
 }
