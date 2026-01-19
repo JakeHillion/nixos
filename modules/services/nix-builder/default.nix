@@ -18,16 +18,9 @@ in
       default = "1h";
       description = "How often to run the builder after inactivity (systemd time format)";
     };
-
-    atticCache = lib.mkOption {
-      type = lib.types.str;
-      default = "nixos";
-      description = "Name of the attic cache to push to";
-    };
   };
 
   config = lib.mkIf cfg.enable {
-    age.secrets."attic/client-token".file = ./client-token.age;
     age.secrets."nix-builder/gitea-token".file = ./gitea-token.age;
 
     systemd.services.nix-builder = {
@@ -38,7 +31,6 @@ in
         CacheDirectory = "nix-builder";
         WorkingDirectory = "%C/nix-builder";
         LoadCredential = [
-          "attic-token:${config.age.secrets."attic/client-token".path}"
           "gitea-token:${config.age.secrets."nix-builder/gitea-token".path}"
         ];
         PrivateTmp = true;
@@ -87,9 +79,6 @@ in
         # Track build results
         BUILD_FAILURES=()
         BUILD_SUCCESSES=()
-
-        # Configure attic client
-        ${pkgs.attic-client}/bin/attic login nixos http://attic.${config.ogygia.domain}/ "$(cat "$CREDENTIALS_DIRECTORY/attic-token")"
 
         # Clone or update repository
         if [[ ! -d "$REPO_DIR" ]]; then
@@ -174,23 +163,14 @@ in
           if ${pkgs.nix}/bin/nix build \
             --quiet \
             --no-link \
-            --print-out-paths \
-            "''${ALL_ARGS[@]}" \
-          | ${pkgs.attic-client}/bin/attic push --stdin nixos; then
-            echo "[+] Successfully built and uploaded branch $branch"
+            "''${ALL_ARGS[@]}"; then
+            echo "[+] Successfully built branch $branch"
             BUILD_SUCCESSES+=("$branch")
             update_commit_status "$COMMIT_SHA" "success" "Build completed successfully"
           else
-            st=("''${PIPESTATUS[@]}")
-            if (( st[1] != 0 )); then
-              echo "[x] Attic push failed for branch $branch"
-              update_commit_status "$COMMIT_SHA" "failure" "Attic push failed"
-              exit 1
-            else
-              echo "[!] Build failed for branch $branch"
-              BUILD_FAILURES+=("$branch")
-              update_commit_status "$COMMIT_SHA" "failure" "Build failed"
-            fi
+            echo "[!] Build failed for branch $branch"
+            BUILD_FAILURES+=("$branch")
+            update_commit_status "$COMMIT_SHA" "failure" "Build failed"
           fi
         done
 

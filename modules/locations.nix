@@ -19,7 +19,6 @@ in
     {
       custom.locations.locations = {
         services = {
-          attic = "phoenix.st.${config.ogygia.domain}";
           authoritative_dns = [
             "boron.cx.${config.ogygia.domain}"
           ];

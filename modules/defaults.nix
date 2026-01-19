@@ -16,18 +16,11 @@
 
     hardware.enableAllFirmware = true;
     nix = {
-      settings = lib.mkMerge [
-        {
-          auto-optimise-store = true;
-          experimental-features = [ "nix-command" "flakes" ];
-          trusted-users = [ config.custom.user ];
-        }
-
-        (lib.mkIf config.custom.nebula.enable {
-          extra-substituters = [ "http://attic.${config.ogygia.domain}/nixos" ];
-          extra-trusted-public-keys = [ "nixos:npaMjNtbUwWvuv4CEdJ2ev/Q2TRBxL0GduwvlYIc3/0=" ];
-        })
-      ];
+      settings = {
+        auto-optimise-store = true;
+        experimental-features = [ "nix-command" "flakes" ];
+        trusted-users = [ config.custom.user ];
+      };
       gc = {
         automatic = true;
         dates = "weekly";

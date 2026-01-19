@@ -2,7 +2,6 @@
 
 {
   imports = [
-    ./attic.nix
     ./authoritative_dns.nix
     ./downloads
     ./frigate.nix

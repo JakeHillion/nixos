@@ -33,7 +33,6 @@ in
             86400 NS ns1.jakehillion.me.
             86400 NS ns2.jakehillion.me.
 
-            attic                             21600 CNAME ${locations.services.attic}.
             ca                                21600 CNAME warlock.cx.${config.ogygia.domain}.
             frigate                           21600 CNAME ${locations.services.frigate}.
             homebox                           21600 CNAME ${locations.services.homebox}.
