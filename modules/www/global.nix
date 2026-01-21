@@ -120,8 +120,25 @@ in
             header_up Host {http.reverse_proxy.upstream.hostport}
           }
         '';
-
         ## ACME sites
+        "tangled.hillion.co.uk".extraConfig = ''
+          tls {
+            dns cloudflare {
+              zone_token {env.CF_ZONE_TOKEN}
+              api_token {env.CF_API_TOKEN_HILLION_CO_UK}
+            }
+          }
+          reverse_proxy http://${locations.services.tangled_appview}:3000
+        '';
+        "knot.tangled.hillion.co.uk".extraConfig = ''
+          tls {
+            dns cloudflare {
+              zone_token {env.CF_ZONE_TOKEN}
+              api_token {env.CF_API_TOKEN_HILLION_CO_UK}
+            }
+          }
+          reverse_proxy http://${locations.services.tangled_knot}:5555
+        '';
         "matrix.hillion.co.uk".extraConfig = ''
           tls {
             dns cloudflare {

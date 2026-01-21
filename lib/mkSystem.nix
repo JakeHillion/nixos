@@ -13,6 +13,8 @@
     inputs.impermanence.nixosModules.impermanence
     inputs.nixos-generators.nixosModules.all-formats
     inputs.ogygia.nixosModules.default
+    inputs.tangled.nixosModules.appview
+    inputs.tangled.nixosModules.knot
 
     home-manager.nixosModules.default
     {

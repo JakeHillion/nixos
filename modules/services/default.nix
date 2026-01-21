@@ -31,6 +31,7 @@
     ./restic
     ./status.nix
     ./tang.nix
+    ./tangled
     ./unifi.nix
     ./version_tracker.nix
     ./zigbee2mqtt.nix

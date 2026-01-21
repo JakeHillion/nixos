@@ -42,6 +42,9 @@
 
     qnaplcd-menu.url = "github:stephenhouser/QnapLCD-Menu";
     qnaplcd-menu.flake = false;
+
+    tangled.url = "git+https://tangled.org/tangled.org/core";
+    tangled.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   description = "Hillion Nix flake";
@@ -63,6 +66,7 @@
     , ogygia
     , qnaplcd-menu
     , status-jakehillion-me
+    , tangled
     , treefmt-nix
     , ...
     }@inputs:
