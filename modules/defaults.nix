@@ -43,6 +43,7 @@
         git
         htop
         nix
+        nix-output-monitor
         ripgrep
         tree
         vim

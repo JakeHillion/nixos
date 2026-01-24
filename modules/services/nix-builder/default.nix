@@ -29,6 +29,7 @@ in
         Type = "oneshot";
         DynamicUser = true;
         CacheDirectory = "nix-builder";
+        StateDirectory = "nix-builder";
         WorkingDirectory = "%C/nix-builder";
         LoadCredential = [
           "gitea-token:${config.age.secrets."nix-builder/gitea-token".path}"
@@ -55,6 +56,20 @@ in
         CONTEXT_NAME="${contextName}"
         GITEA_TOKEN="$(cat "$CREDENTIALS_DIRECTORY/gitea-token")"
 
+        # Signing key management
+        SIGNING_KEY_PATH="$STATE_DIRECTORY/signing-key"
+
+        if [[ ! -f "$SIGNING_KEY_PATH" ]]; then
+          echo "[>] Generating new signing key..."
+          ${pkgs.nix}/bin/nix key generate-secret --key-name "nix-builder-$(${pkgs.hostname}/bin/hostname)-$(${pkgs.coreutils}/bin/date +%y%m%d)" > "$SIGNING_KEY_PATH"
+          chmod 600 "$SIGNING_KEY_PATH"
+        fi
+
+        # Print public key so it can be added to trusted-public-keys
+        echo "[>] Public signing key:"
+        cat "$SIGNING_KEY_PATH" | ${pkgs.nix}/bin/nix key convert-secret-to-public
+        echo ""
+
         echo "[>] Starting nix-builder run"
 
         # Function to update commit status in Gitea
@@ -79,6 +94,7 @@ in
         # Track build results
         BUILD_FAILURES=()
         BUILD_SUCCESSES=()
+        PUSH_FAILURES=()
 
         # Clone or update repository
         if [[ ! -d "$REPO_DIR" ]]; then
@@ -169,14 +185,23 @@ in
           if ${pkgs.nix}/bin/nix build \
             --quiet \
             --no-link \
-            "''${ALL_ARGS[@]}"; then
-            echo "[+] Successfully built branch $branch"
+            --print-out-paths \
+            "''${ALL_ARGS[@]}" \
+          | ${pkgs.ogygia}/bin/ogygia iris push --signing-key "$SIGNING_KEY_PATH"; then
+            echo "[+] Successfully built and pushed branch $branch"
             BUILD_SUCCESSES+=("$branch")
             update_commit_status "$COMMIT_SHA" "success" "Build completed successfully"
           else
-            echo "[!] Build failed for branch $branch"
-            BUILD_FAILURES+=("$branch")
-            update_commit_status "$COMMIT_SHA" "failure" "Build failed"
+            st=("''${PIPESTATUS[@]}")
+            if (( st[0] != 0 )); then
+              echo "[!] Build failed for branch $branch"
+              BUILD_FAILURES+=("$branch")
+              update_commit_status "$COMMIT_SHA" "failure" "Build failed"
+            else
+              echo "[x] Iris push failed for branch $branch (build succeeded, cached locally)"
+              PUSH_FAILURES+=("$branch")
+              update_commit_status "$COMMIT_SHA" "failure" "Iris push failed"
+            fi
           fi
         done
 
@@ -196,9 +221,16 @@ in
           done
           echo ""
         fi
+        if [[ ''${#PUSH_FAILURES[@]} -gt 0 ]]; then
+          echo "[•] Push failures (builds cached locally):"
+          for branch in "''${PUSH_FAILURES[@]}"; do
+            echo "  ⚠ $branch"
+          done
+          echo ""
+        fi
 
         echo ""
-        echo "[>] nix-builder run completed: ''${#BUILD_SUCCESSES[@]} successes, ''${#BUILD_FAILURES[@]} failures"
+        echo "[>] nix-builder run completed: ''${#BUILD_SUCCESSES[@]} successes, ''${#BUILD_FAILURES[@]} build failures, ''${#PUSH_FAILURES[@]} push failures"
       '';
     };
 
@@ -214,5 +246,8 @@ in
 
     # Allow nix-builder to use nix daemon
     nix.settings.trusted-users = [ "nix-builder" ];
+
+    # Persist signing key across reboots (DynamicUser uses /var/lib/private/)
+    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/lib/private/nix-builder" ];
   };
 }
