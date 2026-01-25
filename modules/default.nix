@@ -18,6 +18,7 @@
     ./locations.nix
     ./nebula
     ./oci-containers
+    ./ogygia.nix
     ./prometheus
     ./profiles
     ./qnap-display.nix

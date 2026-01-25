@@ -4,16 +4,6 @@
   options.custom.defaults = lib.mkEnableOption "defaults";
 
   config = lib.mkIf config.custom.defaults {
-    ogygia = {
-      enable = true;
-      domain = "neb.jakehillion.me";
-
-      zookeeper = {
-        enable = true;
-        endpoints = config.custom.services.zookeeper.clientHosts;
-      };
-    };
-
     hardware.enableAllFirmware = true;
     nix = {
       settings = {
@@ -53,7 +43,6 @@
         git
         htop
         nix
-        ogygia
         ripgrep
         tree
         vim
@@ -93,6 +82,7 @@
     custom.hostinfo.enable = true;
     custom.locations.autoServe = true;
     custom.nebula.enable = true;
+    custom.ogygia.enable = true;
     custom.prometheus.client.enable = true;
     custom.shell.enable = true;
     custom.ssh.enable = true;
