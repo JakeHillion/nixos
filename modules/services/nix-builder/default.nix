@@ -116,23 +116,29 @@ in
           # Get all packages for current architecture
           echo "[•] Getting packages for $CURRENT_ARCH..."
           if ! PACKAGES=$(${pkgs.nix}/bin/nix flake show --json 2>/dev/null | ${pkgs.jq}/bin/jq -r ".packages.\"$CURRENT_ARCH\" // {} | keys[]"); then
-            echo "Failed to get packages for branch $branch"
-            exit 1
+            echo "[!] Failed to get packages for branch $branch"
+            BUILD_FAILURES+=("$branch")
+            update_commit_status "$COMMIT_SHA" "failure" "Flake evaluation failed"
+            continue
           fi
 
           # Get nixosConfigurations for current architecture
           echo "[•] Getting nixosConfigurations for $CURRENT_ARCH..."
           if ! ALL_NIXOS_CONFIGS=$(${pkgs.nix}/bin/nix flake show --json 2>/dev/null | ${pkgs.jq}/bin/jq -r ".nixosConfigurations // {} | keys[]"); then
-            echo "Failed to get nixosConfigurations for branch $branch"
-            exit 1
+            echo "[!] Failed to get nixosConfigurations for branch $branch"
+            BUILD_FAILURES+=("$branch")
+            update_commit_status "$COMMIT_SHA" "failure" "Flake evaluation failed"
+            continue
           fi
 
           # Filter by checking system files
           NIXOS_CONFIGS=""
           for config in $ALL_NIXOS_CONFIGS; do
-            if ! SYSTEM=$(${pkgs.nix}/bin/nix eval --raw ".#nixosConfigurations.\"$config\".pkgs.system"); then
-              echo "Failed to get system for configuration $config"
-              exit 1
+            if ! SYSTEM=$(${pkgs.nix}/bin/nix eval --raw ".#nixosConfigurations.\"$config\".pkgs.system" 2>/dev/null); then
+              echo "[!] Failed to get system for configuration $config on branch $branch"
+              BUILD_FAILURES+=("$branch")
+              update_commit_status "$COMMIT_SHA" "failure" "Failed to evaluate configuration $config"
+              continue 2
             fi
             if [[ "$SYSTEM" == "$CURRENT_ARCH" ]]; then
               NIXOS_CONFIGS="$NIXOS_CONFIGS $config"
