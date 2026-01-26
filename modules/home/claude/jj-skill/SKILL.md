@@ -35,5 +35,8 @@ To amend a commit: just make changes and `jj squash` - this folds the working co
 
 Key differences from Git:
 - Working copy is automatically a commit (no staging area)
+- We always expect a staging commit at the top of the stack. Do not attempt to remove it/describe it. Use `jj commit` to turn the working commit into a named commit _and_ name a new commit on top of it.
 - No `git commit --amend` - use `jj squash` instead
 - Branches are called "bookmarks" (`jj bookmark`)
+
+This skill does not require you to take any action unless specifically asked for. Feel free to inspect the state of the repository, but don't take this as an instruction to create a commit/squash etc.
