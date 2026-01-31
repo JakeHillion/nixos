@@ -12,10 +12,11 @@
     boot.loader.efi.canTouchEfiVariables = true;
 
     custom.defaults = true;
-    boot.kernelParams = [
-      # for tang - this may not be required but I need a KVM to fix it if it is, so keeping it for now
-      "ip=dhcp"
-    ];
+    boot.kernelParams =
+      let
+        ifcfg = builtins.head config.networking.interfaces.enp6s0.ipv4.addresses;
+      in
+      [ "ip=${ifcfg.address}::${config.networking.defaultGateway.address}:255.255.255.192:${config.networking.hostName}:eth0:none" ];
     custom.tang = {
       enable = true;
       networkingModule = "igb";
@@ -114,12 +115,19 @@
       interfaces = {
         enp6s0 = {
           name = "eth0";
-          useDHCP = true;
+          ipv4.addresses = [{
+            address = "138.201.252.214";
+            prefixLength = 26;
+          }];
           ipv6.addresses = [{
             address = "2a01:4f8:173:23d2::2";
             prefixLength = 64;
           }];
         };
+      };
+      defaultGateway = {
+        address = "138.201.252.193";
+        interface = "eth0";
       };
       defaultGateway6 = {
         address = "fe80::1";
