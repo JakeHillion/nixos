@@ -83,56 +83,29 @@
     ## Web services and KVM reverse proxies
     services.caddy = {
       enable = true;
-      virtualHosts = {
-        "jellyfin.jakehillion.me".extraConfig = ''
-          reverse_proxy http://${config.custom.locations.locations.services.jellyfin}:8096
-        '';
+      virtualHosts."jellyfin.jakehillion.me".extraConfig = ''
+        reverse_proxy http://${config.custom.locations.locations.services.jellyfin}:8096
+      '';
+    };
 
-        "graphs.cyclone.gw.${config.ogygia.domain}" = {
-          listenAddresses = [ config.custom.dns.nebula.ipv4 ];
-          extraConfig = ''
-            tls {
-              ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
-            }
-            reverse_proxy unix///run/netdata/netdata.sock
-          '';
-        };
-        "argus.kvm.${config.ogygia.domain}" = {
-          listenAddresses = [ config.custom.dns.nebula.ipv4 ];
-          extraConfig = ''
-            tls {
-              ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
-            }
-            reverse_proxy http://10.239.19.12
-          '';
-        };
-        "hammer.kvm.${config.ogygia.domain}" = {
-          listenAddresses = [ config.custom.dns.nebula.ipv4 ];
-          extraConfig = ''
-            tls {
-              ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
-            }
-            reverse_proxy http://10.239.19.6
-          '';
-        };
-        "charlie.kvm.${config.ogygia.domain}" = {
-          listenAddresses = [ config.custom.dns.nebula.ipv4 ];
-          extraConfig = ''
-            tls {
-              ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
-            }
-            reverse_proxy http://10.239.19.7
-          '';
-        };
-        "kvm.phoenix.st.${config.ogygia.domain}" = {
-          listenAddresses = [ config.custom.dns.nebula.ipv4 ];
-          extraConfig = ''
-            tls {
-              ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
-            }
-            reverse_proxy http://10.239.19.9
-          '';
-        };
+    custom.www.nebula = {
+      enable = true;
+      virtualHosts = {
+        "graphs.cyclone.gw.${config.ogygia.domain}".extraConfig = ''
+          reverse_proxy unix///run/netdata/netdata.sock
+        '';
+        "argus.kvm.${config.ogygia.domain}".extraConfig = ''
+          reverse_proxy http://10.239.19.12
+        '';
+        "hammer.kvm.${config.ogygia.domain}".extraConfig = ''
+          reverse_proxy http://10.239.19.6
+        '';
+        "charlie.kvm.${config.ogygia.domain}".extraConfig = ''
+          reverse_proxy http://10.239.19.7
+        '';
+        "kvm.phoenix.st.${config.ogygia.domain}".extraConfig = ''
+          reverse_proxy http://10.239.19.9
+        '';
       };
     };
     ### HACK: Allow Caddy to restart if it fails. This happens because Nebula

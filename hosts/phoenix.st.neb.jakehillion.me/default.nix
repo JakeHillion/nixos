@@ -124,20 +124,12 @@ in
     systemd.services."container@downloads".requires = [ "zfs-mount.service" ];
 
     ## Wallpapers
-    services.caddy = {
+    custom.www.nebula = {
       enable = true;
-
-      virtualHosts."wallpapers.${config.ogygia.domain}" = {
-        listenAddresses = [ config.custom.dns.nebula.ipv4 ];
-        extraConfig = ''
-          tls {
-            ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
-          }
-
-          root * /${zpool_name}/media/wallpapers
-          file_server
-        '';
-      };
+      virtualHosts."wallpapers.${config.ogygia.domain}".extraConfig = ''
+        root * /${zpool_name}/media/wallpapers
+        file_server
+      '';
     };
 
     age.secrets."restic/wallpapers/b52".file = ../../secrets/restic/b52.age;

@@ -18,19 +18,11 @@ in
     users.users.immich.uid = config.ids.uids.immich;
     users.groups.immich.gid = config.ids.gids.immich;
 
-    services.caddy = {
+    custom.www.nebula = {
       enable = true;
-
-      virtualHosts."immich.${config.ogygia.domain}" = {
-        listenAddresses = [ config.custom.dns.nebula.ipv4 ];
-        extraConfig = ''
-          reverse_proxy http://localhost:${toString config.services.immich.port}
-
-          tls {
-            ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
-          }
-        '';
-      };
+      virtualHosts."immich.${config.ogygia.domain}".extraConfig = ''
+        reverse_proxy http://localhost:${toString config.services.immich.port}
+      '';
     };
 
     services.restic.backups."immich" = {

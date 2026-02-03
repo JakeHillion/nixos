@@ -31,20 +31,14 @@ in
       owner = "deluge";
     };
 
-    services.caddy = {
+    custom.www.nebula = {
       enable = true;
-
       virtualHosts = builtins.listToAttrs (builtins.map
         (x: {
           name = "${x}.downloads.${config.ogygia.domain}";
           value = {
-            listenAddresses = [ config.custom.dns.nebula.ipv4 ];
             extraConfig = ''
               reverse_proxy unix//${cfg.metadataPath}/caddy/caddy.sock
-
-              tls {
-                ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
-              }
             '';
           };
         }) [ "prowlarr" "sonarr" "radarr" "deluge" ]);

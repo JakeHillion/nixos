@@ -103,13 +103,9 @@ in
       };
     };
 
-    services.caddy.virtualHosts."radicale.${config.ogygia.domain}" = {
-      listenAddresses = [ "::1" config.custom.dns.nebula.ipv4 ];
-      extraConfig = ''
-        tls {
-          ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
-        }
-
+    custom.www.nebula = {
+      enable = true;
+      virtualHosts."radicale.${config.ogygia.domain}".extraConfig = ''
         reverse_proxy http://127.0.0.1:${toString cfg.port}
       '';
     };

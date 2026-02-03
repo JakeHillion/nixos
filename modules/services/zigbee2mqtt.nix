@@ -21,18 +21,11 @@ in
       owner = "zigbee2mqtt";
     };
 
-    services.caddy = {
+    custom.www.nebula = {
       enable = true;
-
-      virtualHosts."zigbee2mqtt.home.${config.ogygia.domain}" = {
-        listenAddresses = [ config.custom.dns.nebula.ipv4 ];
-        extraConfig = ''
-          tls {
-            ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
-          }
-          reverse_proxy http://127.0.0.1:15606
-        '';
-      };
+      virtualHosts."zigbee2mqtt.home.${config.ogygia.domain}".extraConfig = ''
+        reverse_proxy http://127.0.0.1:15606
+      '';
     };
 
     services.zigbee2mqtt = {

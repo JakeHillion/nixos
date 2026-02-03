@@ -22,19 +22,11 @@ in
 
     age.secrets."frigate/secrets.env".file = ../../secrets/frigate/secrets.env.age;
 
-    services.caddy = {
+    custom.www.nebula = {
       enable = true;
-
-      virtualHosts."frigate.${config.ogygia.domain}" = {
-        listenAddresses = [ config.custom.dns.nebula.ipv4 ];
-        extraConfig = ''
-          reverse_proxy unix///run/nginx-frigate/nginx.sock
-
-          tls {
-            ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
-          }
-        '';
-      };
+      virtualHosts."frigate.${config.ogygia.domain}".extraConfig = ''
+        reverse_proxy unix///run/nginx-frigate/nginx.sock
+      '';
     };
 
     users.users.frigate = {

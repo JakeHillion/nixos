@@ -201,18 +201,11 @@ in
       listenAddress = "127.0.0.1:8000"; # TODO: can this be a Unix socket?
     };
 
-    services.caddy = {
+    custom.www.nebula = {
       enable = true;
-      virtualHosts."restic.${config.ogygia.domain}" = {
-        listenAddresses = [ "::1" config.custom.dns.nebula.ipv4 ];
-        extraConfig = ''
-          tls {
-            ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
-          }
-
-          reverse_proxy http://localhost:8000
-        '';
-      };
+      virtualHosts."restic.${config.ogygia.domain}".extraConfig = ''
+        reverse_proxy http://localhost:8000
+      '';
     };
 
     systemd =
