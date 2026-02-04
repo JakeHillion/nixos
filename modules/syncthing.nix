@@ -115,6 +115,11 @@ in
                     ];
                   };
 
+                  "appdata/blackmagic-cam" = {
+                    id = "thermodynamic-ultramodern-asynchronism";
+                    devices = [ "jakes-iphone.mob" "phoenix.st" ];
+                  };
+
                   "media/offline-youtube" = {
                     id = "receding-accidental-leprosy";
                     devices = [ "bob.lt" "phoenix.st" ];
@@ -147,6 +152,7 @@ in
           fullExcludes = [
             "${cfg.baseDir}/.st"
             "${cfg.baseDir}/*/.stfolder"
+            "${cfg.baseDir}/appdata/blackmagic-cam"
             "${cfg.baseDir}/media/travel-shows"
             "${cfg.baseDir}/media/offline-youtube"
           ];

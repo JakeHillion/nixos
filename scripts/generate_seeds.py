@@ -2,10 +2,13 @@
 #!nix-shell -i python3 -p python3Packages.nltk
 
 import random
+import nltk
 from nltk.corpus import wordnet as wn
 
-# TODO: can I make a Nix derivation for this and point nltk at it?
-# import nltk; nltk.download('wordnet')
+try:
+    wn.ensure_loaded()
+except LookupError:
+    nltk.download('wordnet')
 
 def get_adjectives_and_nouns():
     adjectives = [word for word in wn.all_lemma_names(pos='a') if len(word) > 1 and '_' not in word and '-' not in word]
