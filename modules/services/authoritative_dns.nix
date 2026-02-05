@@ -35,7 +35,6 @@ let
 
     mqtt.home                         21600 CNAME ${locations.services.mosquitto}.
     zigbee2mqtt.home                  21600 CNAME ${locations.services.zigbee2mqtt}.
-    graphs.cyclone.gw                 21600 CNAME cyclone.gw.${domain}.
 
     argus.kvm                         21600 CNAME cyclone.gw.${domain}.
     charlie.kvm                       21600 CNAME cyclone.gw.${domain}.

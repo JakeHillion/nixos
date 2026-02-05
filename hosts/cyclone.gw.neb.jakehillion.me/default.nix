@@ -48,17 +48,6 @@
       "d /data/wireguard 0700 root root -"
     ];
 
-    ## Netdata
-    services.netdata = {
-      enable = true;
-      config = {
-        web = {
-          "bind to" = "unix:/run/netdata/netdata.sock";
-        };
-      };
-    };
-    users.users.caddy.extraGroups = [ "netdata" ];
-
     ## Run a persistent iperf3 server
     services.iperf3.enable = true;
 
@@ -91,9 +80,6 @@
     custom.www.nebula = {
       enable = true;
       virtualHosts = {
-        "graphs.cyclone.gw.${config.ogygia.domain}".extraConfig = ''
-          reverse_proxy unix///run/netdata/netdata.sock
-        '';
         "argus.kvm.${config.ogygia.domain}".extraConfig = ''
           reverse_proxy http://10.239.19.12
         '';
