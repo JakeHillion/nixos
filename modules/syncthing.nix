@@ -64,13 +64,11 @@ in
                 allComputers = lib.lists.filter (x: !builtins.elem x [ "jakes-ipad.mob" "jakes-iphone.mob" ]) allDevices;
               in
               with lib.attrsets; mapAttrs'
-                (name: value: (nameValuePair "${cfg.baseDir}/${name}" {
+                (name: value: (nameValuePair "${cfg.baseDir}/${name}" (value // {
                   enable = lib.lists.any (x: x == (lib.concatStringsSep "." (lib.take 2 (lib.splitString "." config.networking.fqdn)))) value.devices;
 
-                  id = value.id;
                   label = name;
-                  devices = value.devices;
-                }))
+                })))
                 {
                   "sync" = {
                     id = "unaggressive-aggravating-reagent";
@@ -118,6 +116,9 @@ in
                   "appdata/blackmagic-cam" = {
                     id = "thermodynamic-ultramodern-asynchronism";
                     devices = [ "jakes-iphone.mob" "phoenix.st" ];
+                    # Sync smallest files first so the importer can
+                    # process and free remote storage more quickly.
+                    order = "smallestFirst";
                   };
 
                   "media/offline-youtube" = {

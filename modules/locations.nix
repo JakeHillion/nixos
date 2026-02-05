@@ -23,6 +23,7 @@ in
           authoritative_dns = [
             "boron.cx.${config.ogygia.domain}"
           ];
+          blackmagic-cam-importer = "phoenix.st.${config.ogygia.domain}";
           downloads = "phoenix.st.${config.ogygia.domain}";
           frigate = "phoenix.st.${config.ogygia.domain}";
           git = "boron.cx.${config.ogygia.domain}";

@@ -4,6 +4,7 @@
   imports = [
     ./acme-dns-api.nix
     ./authoritative_dns.nix
+    ./blackmagic-cam-importer
     ./downloads
     ./frigate.nix
     ./git.nix
