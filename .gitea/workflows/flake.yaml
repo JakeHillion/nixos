@@ -16,8 +16,8 @@ jobs:
 
       # caddy has a hash pinned in it to get the cloudflare plugin. Build it
       # with no cache to check the hash is still right.
-      - name: build caddy-cloudflare
-        run: nix build .#caddy-cloudflare
+      - name: build caddy-with-dns
+        run: nix build .#caddy-with-dns
 
       - uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
       - name: lint

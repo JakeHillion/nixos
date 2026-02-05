@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ./acme-dns-api.nix
     ./authoritative_dns.nix
     ./downloads
     ./frigate.nix

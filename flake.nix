@@ -74,10 +74,7 @@
 
           "storj" = final.callPackage ./pkgs/storj.nix { };
           "pbcli" = final.callPackage ./pkgs/pbcli.nix { };
-          "caddy-cloudflare" = prev.caddy.withPlugins {
-            plugins = [ "github.com/caddy-dns/cloudflare@v0.2.1" ];
-            hash = "sha256-Zls+5kWd/JSQsmZC4SRQ/WS+pUcRolNaaI7UQoPzJA0=";
-          };
+          "caddy-with-dns" = final.callPackage ./pkgs/caddy-with-dns.nix { };
           "ogygia" = ogygia.packages.${final.system}.ogygia;
           "qnaplcd" = final.callPackage ./pkgs/qnaplcd.nix { inherit qnaplcd-menu; };
         })
@@ -167,6 +164,6 @@
     {
       formatter = nixpkgs.legacyPackages.${system}.nixpkgs-fmt;
 
-      packages.caddy-cloudflare = pkgs.caddy-cloudflare;
+      packages.caddy-with-dns = pkgs.caddy-with-dns;
     });
 }

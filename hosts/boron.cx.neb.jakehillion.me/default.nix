@@ -73,9 +73,9 @@
       };
     };
 
-    services.nsd.interfaces = [
-      "138.201.252.214"
-      "2a01:4f8:173:23d2::2"
+    services.knot.settings.server.listen = [
+      "138.201.252.214@53"
+      "2a01:4f8:173:23d2::2@53"
     ];
 
     ## Filesystems

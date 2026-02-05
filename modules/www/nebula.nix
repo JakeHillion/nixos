@@ -2,6 +2,14 @@
 
 let
   cfg = config.custom.www.nebula;
+  locations = config.custom.locations.locations;
+
+  # The ACME DNS API host - use the first authoritative_dns host
+  acmeApiHost =
+    let
+      authDns = locations.services.authoritative_dns;
+    in
+    if builtins.isList authDns then builtins.head authDns else authDns;
 in
 {
   options.custom.www.nebula = {
@@ -19,6 +27,7 @@ in
         servers {
         	trusted_proxies static 172.20.0.0/24
         }
+        email acme@jakehillion.me
       '';
 
       virtualHosts = lib.attrsets.mapAttrs
@@ -26,7 +35,9 @@ in
           listenAddresses = [ config.custom.dns.nebula.ipv4 ];
           extraConfig = ''
             tls {
-              ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
+              dns jakehillion {
+                api_endpoint http://${acmeApiHost}:8553
+              }
             }
           '' + value.extraConfig;
         }))

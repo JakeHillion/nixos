@@ -70,8 +70,8 @@
 
     services.geoclue2.geoProviderUrl = lib.mkOverride 999 "https://api.beacondb.net/v1/geolocate";
 
-    # Caddy package
-    services.caddy.package = pkgs.caddy-cloudflare;
+    # Caddy package with DNS plugins (cloudflare + jakehillion)
+    services.caddy.package = pkgs.caddy-with-dns;
 
     # Delegation
     custom.auto_updater.enable = true;
