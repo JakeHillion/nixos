@@ -520,7 +520,8 @@
         "nixpkgs-unstable": "nixpkgs-unstable",
         "ogygia": "ogygia",
         "qnaplcd-menu": "qnaplcd-menu",
-        "status-jakehillion-me": "status-jakehillion-me"
+        "status-jakehillion-me": "status-jakehillion-me",
+        "treefmt-nix": "treefmt-nix_3"
       }
     },
     "rust-analyzer-src": {
@@ -705,6 +706,26 @@
         "owner": "numtide",
         "repo": "treefmt-nix",
         "rev": "e96d59dff5c0d7fddb9d113ba108f03c3ef99eca",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "treefmt-nix_3": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1770228511,
+        "narHash": "sha256-wQ6NJSuFqAEmIg2VMnLdCnUc0b7vslUohqqGGD+Fyxk=",
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "rev": "337a4fe074be1042a35086f15481d763b8ddc0e7",
         "type": "github"
       },
       "original": {

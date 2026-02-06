@@ -8,20 +8,32 @@ from nltk.corpus import wordnet as wn
 try:
     wn.ensure_loaded()
 except LookupError:
-    nltk.download('wordnet')
+    nltk.download("wordnet")
+
 
 def get_adjectives_and_nouns():
-    adjectives = [word for word in wn.all_lemma_names(pos='a') if len(word) > 1 and '_' not in word and '-' not in word]
-    nouns = [word for word in wn.all_lemma_names(pos='n') if len(word) > 1 and '_' not in word and '-' not in word]
+    adjectives = [
+        word
+        for word in wn.all_lemma_names(pos="a")
+        if len(word) > 1 and "_" not in word and "-" not in word
+    ]
+    nouns = [
+        word
+        for word in wn.all_lemma_names(pos="n")
+        if len(word) > 1 and "_" not in word and "-" not in word
+    ]
     return adjectives, nouns
 
+
 adjectives, nouns = get_adjectives_and_nouns()
+
 
 def generate_random_word_list(N):
     selected_adjectives = random.sample(adjectives, N)
     noun = random.choice(nouns)
     return selected_adjectives + [noun]
 
+
 while True:
     random_word_list = generate_random_word_list(2)
-    input(' '.join(random_word_list))
+    input(" ".join(random_word_list))

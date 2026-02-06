@@ -7,6 +7,9 @@
 
     flake-utils.url = "github:numtide/flake-utils";
 
+    treefmt-nix.url = "github:numtide/treefmt-nix";
+    treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
+
     darwin.url = "github:lnl7/nix-darwin";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -60,6 +63,7 @@
     , ogygia
     , qnaplcd-menu
     , status-jakehillion-me
+    , treefmt-nix
     , ...
     }@inputs:
     let
@@ -80,6 +84,12 @@
         })
       ];
       mkSystem = import ./lib/mkSystem.nix { inherit inputs; };
+      treefmtEval = pkgs: treefmt-nix.lib.evalModule pkgs {
+        projectRootFile = "flake.nix";
+        programs.nixpkgs-fmt.enable = true;
+        programs.gofumpt.enable = true;
+        programs.black.enable = true;
+      };
     in
     {
       inherit mkSystem;
@@ -128,8 +138,8 @@
         };
       };
 
-    } // flake-utils.lib.eachSystem [ "x86_64-linux" ] (
-      system:
+    } // nixpkgs.lib.recursiveUpdate
+      (flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
           inherit system;
@@ -138,32 +148,38 @@
         };
       in
       {
-        # NixOS module tests
-        checks = import ./tests {
-          inherit pkgs system inputs;
-          lib = nixpkgs.lib;
+        formatter = (treefmtEval pkgs).config.build.wrapper;
+
+        checks = {
+          formatting = (treefmtEval pkgs).config.build.check self;
         };
 
-        # App to auto-generate all snapshots: `nix run .#generate-snapshots`
-        apps.generate-snapshots = {
-          type = "app";
-          program = "${import ./tests/generate-snapshots.nix {
+        packages.caddy-with-dns = pkgs.caddy-with-dns;
+      }))
+      (flake-utils.lib.eachSystem [ "x86_64-linux" ] (
+        system:
+        let
+          pkgs = import nixpkgs {
+            inherit system;
+            overlays = getSystemOverlays system { };
+            config = { allowUnfree = true; };
+          };
+        in
+        {
+          # NixOS module tests
+          checks = import ./tests {
+            inherit pkgs system inputs;
+            lib = nixpkgs.lib;
+          };
+
+          # App to auto-generate all snapshots: `nix run .#generate-snapshots`
+          apps.generate-snapshots = {
+            type = "app";
+            program = "${import ./tests/generate-snapshots.nix {
             inherit pkgs system inputs;
             lib = nixpkgs.lib;
           }}/bin/generate-snapshots";
-        };
-      }
-    ) // flake-utils.lib.eachDefaultSystem (system:
-    let
-      pkgs = import nixpkgs {
-        inherit system;
-        overlays = getSystemOverlays system { };
-        config = { allowUnfree = true; };
-      };
-    in
-    {
-      formatter = nixpkgs.legacyPackages.${system}.nixpkgs-fmt;
-
-      packages.caddy-with-dns = pkgs.caddy-with-dns;
-    });
+          };
+        }
+      ));
 }
