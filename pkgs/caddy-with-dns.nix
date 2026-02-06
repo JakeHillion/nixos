@@ -49,7 +49,8 @@ caddy.overrideAttrs (finalAttrs: prevAttrs: {
       echo 'require github.com/jakehillion/caddy-dns-jakehillion v0.0.0' >> go.mod
       echo 'replace github.com/jakehillion/caddy-dns-jakehillion => ./local-plugins/github.com/jakehillion/caddy-dns-jakehillion' >> go.mod
 
-      # Vendor all dependencies (this will copy our local plugin into vendor)
+      # Resolve transitive dependencies from local plugin, then vendor
+      go mod tidy
       go mod vendor
     '';
 
@@ -59,7 +60,7 @@ caddy.overrideAttrs (finalAttrs: prevAttrs: {
     '';
 
     outputHashMode = "recursive";
-    outputHash = "sha256-xkIwlmyIeddPTBNZSh9faMQAZsO8285+i8LoLXUV2CM=";
+    outputHash = "sha256-oGlZ2rsfQpJVtHtqPOl/YiZiajJ5C8ln4sQDtAreRWw=";
     outputHashAlgo = "sha256";
   };
 
