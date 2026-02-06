@@ -51,6 +51,10 @@ Test plan:
 - Checked <relevant service/feature> works correctly
 ```
 
+When writing the test plan you should check the CI configuration for the
+repository. If the CI configuration clearly covers much of your testing, those
+list entries should be replaced with a simple "- CI".
+
 ## One-commit rule
 
 This repository follows a **one commit per branch / one commit per PR** policy.
