@@ -89,6 +89,7 @@
         programs.nixpkgs-fmt.enable = true;
         programs.gofumpt.enable = true;
         programs.black.enable = true;
+        settings.formatter.black.options = [ "--line-length" "79" ];
       };
     in
     {

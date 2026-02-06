@@ -75,7 +75,9 @@ def query_immich_asset(file_name: str, api_key: str) -> Optional[dict]:
         assets = data.get("assets", {}).get("items", [])
         if assets:
             if len(assets) > 1:
-                log.warning(f"Found {len(assets)} Immich assets " f"for {file_name}")
+                log.warning(
+                    f"Found {len(assets)} Immich assets " f"for {file_name}"
+                )
             return max(
                 assets,
                 key=lambda a: a.get("createdAt", ""),
@@ -126,7 +128,8 @@ def get_service_timestamps(
                 "systemctl",
                 "show",
                 f"{service_name}.service",
-                "--property=ExecMainStartTimestamp," "ExecMainExitTimestamp,Result",
+                "--property=ExecMainStartTimestamp,"
+                "ExecMainExitTimestamp,Result",
             ],
             capture_output=True,
             text=True,
@@ -153,7 +156,9 @@ def get_service_timestamps(
                 ts_str = line.split("=", 1)[1].strip()
                 if ts_str:
                     try:
-                        exit_time = datetime.strptime(ts_str, "%a %Y-%m-%d %H:%M:%S %Z")
+                        exit_time = datetime.strptime(
+                            ts_str, "%a %Y-%m-%d %H:%M:%S %Z"
+                        )
                     except ValueError:
                         pass
             elif line.startswith("Result="):
@@ -186,7 +191,9 @@ def try_cleanup(events: list[Event]) -> None:
                 case "ResticBackupStarted" if not backup_started:
                     backup_started = True
                     chain.append(ev)
-                case "ResticBackupComplete" if backup_started and not backup_complete:
+                case "ResticBackupComplete" if (
+                    backup_started and not backup_complete
+                ):
                     backup_complete = True
                     chain.append(ev)
                 case "ResticCloneStarted" if (
@@ -214,7 +221,8 @@ def try_cleanup(events: list[Event]) -> None:
             return e.file_name or e.region or ""
 
         chain_desc = " -> ".join(
-            f"{e.event_type}({_label(e)}, " f"{_fmt_ts(e.timestamp)})" for e in chain
+            f"{e.event_type}({_label(e)}, " f"{_fmt_ts(e.timestamp)})"
+            for e in chain
         )
 
         try:
@@ -241,7 +249,8 @@ def log_queue(events: list[Event]) -> None:
         region_str = f", region={ev.region}" if ev.region else ""
         file_str = f", file={ev.file_name}" if ev.file_name else ""
         log.info(
-            f"  [{i}] {_fmt_ts(ev.timestamp)} " f"{ev.event_type}{file_str}{region_str}"
+            f"  [{i}] {_fmt_ts(ev.timestamp)} "
+            f"{ev.event_type}{file_str}{region_str}"
         )
 
 
@@ -282,7 +291,8 @@ def main():
                     )
                 except ValueError as e:
                     log.warning(
-                        f"Failed to parse timestamp for " f"{mov_file.name}: {e}"
+                        f"Failed to parse timestamp for "
+                        f"{mov_file.name}: {e}"
                     )
 
     for svc in RESTIC_SERVICES:
@@ -327,7 +337,8 @@ def main():
                     asset = query_immich_asset(ie.name, api_key)
                     if not asset:
                         log.warning(
-                            f"Asset not found in Immich after " f"upload: {ie.name}"
+                            f"Asset not found in Immich after "
+                            f"upload: {ie.name}"
                         )
                     else:
                         created_str = asset.get("createdAt")
@@ -345,7 +356,8 @@ def main():
                                 )
                             except ValueError as e:
                                 log.warning(
-                                    f"Failed to parse timestamp " f"for {ie.name}: {e}"
+                                    f"Failed to parse timestamp "
+                                    f"for {ie.name}: {e}"
                                 )
 
         # Poll systemd for restic service changes
@@ -373,7 +385,9 @@ def main():
                 and success
                 and (prev_exit is None or exit_time > prev_exit)
             ):
-                log.info(f"Service {svc} completed " f"successfully at {exit_time}")
+                log.info(
+                    f"Service {svc} completed " f"successfully at {exit_time}"
+                )
                 new_events.append(
                     Event(
                         timestamp=exit_time,
