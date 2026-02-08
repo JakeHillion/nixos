@@ -65,6 +65,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/lib/knot" ];
+
     services.knot = {
       enable = true;
 
@@ -73,6 +75,13 @@ in
           id = "localhost";
           address = [ "127.0.0.1" "::1" ];
           action = [ "update" ];
+        }];
+
+        policy = [{
+          id = "default";
+          algorithm = "ecdsap256sha256";
+          ksk-lifetime = 0;
+          zsk-lifetime = 0;
         }];
 
         zone = [{
@@ -84,6 +93,8 @@ in
           zonefile-sync = -1;
           zonefile-load = "difference-no-serial";
           journal-content = "all";
+          dnssec-signing = true;
+          dnssec-policy = "default";
         }];
       };
     };
