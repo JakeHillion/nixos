@@ -22,6 +22,8 @@ in
           acme_dns_api = "boron.cx.${config.ogygia.domain}";
           authoritative_dns = [
             "boron.cx.${config.ogygia.domain}"
+            "cyclone.gw.${config.ogygia.domain}"
+            "slider.pop.${config.ogygia.domain}"
           ];
           blackmagic-cam-importer = "phoenix.st.${config.ogygia.domain}";
           downloads = "phoenix.st.${config.ogygia.domain}";

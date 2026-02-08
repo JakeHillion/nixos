@@ -25,6 +25,11 @@
       ];
     };
 
+    # Knot DNS - public listen address
+    services.knot.settings.server.listen = [
+      "10.0.0.24@53"
+    ];
+
     # Networking
     networking = {
       interfaces.eth0 = {
@@ -38,8 +43,11 @@
       firewall = {
         allowedTCPPorts = lib.mkForce [
           22 # SSH
+          53 # DNS
         ];
-        allowedUDPPorts = lib.mkForce [ ];
+        allowedUDPPorts = lib.mkForce [
+          53 # DNS
+        ];
       };
     };
   };

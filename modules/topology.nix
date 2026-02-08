@@ -311,6 +311,20 @@
                 protocol = "tcp";
               }
               {
+                description = "DNS (TCP)";
+                externalPort = 53;
+                internalIP = "10.64.50.1";
+                protocol = "tcp";
+                loopbackEnabled = false;
+              }
+              {
+                description = "DNS (UDP)";
+                externalPort = 53;
+                internalIP = "10.64.50.1";
+                protocol = "udp";
+                loopbackEnabled = false;
+              }
+              {
                 description = "Nebula Lighthouse";
                 externalPort = 4242;
                 internalIP = "10.64.50.1";

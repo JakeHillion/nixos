@@ -69,6 +69,11 @@
     # Disable systemd-timesyncd since we're using chrony
     services.timesyncd.enable = false;
 
+    ## Knot DNS - public listen address
+    services.knot.settings.server.listen = [
+      "185.240.111.53@53"
+    ];
+
     ## Web services and KVM reverse proxies
     services.caddy = {
       enable = true;

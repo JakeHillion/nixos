@@ -7,6 +7,32 @@ let
   locations = config.custom.locations.locations;
   makeRecords = type: s: (lib.concatStringsSep "\n" (lib.collect builtins.isString (lib.mapAttrsRecursive (path: value: "${lib.concatStringsSep "." (lib.reverseList path)} 86400 ${type} ${value}") s)));
 
+  # Role derivation from locations
+  allHosts = locations.services.authoritative_dns;
+  primaryHost = builtins.head allHosts;
+  secondaryHosts = builtins.tail allHosts;
+  isPrimary = config.networking.fqdn == primaryHost;
+  isSecondary = builtins.elem config.networking.fqdn secondaryHosts;
+
+  # Nebula IP lookup (same pattern as zookeeper.nix)
+  lookupFqdn = fqdn:
+    lib.attrsets.attrByPath
+      (lib.reverseList (lib.splitString "." fqdn))
+      null
+      config.custom.dns.authoritative.ipv4;
+
+  primaryNebulaIp = lookupFqdn primaryHost;
+  secondaryNebulaIps = map lookupFqdn secondaryHosts;
+
+  # Generate remote definitions for secondaries (used on primary)
+  secondaryRemotes = lib.imap0
+    (i: ip: {
+      id = "secondary${toString i}";
+      address = "${ip}@53";
+    })
+    secondaryNebulaIps;
+  secondaryRemoteIds = map (r: r.id) secondaryRemotes;
+
   zoneContent = ''
     $ORIGIN ${domain}.
     $TTL 86400
@@ -20,6 +46,8 @@ let
     )
 
     @                                 86400 NS ns1.jakehillion.me.
+    @                                 86400 NS ns2.jakehillion.me.
+    @                                 86400 NS ns3.jakehillion.me.
 
     ca                                21600 CNAME warlock.cx.${domain}.
     frigate                           21600 CNAME ${locations.services.frigate}.
@@ -64,18 +92,42 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/lib/knot" ];
+  config = lib.mkIf cfg.enable (lib.mkMerge [
+    # Common config (both primary and secondary)
+    {
+      custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/lib/knot" ];
 
-    services.knot = {
-      enable = true;
+      services.knot = {
+        enable = true;
 
-      settings = {
-        acl = [{
-          id = "localhost";
-          address = [ "127.0.0.1" "::1" ];
-          action = [ "update" ];
-        }];
+        settings = {
+          server.listen = [ "${config.custom.dns.nebula.ipv4}@53" ];
+        };
+      };
+
+      systemd.services.knot = {
+        after = [ "nebula@jakehillion.service" ];
+        requires = [ "nebula@jakehillion.service" ];
+      };
+    }
+
+    # Primary config
+    (lib.mkIf isPrimary {
+      services.knot.settings = {
+        remote = secondaryRemotes;
+
+        acl = [
+          {
+            id = "localhost";
+            address = [ "127.0.0.1" "::1" ];
+            action = [ "update" ];
+          }
+          {
+            id = "transfer_secondaries";
+            address = secondaryNebulaIps;
+            action = [ "transfer" ];
+          }
+        ];
 
         policy = [{
           id = "default";
@@ -87,7 +139,8 @@ in
         zone = [{
           domain = domain;
           file = zoneFile;
-          acl = [ "localhost" ];
+          acl = [ "localhost" "transfer_secondaries" ];
+          notify = secondaryRemoteIds;
           # Don't sync changes back to the zone file (it's in the read-only Nix store)
           # Dynamic updates are kept in journal only
           zonefile-sync = -1;
@@ -97,6 +150,30 @@ in
           dnssec-policy = "default";
         }];
       };
-    };
-  };
+    })
+
+    # Secondary config
+    (lib.mkIf isSecondary {
+      services.knot.settings = {
+        remote = [{
+          id = "primary";
+          address = "${primaryNebulaIp}@53";
+        }];
+
+        acl = [{
+          id = "notify_primary";
+          address = [ primaryNebulaIp ];
+          action = [ "notify" ];
+        }];
+
+        zone = [{
+          domain = domain;
+          master = [ "primary" ];
+          acl = [ "notify_primary" ];
+          zonefile-sync = -1;
+          journal-content = "all";
+        }];
+      };
+    })
+  ]);
 }
