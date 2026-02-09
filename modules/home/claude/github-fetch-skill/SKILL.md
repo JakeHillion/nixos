@@ -1,5 +1,5 @@
 ---
-name: github
+name: github-fetch
 description: Use when fetching files from GitHub, browsing GitHub repositories, or accessing raw.githubusercontent.com URLs.
 ---
 
