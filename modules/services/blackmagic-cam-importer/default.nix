@@ -11,6 +11,7 @@ let
       libraries = with pkgs.python3Packages; [ inotify-simple requests ];
     }
     (builtins.readFile ./blackmagic-cam-importer.py);
+
 in
 {
   options.custom.services.blackmagic-cam-importer = {
