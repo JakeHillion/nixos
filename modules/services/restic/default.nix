@@ -46,6 +46,21 @@ in
                 opts = lib.mkOption {
                   type = listOf str;
                 };
+                maxSize = lib.mkOption {
+                  default = null;
+                  type = nullOr int;
+                  description = "Max repo size in bytes. Oldest eligible snapshots forgotten when exceeded.";
+                };
+                minAgeDays = lib.mkOption {
+                  default = 180;
+                  type = int;
+                  description = "Minimum snapshot age in days before eligible for size-based removal.";
+                };
+                repackSmall = lib.mkOption {
+                  default = true;
+                  type = bool;
+                  description = "Repack small packs during prune. Disable for deep archive repos.";
+                };
               };
             });
           };
@@ -133,8 +148,9 @@ in
             opts = [
               "--keep-within-daily 14d"
               "--keep-within-weekly 2m"
-              "--keep-within-monthly 18m"
+              "--keep-monthly unlimited"
             ];
+            maxSize = 2 * 1024 * 1024 * 1024 * 1024; # 2 TiB
           };
 
           clones = [
@@ -164,6 +180,22 @@ in
         "aws-us-east-1" = {
           environmentFile = config.age.secrets."restic/aws-us-east-1.env".path;
           packSize = 128;
+
+          forgetConfig = {
+            timerConfig = {
+              OnCalendar = "Sun, 04:00 UTC";
+              RandomizedDelaySec = "2h";
+              Persistent = true;
+            };
+            opts = [
+              "--keep-within-daily 31d"
+              "--keep-within-weekly 16w"
+              "--keep-monthly unlimited"
+            ];
+            maxSize = 5 * 1024 * 1024 * 1024 * 1024; # 5 TiB
+            minAgeDays = 180;
+            repackSmall = false; # deep archive: cannot repack
+          };
         };
       };
     };
@@ -218,6 +250,9 @@ in
 
         mkForgetService = name: repo_cfg:
           if (repo_cfg.forgetConfig != null) then
+            let
+              fc = repo_cfg.forgetConfig;
+            in
             lib.mkMerge [
               {
                 description = "Restic forget service for ${name}";
@@ -227,14 +262,16 @@ in
                   Group = "restic";
                 };
 
-                script = ''
-                  set -xe
+                path = [ pkgs.restic ];
 
-                  ${pkgs.restic}/bin/restic forget ${lib.strings.concatStringsSep " " repo_cfg.forgetConfig.opts} \
-                    --prune \
-                    --repack-small \
+                script = ''
+                  ${pkgs.restic-forget}/bin/restic-forget \
+                    --forget-args "${lib.strings.concatStringsSep " " fc.opts}" \
                     ${lib.optionalString (repo_cfg.packSize != null) "--pack-size ${toString repo_cfg.packSize}"} \
-                    --retry-lock 30m
+                    ${lib.optionalString (fc.maxSize != null) "--max-size ${toString fc.maxSize}"} \
+                    ${lib.optionalString (fc.maxSize != null) "--min-age-days ${toString fc.minAgeDays}"} \
+                    ${lib.optionalString fc.repackSmall "--repack-small"} \
+                    ${lib.optionalString (!fc.repackSmall) "--max-repack-size 0"}
                 '';
               }
               (mkRepoInfo repo_cfg)

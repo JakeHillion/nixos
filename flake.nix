@@ -88,8 +88,9 @@
           "pbcli" = final.callPackage ./pkgs/pbcli.nix { };
           "caddy-with-dns" = final.callPackage ./pkgs/caddy-with-dns.nix { };
           "ogygia" = ogygia.packages.${final.system}.ogygia;
-          "qnaplcd" = final.callPackage ./pkgs/qnaplcd.nix { inherit qnaplcd-menu; };
           "opencode-plugin" = final.callPackage ./pkgs/opencode-plugin { };
+          "qnaplcd" = final.callPackage ./pkgs/qnaplcd.nix { inherit qnaplcd-menu; };
+          "restic-forget" = final.callPackage ./pkgs/restic-forget.nix { };
         })
       ];
       mkSystem = import ./lib/mkSystem.nix { inherit inputs; };
