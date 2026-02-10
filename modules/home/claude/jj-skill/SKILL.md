@@ -18,6 +18,7 @@ Common commands:
 - `jj squash` - squash working copy into parent
 - `jj git push` - push to remote
 - `jj git fetch` - fetch from remote
+- `jj file show -r REV FILE` - read a file's content at a specific revision
 
 File tracking (use when `jj status` shows untracked files):
 - `jj file track <path>` - start tracking a file
