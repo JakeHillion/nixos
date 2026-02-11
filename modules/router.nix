@@ -285,7 +285,7 @@ in
                 iifname {
                   "${locationCfg.wanInterface}"
                 } oifname {
-                  ${lib.strings.concatStringsSep ",\n      " (map (i: "\"${i}\"") trustedInterfaceNames)}
+                  ${lib.strings.concatStringsSep ",\n      " (map (i: "\"${i}\"") internetInterfaceNames)}
                 } ct state { established, related } counter accept comment "Allow established back to LANs"
 
                 # Port forwarding rules from all networks
