@@ -35,6 +35,7 @@ in
           homebox = "boron.cx.${config.ogygia.domain}";
           immich = "phoenix.st.${config.ogygia.domain}";
           jellyfin = "phoenix.st.${config.ogygia.domain}";
+          journal_remote = "phoenix.st.${config.ogygia.domain}";
           mastodon = "";
           matrix = "boron.cx.${config.ogygia.domain}";
           mautrix_discord = "warlock.cx.${config.ogygia.domain}";

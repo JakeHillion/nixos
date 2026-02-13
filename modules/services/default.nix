@@ -16,6 +16,7 @@
     ./protonmail-bridge.nix
     ./immich.nix
     ./jellyfin.nix
+    ./journal-remote.nix
     ./mastodon
     ./matrix
     ./mautrix-discord

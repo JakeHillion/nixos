@@ -74,6 +74,16 @@
     services.caddy.package = pkgs.caddy-with-dns;
 
     # Delegation
+    # Journal upload to central log server
+    services.journald.upload = {
+      enable = true;
+      settings.Upload.URL = "http://${config.custom.locations.locations.services.journal_remote}:19532";
+    };
+    systemd.services.systemd-journal-upload = {
+      after = [ "nebula@jakehillion.service" ];
+      requires = [ "nebula@jakehillion.service" ];
+    };
+
     custom.auto_updater.enable = true;
     custom.ca.consumer.enable = true;
     custom.compressed_ram.enable = true;
