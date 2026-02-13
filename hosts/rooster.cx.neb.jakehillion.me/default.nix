@@ -31,12 +31,6 @@
     ## Run latest kernel for sched_ext development
     boot.kernelPackages = pkgs.linuxPackages_latest;
 
-    # Lockless peek patch for sched_ext testing
-    boot.kernelPatches = [{
-      name = "scx_lockless_peek";
-      patch = ../../patches/kernel/scx_lockless_peek.patch;
-    }];
-
     # Allow performing emulated builds in QEMU
     boot.binfmt.emulatedSystems = [
       "aarch64-linux"
