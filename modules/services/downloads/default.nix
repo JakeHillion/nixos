@@ -200,6 +200,15 @@ in
             };
           };
 
+          systemd.timers.update-resolv-conf = {
+            description = "Periodically update /etc/resolv.conf";
+            wantedBy = [ "timers.target" ];
+            timerConfig = {
+              OnBootSec = "1min";
+              OnUnitActiveSec = "15min";
+            };
+          };
+
           systemd.services = {
             setup-loopback = {
               description = "Setup container loopback adapter.";
@@ -209,6 +218,17 @@ in
               serviceConfig.RemainAfterExit = true;
 
               script = with pkgs; "${iproute2}/bin/ip link set up lo";
+            };
+
+            update-resolv-conf = {
+              description = "Write nameservers to /etc/resolv.conf";
+              serviceConfig.Type = "oneshot";
+              script = ''
+                cat > /etc/resolv.conf <<EOF
+                nameserver 1.1.1.1
+                nameserver 8.8.8.8
+                EOF
+              '';
             };
 
             deluge-natpmp = {
