@@ -183,6 +183,9 @@ in
     neb.cx.warlock # Bridge needs tokens
   ];
 
+  # Firefly III
+  "modules/services/firefly-iii/app-key.age".publicKeys = jake_users ++ [ neb.cx.warlock ];
+
   # Cachix private cache credentials
   "modules/profiles/devbox-cachix-netrc.age".publicKeys = jake_users ++ [
     neb.cx.maverick

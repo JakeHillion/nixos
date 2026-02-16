@@ -17,6 +17,7 @@
       jellyfin = 216;
       radicale = 401;
       homebox = 402;
+      firefly-iii = 403;
 
       ## Consistent People
       jake = 1000;

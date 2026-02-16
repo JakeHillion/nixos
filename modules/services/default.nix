@@ -6,6 +6,7 @@
     ./authoritative_dns.nix
     ./blackmagic-cam-importer
     ./downloads
+    ./firefly-iii
     ./frigate.nix
     ./git.nix
     ./git-sync.nix
