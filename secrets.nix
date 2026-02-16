@@ -186,6 +186,9 @@ in
   # Firefly III
   "modules/services/firefly-iii/app-key.age".publicKeys = jake_users ++ [ neb.cx.warlock ];
 
+  # async-coder secrets
+  "modules/services/async-coder/maverick.cx.password.age".publicKeys = [ neb.cx.maverick ];
+
   # Cachix private cache credentials
   "modules/profiles/devbox-cachix-netrc.age".publicKeys = jake_users ++ [
     neb.cx.maverick

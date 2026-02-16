@@ -20,6 +20,7 @@ in
       custom.locations.locations = {
         services = {
           acme_dns_api = "boron.cx.${config.ogygia.domain}";
+          async_coder = "maverick.cx.${config.ogygia.domain}";
           authoritative_dns = [
             "boron.cx.${config.ogygia.domain}"
             "cyclone.gw.${config.ogygia.domain}"

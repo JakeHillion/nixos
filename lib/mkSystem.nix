@@ -8,6 +8,7 @@
     ../modules
 
     inputs.agenix.nixosModules.default
+    inputs.async-coder.nixosModules.default
     inputs.disko.nixosModules.disko
     inputs.hearthd.nixosModules.default
     inputs.impermanence.nixosModules.impermanence

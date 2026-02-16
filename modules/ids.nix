@@ -18,6 +18,7 @@
       radicale = 401;
       homebox = 402;
       firefly-iii = 403;
+      async-coder = 404;
 
       ## Consistent People
       jake = 1000;
@@ -37,6 +38,7 @@
       jellyfin = 216;
       radicale = 401;
       homebox = 402;
+      async-coder = 404;
 
       ## Consistent Groups
       mediaaccess = 1200;

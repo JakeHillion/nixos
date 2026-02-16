@@ -70,6 +70,7 @@ in
           (lib.lists.optional config.services.postgresql.enable config.services.postgresql.dataDir) ++
           (lib.lists.optional config.hardware.bluetooth.enable "/var/lib/bluetooth") ++
           (lib.lists.optional (config.virtualisation.oci-containers.containers != { }) "/var/lib/containers") ++
+          (lib.lists.optional config.custom.services.async_coder.enable "/var/lib/async-coder") ++
           (lib.lists.optional config.services.caddy.enable "/var/lib/caddy") ++
           (lib.lists.optional config.services.tailscale.enable "/var/lib/tailscale") ++
           (lib.lists.optional config.services.unbound.enable "/var/lib/unbound");

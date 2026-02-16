@@ -34,6 +34,9 @@
     ogygia.url = "github:JakeHillion/ogygia-nix";
     ogygia.inputs.nixpkgs.follows = "nixpkgs";
 
+    async-coder.url = "git+https://gitea.hillion.co.uk/JakeHillion/async-coder.git";
+    async-coder.inputs.nixpkgs.follows = "nixpkgs";
+
     hearthd.url = "github:JakeHillion/hearthd";
     hearthd.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -49,6 +52,7 @@
   outputs =
     { self
     , agenix
+    , async-coder
     , darwin
     , disko
     , flake-utils
