@@ -17,9 +17,20 @@ in
     tokenSecret = lib.mkOption {
       type = lib.types.path;
     };
+    dockerDataPath = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+    };
   };
 
   config = lib.mkIf cfg.enable {
+    custom.services.gitea.actions.dockerDataPath = lib.mkIf config.custom.impermanence.cache.enable
+      (lib.mkOverride 999 "${config.custom.impermanence.cache.path}/system/gitea-actions-docker");
+
+    systemd.tmpfiles.rules = lib.optionals (cfg.dockerDataPath != null) [
+      "d ${cfg.dockerDataPath} 0700 root root - -"
+    ];
+
     age.secrets."gitea/actions/token".file = cfg.tokenSecret;
 
     # Run gitea-actions in a container and firewall it such that it can only
@@ -41,6 +52,8 @@ in
 
       bindMounts = let tokenPath = config.age.secrets."gitea/actions/token".path; in {
         "${tokenPath}".hostPath = tokenPath;
+      } // lib.optionalAttrs (cfg.dockerDataPath != null) {
+        "/var/lib/docker" = { hostPath = cfg.dockerDataPath; isReadOnly = false; };
       };
 
       timeoutStartSec = "5min";
