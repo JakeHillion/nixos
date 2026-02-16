@@ -1,0 +1,20 @@
+{
+  "name": "opencode-plugin",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "exports": {
+    ".": "./dist/src/index.js",
+    "./shim": "./dist/shim/claude-hook.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test dist/test/*.test.js"
+  },
+  "devDependencies": {
+    "@opencode-ai/plugin": "^1.2.6",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
+  }
+}

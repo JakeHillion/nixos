@@ -85,6 +85,7 @@
           "caddy-with-dns" = final.callPackage ./pkgs/caddy-with-dns.nix { };
           "ogygia" = ogygia.packages.${final.system}.ogygia;
           "qnaplcd" = final.callPackage ./pkgs/qnaplcd.nix { inherit qnaplcd-menu; };
+          "opencode-plugin" = final.callPackage ./pkgs/opencode-plugin { };
         })
       ];
       mkSystem = import ./lib/mkSystem.nix { inherit inputs; };
@@ -157,6 +158,7 @@
 
         checks = {
           formatting = (treefmtEval pkgs).config.build.check self;
+          opencode-plugin = pkgs.opencode-plugin;
         };
 
         packages.caddy-with-dns = pkgs.caddy-with-dns;

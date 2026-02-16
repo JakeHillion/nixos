@@ -7,8 +7,6 @@ description: Use when writing commit messages, describing changes, or preparing 
 
 **If the repository has its own commit message guidelines (in CLAUDE.md, CONTRIBUTING.md, or similar), follow those instead of this skill.**
 
-**Claude is commonly used in repositories with Jujutsu instead of Git. If this repository has a `.jj` directory, use `jj commit -m '...'` to commit instead of `git commit -m '...'`.**
-
 ## Format
 
 ### Subject line

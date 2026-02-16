@@ -2,10 +2,29 @@
 let
   cfg = config.custom.home.claude;
   user = config.custom.user;
+
+  claudeSettings = {
+    enabledPlugins = {
+      "rust-analyzer-lsp@claude-plugins-official" = true;
+    };
+    hooks = {
+      PreToolUse = [
+        {
+          matcher = "Bash";
+          hooks = [
+            {
+              type = "command";
+              command = "${pkgs.opencode-plugin}/bin/claude-hook-shim";
+            }
+          ];
+        }
+      ];
+    };
+  };
 in
 {
   options.custom.home.claude = {
-    enable = lib.mkEnableOption "Claude Code setup with skills";
+    enable = lib.mkEnableOption "Claude Code setup with skills and hooks";
   };
 
   config = lib.mkIf cfg.enable {
@@ -15,11 +34,13 @@ in
     };
 
     home-manager.users.${user} = {
-      # Deploy skills to personal skills directory
-      home.file.".claude/skills/nix/SKILL.md".source = ./nix-skill/SKILL.md;
+      # Deploy skills
       home.file.".claude/skills/jj/SKILL.md".source = ./jj-skill/SKILL.md;
       home.file.".claude/skills/commit/SKILL.md".source = ./commit-skill/SKILL.md;
       home.file.".claude/skills/github-fetch/SKILL.md".source = ./github-fetch-skill/SKILL.md;
+
+      # Deploy settings with hooks configuration
+      home.file.".claude/settings.json".text = builtins.toJSON claudeSettings;
     };
   };
 }
