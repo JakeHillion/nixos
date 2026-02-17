@@ -27,6 +27,7 @@ in
         username = shortHost;
         password_file = config.age.secrets."async-coder/${shortHost}.password".path;
 
+        avatar = ./${shortHost}.png;
         store_path = "/var/lib/async-coder/store";
         device_display_name = "async-coder";
         trusted_users = [ "@jake:hillion.co.uk" ];
