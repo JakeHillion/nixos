@@ -26,9 +26,19 @@ in
         homeserver_url = "https://matrix.hillion.co.uk";
         username = shortHost;
         password_file = config.age.secrets."async-coder/${shortHost}.password".path;
+
         store_path = "/var/lib/async-coder/store";
         device_display_name = "async-coder";
         trusted_users = [ "@jake:hillion.co.uk" ];
+        root_space = "!WhggIMMfLMutJEDsdv:hillion.co.uk";
+
+        forges.gitea = {
+          type = "gitea";
+          url = "https://gitea.hillion.co.uk";
+          repositories = [
+            { owner = "JakeHillion"; name = "async-coder"; }
+          ];
+        };
       };
     };
   };
