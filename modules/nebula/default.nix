@@ -30,6 +30,12 @@ in
       type = lib.types.str;
       default = "/data/nebula/host.key";
     };
+
+    forcePort = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Force Nebula to listen on port 4242 (useful for firewall rules on non-lighthouse hosts)";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -82,7 +88,7 @@ in
           listen = lib.mkMerge [
             { host = "[::]"; }
 
-            (lib.mkIf isLighthouse {
+            (lib.mkIf (isLighthouse || cfg.forcePort) {
               port = 4242;
             })
           ];

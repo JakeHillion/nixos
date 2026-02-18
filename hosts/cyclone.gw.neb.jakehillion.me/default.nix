@@ -22,6 +22,10 @@
         # WireGuard VPN forwarding rules
         iifname "wg0" oifname "enp2s0" accept comment "WireGuard to WAN"
         iifname "enp2s0" oifname "wg0" ct state related,established accept comment "WAN to WireGuard established"
+
+        # Allow LAN to reach fanboy Nebula port
+        iifname "enp1s0f0" oifname "openclaw" ip daddr 10.116.242.2 udp dport 4242 counter accept comment "LAN to fanboy Nebula"
+        iifname "openclaw" oifname "enp1s0f0" ct state { established, related } counter accept comment "Established back from openclaw"
       '';
       extraNatRules = ''
         # WireGuard NAT masquerading
@@ -63,6 +67,7 @@
         allow 10.64.50.0/24
         allow 10.239.19.0/24
         allow 10.133.145.0/24
+        allow 10.116.242.0/24
       '';
     };
 

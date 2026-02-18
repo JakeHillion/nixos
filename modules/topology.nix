@@ -440,6 +440,30 @@
             internetAccess = true;
             trustedNetwork = false;
           };
+
+          openclaw = {
+            description = "OpenClaw Network";
+            vlanId = 7;
+            subnet = "10.116.242.0/24";
+            interface = "enp1s0f0";
+            dhcpEnabled = true;
+            dhcpPool = {
+              start = "10.116.242.64";
+              end = "10.116.242.254";
+            };
+            dnsServers = [ "1.1.1.1" "8.8.8.8" ];
+            internetAccess = true;
+            trustedNetwork = false;
+
+            devices = {
+              "2" = {
+                hostname = "fanboy";
+                fqdn = "fanboy.cx.${config.ogygia.domain}";
+                hwAddress = "78:55:36:00:0d:ed";
+                dhcpReservation = true;
+              };
+            };
+          };
         };
       };
     };
