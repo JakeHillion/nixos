@@ -36,6 +36,8 @@ in
         forges.gitea = {
           type = "gitea";
           url = "https://gitea.hillion.co.uk";
+          ssh_url = "git@ssh.gitea.hillion.co.uk";
+
           repositories = [
             { owner = "JakeHillion"; name = "async-coder"; }
           ];
