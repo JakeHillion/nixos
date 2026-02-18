@@ -29,6 +29,7 @@ in
           blackmagic-cam-importer = "phoenix.st.${config.ogygia.domain}";
           downloads = "phoenix.st.${config.ogygia.domain}";
           firefly-iii = "warlock.cx.${config.ogygia.domain}";
+          firefly-iii-data-importer = "warlock.cx.${config.ogygia.domain}";
           frigate = "phoenix.st.${config.ogygia.domain}";
           git = "boron.cx.${config.ogygia.domain}";
           gitea = "boron.cx.${config.ogygia.domain}";

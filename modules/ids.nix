@@ -19,6 +19,7 @@
       homebox = 402;
       firefly-iii = 403;
       async-coder = 404;
+      firefly-iii-data-importer = 405;
 
       ## Consistent People
       jake = 1000;

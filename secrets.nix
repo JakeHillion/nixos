@@ -185,6 +185,7 @@ in
 
   # Firefly III
   "modules/services/firefly-iii/app-key.age".publicKeys = jake_users ++ [ neb.cx.warlock ];
+  "modules/services/firefly-iii/access-token.age".publicKeys = [ neb.cx.warlock ];
 
   # async-coder secrets
   "modules/services/async-coder/maverick.cx.password.age".publicKeys = [ neb.cx.maverick ];
