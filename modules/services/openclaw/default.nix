@@ -32,9 +32,11 @@ let
 
     tools = {
       profile = "minimal";
+      alsoAllow = [ "group:fs" ];
       exec.security = "deny";
-      web.search.enabled = false;
+      fs.workspaceOnly = true;
       web.fetch.enabled = false;
+      web.search.enabled = false;
     };
 
     plugins.entries.matrix.enabled = true;
