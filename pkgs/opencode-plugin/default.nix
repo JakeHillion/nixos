@@ -35,6 +35,12 @@ buildNpmPackage {
     EOF
     chmod +x $out/bin/claude-hook-shim
 
+    cat > $out/bin/claude-webfetch-hook-shim <<EOF
+    #!/bin/sh
+    exec ${nodejs}/bin/node $out/lib/opencode-plugin/dist/shim/claude-webfetch-hook.js
+    EOF
+    chmod +x $out/bin/claude-webfetch-hook-shim
+
     runHook postInstall
   '';
 

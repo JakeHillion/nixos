@@ -18,6 +18,15 @@ let
             }
           ];
         }
+        {
+          matcher = "WebFetch";
+          hooks = [
+            {
+              type = "command";
+              command = "${pkgs.opencode-plugin}/bin/claude-webfetch-hook-shim";
+            }
+          ];
+        }
       ];
     };
   };
