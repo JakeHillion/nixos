@@ -17,8 +17,8 @@ describe("nixHook", () => {
 
   it("adds --no-link and --print-out-paths to nix build", () => {
     const result = nixHook("nix build .#foo");
-    assert.equal(result.action, "modify");
-    if (result.action === "modify") {
+    assert.equal(result.action, "approve_modify");
+    if (result.action === "approve_modify") {
       assert.ok(result.command.includes("--no-link"));
       assert.ok(result.command.includes("--print-out-paths"));
     }
@@ -26,8 +26,8 @@ describe("nixHook", () => {
 
   it("does not add --no-link if already present", () => {
     const result = nixHook("nix build --no-link .#foo");
-    assert.equal(result.action, "modify");
-    if (result.action === "modify") {
+    assert.equal(result.action, "approve_modify");
+    if (result.action === "approve_modify") {
       assert.ok(!result.command.includes("--no-link --no-link"));
       assert.ok(result.command.includes("--print-out-paths"));
     }
@@ -35,8 +35,8 @@ describe("nixHook", () => {
 
   it("does not add --print-out-paths if already present", () => {
     const result = nixHook("nix build --print-out-paths .#foo");
-    assert.equal(result.action, "modify");
-    if (result.action === "modify") {
+    assert.equal(result.action, "approve_modify");
+    if (result.action === "approve_modify") {
       assert.ok(result.command.includes("--no-link"));
       assert.ok(!result.command.includes("--print-out-paths --print-out-paths"));
     }
@@ -44,8 +44,8 @@ describe("nixHook", () => {
 
   it("quotes unquoted .# arguments", () => {
     const result = nixHook("nix build --no-link --print-out-paths .#foo");
-    assert.equal(result.action, "modify");
-    if (result.action === "modify") {
+    assert.equal(result.action, "approve_modify");
+    if (result.action === "approve_modify") {
       assert.ok(result.command.includes('".#foo"'));
     }
   });
@@ -54,7 +54,7 @@ describe("nixHook", () => {
     const result = nixHook(
       'nix build --no-link --print-out-paths ".#foo"',
     );
-    assert.deepStrictEqual(result, { action: "allow" });
+    assert.deepStrictEqual(result, { action: "approve" });
   });
 
   it("handles nix run with .# quoting but no flags", () => {
@@ -74,8 +74,8 @@ describe("nixHook", () => {
 
   it("handles compound commands with nix build after &&", () => {
     const result = nixHook("echo foo && nix build .#bar");
-    assert.equal(result.action, "modify");
-    if (result.action === "modify") {
+    assert.equal(result.action, "approve_modify");
+    if (result.action === "approve_modify") {
       assert.ok(result.command.includes("--no-link"));
       assert.ok(result.command.includes('".#bar"'));
     }
@@ -85,8 +85,8 @@ describe("nixHook", () => {
     const result = nixHook(
       "nix build --no-link --print-out-paths .#nixosConfigurations.host.config.system.build.toplevel",
     );
-    assert.equal(result.action, "modify");
-    if (result.action === "modify") {
+    assert.equal(result.action, "approve_modify");
+    if (result.action === "approve_modify") {
       assert.ok(
         result.command.includes(
           '".#nixosConfigurations.host.config.system.build.toplevel"',
@@ -97,8 +97,8 @@ describe("nixHook", () => {
 
   it("handles nix build without .# argument", () => {
     const result = nixHook("nix build");
-    assert.equal(result.action, "modify");
-    if (result.action === "modify") {
+    assert.equal(result.action, "approve_modify");
+    if (result.action === "approve_modify") {
       assert.ok(result.command.includes("--no-link"));
       assert.ok(result.command.includes("--print-out-paths"));
       assert.ok(!result.command.includes(".#"));

@@ -24,6 +24,9 @@ const plugin: Plugin = async () => {
       if (nixResult.action === "modify") {
         output.args.command = nixResult.command;
       }
+      if (nixResult.action === "approve_modify") {
+        output.args.command = nixResult.command;
+      }
 
       // --- redundant-cwd hook ---
       const rawPath = extractRepoPath(output.args.command);

@@ -26,6 +26,7 @@ async function main() {
   let currentCommand = command;
 
   // --- nix hook ---
+  let nixApprove = false;
   const nixResult = nixHook(currentCommand);
   if (nixResult.action === "block") {
     process.stderr.write(nixResult.reason);
@@ -33,6 +34,13 @@ async function main() {
   }
   if (nixResult.action === "modify") {
     currentCommand = nixResult.command;
+  }
+  if (nixResult.action === "approve") {
+    nixApprove = true;
+  }
+  if (nixResult.action === "approve_modify") {
+    currentCommand = nixResult.command;
+    nixApprove = true;
   }
 
   // --- jj-redirect hook ---
@@ -61,13 +69,15 @@ async function main() {
     }
   }
 
-  // If the nix hook modified the command, output the Claude protocol response
-  if (currentCommand !== command) {
-    const output = {
+  // Output the Claude protocol response if command was modified or needs approval
+  if (currentCommand !== command || nixApprove) {
+    const output: Record<string, unknown> = {
       hookSpecificOutput: {
         hookEventName: "PreToolUse",
-        permissionDecision: "ask",
-        updatedInput: { command: currentCommand },
+        permissionDecision: nixApprove ? "approve" : "ask",
+        ...(currentCommand !== command && {
+          updatedInput: { command: currentCommand },
+        }),
       },
     };
     process.stdout.write(JSON.stringify(output));
