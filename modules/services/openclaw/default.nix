@@ -71,7 +71,6 @@ let
       web.search.enabled = false;
     };
 
-    skills.load.extraDirs = [ "${skillsDir}" ];
     skills.entries.track17.enabled = true;
 
     approvals.exec = {
@@ -134,6 +133,11 @@ in
 
       serviceConfig = {
         Type = "simple";
+        ExecStartPre = pkgs.writeShellScript "openclaw-setup-skills" ''
+          rm -rf ${dataDir}/.openclaw/workspace/skills
+          mkdir -p ${dataDir}/.openclaw/workspace/skills
+          cp -rL ${skillsDir}/* ${dataDir}/.openclaw/workspace/skills/
+        '';
         ExecStart = "${pkgs.openclaw-gateway}/bin/openclaw gateway --port 3000";
         Restart = "on-failure";
         RestartSec = 5;
