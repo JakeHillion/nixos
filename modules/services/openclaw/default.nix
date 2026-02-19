@@ -4,6 +4,30 @@ let
   cfg = config.custom.services.openclaw;
   settingsFormat = pkgs.formats.json { };
 
+  openclaw-skills-src = pkgs.fetchFromGitHub {
+    owner = "openclaw";
+    repo = "skills";
+    rev = "debdfe5ace835cae781e0f7bd9c94288d6e9ec07";
+    hash = "sha256-ThdIaoSrHfQF4XZIJ3UHHoupXYLHYUMy6bI7XrVxfOY=";
+  };
+
+  skillsDir = pkgs.runCommand "openclaw-skills" { } ''
+    mkdir -p $out/track17
+    cp -r ${openclaw-skills-src}/skills/tristanmanchester/track17/* $out/track17/
+
+    # Patch SKILL.md to use the wrapper binary instead of python3 {baseDir}/...
+    substituteInPlace $out/track17/SKILL.md \
+      --replace-quiet 'python3 {baseDir}/scripts/track17.py' 'track17'
+
+    # Remove anyBins requirement — the Nix wrapper bundles python3 directly
+    substituteInPlace $out/track17/SKILL.md \
+      --replace-quiet '"anyBins":["python3","python"],' ""
+  '';
+
+  track17-wrapper = pkgs.writeShellScriptBin "track17" ''
+    exec ${pkgs.python3}/bin/python3 ${skillsDir}/track17/scripts/track17.py "$@"
+  '';
+
   openclawConfig = {
     gateway.mode = "local";
     gateway.trustedProxies = [ "127.0.0.1" "::1" ];
@@ -34,12 +58,25 @@ let
       profile = "minimal";
       alsoAllow = [
         "cron"
+        "exec"
         "group:fs"
       ];
-      exec.security = "deny";
+      exec = {
+        host = "gateway";
+        security = "allowlist";
+        ask = "on-miss";
+      };
       fs.workspaceOnly = true;
       web.fetch.enabled = false;
       web.search.enabled = false;
+    };
+
+    skills.load.extraDirs = [ "${skillsDir}" ];
+    skills.entries.track17.enabled = true;
+
+    approvals.exec = {
+      enabled = true;
+      mode = "session";
     };
 
     plugins.entries.matrix.enabled = true;
@@ -65,6 +102,8 @@ in
       isSystemUser = true;
       group = "openclaw";
       home = dataDir;
+      shell = pkgs.bash;
+      packages = [ track17-wrapper ];
     };
     users.groups.openclaw.gid = config.ids.gids.openclaw;
 
@@ -89,6 +128,8 @@ in
         OPENCLAW_NIX_MODE = "1";
         NODE_PATH = "${pkgs.openclaw-matrix-plugin}/node_modules";
         NODE_ENV = "production";
+        TRACK17_DATA_DIR = "${dataDir}/track17";
+        SHELL = "${pkgs.bash}/bin/bash";
       };
 
       serviceConfig = {
@@ -127,7 +168,7 @@ in
         UMask = "0077";
       };
 
-      path = [ pkgs.bash pkgs.coreutils ];
+      path = [ pkgs.bash ];
     };
   };
 }
