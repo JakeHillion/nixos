@@ -32,7 +32,10 @@ let
 
     tools = {
       profile = "minimal";
-      alsoAllow = [ "group:fs" ];
+      alsoAllow = [
+        "cron"
+        "group:fs"
+      ];
       exec.security = "deny";
       fs.workspaceOnly = true;
       web.fetch.enabled = false;
