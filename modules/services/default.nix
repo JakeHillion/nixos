@@ -28,6 +28,7 @@
     ./nix-remote-builder.nix
     ./offline-youtube
     ./ollama.nix
+    ./openclaw
     ./privatebin.nix
     ./radicale.nix
     ./renovate

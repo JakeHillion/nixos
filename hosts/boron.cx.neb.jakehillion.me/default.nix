@@ -73,6 +73,11 @@
       };
     };
 
+    # TODO: make this a group instead of a single host
+    services.nebula.networks.jakehillion.firewall.inbound = [
+      { host = "fanboy.cx"; port = "8553"; proto = "tcp"; }
+    ];
+
     services.knot.settings.server.listen = [
       "138.201.252.214@53"
       "2a01:4f8:173:23d2::2@53"

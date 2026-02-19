@@ -52,6 +52,7 @@ in
       "bob.lt.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBZHzsley+mbIio2UHmmraS0lHnYTwAKb3aOCfi/veoZ";
       "boron.cx.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDtcJ7HY/vjtheMV8EN2wlTw1hU53CJebGIeRJcSkzt5";
       "cyclone.gw.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJM3XMKyjK4gYWkZ2byGewWiNI0RfVXK/wynv7bKzMmJ";
+      "fanboy.cx.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIef6aIA1FBDoj8r2EQc8jPHxDLEUlNkkb6znMYtJhAp";
       "hangman.pop.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPsgC5Q7UXbYpjxsGZaMMVmPA+NKnIvTDYOskbEx88AT";
       "li.pop.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHQWgcDFL9UZBDKHPiEGepT1Qsc4gz3Pee0/XVHJ6V6u";
       "maverick.cx.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMoaX0F3ytrDVfDuCr09dRazk1ZdQaD7/+e9SuMDl8gN";

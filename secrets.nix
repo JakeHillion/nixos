@@ -16,6 +16,7 @@ let
         neb = {
           cx = {
             boron = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDtcJ7HY/vjtheMV8EN2wlTw1hU53CJebGIeRJcSkzt5 root@boron";
+            fanboy = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIef6aIA1FBDoj8r2EQc8jPHxDLEUlNkkb6znMYtJhAp root@fanboy";
             maverick = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMoaX0F3ytrDVfDuCr09dRazk1ZdQaD7/+e9SuMDl8gN root@maverick";
             rooster = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEVOycZ4M9JYWtKnMeHwUgtJ1H+cECHE+67n1JDCLGle root@rooster";
             warlock = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAPwB61OXWt+hpCV+T68MHTk06NptNBRgUTr/44Q6itT root@warlock";
@@ -197,4 +198,7 @@ in
     neb.lt.bob
     neb.rig.merlin
   ];
+
+  # OpenClaw secrets
+  "modules/services/openclaw/environment.age".publicKeys = jake_users ++ [ neb.cx.fanboy ];
 }
