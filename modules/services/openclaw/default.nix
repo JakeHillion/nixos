@@ -81,6 +81,14 @@ let
     plugins.entries.matrix.enabled = true;
   };
   configFile = settingsFormat.generate "openclaw.json" openclawConfig;
+
+  execApprovalsFile = settingsFormat.generate "exec-approvals.json" {
+    version = 1;
+    agents."*".allowlist = [
+      { pattern = "/etc/profiles/per-user/openclaw/bin/track17"; }
+    ];
+  };
+
   dataDir = "/var/lib/openclaw";
 in
 {
@@ -133,10 +141,13 @@ in
 
       serviceConfig = {
         Type = "simple";
-        ExecStartPre = pkgs.writeShellScript "openclaw-setup-skills" ''
+        ExecStartPre = pkgs.writeShellScript "openclaw-setup" ''
           rm -rf ${dataDir}/.openclaw/workspace/skills
           mkdir -p ${dataDir}/.openclaw/workspace/skills
           cp -rL ${skillsDir}/* ${dataDir}/.openclaw/workspace/skills/
+
+          # Pre-seed exec-approvals allowlist so track17 runs without approval
+          cp ${execApprovalsFile} ${dataDir}/.openclaw/exec-approvals.json
         '';
         ExecStart = "${pkgs.openclaw-gateway}/bin/openclaw gateway --port 3000";
         Restart = "on-failure";
