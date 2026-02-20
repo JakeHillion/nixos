@@ -190,6 +190,7 @@ in
 
   # async-coder secrets
   "modules/services/async-coder/maverick.cx.password.age".publicKeys = [ neb.cx.maverick ];
+  "modules/services/async-coder/opencode-api-key.age".publicKeys = jake_users ++ [ neb.cx.maverick ];
 
   # Cachix private cache credentials
   "modules/profiles/devbox-cachix-netrc.age".publicKeys = jake_users ++ [

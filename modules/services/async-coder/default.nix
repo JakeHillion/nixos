@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   cfg = config.custom.services.async_coder;
@@ -16,12 +16,18 @@ in
       owner = "async-coder";
       group = "async-coder";
     };
+    age.secrets."async-coder/opencode-api-key" = {
+      file = ./opencode-api-key.age;
+      owner = "async-coder";
+      group = "async-coder";
+    };
 
     users.users.async-coder.uid = config.ids.uids.async-coder;
     users.groups.async-coder.gid = config.ids.gids.async-coder;
 
     services.async-coder = {
       enable = true;
+      opencode-package = pkgs.unstable.opencode;
       settings = {
         homeserver_url = "https://matrix.hillion.co.uk";
         username = shortHost;
@@ -41,6 +47,14 @@ in
           repositories = [
             { owner = "JakeHillion"; name = "async-coder"; }
           ];
+        };
+
+        opencode = {
+          api_key_file = config.age.secrets."async-coder/opencode-api-key".path;
+          api_url = "https://api.together.ai/v1";
+          model = "moonshotai/Kimi-K2.5";
+          provider = "together";
+          base_port = 18900;
         };
       };
     };
