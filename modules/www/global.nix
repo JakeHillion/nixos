@@ -122,6 +122,15 @@ in
         '';
 
         ## ACME sites
+        "ntfy.hillion.co.uk".extraConfig = ''
+          tls {
+            dns cloudflare {
+              zone_token {env.CF_ZONE_TOKEN}
+              api_token {env.CF_API_TOKEN_HILLION_CO_UK}
+            }
+          }
+          reverse_proxy http://localhost:2586
+        '';
         "matrix.hillion.co.uk".extraConfig = ''
           tls {
             dns cloudflare {

@@ -43,6 +43,7 @@ in
           matrix = "boron.cx.${config.ogygia.domain}";
           mautrix_discord = "warlock.cx.${config.ogygia.domain}";
           mosquitto = "stinger.pop.${config.ogygia.domain}";
+          ntfy = "boron.cx.${config.ogygia.domain}";
           nix-builder = [
             "slider.pop.${config.ogygia.domain}"
             "boron.cx.${config.ogygia.domain}"

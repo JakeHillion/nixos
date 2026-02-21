@@ -73,7 +73,8 @@ in
           (lib.lists.optional config.custom.services.async_coder.enable "/var/lib/async-coder") ++
           (lib.lists.optional config.services.caddy.enable "/var/lib/caddy") ++
           (lib.lists.optional config.services.tailscale.enable "/var/lib/tailscale") ++
-          (lib.lists.optional config.services.unbound.enable "/var/lib/unbound");
+          (lib.lists.optional config.services.unbound.enable "/var/lib/unbound") ++
+          (lib.lists.optional config.services.ntfy-sh.enable "/var/lib/private/ntfy-sh");
         };
       }
       (lib.mkIf cfg.cache.enable {

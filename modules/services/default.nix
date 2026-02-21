@@ -26,6 +26,7 @@
     ./nix-builder
     ./nix-prefetch-repos.nix
     ./nix-remote-builder.nix
+    ./ntfy.nix
     ./offline-youtube
     ./ollama.nix
     ./openclaw
