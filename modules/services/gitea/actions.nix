@@ -10,8 +10,9 @@ in
     labels = lib.mkOption {
       type = with lib.types; listOf str;
       default = [
-        "ubuntu-latest:docker://node:16-bullseye"
-        "ubuntu-20.04:docker://node:16-bullseye"
+        "ubuntu-latest:docker://node:22-bookworm"
+        "ubuntu-22.04:docker://node:22-bookworm"
+        "ubuntu-24.04:docker://node:22-bookworm"
       ];
     };
     tokenSecret = lib.mkOption {
