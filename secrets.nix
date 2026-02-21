@@ -201,4 +201,7 @@ in
 
   # OpenClaw secrets
   "modules/services/openclaw/environment.age".publicKeys = jake_users ++ [ neb.cx.fanboy ];
+
+  # personal-agent secrets
+  "modules/services/personal-agent/matrix_password.age".publicKeys = jake_users ++ [ neb.cx.fanboy ];
 }

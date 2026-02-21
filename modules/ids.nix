@@ -21,6 +21,7 @@
       async-coder = 404;
       firefly-iii-data-importer = 405;
       openclaw = 406;
+      personal-agent = 407;
 
       ## Consistent People
       jake = 1000;
@@ -42,6 +43,7 @@
       homebox = 402;
       async-coder = 404;
       openclaw = 406;
+      personal-agent = 407;
 
       ## Consistent Groups
       mediaaccess = 1200;

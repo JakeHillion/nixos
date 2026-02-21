@@ -30,6 +30,7 @@
     ./offline-youtube
     ./ollama.nix
     ./openclaw
+    ./personal-agent
     ./privatebin.nix
     ./radicale.nix
     ./renovate

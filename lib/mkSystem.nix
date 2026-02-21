@@ -10,6 +10,7 @@
     inputs.agenix.nixosModules.default
     inputs.async-coder.nixosModules.default
     inputs.disko.nixosModules.disko
+    inputs.personal-agent.nixosModules.default
     inputs.hearthd.nixosModules.default
     inputs.impermanence.nixosModules.impermanence
     inputs.nixos-generators.nixosModules.all-formats

@@ -47,6 +47,9 @@
     nix-openclaw.inputs.nixpkgs.follows = "nixpkgs";
     nix-openclaw.inputs.flake-utils.follows = "flake-utils";
 
+    personal-agent.url = "git+https://gitea.hillion.co.uk/JakeHillion/personal-agent.git?ref=jj/pukstkyrxlnq";
+    personal-agent.inputs.nixpkgs.follows = "nixpkgs";
+
     qnaplcd-menu.url = "github:stephenhouser/QnapLCD-Menu";
     qnaplcd-menu.flake = false;
   };
@@ -70,6 +73,7 @@
     , nixpkgs
     , nixpkgs-unstable
     , ogygia
+    , personal-agent
     , qnaplcd-menu
     , status-jakehillion-me
     , treefmt-nix
