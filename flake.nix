@@ -40,7 +40,7 @@
     hearthd.url = "github:JakeHillion/hearthd";
     hearthd.inputs.nixpkgs.follows = "nixpkgs";
 
-    status-jakehillion-me.url = "git+https://gitea.hillion.co.uk/JakeHillion/status.jakehillion.me.git";
+    status-jakehillion-me.url = "https://gitea.hillion.co.uk/JakeHillion/status.jakehillion.me/archive/main.tar.gz";
     status-jakehillion-me.inputs.nixpkgs.follows = "nixpkgs";
 
     nix-openclaw.url = "github:openclaw/nix-openclaw";

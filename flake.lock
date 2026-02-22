@@ -897,15 +897,13 @@
       "locked": {
         "lastModified": 1764549129,
         "narHash": "sha256-32W+aeJ1looxeH+tqFZDaigMNc9IM2rEuovsemzwj+c=",
-        "ref": "refs/heads/main",
         "rev": "b5d5d398759179dc88db1fd2412d19ae6ac24d6c",
-        "revCount": 35,
-        "type": "git",
-        "url": "https://gitea.hillion.co.uk/JakeHillion/status.jakehillion.me.git"
+        "type": "tarball",
+        "url": "https://gitea.hillion.co.uk/api/v1/repos/JakeHillion/status.jakehillion.me/archive/b5d5d398759179dc88db1fd2412d19ae6ac24d6c.tar.gz"
       },
       "original": {
-        "type": "git",
-        "url": "https://gitea.hillion.co.uk/JakeHillion/status.jakehillion.me.git"
+        "type": "tarball",
+        "url": "https://gitea.hillion.co.uk/JakeHillion/status.jakehillion.me/archive/main.tar.gz"
       }
     },
     "systems": {
