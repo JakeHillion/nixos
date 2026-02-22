@@ -128,6 +128,7 @@
         "url": "https://gitea.hillion.co.uk/JakeHillion/async-coder.git"
       },
       "original": {
+        "rev": "2114bf8a665e21100f238f26c1cc545d14317af8",
         "type": "git",
         "url": "https://gitea.hillion.co.uk/JakeHillion/async-coder.git"
       }
@@ -487,6 +488,7 @@
       "original": {
         "owner": "JakeHillion",
         "repo": "hearthd",
+        "rev": "e02d5272f573583ffacbc45c1447340ac98045c6",
         "type": "github"
       }
     },
@@ -732,6 +734,7 @@
       "original": {
         "owner": "JakeHillion",
         "repo": "ogygia-nix",
+        "rev": "eaa30713cfa4d37bfe63471934d6a409e3b7b92c",
         "type": "github"
       }
     },
@@ -756,6 +759,7 @@
         "url": "https://gitea.hillion.co.uk/JakeHillion/personal-agent.git"
       },
       "original": {
+        "rev": "9545b3bb9c9bbabd02c66d08df0d2d7481e7dfa0",
         "type": "git",
         "url": "https://gitea.hillion.co.uk/JakeHillion/personal-agent.git"
       }

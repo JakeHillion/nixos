@@ -31,13 +31,13 @@
     nixos-generators.url = "github:nix-community/nixos-generators";
     nixos-generators.inputs.nixpkgs.follows = "nixpkgs";
 
-    ogygia.url = "github:JakeHillion/ogygia-nix";
+    ogygia.url = "github:JakeHillion/ogygia-nix/eaa30713cfa4d37bfe63471934d6a409e3b7b92c";
     ogygia.inputs.nixpkgs.follows = "nixpkgs";
 
-    async-coder.url = "git+https://gitea.hillion.co.uk/JakeHillion/async-coder.git";
+    async-coder.url = "git+https://gitea.hillion.co.uk/JakeHillion/async-coder.git?rev=2114bf8a665e21100f238f26c1cc545d14317af8";
     async-coder.inputs.nixpkgs.follows = "nixpkgs";
 
-    hearthd.url = "github:JakeHillion/hearthd";
+    hearthd.url = "github:JakeHillion/hearthd/e02d5272f573583ffacbc45c1447340ac98045c6";
     hearthd.inputs.nixpkgs.follows = "nixpkgs";
 
     status-jakehillion-me.url = "git+https://gitea.hillion.co.uk/JakeHillion/status.jakehillion.me.git";
@@ -47,7 +47,7 @@
     nix-openclaw.inputs.nixpkgs.follows = "nixpkgs";
     nix-openclaw.inputs.flake-utils.follows = "flake-utils";
 
-    personal-agent.url = "git+https://gitea.hillion.co.uk/JakeHillion/personal-agent.git";
+    personal-agent.url = "git+https://gitea.hillion.co.uk/JakeHillion/personal-agent.git?rev=9545b3bb9c9bbabd02c66d08df0d2d7481e7dfa0";
     personal-agent.inputs.nixpkgs.follows = "nixpkgs";
 
     qnaplcd-menu.url = "github:stephenhouser/QnapLCD-Menu";
