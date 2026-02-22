@@ -204,4 +204,5 @@ in
 
   # personal-agent secrets
   "modules/services/personal-agent/matrix_password.age".publicKeys = jake_users ++ [ neb.cx.fanboy ];
+  "modules/services/personal-agent/together_token.age".publicKeys = jake_users ++ [ neb.cx.fanboy ];
 }

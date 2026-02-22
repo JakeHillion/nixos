@@ -17,6 +17,12 @@ in
       group = "personal-agent";
     };
 
+    age.secrets."personal-agent/together_token" = {
+      file = ./together_token.age;
+      owner = "personal-agent";
+      group = "personal-agent";
+    };
+
     users.users.personal-agent.uid = config.ids.uids.personal-agent;
     users.groups.personal-agent.gid = config.ids.gids.personal-agent;
 
@@ -32,6 +38,15 @@ in
           store_path = "${dataDir}/store";
           device_display_name = "personal-agent";
           trusted_users = [ "@jake:hillion.co.uk" ];
+        };
+        llm = {
+          default_model = "Kimi K2.5";
+          providers = [{
+            name = "together";
+            base_url = "https://api.together.ai/v1";
+            token_file = config.age.secrets."personal-agent/together_token".path;
+            models = [{ id = "moonshotai/Kimi-K2.5"; name = "Kimi K2.5"; }];
+          }];
         };
       };
     };
