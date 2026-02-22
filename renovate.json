@@ -27,6 +27,13 @@
         "after 11pm on Monday",
         "after 11pm on Thursday"
       ]
+    },
+    {
+      "matchManagers": ["nix"],
+      "matchDepNames": ["personal-agent", "hearthd", "async-coder", "ogygia"],
+      "schedule": ["at any time"],
+      "automerge": true,
+      "automergeType": "branch"
     }
   ],
   "extends": [
