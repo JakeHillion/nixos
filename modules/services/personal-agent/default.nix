@@ -29,13 +29,14 @@ in
     services.personal-agent = {
       enable = true;
       settings = {
+        state_dir = "${dataDir}/store";
+
         matrix = {
           homeserver_url = "https://matrix.hillion.co.uk";
           username = "personal-agent";
           display_name = "Higgins";
           avatar = ./higgins.png;
           password_file = config.age.secrets."personal-agent/matrix_password".path;
-          store_path = "${dataDir}/store";
           device_display_name = "personal-agent";
           trusted_users = [ "@jake:hillion.co.uk" ];
         };
