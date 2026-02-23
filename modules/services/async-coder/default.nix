@@ -49,6 +49,8 @@ in
 
           repositories = [
             { owner = "JakeHillion"; name = "async-coder"; }
+            { owner = "JakeHillion"; name = "nixos"; jujutsu_mode = true; }
+            { owner = "JakeHillion"; name = "personal-agent"; }
           ];
         };
 
@@ -56,6 +58,7 @@ in
           api_key_file = config.age.secrets."async-coder/opencode-api-key".path;
           api_url = "https://api.fireworks.ai/inference/v1";
           model = "accounts/fireworks/models/kimi-k2p5";
+          cheap_fast_model = "accounts/fireworks/models/glm-4p7"; # TODO: this isn't cheap or fast, but the small fast ones don't seem to work
           provider = "fireworks";
           base_port = 18900;
         };
