@@ -39,6 +39,9 @@ in
         trusted_users = [ "@jake:hillion.co.uk" ];
         root_space = "!WhggIMMfLMutJEDsdv:hillion.co.uk";
 
+        git_author_name = "Jake Hillion";
+        git_author_email = "jake@hillion.co.uk";
+
         forges.gitea = {
           type = "gitea";
           url = "https://gitea.hillion.co.uk";
