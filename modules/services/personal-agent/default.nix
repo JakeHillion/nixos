@@ -17,8 +17,8 @@ in
       group = "personal-agent";
     };
 
-    age.secrets."personal-agent/together_token" = {
-      file = ./together_token.age;
+    age.secrets."personal-agent/fireworks_token" = {
+      file = ./fireworks_token.age;
       owner = "personal-agent";
       group = "personal-agent";
     };
@@ -42,10 +42,10 @@ in
         llm = {
           default_model = "Kimi K2.5";
           providers = [{
-            name = "together";
-            base_url = "https://api.together.ai/v1";
-            token_file = config.age.secrets."personal-agent/together_token".path;
-            models = [{ id = "moonshotai/Kimi-K2.5"; name = "Kimi K2.5"; }];
+            name = "fireworks";
+            base_url = "https://api.fireworks.ai/inference/v1";
+            token_file = config.age.secrets."personal-agent/fireworks_token".path;
+            models = [{ id = "accounts/fireworks/models/kimi-k2p5"; name = "Kimi K2.5"; }];
           }];
         };
       };

@@ -46,13 +46,13 @@ let
       groupPolicy = "disabled";
     };
 
-    models.providers.together = {
-      baseUrl = "https://api.together.ai/v1";
-      apiKey = "\${TOGETHER_API_KEY}";
+    models.providers.fireworks = {
+      baseUrl = "https://api.fireworks.ai/inference/v1";
+      apiKey = "\${FIREWORKS_API_KEY}";
       api = "openai-completions";
-      models = [{ id = "moonshotai/Kimi-K2.5"; name = "Kimi K2.5"; }];
+      models = [{ id = "accounts/fireworks/models/kimi-k2p5"; name = "Kimi K2.5"; }];
     };
-    agents.defaults.model.primary = "together/moonshotai/Kimi-K2.5";
+    agents.defaults.model.primary = "fireworks/accounts/fireworks/models/kimi-k2p5";
 
     tools = {
       profile = "minimal";

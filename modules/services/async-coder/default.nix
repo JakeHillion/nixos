@@ -51,9 +51,9 @@ in
 
         opencode = {
           api_key_file = config.age.secrets."async-coder/opencode-api-key".path;
-          api_url = "https://api.together.ai/v1";
-          model = "moonshotai/Kimi-K2.5";
-          provider = "together";
+          api_url = "https://api.fireworks.ai/inference/v1";
+          model = "accounts/fireworks/models/kimi-k2p5";
+          provider = "fireworks";
           base_port = 18900;
         };
       };
