@@ -11,17 +11,17 @@ in
     custom.impermanence.extraDirs =
       lib.mkIf config.custom.impermanence.enable [ dataDir ];
 
-    age.secrets."personal-agent/matrix_password" = {
-      file = ./matrix_password.age;
-      owner = "personal-agent";
-      group = "personal-agent";
-    };
-
-    age.secrets."personal-agent/fireworks_token" = {
-      file = ./fireworks_token.age;
-      owner = "personal-agent";
-      group = "personal-agent";
-    };
+    age.secrets = lib.genAttrs
+      (map (s: "personal-agent/${s}") [
+        "matrix_password"
+        "fireworks_token"
+        "todoist_token"
+      ])
+      (name: {
+        file = ./. + "/${lib.removePrefix "personal-agent/" name}.age";
+        owner = "personal-agent";
+        group = "personal-agent";
+      });
 
     users.users.personal-agent.uid = config.ids.uids.personal-agent;
     users.groups.personal-agent.gid = config.ids.gids.personal-agent;
@@ -39,6 +39,9 @@ in
           password_file = config.age.secrets."personal-agent/matrix_password".path;
           device_display_name = "personal-agent";
           trusted_users = [ "@jake:hillion.co.uk" ];
+        };
+        todoist = {
+          token_file = config.age.secrets."personal-agent/todoist_token".path;
         };
         llm = {
           default_model = "Kimi K2.5";
