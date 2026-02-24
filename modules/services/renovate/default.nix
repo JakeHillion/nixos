@@ -80,9 +80,11 @@ in
     systemd.services.renovate = {
       description = "Renovate Bot - Automated dependency updates for Gitea repositories";
 
-      path = [
+      path = with pkgs; [
+        config.nix.package
         gitWrapper
-        pkgs.nix
+
+        cargo
       ];
 
       serviceConfig = {
