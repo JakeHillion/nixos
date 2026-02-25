@@ -48,9 +48,9 @@ in
           ssh_url = "git@ssh.gitea.hillion.co.uk";
 
           repositories = [
-            { owner = "JakeHillion"; name = "async-coder"; }
+            { owner = "JakeHillion"; name = "async-coder"; envrc = true; }
             { owner = "JakeHillion"; name = "nixos"; jujutsu_mode = true; }
-            { owner = "JakeHillion"; name = "personal-agent"; }
+            { owner = "JakeHillion"; name = "personal-agent"; envrc = true; }
           ];
         };
 
