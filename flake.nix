@@ -43,10 +43,6 @@
     status-jakehillion-me.url = "https://gitea.hillion.co.uk/JakeHillion/status.jakehillion.me/archive/main.tar.gz";
     status-jakehillion-me.inputs.nixpkgs.follows = "nixpkgs";
 
-    nix-openclaw.url = "github:openclaw/nix-openclaw";
-    nix-openclaw.inputs.nixpkgs.follows = "nixpkgs";
-    nix-openclaw.inputs.flake-utils.follows = "flake-utils";
-
     personal-agent.url = "git+https://gitea.hillion.co.uk/JakeHillion/personal-agent.git";
     personal-agent.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -67,7 +63,6 @@
     , home-manager
     , home-manager-unstable
     , impermanence
-    , nix-openclaw
     , nixos-generators
     , nixos-hardware
     , nixpkgs
@@ -95,10 +90,6 @@
           "ogygia" = ogygia.packages.${final.system}.ogygia;
           "qnaplcd" = final.callPackage ./pkgs/qnaplcd.nix { inherit qnaplcd-menu; };
           "opencode-plugin" = final.callPackage ./pkgs/opencode-plugin { };
-          "openclaw-gateway" = nix-openclaw.packages.${final.system}.openclaw-gateway;
-          "openclaw-matrix-plugin" = final.callPackage ./pkgs/openclaw-matrix-plugin {
-            inherit (final) openclaw-gateway;
-          };
         })
       ];
       mkSystem = import ./lib/mkSystem.nix { inherit inputs; };
