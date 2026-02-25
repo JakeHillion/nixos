@@ -85,6 +85,12 @@ in
           rights = {
             type = "from_file";
             file = builtins.toString (pkgs.writeText "radicale-rights" ''
+              # Allow personal-agent to read specific jake calendars
+              [personal-agent-jake-calendars]
+              user: personal-agent
+              collection: jake/(69F72067-3C92-40C4-99FB-911D27FCD8E9|94E7F50D-CDFC-41B6-BAC7-E94EBA42AF5D)
+              permissions: r
+
               # Allow reading and writing principal collection (same as username)
               [principal]
               user: .+

@@ -14,6 +14,7 @@ in
     age.secrets = lib.genAttrs
       (map (s: "personal-agent/${s}") [
         "17track_token"
+        "calendar_password"
         "fireworks_token"
         "matrix_password"
         "todoist_token"
@@ -51,6 +52,22 @@ in
           }];
         };
 
+        calendar = {
+          private = {
+            server_url = "https://radicale.hillion.co.uk";
+            username = "personal-agent";
+            password_file = config.age.secrets."personal-agent/calendar_password".path;
+            read_only = true;
+            calendar_path = "/jake/69F72067-3C92-40C4-99FB-911D27FCD8E9";
+          };
+          travel = {
+            server_url = "https://radicale.hillion.co.uk";
+            username = "personal-agent";
+            password_file = config.age.secrets."personal-agent/calendar_password".path;
+            read_only = true;
+            calendar_path = "/jake/94E7F50D-CDFC-41B6-BAC7-E94EBA42AF5D";
+          };
+        };
         seventeen_track = {
           token_file = config.age.secrets."personal-agent/17track_token".path;
           write = true;
