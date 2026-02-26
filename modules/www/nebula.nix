@@ -43,5 +43,10 @@ in
         }))
         cfg.virtualHosts;
     };
+
+    systemd.services.caddy = {
+      after = [ "nebula-online@jakehillion.service" ];
+      requires = [ "nebula-online@jakehillion.service" ];
+    };
   };
 }

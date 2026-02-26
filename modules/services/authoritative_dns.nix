@@ -108,8 +108,8 @@ in
       };
 
       systemd.services.knot = {
-        after = [ "nebula@jakehillion.service" ];
-        requires = [ "nebula@jakehillion.service" ];
+        after = [ "nebula-online@jakehillion.service" ];
+        requires = [ "nebula-online@jakehillion.service" ];
       };
     }
 

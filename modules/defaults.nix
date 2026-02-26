@@ -80,8 +80,8 @@
       settings.Upload.URL = "http://${config.custom.locations.locations.services.journal_remote}:19532";
     };
     systemd.services.systemd-journal-upload = {
-      after = [ "nebula@jakehillion.service" ];
-      requires = [ "nebula@jakehillion.service" ];
+      after = [ "nebula-online@jakehillion.service" ];
+      requires = [ "nebula-online@jakehillion.service" ];
     };
 
     custom.auto_updater.enable = true;

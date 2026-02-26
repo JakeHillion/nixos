@@ -17,6 +17,28 @@ let
   serviceGroup = config.systemd.services."nebula@jakehillion".serviceConfig.Group;
 
   lookupIpv4 = fqdn: lib.attrsets.attrByPath (lib.reverseList (lib.splitString "." fqdn)) null config.custom.dns.authoritative.ipv4;
+
+  # Generate a nebula-online service for each configured network
+  mkNebulaOnlineService = netName: netCfg:
+    {
+      name = "nebula-online@${netName}";
+      value = {
+        description = "Wait for Nebula interface ${netName} to be online";
+        after = [ "nebula@${netName}.service" ];
+        requires = [ "nebula@${netName}.service" ];
+        wantedBy = [ "multi-user.target" ];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          TimeoutStartSec = "60";
+        };
+        script = ''
+          until ${pkgs.iproute2}/bin/ip addr show "${netCfg.tun.device}" 2>/dev/null | ${pkgs.gnugrep}/bin/grep -q "inet "; do
+            sleep 1
+          done
+        '';
+      };
+    };
 in
 {
   options.custom.nebula = {
@@ -46,21 +68,23 @@ in
       "d ${builtins.dirOf cfg.certPath} 0775 ${serviceUser} ${serviceGroup} - -"
       "d ${builtins.dirOf cfg.keyPath} 0775 ${serviceUser} ${serviceGroup} - -"
     ];
-    systemd.services.generate-nebula-certs = {
-      description = "Generate empty Nebula certificates if they don't exist";
+    systemd.services = lib.attrsets.mapAttrs' mkNebulaOnlineService config.services.nebula.networks // {
+      generate-nebula-certs = {
+        description = "Generate empty Nebula certificates if they don't exist";
 
-      before = [ "nebula@jakehillion.service" ];
-      wantedBy = [ "multi-user.target" ];
+        before = [ "nebula@jakehillion.service" ];
+        wantedBy = [ "multi-user.target" ];
 
-      script = ''
-        if [ ! -e ${cfg.certPath} ] && [ ! -e ${cfg.keyPath} ]; then
-          ${pkgs.nebula}/bin/nebula-cert keygen -out-key ${cfg.keyPath} -out-pub ${cfg.certPath}
-        fi
+        script = ''
+          if [ ! -e ${cfg.certPath} ] && [ ! -e ${cfg.keyPath} ]; then
+            ${pkgs.nebula}/bin/nebula-cert keygen -out-key ${cfg.keyPath} -out-pub ${cfg.certPath}
+          fi
 
-        chown ${serviceUser}:${serviceGroup} ${cfg.keyPath} ${cfg.certPath}
-        chmod 0400 ${cfg.keyPath}
-        chmod 0444 ${cfg.certPath}
-      '';
+          chown ${serviceUser}:${serviceGroup} ${cfg.keyPath} ${cfg.certPath}
+          chmod 0400 ${cfg.keyPath}
+          chmod 0444 ${cfg.certPath}
+        '';
+      };
     };
 
     # Turn off the normal firewall and use the Nebula capability based firewall instead.
