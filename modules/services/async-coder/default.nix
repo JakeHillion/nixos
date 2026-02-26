@@ -11,16 +11,16 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    age.secrets."async-coder/${shortHost}.password" = {
-      file = ./${shortHost}.password.age;
-      owner = "async-coder";
-      group = "async-coder";
-    };
-    age.secrets."async-coder/opencode-api-key" = {
-      file = ./opencode-api-key.age;
-      owner = "async-coder";
-      group = "async-coder";
-    };
+    age.secrets = lib.genAttrs
+      (map (s: "async-coder/${s}") [
+        "${shortHost}.password"
+        "opencode-api-key"
+      ])
+      (name: {
+        file = ./. + "/${lib.removePrefix "async-coder/" name}.age";
+        owner = "async-coder";
+        group = "async-coder";
+      });
 
     users.users.async-coder.uid = config.ids.uids.async-coder;
     users.groups.async-coder.gid = config.ids.gids.async-coder;
@@ -42,16 +42,27 @@ in
         git_author_name = "Jake Hillion";
         git_author_email = "jake@hillion.co.uk";
 
-        forges.gitea = {
-          type = "gitea";
-          url = "https://gitea.hillion.co.uk";
-          ssh_url = "git@ssh.gitea.hillion.co.uk";
+        forges = {
+          gitea = {
+            type = "gitea";
+            url = "https://gitea.hillion.co.uk";
+            ssh_url = "git@ssh.gitea.hillion.co.uk";
 
-          repositories = [
-            { owner = "JakeHillion"; name = "async-coder"; envrc = true; }
-            { owner = "JakeHillion"; name = "nixos"; jujutsu_mode = true; }
-            { owner = "JakeHillion"; name = "personal-agent"; envrc = true; }
-          ];
+            repositories = [
+              { owner = "JakeHillion"; name = "async-coder"; envrc = true; }
+              { owner = "JakeHillion"; name = "nixos"; jujutsu_mode = true; }
+              { owner = "JakeHillion"; name = "personal-agent"; envrc = true; }
+            ];
+          };
+
+          github = {
+            type = "github";
+
+            repositories = [
+              { owner = "exo-explore"; name = "exo"; feature_prefix = "JakeHillion/"; }
+              { owner = "exo-explore"; name = "exo-internal"; feature_prefix = "JakeHillion/"; }
+            ];
+          };
         };
 
         opencode = {
