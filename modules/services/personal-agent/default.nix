@@ -13,8 +13,9 @@ in
 
     age.secrets = lib.genAttrs
       (map (s: "personal-agent/${s}") [
-        "matrix_password"
+        "17track_token"
         "fireworks_token"
+        "matrix_password"
         "todoist_token"
       ])
       (name: {
@@ -40,9 +41,6 @@ in
           device_display_name = "personal-agent";
           trusted_users = [ "@jake:hillion.co.uk" ];
         };
-        todoist = {
-          token_file = config.age.secrets."personal-agent/todoist_token".path;
-        };
         llm = {
           default_model = "Kimi K2.5";
           providers = [{
@@ -52,6 +50,12 @@ in
             models = [{ id = "accounts/fireworks/models/kimi-k2p5"; name = "Kimi K2.5"; }];
           }];
         };
+
+        seventeen_track = {
+          token_file = config.age.secrets."personal-agent/17track_token".path;
+          write = true;
+        };
+        todoist = { token_file = config.age.secrets."personal-agent/todoist_token".path; };
       };
     };
   };
