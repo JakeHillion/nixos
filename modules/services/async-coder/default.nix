@@ -14,6 +14,7 @@ in
     age.secrets = lib.genAttrs
       (map (s: "async-coder/${s}") [
         "${shortHost}.password"
+        "gitea-token"
         "opencode-api-key"
       ])
       (name: {
@@ -47,6 +48,7 @@ in
             type = "gitea";
             url = "https://gitea.hillion.co.uk";
             ssh_url = "git@ssh.gitea.hillion.co.uk";
+            token_file = config.age.secrets."async-coder/gitea-token".path;
 
             repositories = [
               { owner = "JakeHillion"; name = "async-coder"; envrc = true; }

@@ -186,6 +186,7 @@ in
   "modules/services/firefly-iii/access-token.age".publicKeys = [ neb.cx.warlock ];
 
   # async-coder secrets
+  "modules/services/async-coder/gitea-token.age".publicKeys = jake_users ++ [ neb.cx.maverick ];
   "modules/services/async-coder/maverick.cx.password.age".publicKeys = [ neb.cx.maverick ];
   "modules/services/async-coder/opencode-api-key.age".publicKeys = jake_users ++ [ neb.cx.maverick ];
 
