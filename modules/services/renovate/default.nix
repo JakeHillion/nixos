@@ -85,6 +85,7 @@ in
         gitWrapper
 
         cargo
+        nodejs
       ];
 
       serviceConfig = {
