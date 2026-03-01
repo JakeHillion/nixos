@@ -6,7 +6,7 @@ buildNpmPackage {
 
   src = ./.;
 
-  npmDepsHash = "sha256-voooRJ9NzLo/qmh9Iy3HdaB9bHGQnRsc/fDgdq7cSGA=";
+  npmDepsHash = "sha256-Csy4hWsxWesGkote6qjrnMIiNJDF/nX4qjXOXqj18u8=";
 
   buildPhase = ''
     runHook preBuild
