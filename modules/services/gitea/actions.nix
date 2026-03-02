@@ -75,7 +75,7 @@ in
 
             settings = {
               runner = {
-                capacity = 3;
+                capacity = 1;
               };
               cache = {
                 enabled = true;
