@@ -1,4 +1,4 @@
-{ lib, buildNpmPackage, nodejs }:
+{ lib, buildNpmPackage, importNpmLock, nodejs }:
 
 buildNpmPackage {
   pname = "opencode-plugin";
@@ -6,7 +6,8 @@ buildNpmPackage {
 
   src = ./.;
 
-  npmDepsHash = "sha256-Csy4hWsxWesGkote6qjrnMIiNJDF/nX4qjXOXqj18u8=";
+  npmDeps = importNpmLock { npmRoot = ./.; };
+  npmConfigHook = importNpmLock.npmConfigHook;
 
   buildPhase = ''
     runHook preBuild
