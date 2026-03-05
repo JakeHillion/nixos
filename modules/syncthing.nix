@@ -81,7 +81,7 @@ in
 
                   "media/audiobooks" = {
                     id = "spherical-tagged-muenster";
-                    devices = [ "bob.lt" "jakehillion-mba-m2-15.lt" "phoenix.st" ];
+                    devices = [ "bob.lt" "phoenix.st" ];
                   };
                   "media/travel-shows" = {
                     id = "amylaceous-directionless-methyl";
