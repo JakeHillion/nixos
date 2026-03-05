@@ -59,6 +59,11 @@
           authProtocols = [ "WPA-PSK" ];
           priority = -10;
         };
+        "assuming-ungenerous-forger" = {
+          pskRaw = "ext:FORGER_PSK";
+          priority = -9;
+        };
+
 
         "Plaza Premium Lounge".pskRaw = "ext:PLAZA_PREMIUM_PSK";
         "ANA WiFi Service" = { };
