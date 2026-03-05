@@ -57,15 +57,6 @@ in
               { owner = "JakeHillion"; name = "testquorum"; }
             ];
           };
-
-          github = {
-            type = "github";
-
-            repositories = [
-              { owner = "exo-explore"; name = "exo"; feature_prefix = "JakeHillion/"; }
-              { owner = "exo-explore"; name = "exo-internal"; feature_prefix = "JakeHillion/"; }
-            ];
-          };
         };
 
         opencode = {

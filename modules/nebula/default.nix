@@ -120,14 +120,6 @@ in
           staticHostMap = lib.attrsets.mapAttrs' (name: value: lib.attrsets.nameValuePair (lookupIpv4 name) [ value ]) lighthouses;
 
           settings = {
-            lighthouse = {
-              remote_allow_list = {
-                # block peering over Tailscale IPs
-                "100.64.0.0/10" = false;
-                "fd7a:115c:a1e0::/48" = false;
-              };
-            };
-
             stats = {
               type = "prometheus";
               namespace = "nebula";
