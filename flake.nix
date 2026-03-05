@@ -10,7 +10,7 @@
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
 
-    darwin.url = "github:lnl7/nix-darwin";
+    darwin.url = "github:lnl7/nix-darwin/nix-darwin-25.11";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
 
     agenix.url = "github:ryantm/agenix";
@@ -149,24 +149,38 @@
       };
 
     } // nixpkgs.lib.recursiveUpdate
-      (flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = import nixpkgs {
-          inherit system;
-          overlays = getSystemOverlays system { };
-          config = { allowUnfree = true; };
-        };
-      in
-      {
-        formatter = (treefmtEval pkgs).config.build.wrapper;
+      (nixpkgs.lib.recursiveUpdate
+        (flake-utils.lib.eachDefaultSystem (system:
+        let
+          pkgs = import nixpkgs {
+            inherit system;
+            overlays = getSystemOverlays system { };
+            config = { allowUnfree = true; };
+          };
+        in
+        {
+          formatter = (treefmtEval pkgs).config.build.wrapper;
 
-        checks = {
-          formatting = (treefmtEval pkgs).config.build.check self;
-          opencode-plugin = pkgs.opencode-plugin;
-        };
+          checks = {
+            formatting = (treefmtEval pkgs).config.build.check self;
+          };
 
-        packages.caddy-with-dns = pkgs.caddy-with-dns;
-      }))
+          packages.caddy-with-dns = pkgs.caddy-with-dns;
+        }))
+        (flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ] (
+          system:
+          let
+            pkgs = import nixpkgs {
+              inherit system;
+              overlays = getSystemOverlays system { };
+              config = { allowUnfree = true; };
+            };
+          in
+          {
+            # npm tooling doesn't work on Darwin, only build on Linux
+            checks.opencode-plugin = pkgs.opencode-plugin;
+          }
+        )))
       (flake-utils.lib.eachSystem [ "x86_64-linux" ] (
         system:
         let

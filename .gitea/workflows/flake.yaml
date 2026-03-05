@@ -25,5 +25,5 @@ jobs:
           nix fmt -- .
           git diff --exit-code
       - name: flake check
-        run: nix flake check --all-systems
+        run: nix flake check
         timeout-minutes: 10
