@@ -50,6 +50,7 @@ let
     @                                 86400 NS ns3.jakehillion.me.
 
     ca                                21600 CNAME warlock.cx.${domain}.
+    couchdb                           21600 CNAME ${locations.services.couchdb}.
     firefly                           21600 CNAME ${locations.services.firefly-iii}.
     firefly-importer                  21600 CNAME ${locations.services.firefly-iii-data-importer}.
     frigate                           21600 CNAME ${locations.services.frigate}.

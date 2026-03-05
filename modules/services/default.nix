@@ -6,6 +6,7 @@
     ./async-coder
     ./authoritative_dns.nix
     ./blackmagic-cam-importer
+    ./couchdb
     ./downloads
     ./firefly-iii
     ./frigate.nix

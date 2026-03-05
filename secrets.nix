@@ -181,6 +181,9 @@ in
     neb.cx.warlock # Bridge needs tokens
   ];
 
+  # CouchDB
+  "modules/services/couchdb/admin.age".publicKeys = [ neb.cx.warlock ];
+
   # Firefly III
   "modules/services/firefly-iii/app-key.age".publicKeys = jake_users ++ [ neb.cx.warlock ];
   "modules/services/firefly-iii/access-token.age".publicKeys = [ neb.cx.warlock ];

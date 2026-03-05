@@ -27,6 +27,7 @@ in
             "slider.pop.${config.ogygia.domain}"
           ];
           blackmagic-cam-importer = "phoenix.st.${config.ogygia.domain}";
+          couchdb = "warlock.cx.${config.ogygia.domain}";
           downloads = "phoenix.st.${config.ogygia.domain}";
           firefly-iii = "warlock.cx.${config.ogygia.domain}";
           firefly-iii-data-importer = "warlock.cx.${config.ogygia.domain}";
