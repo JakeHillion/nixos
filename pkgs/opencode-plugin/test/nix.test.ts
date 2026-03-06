@@ -104,4 +104,36 @@ describe("nixHook", () => {
       assert.ok(!result.command.includes(".#"));
     }
   });
+
+  it("quotes multiple .# arguments in one command", () => {
+    const result = nixHook("nix build .#foo .#bar");
+    assert.equal(result.action, "approve_modify");
+    if (result.action === "approve_modify") {
+      assert.ok(result.command.includes('".#foo"'));
+      assert.ok(result.command.includes('".#bar"'));
+    }
+  });
+
+  it("handles flake reference with double quotes inside hostname", () => {
+    const result = nixHook('nix build .#nixosConfigurations."host.domain".config.system.build.toplevel');
+    // Should not double-quote, just add flags
+    assert.equal(result.action, "approve_modify");
+    if (result.action === "approve_modify") {
+      // The existing quotes should remain, and it should add flags
+      assert.ok(result.command.includes('--no-link'));
+    }
+  });
+
+  it("allows subshell with nix build (not a direct invocation)", () => {
+    // Subshells like $(nix build ...) don't start with "nix build" pattern
+    // They start with "$(" so they should be allowed without modification
+    const result = nixHook("$(nix build .#pkg)");
+    assert.equal(result.action, "allow");
+  });
+
+  it("allows command substitution with nix build (not a direct invocation)", () => {
+    // Command substitution like VAR=$(nix build ...) doesn't match nix build pattern
+    const result = nixHook("STORE_PATH=$(nix build --no-link --print-out-paths .#pkg)");
+    assert.equal(result.action, "allow");
+  });
 });

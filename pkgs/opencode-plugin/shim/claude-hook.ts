@@ -74,7 +74,7 @@ async function main() {
     const output: Record<string, unknown> = {
       hookSpecificOutput: {
         hookEventName: "PreToolUse",
-        permissionDecision: nixApprove ? "approve" : "ask",
+        permissionDecision: nixApprove ? "allow" : "ask",
         ...(currentCommand !== command && {
           updatedInput: { command: currentCommand },
         }),
