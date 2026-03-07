@@ -8,6 +8,9 @@ use JSON qw(decode_json encode_json);
 use Net::DNS;
 use Socket qw(inet_ntoa);
 use POSIX qw(strftime);
+use Crypt::Ed25519;
+use LWP::UserAgent;
+use MIME::Base64;
 
 # Get configuration from environment variables
 my $DOMAIN = $ENV{ACME_DNS_DOMAIN} // die "ACME_DNS_DOMAIN not set\n";
@@ -15,6 +18,8 @@ my $LISTEN_ADDR = $ENV{ACME_DNS_LISTEN_ADDR} // die "ACME_DNS_LISTEN_ADDR not se
 my $KNOTC = $ENV{ACME_DNS_KNOTC} // die "ACME_DNS_KNOTC not set\n";
 my $KNOT_NAMESERVER = $ENV{ACME_DNS_KNOT_NAMESERVER} // die "ACME_DNS_KNOT_NAMESERVER not set\n";
 my $PORT = 8553;
+my $KEYSERVER_PORT = 80;
+my $NONCE_TTL = 300;
 
 # Disable output buffering
 $| = 1;
@@ -30,6 +35,9 @@ my $resolver = Net::DNS::Resolver->new(
     nameservers => [$KNOT_NAMESERVER],
     recurse => 0,
 );
+
+my $ua = LWP::UserAgent->new(timeout => 10, ssl_opts => { verify_hostname => 0 });
+my %nonce_store = ();
 
 sub get_client_ip {
     my ($conn) = @_;
@@ -74,6 +82,70 @@ sub validate_client {
         return (1, "OK");
     } else {
         return (0, "Client IP $client_ip does not match resolved IP $resolved_ip for $host_fqdn");
+    }
+}
+
+sub fetch_public_key {
+    my ($client_ip) = @_;
+    my $url = "http://$client_ip:$KEYSERVER_PORT/.well-known/acme-dns-key";
+    log_msg("Fetching public key from $url");
+
+    my $response = $ua->get($url);
+    unless ($response->is_success) {
+        log_msg("Failed to fetch public key: " . $response->status_line);
+        return undef;
+    }
+
+    my $pubkey = $response->decoded_content;
+    unless ($pubkey && length($pubkey) == 32) {
+        log_msg("Invalid public key length: " . length($pubkey));
+        return undef;
+    }
+    return $pubkey;
+}
+
+sub generate_nonce {
+    my @chars = ('a'..'z', 'A'..'Z', '0'..'9');
+    my $nonce = "";
+    $nonce .= $chars[rand @chars] for 1..32;
+    return $nonce;
+}
+
+sub store_nonce {
+    my ($nonce, $client_ip) = @_;
+    $nonce_store{$nonce} = { client_ip => $client_ip, created => time() };
+}
+
+sub validate_and_consume_nonce {
+    my ($nonce, $client_ip) = @_;
+    my $now = time();
+
+    for my $key (keys %nonce_store) {
+        delete $nonce_store{$key} if ($now - $nonce_store{$key}->{created} > $NONCE_TTL);
+    }
+
+    return (0, "Invalid or expired nonce") unless exists $nonce_store{$nonce};
+    return (0, "Nonce issued to different client") unless $nonce_store{$nonce}->{client_ip} eq $client_ip;
+
+    delete $nonce_store{$nonce};
+    return (1, "OK");
+}
+
+sub verify_signature {
+    my ($client_ip, $fqdn, $value, $nonce, $sig_b64) = @_;
+
+    my $pubkey = fetch_public_key($client_ip);
+    return (0, "Failed to fetch public key") unless $pubkey;
+
+    my $sig = decode_base64($sig_b64);
+    return (0, "Invalid signature format") unless ($sig && length($sig) == 64);
+
+    my $payload = encode_json({ fqdn => $fqdn, value => $value, nonce => $nonce });
+
+    if (Crypt::Ed25519::verify($pubkey, $payload, $sig)) {
+        return (1, "Signature verified");
+    } else {
+        return (0, "Signature verification failed");
     }
 }
 
@@ -146,7 +218,15 @@ sub handle_request {
 
     log_msg("Request: $method $path from $client_ip");
 
-    # Only allow POST
+    # Handle nonce endpoint (GET allowed)
+    if ($path eq '/nonce') {
+        my $nonce = generate_nonce();
+        store_nonce($nonce, $client_ip);
+        log_msg("Generated nonce for $client_ip: $nonce");
+        return (RC_OK, encode_json({ nonce => $nonce }));
+    }
+
+    # Only allow POST for /present and /cleanup
     unless ($method eq 'POST') {
         log_msg("Rejected: method not allowed");
         return (RC_METHOD_NOT_ALLOWED, "Method not allowed");
@@ -165,12 +245,14 @@ sub handle_request {
 
     my $fqdn = $data->{fqdn};
     my $value = $data->{value};
+    my $nonce = $data->{nonce};
+    my $signature = $data->{signature};
 
     log_msg("Parsed request: fqdn=$fqdn value=$value");
 
-    unless (defined $fqdn && defined $value) {
-        log_msg("Rejected: missing fqdn or value");
-        return (RC_BAD_REQUEST, "Missing fqdn or value");
+    unless (defined $fqdn && defined $value && defined $nonce && defined $signature) {
+        log_msg("Rejected: missing fqdn, value, nonce, or signature");
+        return (RC_BAD_REQUEST, "Missing fqdn, value, nonce, or signature");
     }
 
     # Validate that the FQDN is within our domain
@@ -179,14 +261,23 @@ sub handle_request {
         return (RC_FORBIDDEN, "FQDN $fqdn is not within $DOMAIN");
     }
 
-    # Validate client IP matches DNS resolution
-    log_msg("Validating client IP $client_ip for $fqdn");
-    my ($valid, $msg) = validate_client($client_ip, $fqdn);
-    unless ($valid) {
-        log_msg("Rejected: $msg");
-        return (RC_FORBIDDEN, $msg);
+    # Validate and consume nonce
+    log_msg("Validating nonce for $client_ip");
+    my ($nonce_ok, $nonce_msg) = validate_and_consume_nonce($nonce, $client_ip);
+    unless ($nonce_ok) {
+        log_msg("Rejected: $nonce_msg");
+        return (RC_FORBIDDEN, $nonce_msg);
     }
-    log_msg("Client validation passed");
+    log_msg("Nonce validation passed");
+
+    # Verify signature
+    log_msg("Verifying signature from $client_ip");
+    my ($sig_ok, $sig_msg) = verify_signature($client_ip, $fqdn, $value, $nonce, $signature);
+    unless ($sig_ok) {
+        log_msg("Rejected: $sig_msg");
+        return (RC_FORBIDDEN, $sig_msg);
+    }
+    log_msg("Signature verification passed");
 
     if ($path eq '/present') {
         my ($ok, $result) = add_txt_record($fqdn, $value);

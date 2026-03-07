@@ -17,6 +17,8 @@ let
         HTTPDaemon
         JSON
         NetDNS
+        CryptEd25519
+        LWPUserAgent
       ];
     }
     (builtins.readFile ./acme-dns-api.pl);

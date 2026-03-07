@@ -23,6 +23,7 @@ func (Provider) CaddyModule() caddy.ModuleInfo {
 //
 //	jakehillion {
 //	    api_endpoint <url>
+//	    key_path <path>
 //	}
 func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 	for d.Next() {
@@ -33,6 +34,11 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 					return d.ArgErr()
 				}
 				p.APIEndpoint = d.Val()
+			case "key_path":
+				if !d.NextArg() {
+					return d.ArgErr()
+				}
+				p.KeyPath = d.Val()
 			default:
 				return d.Errf("unrecognized subdirective: %s", d.Val())
 			}
