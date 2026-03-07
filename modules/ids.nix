@@ -21,6 +21,7 @@
       async-coder = 404;
       firefly-iii-data-importer = 405;
       personal-agent = 407;
+      systemd-journal-remote = 408;
 
       ## Consistent People
       jake = 1000;
@@ -42,6 +43,7 @@
       homebox = 402;
       async-coder = 404;
       personal-agent = 407;
+      systemd-journal-remote = 408;
 
       ## Consistent Groups
       mediaaccess = 1200;

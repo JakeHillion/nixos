@@ -25,14 +25,22 @@ in
       };
     };
 
+    # Pin UID/GID to prevent drift on impermanence systems
+    users.users.systemd-journal-remote.uid = config.ids.uids.systemd-journal-remote;
+    users.groups.systemd-journal-remote.gid = config.ids.gids.systemd-journal-remote;
+
     # Allow writing to custom output path
     systemd.services.systemd-journal-remote.serviceConfig.ReadWritePaths =
       [ config.services.journald.remote.output ];
 
     # Bind socket to Nebula IP only
-    systemd.sockets.systemd-journal-remote.listenStreams = lib.mkForce [
-      ""
-      "${config.custom.dns.nebula.ipv4}:19532"
-    ];
+    systemd.sockets.systemd-journal-remote = {
+      after = [ "nebula-online@jakehillion.service" ];
+      requires = [ "nebula-online@jakehillion.service" ];
+      listenStreams = lib.mkForce [
+        ""
+        "${config.custom.dns.nebula.ipv4}:19532"
+      ];
+    };
   };
 }
