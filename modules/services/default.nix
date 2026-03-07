@@ -2,7 +2,7 @@
 
 {
   imports = [
-    ./acme-dns-api.nix
+    ./acme-dns-api
     ./async-coder
     ./authoritative_dns.nix
     ./blackmagic-cam-importer
