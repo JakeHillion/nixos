@@ -34,7 +34,7 @@
     ogygia.url = "github:JakeHillion/ogygia-nix";
     ogygia.inputs.nixpkgs.follows = "nixpkgs";
 
-    async-coder.url = "git+https://gitea.hillion.co.uk/JakeHillion/async-coder.git";
+    async-coder.url = "git+https://gitea.hillion.co.uk/JakeHillion/async-coder.git?ref=feature/tozvvkznpnus";
     async-coder.inputs.nixpkgs.follows = "nixpkgs";
 
     hearthd.url = "github:JakeHillion/hearthd";

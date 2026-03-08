@@ -74,6 +74,10 @@ in
           cheap_fast_model = "accounts/fireworks/models/glm-4p7"; # TODO: this isn't cheap or fast, but the small fast ones don't seem to work
           provider = "fireworks";
           base_port = 18900;
+
+          input_cost_per_million = 0.60;
+          cached_input_cost_per_million = 0.10;
+          output_cost_per_million = 3.00;
         };
       };
     };
