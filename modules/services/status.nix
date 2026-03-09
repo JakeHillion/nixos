@@ -50,9 +50,9 @@ in
           DynamicUser = true;
           ExecStart = "${status-jakehillion-me.packages.${pkgs.system}.default}/bin/status-jakehillion-me --config ${configFile}";
           Restart = "always";
-          RestartSec = "1s";
-          StartLimitIntervalSec = "60s";
-          StartLimitBurst = "5";
+          RestartSec = "10s";
+          StartLimitIntervalSec = "300s";
+          StartLimitBurst = 30;
 
           # Security
           NoNewPrivileges = true;
