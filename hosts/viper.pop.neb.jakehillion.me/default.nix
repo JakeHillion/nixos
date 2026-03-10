@@ -6,7 +6,9 @@
   ];
 
   config = {
-    system.stateVersion = "25.05";
+    system.stateVersion = "25.11";
+
+    boot.kernelPackages = pkgs.linuxPackages_latest;
 
     boot.loader.efi.canTouchEfiVariables = true;
     boot.loader.grub = {
@@ -28,13 +30,6 @@
     };
 
     custom.defaults = true;
-
-    custom.tang = {
-      enable = true;
-      networkingModule = "r8169";
-      secretFile = "/data/disk_encryption.jwe";
-      devices = [ "disk0-crypt" "disk1-crypt" ];
-    };
 
     custom.auto_updater.allowReboot = true;
 
