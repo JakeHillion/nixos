@@ -219,6 +219,16 @@
             trustedNetwork = true;
 
             devices = {
+              "2" = {
+                hostname = "es-16-xg";
+                hwAddress = "18:e8:29:26:fe:a9";
+                dhcpReservation = true;
+              };
+              "3" = {
+                hostname = "es-48-500w";
+                hwAddress = "74:ac:b9:a0:e1:3b";
+                dhcpReservation = true;
+              };
               "20" = {
                 hostname = "rooster";
                 fqdn = "rooster.cx.${config.ogygia.domain}";
