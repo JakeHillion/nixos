@@ -48,7 +48,7 @@ let
       ${pkgs.jujutsu}/bin/jj new $BRANCH@origin
 
       echo 'Building configuration...'
-      nix build --no-link --print-out-paths '.#nixosConfigurations."${config.networking.fqdn}".config.system.build.toplevel' |& ${pkgs.nix-output-monitor}/bin/nom
+      ${pkgs.nix-output-monitor}/bin/nom build --no-link --print-out-paths '.#nixosConfigurations."${config.networking.fqdn}".config.system.build.toplevel'
 
       if ! ${pkgs.nixos-rebuild}/bin/nixos-rebuild --flake "/etc/nixos#${config.networking.fqdn}" test; then
         echo "WARNING: \`nixos-rebuild test' failed!"
