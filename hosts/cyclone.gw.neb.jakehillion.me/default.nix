@@ -104,9 +104,5 @@
         '';
       };
     };
-    systemd.services.caddy = {
-      requires = [ "nebula-online@jakehillion.service" ];
-      after = [ "nebula-online@jakehillion.service" ];
-    };
   };
 }

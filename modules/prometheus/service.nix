@@ -37,18 +37,11 @@ in
       ];
     };
 
-    services.caddy = {
+    custom.www.nebula = {
       enable = true;
-      virtualHosts."prometheus.${config.ogygia.domain}" = {
-        listenAddresses = [ config.custom.dns.nebula.ipv4 ];
-        extraConfig = ''
-          reverse_proxy http://localhost:9090
-
-          tls {
-            ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
-          }
-        '';
-      };
+      virtualHosts."prometheus.${config.ogygia.domain}".extraConfig = ''
+        reverse_proxy http://localhost:9090
+      '';
     };
   };
 }
