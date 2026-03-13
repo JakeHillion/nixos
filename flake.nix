@@ -86,7 +86,7 @@
 
           "storj" = final.callPackage ./pkgs/storj.nix { };
           "pbcli" = final.callPackage ./pkgs/pbcli.nix { };
-          "caddy-with-dns" = final.callPackage ./pkgs/caddy-with-dns.nix { };
+          "caddy-with-dns" = final.callPackage ./pkgs/caddy-with-dns { };
           "ogygia" = ogygia.packages.${final.system}.ogygia;
           "qnaplcd" = final.callPackage ./pkgs/qnaplcd.nix { inherit qnaplcd-menu; };
           "opencode-plugin" = final.callPackage ./pkgs/opencode-plugin { };

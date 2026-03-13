@@ -32,6 +32,24 @@
         "after 11pm on Monday",
         "after 11pm on Thursday"
       ]
+    },
+    {
+      "matchManagers": [
+        "gomod"
+      ],
+      "matchFileNames": [
+        "pkgs/caddy-with-dns/**"
+      ],
+      "postUpgradeTasks": {
+        "commands": [
+          "sed -i 's|vendorHash = \"sha256-[^\"]*\"|vendorHash = \"sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\"|' pkgs/caddy-with-dns/default.nix",
+          "HASH=$(nix build --no-link .#caddy-with-dns 2>&1 | grep 'got:' | awk '{print $2}') && sed -i \"s|vendorHash = \\\"sha256-[^\\\"]*\\\"|vendorHash = \\\"$HASH\\\"|\" pkgs/caddy-with-dns/default.nix"
+        ],
+        "fileFilters": [
+          "pkgs/caddy-with-dns/default.nix"
+        ],
+        "executionMode": "update"
+      }
     }
   ],
   "extends": [

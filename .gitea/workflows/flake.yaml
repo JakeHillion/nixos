@@ -13,12 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - uses: DeterminateSystems/nix-installer-action@c5a866b6ab867e88becbed4467b93592bce69f8a # v21
-
-      # caddy has a hash pinned in it to get the cloudflare plugin. Build it
-      # with no cache to check the hash is still right.
-      - name: build caddy-with-dns
-        run: nix build .#caddy-with-dns
-
       - uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
       - name: lint
         run: |

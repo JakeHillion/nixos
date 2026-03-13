@@ -85,6 +85,8 @@ in
         gitWrapper
 
         cargo
+        gawk
+        gnused
         go
         nodejs
       ];
