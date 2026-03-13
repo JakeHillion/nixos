@@ -643,11 +643,11 @@
         "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
-        "lastModified": 1773350704,
-        "narHash": "sha256-9AqDuCAAIfw/xAPZ5zkFzEh+Q6lDtuKbtu7io3ujvhM=",
+        "lastModified": 1773530574,
+        "narHash": "sha256-bfjCbvMdIf0Ar1uXQLiD30ODqW2ioDXwEIppucvCQDI=",
         "owner": "JakeHillion",
         "repo": "ogygia-nix",
-        "rev": "1d63dae7a5584651ffc5bf73e9ad08fc08b13bda",
+        "rev": "6fd88aa0ce73a300bcb8bdab764ee1f1d147e321",
         "type": "github"
       },
       "original": {
