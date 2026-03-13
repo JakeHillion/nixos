@@ -31,7 +31,7 @@ in
                   )
                   (builtins.attrNames (builtins.readDir ../../hosts));
               in
-              lib.lists.flatten (builtins.map (x: [ "${x}:9000" "${x}:9001" ]) hosts);
+              lib.lists.flatten (builtins.map (x: [ "${x}:9000" "${x}:9001" "${x}:9002" ]) hosts);
           }];
         }
       ];

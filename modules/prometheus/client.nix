@@ -20,5 +20,14 @@ in
         "systemd"
       ];
     };
+
+    services.prometheus.exporters.systemd = {
+      enable = true;
+      port = 9002;
+      extraFlags = [
+        "--systemd.collector.enable-restart-count"
+        "--systemd.collector.enable-ip-accounting"
+      ];
+    };
   };
 }
