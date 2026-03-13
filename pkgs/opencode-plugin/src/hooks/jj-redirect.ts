@@ -17,6 +17,6 @@ export function jjRedirectHook(
   return {
     action: "block",
     reason:
-      'This repository uses Jujutsu (jj), not Git. Use \'jj commit -m "..."\' instead of \'git commit\'. See the jj skill for the full workflow.',
+      'This repository uses Jujutsu (jj), not Git. Use \'jj commit -m "..."\' instead of \'git commit\'. DO NOT use \'jj describe\', it is not a replacement for \'git commit\'. See the jj skill for the full workflow.',
   };
 }
