@@ -4,12 +4,16 @@
   },
   "lockFileMaintenance": {
     "enabled": true,
-    "schedule": ["* 2-5 * * *"]
+    "schedule": [
+      "* 2-5 * * *"
+    ]
   },
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": ["modules/oci-containers/versions.json"],
+      "managerFilePatterns": [
+        "/modules/oci-containers/versions.json/"
+      ],
       "matchStrings": [
         "\"(?<depName>[^\"]+)\":\\s*\"(?<currentValue>[^\"]+)\""
       ],
@@ -17,11 +21,12 @@
       "versioningTemplate": "docker"
     }
   ],
-
   "rebaseWhen": "behind-base-branch",
   "packageRules": [
     {
-      "matchManagers": ["github-actions"],
+      "matchManagers": [
+        "github-actions"
+      ],
       "automerge": true,
       "schedule": [
         "after 11pm on Monday",
