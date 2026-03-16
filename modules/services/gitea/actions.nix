@@ -22,6 +22,17 @@ in
       type = lib.types.nullOr lib.types.str;
       default = null;
     };
+    capacity = lib.mkOption {
+      type = lib.types.int;
+      default = 1;
+      description = "Number of concurrent jobs the runner will accept.";
+    };
+    dockerMemoryHigh = lib.mkOption {
+      type = lib.types.nullOr lib.types.int;
+      default = null;
+      example = 8589934592;
+      description = "Per-Docker-container memory.high cgroup v2 soft limit in bytes. Applied via custom runc wrapper since Docker has no native support for memory.high.";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -60,53 +71,89 @@ in
       timeoutStartSec = "5min";
 
       config = (hostConfig: ({ config, pkgs, ... }: {
-        config = let cfg = hostConfig.custom.services.gitea.actions; in {
-          system.stateVersion = "23.11";
+        config =
+          let
+            cfg = hostConfig.custom.services.gitea.actions;
 
-          virtualisation.docker.enable = true;
+            # Wrapper around runc that injects memory.high into the OCI config.
+            # Docker has no native support for cgroup v2 memory.high
+            # (https://github.com/moby/moby/issues/49599), so we intercept
+            # container creation and set it via the OCI unified cgroup field.
+            runcWrapper = pkgs.writeShellScript "runc-memory-high" ''
+              bundle=""
+              is_create=0
+              prev=""
+              for arg in "$@"; do
+                case "$arg" in
+                  create|run) is_create=1 ;;
+                esac
+                if [ "$prev" = "--bundle" ] || [ "$prev" = "-b" ]; then
+                  bundle="$arg"
+                fi
+                prev="$arg"
+              done
 
-          services.gitea-actions-runner.instances.container = {
-            enable = true;
-            url = "https://gitea.hillion.co.uk";
-            tokenFile = hostConfig.age.secrets."gitea/actions/token".path;
+              if [ "$is_create" = "1" ] && [ -n "$bundle" ] && [ -f "$bundle/config.json" ]; then
+                ${pkgs.jq}/bin/jq --arg mh "${toString cfg.dockerMemoryHigh}" \
+                  '.linux.resources.unified["memory.high"] = $mh' \
+                  "$bundle/config.json" > "$bundle/config.json.tmp" && \
+                  mv "$bundle/config.json.tmp" "$bundle/config.json"
+              fi
 
-            name = "${hostConfig.networking.hostName}";
-            labels = cfg.labels;
+              exec ${pkgs.runc}/bin/runc "$@"
+            '';
+          in
+          {
+            system.stateVersion = "23.11";
 
-            settings = {
-              runner = {
-                capacity = 1;
-              };
-              cache = {
-                enabled = true;
-                host = "10.108.27.2";
-                port = 41919;
-              };
+            virtualisation.docker.enable = true;
+            virtualisation.docker.daemon.settings = lib.mkIf (cfg.dockerMemoryHigh != null) {
+              runtimes."runc-memlimit".path = "${runcWrapper}";
+              "default-runtime" = "runc-memlimit";
             };
-          };
 
-          # Drop any packets to private networks
-          networking = {
-            firewall.enable = lib.mkForce false;
-            nftables = {
+            services.gitea-actions-runner.instances.container = {
               enable = true;
-              ruleset = ''
-                table inet filter {
-                  chain output {
-                    type filter hook output priority 100; policy accept;
+              url = "https://gitea.hillion.co.uk";
+              tokenFile = hostConfig.age.secrets."gitea/actions/token".path;
 
-                    ct state { established, related } counter accept
+              name = "${hostConfig.networking.hostName}";
+              labels = cfg.labels;
 
-                    ip daddr 10.0.0.0/8 drop
-                    ip daddr 100.64.0.0/10 drop
-                    ip daddr 172.16.0.0/12 drop
-                    ip daddr 192.168.0.0/16 drop
+              settings = {
+                runner = {
+                  capacity = cfg.capacity;
+                };
+                cache = {
+                  enabled = true;
+                  host = "10.108.27.2";
+                  port = 41919;
+                };
+              };
+            };
+
+            # Drop any packets to private networks
+            networking = {
+              firewall.enable = lib.mkForce false;
+              nftables = {
+                enable = true;
+                ruleset = ''
+                  table inet filter {
+                    chain output {
+                      type filter hook output priority 100; policy accept;
+
+                      ct state { established, related } counter accept
+
+                      ip daddr 10.0.0.0/8 drop
+                      ip daddr 100.64.0.0/10 drop
+                      ip daddr 172.16.0.0/12 drop
+                      ip daddr 192.168.0.0/16 drop
+                    }
                   }
-                }
-              '';
+                '';
+              };
             };
           };
-        };
       })) config;
     };
 
