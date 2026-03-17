@@ -27,6 +27,12 @@ in
       default = 1;
       description = "Number of concurrent jobs the runner will accept.";
     };
+    nixBuildCores = lib.mkOption {
+      type = lib.types.nullOr lib.types.int;
+      default = null;
+      example = 4;
+      description = "Number of cores each Nix build job may use inside CI containers. Sets NIX_BUILD_CORES via Docker environment variable.";
+    };
     dockerMemoryHigh = lib.mkOption {
       type = lib.types.nullOr lib.types.int;
       default = null;
@@ -123,6 +129,11 @@ in
               settings = {
                 runner = {
                   capacity = cfg.capacity;
+                };
+                container = {
+                  options = lib.concatStringsSep " " (
+                    lib.optional (cfg.nixBuildCores != null) "--env NIX_BUILD_CORES=${toString cfg.nixBuildCores}"
+                  );
                 };
                 cache = {
                   enabled = true;
