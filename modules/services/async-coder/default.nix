@@ -54,6 +54,7 @@ in
               { owner = "JakeHillion"; name = "async-coder"; envrc = true; }
               { owner = "JakeHillion"; name = "nixos"; jujutsu_mode = true; }
               { owner = "JakeHillion"; name = "personal-agent"; envrc = true; }
+              { owner = "JakeHillion"; name = "testquorum"; }
             ];
           };
 
