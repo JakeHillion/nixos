@@ -67,6 +67,8 @@ in
           jj = lib.getExe pkgs.jujutsu;
           nixos-rebuild = lib.getExe pkgs.nixos-rebuild;
           readlink = "${pkgs.coreutils}/bin/readlink";
+          hostname = "${pkgs.hostname}/bin/hostname";
+          nix = lib.getExe config.nix.package;
           shutdown = "${config.systemd.package}/bin/shutdown";
         in
         ''
@@ -126,6 +128,14 @@ in
           if [ "$repo_sha" = "$current_sha" ] && [ "$repo_sha" = "$nextboot_sha" ]; then
             echo "✔ Already on correct commit. Nothing to do."
             exit 0
+          fi
+
+          if [ "$(${hostname} -f)" != "fanboy.cx.neb.jakehillion.me" ]; then
+            ${nix} build \
+              --max-jobs 0 \
+              --no-link \
+              --print-out-paths \
+              '.#nixosConfigurations."${config.networking.fqdn}".config.system.build.toplevel'
           fi
 
           if ! is_in_main "$nextboot_sha"; then
