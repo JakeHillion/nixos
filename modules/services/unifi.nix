@@ -26,6 +26,7 @@ in
       virtualHosts = {
         "unifi.hillion.co.uk".extraConfig = ''
           reverse_proxy https://localhost:8443 {
+            header_up Host {host}
             transport http {
               tls_insecure_skip_verify
             }
