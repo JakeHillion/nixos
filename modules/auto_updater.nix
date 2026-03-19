@@ -133,6 +133,7 @@ in
           if [ "$(${hostname} -f)" != "fanboy.cx.neb.jakehillion.me" ]; then
             ${nix} build \
               --max-jobs 0 \
+              --option always-allow-substitutes true \
               --no-link \
               --print-out-paths \
               '.#nixosConfigurations."${config.networking.fqdn}".config.system.build.toplevel'
