@@ -37,7 +37,7 @@ in
 
     services.unifi = {
       enable = true;
-      unifiPackage = pkgs.unifi;
+      unifiPackage = pkgs.unstable.unifi;
       mongodbPackage = pkgs.mongodb-7_0;
     };
   };
