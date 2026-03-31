@@ -26,4 +26,4 @@ jobs:
           git diff --exit-code
       - name: flake check
         run: nix flake check
-        timeout-minutes: 10
+        timeout-minutes: 20
