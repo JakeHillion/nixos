@@ -107,6 +107,7 @@ in
             system.stateVersion = "23.11";
 
             virtualisation.docker.enable = true;
+            virtualisation.docker.autoPrune.enable = true;
             virtualisation.docker.daemon.settings = lib.mkIf (cfg.dockerMemoryHigh != null) {
               runtimes."runc-memlimit".path = "${runcWrapper}";
               "default-runtime" = "runc-memlimit";
