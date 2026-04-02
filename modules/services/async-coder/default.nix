@@ -62,8 +62,6 @@ in
             type = "github";
 
             repositories = [
-              { owner = "exo-explore"; name = "exo"; feature_prefix = "JakeHillion/"; }
-              { owner = "exo-explore"; name = "exo-internal"; feature_prefix = "JakeHillion/"; }
               { owner = "JakeHillion"; name = "hearthd"; envrc = true; }
               { owner = "JakeHillion"; name = "ogygia-nix"; envrc = true; }
             ];
