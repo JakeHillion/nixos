@@ -54,7 +54,7 @@ in
               { owner = "JakeHillion"; name = "async-coder"; envrc = true; }
               { owner = "JakeHillion"; name = "nixos"; jujutsu_mode = true; }
               { owner = "JakeHillion"; name = "personal-agent"; envrc = true; }
-              { owner = "JakeHillion"; name = "testquorum"; }
+              { owner = "JakeHillion"; name = "testquorum"; envrc = true; }
             ];
           };
 
@@ -64,6 +64,8 @@ in
             repositories = [
               { owner = "exo-explore"; name = "exo"; feature_prefix = "JakeHillion/"; }
               { owner = "exo-explore"; name = "exo-internal"; feature_prefix = "JakeHillion/"; }
+              { owner = "JakeHillion"; name = "hearthd"; envrc = true; }
+              { owner = "JakeHillion"; name = "ogygia-nix"; envrc = true; }
             ];
           };
         };
