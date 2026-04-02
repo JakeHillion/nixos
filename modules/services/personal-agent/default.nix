@@ -43,12 +43,12 @@ in
           trusted_users = [ "@jake:hillion.co.uk" ];
         };
         llm = {
-          default_model = "Kimi K2.5";
+          default_model = "Kimi K2.5 Turbo";
           providers = [{
             name = "fireworks";
             base_url = "https://api.fireworks.ai/inference/v1";
             token_file = config.age.secrets."personal-agent/fireworks_token".path;
-            models = [{ id = "accounts/fireworks/models/kimi-k2p5"; name = "Kimi K2.5"; }];
+            models = [{ id = "accounts/fireworks/routers/kimi-k2p5-turbo"; name = "Kimi K2.5 Turbo"; }];
           }];
         };
 
