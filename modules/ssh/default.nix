@@ -2,6 +2,7 @@
 
 let
   cfg = config.custom.ssh;
+  hostKeys = import ./host-keys.nix;
 in
 {
   options.custom.ssh = {
@@ -43,31 +44,13 @@ in
       } else { };
 
     programs.ssh.knownHosts = {
-      # Global Internet hosts
+      # Global Internet hosts
       "ssh.git.hillion.co.uk".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDtcJ7HY/vjtheMV8EN2wlTw1hU53CJebGIeRJcSkzt5";
       "ssh.gitea.hillion.co.uk".publicKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCxQpywsy+WGeaEkEL67xOBL1NIE++pcojxro5xAPO6VQe2N79388NRFMLlX6HtnebkIpVrvnqdLOs0BPMAokjaWCC4Ay7T/3ko1kXSOlqHY5Ye9jtjRK+wPHMZgzf74a3jlvxjrXJMA70rPQ3X+8UGpA04eB3JyyLTLuVvc6znMe53QiZ0x+hSz+4pYshnCO2UazJ148vV3htN6wRK+uqjNdjjQXkNJ7llNBSrvmfrLidlf0LRphEk43maSQCBcLEZgf4pxXBA7rFuZABZTz1twbnxP2ziyBaSOs7rcII+jVhF2cqJlElutBfIgRNJ3DjNiTcdhNaZzkwJ59huR0LUFQlHI+SALvPzE9ZXWVOX/SqQG+oIB8VebR52icii0aJH7jatkogwNk0121xmhpvvR7gwbJ9YjYRTpKs4lew3bq/W/OM8GF/FEuCsCuNIXRXKqIjJVAtIpuuhxPymFHeqJH3wK3f6jTJfcAz/z33Rwpow2VOdDyqrRfAW8ti73CCnRlN+VJi0V/zvYGs9CHldY3YvMr7rSd0+fdGyJHSTSRBF0vcyRVA/SqSfcIo/5o0ssYoBnQCg6gOkc3nNQ0C0/qh1ww17rw4hqBRxFJ2t3aBUMK+UHPxrELLVmG6ZUmfg9uVkOoafjRsoML6DVDB4JAk5JsmcZhybOarI9PJfEQ==";
 
-      # Nebula hosts
-      "be.lt.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILV3OSUT+cqFqrFHZGfn7/xi5FW3n1qjUFy8zBbYs2Sm";
-      "bob.lt.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBZHzsley+mbIio2UHmmraS0lHnYTwAKb3aOCfi/veoZ";
-      "boron.cx.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDtcJ7HY/vjtheMV8EN2wlTw1hU53CJebGIeRJcSkzt5";
-      "cyclone.gw.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJM3XMKyjK4gYWkZ2byGewWiNI0RfVXK/wynv7bKzMmJ";
-      "fanboy.cx.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIef6aIA1FBDoj8r2EQc8jPHxDLEUlNkkb6znMYtJhAp";
-      "hangman.pop.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPsgC5Q7UXbYpjxsGZaMMVmPA+NKnIvTDYOskbEx88AT";
-      "li.pop.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHQWgcDFL9UZBDKHPiEGepT1Qsc4gz3Pee0/XVHJ6V6u";
-      "maverick.cx.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMoaX0F3ytrDVfDuCr09dRazk1ZdQaD7/+e9SuMDl8gN";
-      "merlin.rig.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN99UrXe3puoW0Jr1bSPRHL6ImLZD9A9sXeE54JFggIC";
-      "phoenix.st.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBPQcp9MzabvwbViNmILVNfipMUnwV+5okRfhOuV7+Mt";
-      "rooster.cx.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEVOycZ4M9JYWtKnMeHwUgtJ1H+cECHE+67n1JDCLGle";
-      "router.home.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAlCj/i2xprN6h0Ik2tthOJQy6Qwq3Ony73+yfbHYTFu";
-      "slider.pop.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFABZxZAYPVqQ4+ZShrOvPopUrWHrnj47BnFJJwjdpwD";
-      "stinger.pop.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID28NGGSaK1OtpQkQnYqSZWSahX25uboiHwhsYQoKKbL";
-      "theon.storage.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN59psLVu3/sQORA4x3p8H3ei8MCQlcwX5T+k3kBeBMf";
-      "warlock.cx.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAPwB61OXWt+hpCV+T68MHTk06NptNBRgUTr/44Q6itT";
-
       # CNAME records
       "restic.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE9AAAAIBPQcp9MzabvwbViNmILVNfipMUnwV+5okRfhOuV7+Mt";
-    };
+    } // builtins.mapAttrs (_: key: { publicKey = key; }) hostKeys.byFqdn;
     programs.ssh.knownHostsFiles = [ ./github_known_hosts ];
   };
 }
