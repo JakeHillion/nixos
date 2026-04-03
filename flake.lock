@@ -143,11 +143,11 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1772324543,
-        "narHash": "sha256-Y8NUBlATeTUm+BdnpYsHQe5nshV+xY+WPwcWvPXdhlw=",
+        "lastModified": 1775221576,
+        "narHash": "sha256-T6sLO1JXicBIDMu2EWUD+olbCazzdR7McmiaUMF8fQ4=",
         "ref": "refs/heads/main",
-        "rev": "8dfd7c29dd5d7fb6d595ba99272293df04e25dc8",
-        "revCount": 58,
+        "rev": "ee2b9570a4541f49b2db5a4f8386f8638e60456d",
+        "revCount": 71,
         "type": "git",
         "url": "https://gitea.hillion.co.uk/JakeHillion/async-coder.git"
       },
