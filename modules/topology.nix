@@ -279,12 +279,6 @@
             };
             portForwarding = [
               {
-                description = "Plex";
-                externalPort = 32400;
-                fqdn = "phoenix.st.${config.ogygia.domain}";
-                protocol = "tcp";
-              }
-              {
                 description = "SSH";
                 externalPort = 22;
                 internalIP = "10.64.50.1";

@@ -53,10 +53,6 @@ in
       path = lib.mkOverride 999 "${cfg.base}/chia";
     };
 
-    services.plex = lib.mkIf config.services.plex.enable {
-      dataDir = lib.mkOverride 999 "${cfg.base}/plex";
-    };
-
     environment.persistence = lib.mkMerge [
       {
         "${cfg.base}/system" = {

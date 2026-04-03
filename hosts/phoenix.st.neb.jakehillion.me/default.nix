@@ -146,13 +146,6 @@ in
       paths = [ "/${zpool_name}/media/wallpapers" ];
     };
 
-    ## Plex
-    users.users.plex.extraGroups = [ "mediaaccess" ];
-    services.plex = {
-      enable = true;
-      package = if lib.versionAtLeast pkgs.plexRaw.version "1.41.2" then pkgs.plex else pkgs.unstable.plex;
-    };
-
     ## Jellyfin
     users.users.jellyfin.extraGroups = [ "mediaaccess" ];
 
@@ -236,9 +229,7 @@ in
       allowedUDPPorts = lib.mkForce [ ];
       interfaces = {
         sfp0 = {
-          allowedTCPPorts = lib.mkForce [
-            32400 # Plex
-          ];
+          allowedTCPPorts = lib.mkForce [ ];
           allowedUDPPorts = lib.mkForce [ ];
         };
       };
