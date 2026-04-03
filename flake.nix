@@ -43,7 +43,7 @@
     status-jakehillion-me.url = "https://gitea.hillion.co.uk/JakeHillion/status.jakehillion.me/archive/main.tar.gz";
     status-jakehillion-me.inputs.nixpkgs.follows = "nixpkgs";
 
-    personal-agent.url = "git+https://gitea.hillion.co.uk/JakeHillion/personal-agent.git";
+    personal-agent.url = "git+https://gitea.hillion.co.uk/JakeHillion/personal-agent.git?ref=feature/ntllnrovyuup";
     personal-agent.inputs.nixpkgs.follows = "nixpkgs";
 
     qnaplcd-menu.url = "github:stephenhouser/QnapLCD-Menu";
