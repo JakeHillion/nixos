@@ -8,6 +8,7 @@
     ../modules
 
     inputs.agenix.nixosModules.default
+    inputs.agenix-rekey.nixosModules.default
     inputs.async-coder.nixosModules.default
     inputs.disko.nixosModules.disko
     inputs.personal-agent.nixosModules.default

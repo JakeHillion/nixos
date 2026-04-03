@@ -1,4 +1,4 @@
-{ pkgs, nixpkgs-unstable, lib, config, agenix, ... }:
+{ pkgs, nixpkgs-unstable, lib, config, agenix-rekey, ... }:
 
 {
   options.custom.defaults = lib.mkEnableOption "defaults";
@@ -35,7 +35,7 @@
 
     environment = {
       systemPackages = with pkgs; [
-        agenix.packages."${system}".default
+        agenix-rekey.packages."${system}".default
         btop
         fd
         gh

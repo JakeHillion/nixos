@@ -18,7 +18,7 @@ in
     };
 
     age.secrets."firefly-iii/restic/mig29" = {
-      file = ../../../secrets/restic/mig29.age;
+      rekeyFile = ../../../secrets/restic/mig29.age;
     };
 
     services.firefly-iii.dataDir = lib.mkIf config.custom.impermanence.enable

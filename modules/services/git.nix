@@ -83,7 +83,7 @@ in
 
       # Backup configuration
       age.secrets."backups/git/restic/mig29" = lib.mkIf cfg.backup {
-        file = ../../secrets/restic/mig29.age;
+        rekeyFile = ../../secrets/restic/mig29.age;
         owner = config.services.gitolite.user;
         group = config.services.gitolite.group;
       };

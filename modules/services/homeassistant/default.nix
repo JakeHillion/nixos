@@ -18,12 +18,12 @@ in
 
     age.secrets = {
       "backups/homeassistant/restic/mig29" = lib.mkIf cfg.backup {
-        file = ../../../secrets/restic/mig29.age;
+        rekeyFile = ../../../secrets/restic/mig29.age;
         owner = "hass";
         group = "hass";
       };
       "backups/homeassistant/restic/b52" = lib.mkIf cfg.backup {
-        file = ../../../secrets/restic/b52.age;
+        rekeyFile = ../../../secrets/restic/b52.age;
         owner = "postgres";
         group = "postgres";
       };

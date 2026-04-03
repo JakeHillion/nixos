@@ -18,6 +18,9 @@
     agenix.inputs.darwin.follows = "darwin";
     agenix.inputs.home-manager.follows = "home-manager";
 
+    agenix-rekey.url = "github:oddlama/agenix-rekey";
+    agenix-rekey.inputs.nixpkgs.follows = "nixpkgs";
+
     home-manager.url = "github:nix-community/home-manager/release-25.11";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     home-manager-unstable.url = "github:nix-community/home-manager";
@@ -55,6 +58,7 @@
   outputs =
     { self
     , agenix
+    , agenix-rekey
     , async-coder
     , darwin
     , disko
@@ -103,6 +107,11 @@
     in
     {
       inherit mkSystem;
+
+      agenix-rekey = agenix-rekey.configure {
+        userFlake = self;
+        nixosConfigurations = self.nixosConfigurations;
+      };
 
       nixosConfigurations =
         let
@@ -166,6 +175,13 @@
           };
 
           packages.caddy-with-dns = pkgs.caddy-with-dns;
+
+          devShells.default = pkgs.mkShell {
+            packages = [
+              agenix-rekey.packages.${system}.default
+              pkgs.age
+            ];
+          };
         }))
         (flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ] (
           system:

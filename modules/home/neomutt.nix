@@ -80,7 +80,7 @@ in
 
     # Configure restic backup secret
     age.secrets."restic/neomutt/mig29.key" = lib.mkIf config.custom.home.neomutt.backup {
-      file = ../../secrets/restic/mig29.age;
+      rekeyFile = ../../secrets/restic/mig29.age;
       owner = config.custom.user;
     };
     home-manager.users.jake = {

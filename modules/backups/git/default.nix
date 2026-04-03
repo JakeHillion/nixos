@@ -17,7 +17,7 @@ in
   config = lib.mkIf cfg.enable {
     age.secrets."git/git_backups_ecdsa".file = ../../../secrets/git/git_backups_ecdsa.age;
     age.secrets."git/git_backups_remotes".file = ../../../secrets/git/git_backups_remotes.age;
-    age.secrets."git-backups/restic/mig29".file = ../../../secrets/restic/mig29.age;
+    age.secrets."git-backups/restic/mig29".rekeyFile = ../../../secrets/restic/mig29.age;
 
     systemd.services.backup-git = {
       description = "Git repo backup service.";

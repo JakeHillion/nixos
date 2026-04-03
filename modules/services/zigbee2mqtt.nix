@@ -53,7 +53,7 @@ in
 
 
     age.secrets."restic/zigbee2mqtt/b52.key" = lib.mkIf cfg.backup {
-      file = ../../secrets/restic/b52.age;
+      rekeyFile = ../../secrets/restic/b52.age;
       owner = "zigbee2mqtt";
     };
 

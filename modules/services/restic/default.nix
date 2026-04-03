@@ -172,19 +172,19 @@ in
   config = lib.mkIf cfg.enable {
     age.secrets = {
       "restic/mig29.key" = {
-        file = ../../../secrets/restic/mig29.age;
+        rekeyFile = ../../../secrets/restic/mig29.age;
         owner = "restic";
         group = "restic";
       };
 
       "restic/b52.key" = {
-        file = ../../../secrets/restic/b52.age;
+        rekeyFile = ../../../secrets/restic/b52.age;
         owner = "restic";
         group = "restic";
       };
 
-      "restic/aws-eu-central-2.env".file = ./aws-eu-central-2.env.age;
-      "restic/aws-us-east-1.env".file = ./aws-us-east-1.env.age;
+      "restic/aws-eu-central-2.env".rekeyFile = ./aws-eu-central-2.env.age;
+      "restic/aws-us-east-1.env".rekeyFile = ./aws-us-east-1.env.age;
     };
 
     services.restic.server = {

@@ -28,7 +28,7 @@ in
         group = "mautrix-discord";
       };
       "backups/mautrix-discord/restic/mig29" = {
-        file = ../../../secrets/restic/mig29.age;
+        rekeyFile = ../../../secrets/restic/mig29.age;
       };
     };
 

@@ -17,6 +17,9 @@ let
   neb = systems.me.jakehillion.neb;
 in
 {
+  # Restic secrets are managed by agenix-rekey (see modules/rekey.nix).
+  # New secrets should use agenix-rekey where possible.
+
   # User Passwords
   "secrets/passwords/jake.age".publicKeys = jake_users ++ [
     neb.gw.cyclone
@@ -39,20 +42,6 @@ in
   "modules/services/matrix/matrix.hillion.co.uk/syncv3_secret.age".publicKeys = jake_users ++ [ neb.cx.boron ];
 
   # Backups Secrets
-  "secrets/restic/mig29.age".publicKeys = [
-    neb.cx.boron
-    neb.cx.rooster
-    neb.cx.maverick
-    neb.cx.warlock
-    neb.pop.stinger
-    neb.rig.merlin
-    neb.st.phoenix
-  ];
-  "secrets/restic/b52.age".publicKeys = jake_users ++ [ neb.st.phoenix neb.home.router neb.pop.stinger ];
-
-  "modules/services/restic/aws-eu-central-2.env.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
-  "modules/services/restic/aws-us-east-1.env.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
-
   "secrets/git/git_backups_ecdsa.age".publicKeys = jake_users ++ [ neb.st.phoenix neb.cx.warlock ];
   "secrets/git/git_backups_remotes.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
 

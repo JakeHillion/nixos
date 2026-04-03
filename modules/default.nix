@@ -22,6 +22,7 @@
     ./prometheus
     ./profiles
     ./qnap-display.nix
+    ./rekey.nix
     ./router.nix
     ./sched_ext.nix
     ./services

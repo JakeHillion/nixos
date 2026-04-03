@@ -133,12 +133,12 @@ in
     (lib.mkIf cfg.backups.enable {
       age.secrets = {
         "restic/syncthing/mig29.key" = {
-          file = ../secrets/restic/mig29.age;
+          rekeyFile = ../secrets/restic/mig29.age;
           owner = "jake";
           group = "users";
         };
         "restic/syncthing/b52.key" = {
-          file = ../secrets/restic/b52.age;
+          rekeyFile = ../secrets/restic/b52.age;
           owner = "jake";
           group = "users";
         };

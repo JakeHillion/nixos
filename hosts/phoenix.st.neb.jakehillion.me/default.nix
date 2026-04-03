@@ -135,7 +135,7 @@ in
       '';
     };
 
-    age.secrets."restic/wallpapers/b52".file = ../../secrets/restic/b52.age;
+    age.secrets."restic/wallpapers/b52".rekeyFile = ../../secrets/restic/b52.age;
     services.restic.backups."wallpapers" = {
       timerConfig = {
         OnCalendar = "03:00";

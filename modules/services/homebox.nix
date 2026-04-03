@@ -10,7 +10,7 @@ in
 
   config = lib.mkIf cfg.enable {
     age.secrets."homebox/restic/mig29.key" = {
-      file = ../../secrets/restic/mig29.age;
+      rekeyFile = ../../secrets/restic/mig29.age;
     };
 
     users.users.homebox.uid = config.ids.uids.homebox;

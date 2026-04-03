@@ -29,7 +29,7 @@ in
 
     age.secrets = {
       "backups/matrix/restic/mig29" = lib.mkIf cfg.backup {
-        file = ../../../secrets/restic/mig29.age;
+        rekeyFile = ../../../secrets/restic/mig29.age;
       };
 
       "matrix/matrix.hillion.co.uk/macaroon_secret_key" = {

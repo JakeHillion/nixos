@@ -10,7 +10,7 @@ in
 
   config = lib.mkIf cfg.enable {
     age.secrets."immich/restic/b52.key" = {
-      file = ../../secrets/restic/b52.age;
+      rekeyFile = ../../secrets/restic/b52.age;
       owner = "immich";
       group = "immich";
     };
