@@ -10,6 +10,26 @@ in
   config = lib.mkIf cfg {
     age.secrets.devbox-cachix-netrc.file = ./devbox-cachix-netrc.age;
     nix.settings.netrc-file = config.age.secrets.devbox-cachix-netrc.path;
+
+    # testquorum private S3 (Cloudflare R2) binary cache.
+    # System-level so nix-daemon can authenticate via AWS env vars.
+    age.secrets.testquorum-r2-env.rekeyFile = ./testquorum-r2.env.age;
+
+    nix.settings = {
+      extra-substituters = [
+        "s3://testquorum-nix?endpoint=ba58a56742691d9efc310cca51093d04.r2.cloudflarestorage.com&region=auto&scheme=https"
+      ];
+      extra-trusted-public-keys = [
+        "testquorum-nix-1:bXii6WULJDpQ/VONPLR9Ir+/rA2E67HAQEG1AVjQNnc="
+      ];
+    };
+
+    systemd.services.nix-daemon = {
+      serviceConfig.EnvironmentFile =
+        "-${config.age.secrets.testquorum-r2-env.path}";
+      after = [ "agenix.service" ];
+      wants = [ "agenix.service" ];
+    };
     environment.systemPackages = with pkgs; [
       jq # handy and claude always tries to invoke it
     ];
