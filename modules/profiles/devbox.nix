@@ -22,6 +22,12 @@ in
       extra-trusted-public-keys = [
         "testquorum-nix-1:bXii6WULJDpQ/VONPLR9Ir+/rA2E67HAQEG1AVjQNnc="
       ];
+      # Force the nix CLI to always go through nix-daemon, even when invoked
+      # as root. Otherwise root's nix opens the LocalStore directly and tries
+      # to fetch from the s3:// substituter without the AWS credentials that
+      # only nix-daemon's EnvironmentFile provides, spamming
+      # "InvalidArgument: Authorization" errors on every cache miss.
+      store = "daemon";
     };
 
     systemd.services.nix-daemon = {
