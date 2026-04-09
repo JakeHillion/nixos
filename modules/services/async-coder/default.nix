@@ -64,6 +64,7 @@ in
             repositories = [
               { owner = "JakeHillion"; name = "hearthd"; envrc = true; }
               { owner = "JakeHillion"; name = "ogygia-nix"; envrc = true; }
+              { owner = "testquorum"; name = "testquorum-rs"; envrc = true; }
             ];
           };
         };

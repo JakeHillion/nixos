@@ -59,6 +59,7 @@ in
         "https://nixcache.jakehillion.me"
         "https://ogygia.cachix.org"
         "https://sched-ext.cachix.org"
+        "https://nixcache.testquorum.dev"
       ];
       trustedPublicKeys = [
         "exo-internal.cachix.org-1:4kcxdKKQspZqUcdXZHOeppVJmVQsaha0U5eHB3Akg5A="
@@ -67,6 +68,7 @@ in
         "nixcache.jakehillion.me-1:HQsjYdrcs3ilS/ngtlbTQXU4Xfsm+va5NN7yoK0wKMg="
         "ogygia.cachix.org-1:xb4bnMPeWgSP81Xs0Vl7ZU4Ez7Ul65qp/EoZ40pDaWo="
         "sched-ext.cachix.org-1:dtoM9QOUUqJs3JkmSgVoKYp9cLY0BrupOqp4DVz35/g="
+        "nixcache.testquorum.dev-1:w8eYAwlsCrkOoPWvRFZa/haM19qkHu0kAHD0zkGN+0g="
       ];
     };
 
