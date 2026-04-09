@@ -26,6 +26,7 @@ in
             "cyclone.gw.${config.ogygia.domain}"
             "slider.pop.${config.ogygia.domain}"
           ];
+          awtrix-fireworks-tokens = "stinger.pop.${config.ogygia.domain}";
           blackmagic-cam-importer = "phoenix.st.${config.ogygia.domain}";
           couchdb = "warlock.cx.${config.ogygia.domain}";
           downloads = "phoenix.st.${config.ogygia.domain}";

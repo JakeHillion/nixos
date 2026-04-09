@@ -90,6 +90,7 @@
 
           "storj" = final.callPackage ./pkgs/storj.nix { };
           "pbcli" = final.callPackage ./pkgs/pbcli.nix { };
+          "firectl" = final.callPackage ./pkgs/firectl.nix { };
           "caddy-with-dns" = final.callPackage ./pkgs/caddy-with-dns.nix { };
           "ogygia" = ogygia.packages.${final.system}.ogygia;
           "qnaplcd" = final.callPackage ./pkgs/qnaplcd.nix { inherit qnaplcd-menu; };

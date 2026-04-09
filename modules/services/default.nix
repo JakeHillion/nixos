@@ -5,6 +5,7 @@
     ./acme-dns-api
     ./async-coder
     ./authoritative_dns.nix
+    ./awtrix-fireworks-tokens
     ./blackmagic-cam-importer
     ./couchdb
     ./downloads

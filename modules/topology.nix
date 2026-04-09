@@ -410,6 +410,11 @@
                 hwAddress = "48:da:35:6f:0f:a8";
                 dhcpReservation = true;
               };
+              "13" = {
+                hostname = "awtrix";
+                hwAddress = "8c:4f:00:09:cb:34";
+                dhcpReservation = true;
+              };
             };
           };
 
