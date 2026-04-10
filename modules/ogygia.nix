@@ -26,6 +26,11 @@ in
         settings.peers.urls = builtins.map (fqdn: "http://${fqdn}:35742") hosts;
       };
 
+      etcd = {
+        enable = true;
+        endpoints = config.custom.services.etcd.endpoints;
+      };
+
       zookeeper = {
         enable = true;
         endpoints = config.custom.services.zookeeper.clientHosts;
