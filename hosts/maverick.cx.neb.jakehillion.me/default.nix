@@ -16,7 +16,7 @@
       scheduler = "scx_lavd";
     };
 
-    ## Impermanence
+    ## Impermanence
     custom.impermanence = {
       enable = true;
       userExtraFiles.jake = [

@@ -85,11 +85,11 @@
       "2a01:4f8:173:23d2::2@53"
     ];
 
-    ## Filesystems
+    ## Filesystems
     services.btrfs.autoScrub = {
       enable = true;
       interval = "Tue, 02:00";
-      # By default both /data and /nix would be scrubbed. They are the same filesystem so this is wasteful.
+      # By default both /data and /nix would be scrubbed. They are the same filesystem so this is wasteful.
       fileSystems = [ "/data" ];
     };
 
@@ -159,7 +159,7 @@
           allowedUDPPorts = lib.mkForce [
             53 # DNS
             443 # HTTP 3
-            3478 # Unifi STUN
+            3478 # Unifi STUN
             4242 # Nebula Lighthouse
           ];
         };

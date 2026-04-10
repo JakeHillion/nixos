@@ -14,7 +14,7 @@
     custom.defaults = true;
     custom.profiles.laptop = true;
 
-    ## Impermanence
+    ## Impermanence
     custom.impermanence = {
       enable = true;
 

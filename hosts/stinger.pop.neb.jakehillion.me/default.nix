@@ -86,13 +86,13 @@
           allowedTCPPorts = lib.mkForce [
             80 # HTTP 1-2
             443 # HTTPS 1-2
-            1400 # HA Sonos
+            1400 # HA Sonos
             7654 # Tang
-            21063 # HomeKit
+            21063 # HomeKit
           ];
           allowedUDPPorts = lib.mkForce [
             443 # HTTP 3
-            5353 # HomeKit
+            5353 # HomeKit
           ];
         };
         iot = {

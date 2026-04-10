@@ -134,7 +134,7 @@ in
         enable = true;
 
         extraPackages = python3Packages: with python3Packages; [
-          psycopg2 # postgresql support
+          psycopg2 # postgresql support
         ];
         extraComponents = [
           "bluetooth"
@@ -274,7 +274,7 @@ in
             };
 
 
-            # UI managed expansions
+            # UI managed expansions
             automation = "!include automations.yaml";
             script = "!include scripts.yaml";
             scene = "!include scenes.yaml";

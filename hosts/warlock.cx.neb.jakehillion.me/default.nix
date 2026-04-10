@@ -10,7 +10,7 @@
 
     custom.defaults = true;
 
-    ## Custom Services
+    ## Custom Services
     custom.tang.enable = true;
     custom.auto_updater.allowReboot = true;
     custom.services.zookeeper.enable = true;

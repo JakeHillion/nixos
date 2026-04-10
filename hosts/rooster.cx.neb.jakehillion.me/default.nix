@@ -16,7 +16,7 @@
       scheduler = "scx_lavd";
     };
 
-    ## Impermanence
+    ## Impermanence
     custom.impermanence = {
       enable = true;
       userExtraFiles.jake = [
@@ -55,7 +55,7 @@
     };
     users.users.jake.extraGroups = [ "podman" ];
 
-    ### Mount tracefs to enable tools like scxtop
+    ### Mount tracefs to enable tools like scxtop
     fileSystems."/sys/kernel/tracing" = {
       device = "tracefs";
       fsType = "tracefs";

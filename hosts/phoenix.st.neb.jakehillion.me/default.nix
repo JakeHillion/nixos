@@ -45,7 +45,7 @@ in
       devices = [ "disk0-crypt" "disk1-crypt" ];
     };
 
-    custom.users.jake.password = true; # TODO: remove me once booting has stabilised
+    custom.users.jake.password = true; # TODO: remove me once booting has stabilised
 
     custom.sched_ext = {
       enable = true;

@@ -22,7 +22,7 @@
     networking.useNetworkd = true;
     systemd.network.enable = true;
 
-    networking.nameservers = lib.mkForce [ ]; # Trust the DHCP nameservers
+    networking.nameservers = lib.mkForce [ ]; # Trust the DHCP nameservers
     networking.firewall = {
       allowedTCPPorts = lib.mkForce [
         22 # SSH
