@@ -61,8 +61,8 @@ let
       AWTRIX_HOST=${lib.escapeShellArg cfg.awtrixHost}
       APP_NAME=${lib.escapeShellArg cfg.appName}
 
-      END=$(date -u +%Y-%m-%d)
-      START=$(date -u -d "7 days ago" +%Y-%m-%d)
+      END=$(date -u "+%Y-%m-%d %H:%M:%S")
+      START=$(date -u -d "7 days ago" "+%Y-%m-%d %H:%M:%S")
       CSV="$RUNTIME_DIRECTORY/billing.csv"
       rm -f "$CSV"
 
