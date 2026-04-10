@@ -9,6 +9,7 @@
     ./blackmagic-cam-importer
     ./couchdb
     ./downloads
+    ./etcd.nix
     ./firefly-iii
     ./frigate.nix
     ./git.nix
