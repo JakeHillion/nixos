@@ -99,13 +99,13 @@ let
 
       # AWTRIX default font is ~4px per character; calculate right-aligned position
       TEXT_WIDTH=$((''${#LABEL} * 4))
-      TEXT_OFFSET=$((32 - TEXT_WIDTH - 1))
+      TEXT_OFFSET=$((32 - TEXT_WIDTH - 4))
 
       PAYLOAD=$(jq -nc \
         --arg text "$LABEL" \
         --argjson draw ${lib.escapeShellArg (builtins.toJSON logoDraw)} \
         --argjson x "$TEXT_OFFSET" \
-        '{ text: $text, textOffset: $x, textY: 1, draw: $draw,
+        '{ draw: ($draw + [{"dt": [$x, 2, $text, "#FFFFFF"]}]),
            lifetime: 5400, lifetimeMode: 0, duration: 5,
            pushIcon: 0, center: false, noScroll: true }')
 
