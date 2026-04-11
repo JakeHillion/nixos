@@ -41,6 +41,7 @@
     ./tang.nix
     ./unifi.nix
     ./version_tracker.nix
+    ./wan-failover.nix
     ./zigbee2mqtt.nix
     ./zookeeper.nix
   ];

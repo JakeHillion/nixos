@@ -12,6 +12,18 @@ in
       description = "Whether to automatically configure network interfaces based on topology";
     };
 
+    extraWanInterfaces = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      description = "Additional WAN interfaces (e.g., for failover)";
+    };
+
+    extraNatLoopbackIps = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      description = "Additional WAN IP addresses for NAT loopback (e.g., dynamic secondary WAN IP)";
+    };
+
     extraForwardRules = lib.mkOption {
       type = lib.types.lines;
       default = "";
@@ -207,13 +219,20 @@ in
 
         # Configure network interfaces
         interfaces =
-          # WAN interface
+          # Primary WAN interface
           {
             "${locationCfg.wanInterface}" = {
               useDHCP = true;
               macAddress = locationCfg.wanMacAddress;
             };
           } //
+          # Extra WAN interfaces (for failover)
+          lib.attrsets.listToAttrs (map
+            (iface: {
+              name = iface;
+              value = { useDHCP = true; };
+            })
+            cfg.extraWanInterfaces) //
           # Regular interfaces and VLANs
           lib.attrsets.mapAttrs'
             (name: netCfg:
@@ -233,127 +252,155 @@ in
         # Configure nftables firewall
         nftables = {
           enable = true;
-          ruleset = ''
-            table inet filter {
-              chain output {
-                type filter hook output priority 100; policy accept;
-              }
+          ruleset =
+            let
+              # Build the list of WAN interfaces for the set
+              wanInterfaceList = [ locationCfg.wanInterface ] ++ cfg.extraWanInterfaces;
+              wanInterfaceElements = lib.strings.concatStringsSep ", " (map (i: ''"${i}"'') wanInterfaceList);
 
-              chain input {
-                type filter hook input priority filter; policy drop;
+              # Build the list of WAN IPs for NAT loopback
+              wanIpList = (lib.lists.optional (locationCfg.staticWanIP != null) locationCfg.staticWanIP) ++ cfg.extraNatLoopbackIps;
+              wanIpElements = lib.strings.concatStringsSep ", " wanIpList;
+            in
+            ''
+              table inet filter {
+                # Define WAN interface set
+                set wan_interfaces {
+                  type ifname
+                  flags interval
+                  elements = { ${wanInterfaceElements} }
+                }
 
-                # Allow all loopback traffic
-                iifname "lo" counter accept
+                chain output {
+                  type filter hook output priority 100; policy accept;
+                }
 
-                # Allow trusted networks to access the router
-                iifname {
-                  ${lib.strings.concatStringsSep ",\n      " (map (i: "\"${i}\"") (["lo"] ++ trustedInterfaceNames ++ ["neb.jh"]))}
-                } counter accept
+                chain input {
+                  type filter hook input priority filter; policy drop;
 
-                # Allow ICMP from anywhere
-                ip protocol icmp counter accept comment "accept all ICMP types"
+                  # Allow all loopback traffic
+                  iifname "lo" counter accept
 
-                # Allow established connections
-                ct state { established, related } counter accept
+                  # Allow trusted networks to access the router
+                  iifname {
+                    ${lib.strings.concatStringsSep ",\n      " (map (i: ''"${i}"'') (["lo"] ++ trustedInterfaceNames ++ ["neb.jh"]))}
+                  } counter accept
 
-                # Allow specific services from WAN (both router services and port forwarding)
-                ${lib.strings.concatStringsSep "\n    " 
-                  (lib.lists.flatten 
+                  # Allow ICMP from anywhere
+                  ip protocol icmp counter accept comment "accept all ICMP types"
+
+                  # Allow established connections
+                  ct state { established, related } counter accept
+
+                  # Allow specific services from WAN (both router services and port forwarding)
+                  ${lib.strings.concatStringsSep "\n    " 
+                    (lib.lists.flatten 
+                      (map (rule: 
+                        map (proto: 
+                          "iifname @wan_interfaces ${proto} dport ${toString rule.externalPort} counter accept comment \"${rule.description}\""
+                        ) (protocolRules rule.protocol)
+                      ) (lib.lists.filter (rule: rule != null) getAllPortForwardingRules))
+                    )
+                  }
+
+                  # Drop all other WAN traffic
+                  iifname @wan_interfaces counter drop
+                }
+
+                chain forward {
+                  type filter hook forward priority filter; policy drop;
+
+                  # Allow trusted LAN to WAN (internet access)
+                  iifname {
+                    ${lib.strings.concatStringsSep ",\n      " (map (i: ''"${i}"'') internetInterfaceNames)}
+                  } oifname @wan_interfaces counter accept comment "Allow trusted LAN to WAN"
+
+                  # Allow established connections back to LANs
+                  iifname @wan_interfaces oifname {
+                    ${lib.strings.concatStringsSep ",\n      " (map (i: ''"${i}"'') internetInterfaceNames)}
+                  } ct state { established, related } counter accept comment "Allow established back to LANs"
+
+                  # Port forwarding rules from all networks
+                  ${lib.strings.concatStringsSep "\n    " 
                     (map (rule: 
-                      map (proto: 
-                        "iifname \"${locationCfg.wanInterface}\" ${proto} dport ${toString rule.externalPort} counter accept comment \"${rule.description}\""
-                      ) (protocolRules rule.protocol)
-                    ) (lib.lists.filter (rule: rule != null) getAllPortForwardingRules))
-                  )
-                }
-
-                # Drop all other WAN traffic
-                iifname { "${locationCfg.wanInterface}" } counter drop
-              }
-
-              chain forward {
-                type filter hook forward priority filter; policy drop;
-
-                # Allow trusted LAN to WAN (internet access)
-                iifname {
-                  ${lib.strings.concatStringsSep ",\n      " (map (i: "\"${i}\"") internetInterfaceNames)}
-                } oifname {
-                  "${locationCfg.wanInterface}"
-                } counter accept comment "Allow trusted LAN to WAN"
-
-                # Allow established connections back to LANs
-                iifname {
-                  "${locationCfg.wanInterface}"
-                } oifname {
-                  ${lib.strings.concatStringsSep ",\n      " (map (i: "\"${i}\"") internetInterfaceNames)}
-                } ct state { established, related } counter accept comment "Allow established back to LANs"
-
-                # Port forwarding rules from all networks
-                ${lib.strings.concatStringsSep "\n    " 
-                  (map (rule: 
-                    if rule.internalPort != null then
-                      "ip daddr ${rule.internalIP} ${rule.protocol} dport ${toString rule.internalPort} counter accept comment \"${rule.description}\""
-                    else
-                      "ip daddr ${rule.internalIP} ${rule.protocol} dport ${toString rule.externalPort} counter accept comment \"${rule.description}\""
-                  ) (lib.lists.filter (rule: rule != null) getAllPortForwardingRules))
-                }
-
-                # Extra forward rules
-                ${cfg.extraForwardRules}
-              }
-            }
-
-            table ip nat {
-              chain prerouting {
-                type nat hook prerouting priority filter; policy accept;
-
-                # Port forwarding (skip DNAT for router services)
-                ${lib.strings.concatStringsSep "\n    " 
-                  (map (rule: 
-                    "iifname ${locationCfg.wanInterface} ${rule.protocol} dport ${toString rule.externalPort} counter dnat to ${rule.internalIP}:${
-                      toString (if rule.internalPort != null then rule.internalPort else rule.externalPort)
-                    }"
-                  ) (lib.lists.filter (rule: rule != null && !(isRouterService rule)) getAllPortForwardingRules))
-                }
-                
-                # NAT loopback/reflection for internal clients accessing WAN IP
-                ${lib.strings.optionalString (locationCfg.staticWanIP != null) (
-                  lib.strings.concatStringsSep "\n    " 
-                  (lib.lists.flatten 
-                    (map (rule: 
-                      if (rule.loopbackEnabled) then
-                        let
-                          # Find the LAN interface where clients will connect from
-                          lanInterfaces = lib.attrsets.mapAttrsToList
-                            (name: netCfg: 
-                              if netCfg.trustedNetwork then getInterfaceName name netCfg else null
-                            )
-                            (lib.attrsets.filterAttrs (name: netCfg: netCfg.trustedNetwork) locationCfg.networks);
-                          filteredInterfaces = lib.lists.filter (i: i != null) lanInterfaces;
-                        in
-                        map (iface: 
-                          "iifname ${iface} ip daddr ${locationCfg.staticWanIP} ${rule.protocol} dport ${toString rule.externalPort} counter dnat to ${rule.internalIP}:${
-                            toString (if rule.internalPort != null then rule.internalPort else rule.externalPort)
-                          }"
-                        ) filteredInterfaces
+                      if rule.internalPort != null then
+                        "ip daddr ${rule.internalIP} ${rule.protocol} dport ${toString rule.internalPort} counter accept comment \"${rule.description}\""
                       else
-                        []
+                        "ip daddr ${rule.internalIP} ${rule.protocol} dport ${toString rule.externalPort} counter accept comment \"${rule.description}\""
                     ) (lib.lists.filter (rule: rule != null) getAllPortForwardingRules))
-                  )
-                )}
+                  }
+
+                  # Extra forward rules
+                  ${cfg.extraForwardRules}
+                }
               }
 
-              chain postrouting {
-                type nat hook postrouting priority filter; policy accept;
+              table ip nat {
+                # Define WAN interface set (duplicate of inet filter table for nat table scope)
+                set wan_interfaces {
+                  type ifname
+                  flags interval
+                  elements = { ${wanInterfaceElements} }
+                }
 
-                # Masquerade outgoing WAN traffic
-                oifname "${locationCfg.wanInterface}" masquerade
+                ${lib.strings.optionalString (wanIpList != [ ]) ''
+                # Define WAN IP set for NAT loopback
+                set wan_loopback_ips {
+                  type ipv4_addr
+                  flags interval
+                  elements = { ${wanIpElements} }
+                }
+                ''}
 
-                # Extra NAT rules
-                ${cfg.extraNatRules}
+                chain prerouting {
+                  type nat hook prerouting priority filter; policy accept;
+
+                  # Port forwarding (skip DNAT for router services)
+                  ${lib.strings.concatStringsSep "\n    " 
+                    (map (rule: 
+                      "iifname @wan_interfaces ${rule.protocol} dport ${toString rule.externalPort} counter dnat to ${rule.internalIP}:${
+                        toString (if rule.internalPort != null then rule.internalPort else rule.externalPort)
+                      }"
+                    ) (lib.lists.filter (rule: rule != null && !(isRouterService rule)) getAllPortForwardingRules))
+                  }
+                
+                  # NAT loopback/reflection for internal clients accessing WAN IP
+                  ${lib.strings.optionalString (wanIpList != [ ]) (lib.strings.concatStringsSep "\n    " 
+                    (lib.lists.flatten 
+                      (map (rule: 
+                        if (rule.loopbackEnabled) then
+                          let
+                            # Find the LAN interface where clients will connect from
+                            lanInterfaces = lib.attrsets.mapAttrsToList
+                              (name: netCfg: 
+                                if netCfg.trustedNetwork then getInterfaceName name netCfg else null
+                              )
+                              (lib.attrsets.filterAttrs (name: netCfg: netCfg.trustedNetwork) locationCfg.networks);
+                            filteredInterfaces = lib.lists.filter (i: i != null) lanInterfaces;
+                          in
+                          map (iface: 
+                            "iifname ${iface} ip daddr @wan_loopback_ips ${rule.protocol} dport ${toString rule.externalPort} counter dnat to ${rule.internalIP}:${
+                              toString (if rule.internalPort != null then rule.internalPort else rule.externalPort)
+                            }"
+                          ) filteredInterfaces
+                        else
+                          []
+                      ) (lib.lists.filter (rule: rule != null) getAllPortForwardingRules))
+                    )
+                  )}
+                }
+
+                chain postrouting {
+                  type nat hook postrouting priority filter; policy accept;
+
+                  # Masquerade outgoing WAN traffic
+                  oifname @wan_interfaces masquerade
+
+                  # Extra NAT rules
+                  ${cfg.extraNatRules}
+                }
               }
-            }
-          '';
+            '';
         };
       };
 

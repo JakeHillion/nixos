@@ -15,13 +15,23 @@
     ## Interactive password
     custom.users.jake.password = true;
 
+    ## VLAN 5 for Cellular backup WAN
+    networking.vlans = {
+      wan2 = {
+        id = 5;
+        interface = "enp1s0f0";
+      };
+    };
+
     ## Use the network topology abstraction
     custom.router = {
       auto = true;
+      extraWanInterfaces = [ "wan2" ];
+      extraNatLoopbackIps = [ ];
       extraForwardRules = ''
         # WireGuard VPN forwarding rules
-        iifname "wg0" oifname "enp2s0" accept comment "WireGuard to WAN"
-        iifname "enp2s0" oifname "wg0" ct state related,established accept comment "WAN to WireGuard established"
+        iifname "wg0" oifname @wan_interfaces accept comment "WireGuard to WAN"
+        iifname @wan_interfaces oifname "wg0" ct state related,established accept comment "WAN to WireGuard established"
 
         # Allow LAN to reach fanboy Nebula port
         iifname "enp1s0f0" oifname "openclaw" ip daddr 10.116.242.2 udp dport 4242 counter accept comment "LAN to fanboy Nebula"
@@ -29,8 +39,19 @@
       '';
       extraNatRules = ''
         # WireGuard NAT masquerading
-        iifname "wg0" oifname "enp2s0" masquerade comment "WireGuard NAT"
+        iifname "wg0" oifname @wan_interfaces masquerade comment "WireGuard NAT"
       '';
+    };
+
+    ## WAN Failover - switches to cellular when primary is down
+    custom.services.wan-failover = {
+      enable = true;
+      primaryInterface = "enp2s0";
+      secondaryInterface = "wan2";
+      primaryMetric = 100;
+      secondaryMetric = 200;
+      # Placeholder - update with actual command to query GL.iNet router
+      secondaryIpCommand = null;
     };
 
     ## WireGuard VPN Server
