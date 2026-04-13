@@ -989,15 +989,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1773620183,
-        "narHash": "sha256-82is1qQbKSW8UuvWuKQFMHydhszoKJU+SPXwwxLcVYQ=",
-        "rev": "f838389050ee624cc19894dc3f51ddd797fa0df8",
+        "lastModified": 1776107926,
+        "narHash": "sha256-OJhtuwY4+LKDo1Z1NKtMeZmDqKHOMS5cnjR301rdObo=",
+        "rev": "a2871ca1f5175df2b97606c48744f7d41c4cc417",
         "type": "tarball",
-        "url": "https://gitea.hillion.co.uk/api/v1/repos/JakeHillion/status.jakehillion.me/archive/f838389050ee624cc19894dc3f51ddd797fa0df8.tar.gz"
+        "url": "https://gitea.hillion.co.uk/api/v1/repos/JakeHillion/status.jakehillion.me/archive/a2871ca1f5175df2b97606c48744f7d41c4cc417.tar.gz"
       },
       "original": {
         "type": "tarball",
-        "url": "https://gitea.hillion.co.uk/JakeHillion/status.jakehillion.me/archive/main.tar.gz"
+        "url": "https://gitea.hillion.co.uk/JakeHillion/status.jakehillion.me/archive/jj/mxpmwtwsypkz.tar.gz"
       }
     },
     "systems": {

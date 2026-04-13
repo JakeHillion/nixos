@@ -30,8 +30,8 @@ in
         git = {
           remote_url = cfg.gitRemoteUrl;
         };
-        zookeeper = {
-          endpoints = config.custom.services.zookeeper.clientHosts;
+        etcd = {
+          endpoints = config.custom.services.etcd.endpoints;
         };
       };
     in
