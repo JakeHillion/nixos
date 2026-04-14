@@ -1,4 +1,4 @@
-{ config, pkgs, lib, status-jakehillion-me, ... }:
+{ config, lib, ... }:
 
 let
   cfg = config.custom.services.status;
@@ -6,75 +6,20 @@ in
 {
   options.custom.services.status = {
     enable = lib.mkEnableOption "status";
-
-    port = lib.mkOption {
-      type = lib.types.port;
-      default = 47283;
-      description = "Port for status service to listen on";
-    };
-
-    gitRemoteUrl = lib.mkOption {
-      type = lib.types.str;
-      default = "https://gitea.hillion.co.uk/JakeHillion/nixos.git";
-      description = "Git remote URL for the status service";
-    };
-
   };
 
-  config = lib.mkIf cfg.enable (
-    let
-      configFile = pkgs.writers.writeTOML "status-config.toml" {
-        server = {
-          port = cfg.port;
-        };
-        git = {
-          remote_url = cfg.gitRemoteUrl;
-        };
-        zookeeper = {
-          endpoints = config.custom.services.zookeeper.clientHosts;
-        };
-      };
-    in
-    {
-      systemd.services.status = {
-        description = "Status service";
-        wantedBy = [ "multi-user.target" ];
-        after = [ "network.target" ];
+  config = lib.mkIf cfg.enable {
+    ogygia.dashboard = {
+      enable = true;
+      title = "Jake's Home Lab Status";
+      serverConfig = { port = 47283; };
+    };
 
-        environment = {
-          RUST_LOG = "info";
-        };
-
-        serviceConfig = {
-          Type = "exec";
-          DynamicUser = true;
-          ExecStart = "${status-jakehillion-me.packages.${pkgs.system}.default}/bin/status-jakehillion-me --config ${configFile}";
-          Restart = "always";
-          RestartSec = "10s";
-          StartLimitIntervalSec = "300s";
-          StartLimitBurst = 30;
-
-          # Security
-          NoNewPrivileges = true;
-          PrivateTmp = true;
-          ProtectSystem = "strict";
-          ProtectHome = true;
-          ProtectKernelTunables = true;
-          ProtectKernelModules = true;
-          ProtectControlGroups = true;
-          RestrictSUIDSGID = true;
-          RestrictRealtime = true;
-          MemoryDenyWriteExecute = true;
-          LockPersonality = true;
-        };
-      };
-
-      custom.www.nebula = {
-        enable = true;
-        virtualHosts."status.${config.ogygia.domain}".extraConfig = ''
-          reverse_proxy http://127.0.0.1:${toString cfg.port}
-        '';
-      };
-    }
-  );
+    custom.www.nebula = {
+      enable = true;
+      virtualHosts."status.${config.ogygia.domain}".extraConfig = ''
+        reverse_proxy http://127.0.0.1:47283
+      '';
+    };
+  };
 }

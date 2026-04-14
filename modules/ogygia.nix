@@ -17,6 +17,8 @@ in
       enable = true;
       domain = "neb.jakehillion.me";
 
+      gitRemoteUrl = "https://gitea.hillion.co.uk/JakeHillion/nixos.git";
+
       nebula.ipv4 = config.custom.dns.nebula.ipv4;
 
       irisd = {
