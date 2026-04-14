@@ -68,10 +68,8 @@ let
 
     argus.kvm                         21600 CNAME cyclone.gw.${domain}.
     charlie.kvm                       21600 CNAME cyclone.gw.${domain}.
-    hammer.kvm                        21600 CNAME cyclone.gw.${domain}.
+    hammer.kvm                         21600 CNAME cyclone.gw.${domain}.
     kvm.phoenix.st                    21600 CNAME cyclone.gw.${domain}.
-
-    cgit.git                          21600 CNAME ${locations.services.git}.
 
     deluge.downloads                  21600 CNAME ${locations.services.downloads}.
     prowlarr.downloads                21600 CNAME ${locations.services.downloads}.

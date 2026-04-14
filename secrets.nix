@@ -91,7 +91,6 @@ in
   # Web certificates
   "secrets/certs/hillion.co.uk.pem.age".publicKeys = jake_users ++ [ neb.cx.boron ];
   "secrets/certs/blog.hillion.co.uk.pem.age".publicKeys = jake_users ++ [ neb.cx.boron ];
-  "secrets/certs/git.hillion.co.uk.pem.age".publicKeys = jake_users ++ [ neb.cx.boron ];
   "secrets/certs/gitea.hillion.co.uk.pem.age".publicKeys = jake_users ++ [ neb.cx.boron ];
   "secrets/certs/homeassistant.hillion.co.uk.pem.age".publicKeys = jake_users ++ [ neb.cx.boron ];
   "secrets/certs/links.hillion.co.uk.pem.age".publicKeys = jake_users ++ [ neb.cx.boron ];
