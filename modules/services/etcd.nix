@@ -23,7 +23,6 @@ in
           # Get the list of etcd hosts from locations.nix
           etcdHosts = locations.services.etcd;
 
-          # Function to lookup FQDN in DNS config (same pattern as zookeeper.nix)
           lookupFqdn = fqdn:
             lib.attrsets.attrByPath
               (lib.reverseList (lib.splitString "." fqdn))
@@ -47,7 +46,6 @@ in
         # Get the list of etcd hosts from locations.nix
         etcdHosts = locations.services.etcd;
 
-        # Function to lookup FQDN in DNS config (same pattern as zookeeper.nix)
         lookupFqdn = fqdn:
           lib.attrsets.attrByPath
             (lib.reverseList (lib.splitString "." fqdn))

@@ -71,7 +71,6 @@
           dockerMemoryHigh = 12 * 1024 * 1024 * 1024; # 8 GiB
         };
         matrix.mautrix_discord = true;
-        zookeeper.enable = true;
       };
     };
 

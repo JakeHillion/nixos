@@ -14,7 +14,6 @@ let
   isPrimary = config.networking.fqdn == primaryHost;
   isSecondary = builtins.elem config.networking.fqdn secondaryHosts;
 
-  # Nebula IP lookup (same pattern as zookeeper.nix)
   lookupFqdn = fqdn:
     lib.attrsets.attrByPath
       (lib.reverseList (lib.splitString "." fqdn))

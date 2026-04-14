@@ -13,7 +13,6 @@
     ## Custom Services
     custom.tang.enable = true;
     custom.auto_updater.allowReboot = true;
-    custom.services.zookeeper.enable = true;
 
     ## CA server
     custom.ca.service.enable = true;

@@ -32,11 +32,6 @@ in
         enable = true;
         endpoints = config.custom.services.etcd.endpoints;
       };
-
-      zookeeper = {
-        enable = true;
-        endpoints = config.custom.services.zookeeper.clientHosts;
-      };
     };
 
     environment.systemPackages = [ pkgs.ogygia ];
