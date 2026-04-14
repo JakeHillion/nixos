@@ -72,7 +72,7 @@ in
         opencode = {
           api_key_file = config.age.secrets."async-coder/opencode-api-key".path;
           api_url = "https://api.fireworks.ai/inference/v1";
-          model = "accounts/fireworks/routers/glm-5p1-fast";
+          model = "accounts/fireworks/routers/glm-5-fast";
           cheap_fast_model = "accounts/fireworks/models/gpt-oss-20b";
           provider = "fireworks-ai";
           base_port = 18900;

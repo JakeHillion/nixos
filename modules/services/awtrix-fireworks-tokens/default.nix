@@ -132,7 +132,7 @@ in
 
     models = lib.mkOption {
       type = lib.types.listOf lib.types.str;
-      default = [ "kimi-k2p5" "glm-5p1" ];
+      default = [ "kimi-k2p5" "glm-5" ];
       description = "Model name substrings to match in the billing CSV.";
     };
 
