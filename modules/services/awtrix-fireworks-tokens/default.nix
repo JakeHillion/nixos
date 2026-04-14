@@ -57,7 +57,7 @@ let
 
       FIREWORKS_API_KEY=$(cat "$CREDENTIALS_DIRECTORY/fireworks-api-key")
       ACCOUNT_ID=${lib.escapeShellArg cfg.accountId}
-      MODEL=${lib.escapeShellArg cfg.model}
+      MODEL_REGEX=${lib.escapeShellArg (lib.concatStringsSep "|" cfg.models)}
       AWTRIX_HOST=${lib.escapeShellArg cfg.awtrixHost}
       APP_NAME=${lib.escapeShellArg cfg.appName}
 
@@ -73,15 +73,15 @@ let
       # CSV columns: email,start_time,end_time,usage_type,accelerator_type,
       #   accelerator_seconds,base_model_name,model_bucket,parameter_count,
       #   prompt_tokens,completion_tokens
-      TOTAL=$(awk -F, -v model="$MODEL" '
+      TOTAL=$(awk -F, -v model="$MODEL_REGEX" '
         NR==1 { next }
-        index($7, model) > 0 {
+        $7 ~ model {
           p = ($10=="" ? 0 : $10); c = ($11=="" ? 0 : $11); sum += p + c
         }
         END { printf "%d", (sum ? sum : 0) }
       ' "$CSV")
 
-      echo "fireworks 7-day token total for $MODEL: $TOTAL"
+      echo "fireworks 7-day token total for models $MODEL_REGEX: $TOTAL"
 
       URL="http://$AWTRIX_HOST/api/custom?name=$APP_NAME"
 
@@ -130,10 +130,10 @@ in
       description = "Fireworks.AI account ID.";
     };
 
-    model = lib.mkOption {
-      type = lib.types.str;
-      default = "kimi-k2p5";
-      description = "Model name substring to match in the billing CSV.";
+    models = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ "kimi-k2p5" "glm-5p1" ];
+      description = "Model name substrings to match in the billing CSV.";
     };
 
     appName = lib.mkOption {
