@@ -68,6 +68,9 @@ in
         isClusterMember = builtins.elem config.networking.fqdn etcdHosts;
       in
       lib.mkIf isClusterMember {
+        users.users.etcd.uid = config.ids.uids.etcd;
+        users.groups.etcd.gid = config.ids.gids.etcd;
+
         services.etcd = {
           enable = true;
 
