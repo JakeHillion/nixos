@@ -51,6 +51,9 @@
 
     qnaplcd-menu.url = "github:stephenhouser/QnapLCD-Menu";
     qnaplcd-menu.flake = false;
+
+    oh-my-opencode.url = "https://registry.npmjs.org/oh-my-opencode/-/oh-my-opencode-3.0.0.tgz";
+    oh-my-opencode.flake = false;
   };
 
   description = "Hillion Nix flake";
@@ -74,6 +77,7 @@
     , ogygia
     , personal-agent
     , qnaplcd-menu
+    , oh-my-opencode
     , status-jakehillion-me
     , treefmt-nix
     , ...
@@ -95,6 +99,11 @@
           "ogygia" = ogygia.packages.${final.system}.ogygia;
           "qnaplcd" = final.callPackage ./pkgs/qnaplcd.nix { inherit qnaplcd-menu; };
           "opencode-plugin" = final.callPackage ./pkgs/opencode-plugin { };
+          "oh-my-opencode" = final.callPackage ./pkgs/oh-my-opencode { inherit oh-my-opencode; };
+          "opencode-with-plugins" = final.callPackage ./pkgs/opencode-with-plugins {
+            opencode = final.unstable.opencode;
+            inherit (final) opencode-plugin oh-my-opencode;
+          };
         })
       ];
       mkSystem = import ./lib/mkSystem.nix { inherit inputs; };

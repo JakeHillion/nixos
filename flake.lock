@@ -806,6 +806,19 @@
         "type": "github"
       }
     },
+    "oh-my-opencode": {
+      "flake": false,
+      "locked": {
+        "lastModified": 499162500,
+        "narHash": "sha256-RLnUDL7j8T91+BnsABmhoKNUUrfWpvyEVpTp0agDuAs=",
+        "type": "tarball",
+        "url": "https://registry.npmjs.org/oh-my-opencode/-/oh-my-opencode-3.0.0.tgz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://registry.npmjs.org/oh-my-opencode/-/oh-my-opencode-3.0.0.tgz"
+      }
+    },
     "personal-agent": {
       "inputs": {
         "advisory-db": "advisory-db_4",
@@ -887,6 +900,7 @@
         "nixpkgs": "nixpkgs",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "ogygia": "ogygia",
+        "oh-my-opencode": "oh-my-opencode",
         "personal-agent": "personal-agent",
         "qnaplcd-menu": "qnaplcd-menu",
         "status-jakehillion-me": "status-jakehillion-me",

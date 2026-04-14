@@ -4,6 +4,37 @@ let
   cfg = config.custom.services.async_coder;
   fqdnParts = lib.splitString "." config.networking.fqdn;
   shortHost = "${builtins.elemAt fqdnParts 0}.${builtins.elemAt fqdnParts 1}";
+
+  # Oh My OpenCode configuration for async-coder - all agents use Kimi K2.5
+  ohMyOpencodeConfig = {
+    agents = {
+      sisyphus = {
+        model = "fireworks-ai/accounts/fireworks/routers/kimi-k2p5-turbo";
+      };
+      oracle = {
+        model = "fireworks-ai/accounts/fireworks/routers/kimi-k2p5-turbo";
+      };
+      librarian = {
+        model = "fireworks-ai/accounts/fireworks/routers/kimi-k2p5-turbo";
+      };
+      explore = {
+        model = "fireworks-ai/accounts/fireworks/routers/kimi-k2p5-turbo";
+      };
+      "multimodal-looker" = {
+        model = "fireworks-ai/accounts/fireworks/routers/kimi-k2p5-turbo";
+      };
+      prometheus = {
+        model = "fireworks-ai/accounts/fireworks/routers/kimi-k2p5-turbo";
+      };
+      metis = {
+        model = "fireworks-ai/accounts/fireworks/routers/kimi-k2p5-turbo";
+      };
+    };
+    disabled_hooks = [ ];
+    background_tasks = {
+      max_concurrent = 5;
+    };
+  };
 in
 {
   options.custom.services.async_coder = {
@@ -26,9 +57,25 @@ in
     users.users.async-coder.uid = config.ids.uids.async-coder;
     users.groups.async-coder.gid = config.ids.gids.async-coder;
 
+    # Deploy opencode and oh-my-opencode configs for the async-coder user
+    systemd.tmpfiles.rules =
+      let
+        opencodeConfig = {
+          plugin = [
+            "file://${pkgs.opencode-with-plugins}/lib/opencode-plugins/opencode-plugin/dist/src/index.js"
+            "file://${pkgs.opencode-with-plugins}/lib/opencode-plugins/oh-my-opencode/dist/index.js"
+          ];
+        };
+      in
+      [
+        "d /var/lib/async-coder/.config/opencode 0755 async-coder async-coder -"
+        "L+ /var/lib/async-coder/.config/opencode/opencode.json - - - - ${pkgs.writeText "opencode-async-coder.json" (builtins.toJSON opencodeConfig)}"
+        "L+ /var/lib/async-coder/.config/opencode/oh-my-opencode.json - - - - ${pkgs.writeText "oh-my-opencode-async-coder.json" (builtins.toJSON ohMyOpencodeConfig)}"
+      ];
+
     services.async-coder = {
       enable = true;
-      opencode-package = pkgs.unstable.opencode;
+      opencode-package = pkgs.opencode-with-plugins;
       settings = {
         homeserver_url = "https://matrix.hillion.co.uk";
         username = shortHost;
