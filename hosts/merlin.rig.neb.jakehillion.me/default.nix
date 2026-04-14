@@ -124,9 +124,9 @@
     systemd.services.boot-control = {
       description = "Boot Control Service - Check Home Assistant for Windows boot preference";
       wantedBy = [ "multi-user.target" ];
-      after = [ "network-online.target" "auto_updater.service" ];
+      after = [ "network-online.target" "auto-updater.service" ];
       wants = [ "network-online.target" ];
-      requires = [ "auto_updater.service" ];
+      requires = [ "auto-updater.service" ];
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = false;

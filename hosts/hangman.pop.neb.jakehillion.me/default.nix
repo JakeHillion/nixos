@@ -11,7 +11,7 @@
     # Enable defaults and auto-serve
     custom.defaults = true;
     custom.locations.autoServe = true;
-    custom.auto_updater.allowReboot = true;
+    custom.auto-updater.allowReboot = true;
 
     # Tang/Clevis configuration for disk encryption
     custom.tang.enable = true;

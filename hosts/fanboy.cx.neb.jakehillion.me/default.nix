@@ -22,7 +22,7 @@
     custom.impermanence.enable = true;
 
     ## Auto-updater with reboot
-    custom.auto_updater.allowReboot = true;
+    custom.auto-updater.allowReboot = true;
 
     ## Force Nebula port for firewall rules on openclaw VLAN
     custom.nebula.forcePort = true;

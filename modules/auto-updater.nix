@@ -1,12 +1,12 @@
 { config, pkgs, lib, ... }:
 
 let
-  cfg = config.custom.auto_updater;
+  cfg = config.custom.auto-updater;
   location = "/etc/nixos";
   remote = "https://gitea.hillion.co.uk/JakeHillion/nixos.git";
 in
 {
-  options.custom.auto_updater = {
+  options.custom.auto-updater = {
     enable = lib.mkEnableOption "www-repo";
 
     allowReboot = lib.mkOption {
@@ -27,7 +27,7 @@ in
     assertions = [
       {
         assertion = !cfg.allowReboot || cfg.rebootDelay < 30;
-        message = "auto_updater.rebootDelay must be less than 30 minutes to avoid timer conflicts that could prevent rebooting.";
+        message = "auto-updater.rebootDelay must be less than 30 minutes to avoid timer conflicts that could prevent rebooting.";
       }
     ];
 
@@ -35,17 +35,17 @@ in
       "d ${location} 0755 root root - -"
     ];
 
-    systemd.timers.auto_updater = {
+    systemd.timers.auto-updater = {
       wantedBy = [ "timers.target" ];
       timerConfig = {
         OnBootSec = "15m";
         OnUnitInactiveSec = "60m";
         RandomizedDelaySec = "30m";
-        Unit = "auto_updater.service";
+        Unit = "auto-updater.service";
       };
     };
 
-    systemd.services.auto_updater = {
+    systemd.services.auto-updater = {
       description = "Automatically update NixOS configuration if already on main.";
 
       after = [ "network-online.target" ];

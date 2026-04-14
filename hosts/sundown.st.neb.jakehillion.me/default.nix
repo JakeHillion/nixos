@@ -12,6 +12,6 @@
 
     ## Custom Services
     custom.tang.enable = true;
-    custom.auto_updater.allowReboot = true;
+    custom.auto-updater.allowReboot = true;
   };
 }

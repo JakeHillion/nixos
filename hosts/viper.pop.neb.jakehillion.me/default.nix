@@ -36,7 +36,7 @@
       devices = [ "disk0-crypt" "disk1-crypt" ];
     };
 
-    custom.auto_updater.allowReboot = true;
+    custom.auto-updater.allowReboot = true;
 
     custom.sched_ext = {
       enable = true;

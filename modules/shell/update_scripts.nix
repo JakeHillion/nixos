@@ -18,7 +18,7 @@ let
         exec sudo ${pkgs.runtimeShell} "$0" "$@"
       fi
 
-      # Create lock file to prevent auto_updater from running
+      # Create lock file to prevent auto-updater from running
       LOCK_FILE="/run/nixos-update.lock"
       echo "Creating update lock file..."
       touch "$LOCK_FILE"
@@ -27,14 +27,14 @@ let
       # Set up trap to clean up lock file on exit
       trap 'echo "Cleaning up lock file..."; rm -f "$LOCK_FILE"' EXIT
 
-      # Wait for any currently running auto_updater service to stop
-      if ${pkgs.systemd}/bin/systemctl is-active --quiet auto_updater.service; then
-        echo "Waiting for auto_updater service to finish..."
-        while ${pkgs.systemd}/bin/systemctl is-active --quiet auto_updater.service; do
+      # Wait for any currently running auto-updater service to stop
+      if ${pkgs.systemd}/bin/systemctl is-active --quiet auto-updater.service; then
+        echo "Waiting for auto-updater service to finish..."
+        while ${pkgs.systemd}/bin/systemctl is-active --quiet auto-updater.service; do
           sleep 15
-          echo "Still waiting for auto_updater to stop..."
+          echo "Still waiting for auto-updater to stop..."
         done
-        echo "Auto_updater service has stopped."
+        echo "Auto-updater service has stopped."
       fi
 
       if [ -n "$1" ]; then

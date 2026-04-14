@@ -12,7 +12,7 @@
     custom.defaults = true;
 
     ## Custom Services
-    custom.auto_updater.allowReboot = true;
+    custom.auto-updater.allowReboot = true;
     custom.locations.autoServe = true;
     custom.services.zookeeper.enable = true;
 
