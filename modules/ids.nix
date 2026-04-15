@@ -23,6 +23,8 @@
       personal-agent = 407;
       systemd-journal-remote = 408;
       etcd = 409;
+      buildbot = 410;
+      buildbot-worker = 411;
 
       ## Consistent People
       jake = 1000;
@@ -46,6 +48,8 @@
       personal-agent = 407;
       systemd-journal-remote = 408;
       etcd = 409;
+      buildbot = 410;
+      buildbot-worker = 411;
 
       ## Consistent Groups
       mediaaccess = 1200;

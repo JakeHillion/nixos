@@ -7,6 +7,8 @@
     ./authoritative_dns.nix
     ./awtrix-fireworks-tokens
     ./blackmagic-cam-importer
+    ./buildbot-nix-master.nix
+    ./buildbot-nix-worker.nix
     ./couchdb
     ./downloads
     ./etcd.nix

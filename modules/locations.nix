@@ -26,6 +26,8 @@ in
             "cyclone.gw.${config.ogygia.domain}"
             "slider.pop.${config.ogygia.domain}"
           ];
+          buildbot-nix-master = "boron.cx.${config.ogygia.domain}";
+          buildbot-nix-worker = "boron.cx.${config.ogygia.domain}";
           awtrix-fireworks-tokens = "stinger.pop.${config.ogygia.domain}";
           blackmagic-cam-importer = "phoenix.st.${config.ogygia.domain}";
           couchdb = "warlock.cx.${config.ogygia.domain}";

@@ -48,6 +48,9 @@
 
     qnaplcd-menu.url = "github:stephenhouser/QnapLCD-Menu";
     qnaplcd-menu.flake = false;
+
+    buildbot-nix.url = "github:nix-community/buildbot-nix";
+    buildbot-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   description = "Hillion Nix flake";
@@ -57,6 +60,7 @@
     , agenix
     , agenix-rekey
     , async-coder
+    , buildbot-nix
     , darwin
     , disko
     , flake-utils
@@ -189,10 +193,14 @@
               overlays = getSystemOverlays system { };
               config = { allowUnfree = true; };
             };
+            nixosMachines = nixpkgs.lib.mapAttrs'
+              (name: config: nixpkgs.lib.nameValuePair "nixos-${name}" config.config.system.build.toplevel)
+              (nixpkgs.lib.filterAttrs (_: config: config.pkgs.system == system) self.nixosConfigurations);
           in
           {
-            # npm tooling doesn't work on Darwin, only build on Linux
-            checks.opencode-plugin = pkgs.opencode-plugin;
+            checks = {
+              opencode-plugin = pkgs.opencode-plugin;
+            } // nixosMachines;
           }
         )))
       (flake-utils.lib.eachSystem [ "x86_64-linux" ] (
