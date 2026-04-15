@@ -91,6 +91,7 @@
           "ogygia" = ogygia.packages.${final.system}.ogygia;
           "qnaplcd" = final.callPackage ./pkgs/qnaplcd.nix { inherit qnaplcd-menu; };
           "opencode-plugin" = final.callPackage ./pkgs/opencode-plugin { };
+          "oh-my-openagent" = final.callPackage ./pkgs/oh-my-openagent { };
         })
       ];
       mkSystem = import ./lib/mkSystem.nix { inherit inputs; };
