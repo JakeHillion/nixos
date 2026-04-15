@@ -36,6 +36,8 @@ in
 
     environment.systemPackages = [ pkgs.ogygia ];
 
+    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/cache/private/ogygia-irisd" ];
+
     nix.settings = {
       trusted-public-keys = [
         "nix-builder-boron-260125:rYsNk2FjznUnYDLjgnQJL8U+NM2XTDwK5Z9xsOTDH98="
