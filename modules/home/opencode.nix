@@ -5,7 +5,7 @@ let
   user = config.custom.user;
 
   kimi = "fireworks-ai/accounts/fireworks/routers/kimi-k2p5-turbo";
-  glm5p1 = "fireworks-ai/accounts/fireworks/routers/glm-5p1-fast";
+  glm = "ollama/glm-5.1";
 
   opencodeConfig = {
     "$schema" = "https://opencode.ai/config.json";
@@ -23,8 +23,18 @@ let
           name = "Kimi K2.5 Turbo (Firepass)";
           limit = { context = 256000; output = 65536; };
         };
-        "accounts/fireworks/routers/glm-5p1-fast" = {
-          name = "GLM-5.1 Fast (Firepass)";
+      };
+    };
+    provider.ollama = {
+      npm = "@ai-sdk/openai-compatible";
+      name = "Ollama Cloud";
+      options = {
+        baseURL = "https://ollama.com/v1";
+        apiKey = "{file:${config.age.secrets."opencode/ollama-api-key".path}}";
+      };
+      models = {
+        "glm-5.1" = {
+          name = "GLM-5.1 (Ollama Pro)";
           limit = { context = 202752; output = 65536; };
         };
       };
@@ -38,26 +48,26 @@ let
   omoConfig = {
     "$schema" = "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/oh-my-opencode.schema.json";
     agents = {
-      sisyphus = { model = kimi; };
-      hephaestus = { model = kimi; allow_non_gpt_model = true; };
-      prometheus = { model = kimi; };
-      metis = { model = kimi; };
+      sisyphus = { model = glm; fallback_models = [ kimi ]; };
+      hephaestus = { model = glm; allow_non_gpt_model = true; fallback_models = [ kimi ]; };
+      prometheus = { model = glm; fallback_models = [ kimi ]; };
+      metis = { model = glm; fallback_models = [ kimi ]; };
       atlas = { model = kimi; };
       explore = { model = kimi; };
       librarian = { model = kimi; };
       multimodal-looker = { model = kimi; };
-      oracle = { model = glm5p1; };
-      momus = { model = glm5p1; };
+      oracle = { model = glm; fallback_models = [ kimi ]; };
+      momus = { model = glm; fallback_models = [ kimi ]; };
     };
     categories = {
       quick = { model = kimi; };
       unspecified-low = { model = kimi; };
-      unspecified-high = { model = kimi; };
+      unspecified-high = { model = glm; fallback_models = [ kimi ]; };
       writing = { model = kimi; };
       visual-engineering = { model = kimi; };
-      ultrabrain = { model = glm5p1; };
-      deep = { model = glm5p1; };
-      artistry = { model = glm5p1; };
+      ultrabrain = { model = glm; fallback_models = [ kimi ]; };
+      deep = { model = glm; fallback_models = [ kimi ]; };
+      artistry = { model = glm; fallback_models = [ kimi ]; };
     };
   };
 in
@@ -67,6 +77,12 @@ in
   config = lib.mkIf cfg.enable {
     age.secrets."opencode/fireworks-api-key" = {
       rekeyFile = ./opencode-fireworks-api-key.age;
+      owner = user;
+      group = "users";
+    };
+
+    age.secrets."opencode/ollama-api-key" = {
+      rekeyFile = ./opencode-ollama-api-key.age;
       owner = user;
       group = "users";
     };
