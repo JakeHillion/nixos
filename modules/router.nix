@@ -365,6 +365,10 @@ in
         ip link set dev ${locationCfg.wanInterface} address ${locationCfg.wanMacAddress}
       '';
 
+      custom.impermanence.extraDirs = lib.mkIf (config.custom.impermanence.enable && dhcpNetworks != { }) [
+        "/var/lib/private/kea"
+      ];
+
       # Configure DHCP server for networks that have it enabled
       services.kea.dhcp4 = lib.mkIf (dhcpNetworks != { }) {
         enable = true;
@@ -375,7 +379,6 @@ in
             interfaces = lib.attrsets.mapAttrsToList getInterfaceName dhcpNetworks;
           };
 
-          # Use persistent memfile database for leases
           lease-database = {
             type = "memfile";
             persist = true;
@@ -480,6 +483,13 @@ in
                     (netCfg.devices or { }));
               })
               dhcpNetworks;
+        };
+      };
+
+      systemd.services.kea-dhcp4-server = lib.mkIf (dhcpNetworks != { }) {
+        serviceConfig = {
+          Restart = lib.mkForce "always";
+          RestartSec = "15s";
         };
       };
     };
