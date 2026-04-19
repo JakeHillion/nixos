@@ -21,7 +21,7 @@
       enable = true;
       networkingModule = "igb";
       secretFile = "/data/disk_encryption.jwe";
-      devices = [ "disk0-crypt" "disk1-crypt" ];
+      devices = [ "disk0-crypt" "disk1-crypt" "disk2-crypt" ];
     };
 
     ## Kernel

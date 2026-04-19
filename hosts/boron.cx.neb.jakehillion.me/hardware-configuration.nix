@@ -57,15 +57,14 @@
     device = "/dev/disk/by-uuid/19bde205-bee4-430d-a4c1-52d635a23963";
     allowDiscards = true;
   };
+  boot.initrd.luks.devices."disk2-crypt" = {
+    device = "/dev/disk/by-uuid/d9b13f9a-abc2-4c51-b2ec-7f3dc531c5aa";
+    allowDiscards = true;
+  };
 
   swapDevices = [
     {
-      device = "/dev/nvme0n1p3";
-      randomEncryption.enable = true;
-      discardPolicy = "both";
-    }
-    {
-      device = "/dev/nvme1n1p3";
+      device = "/dev/disk/by-partuuid/22e9b42c-feaa-4ce9-99f4-60edfed86b1c";
       randomEncryption.enable = true;
       discardPolicy = "both";
     }
