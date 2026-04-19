@@ -16,7 +16,7 @@
     custom.users.jake.password = true;
 
     ## Use the network topology abstraction
-    custom.router = {
+    custom.networking.router = {
       auto = true;
       extraForwardRules = ''
         # WireGuard VPN forwarding rules

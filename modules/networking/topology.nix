@@ -2,7 +2,7 @@
 
 {
   options = {
-    custom.topology = lib.mkOption {
+    custom.networking.topology = lib.mkOption {
       type = lib.types.attrsOf (lib.types.submodule {
         options = {
           description = lib.mkOption {
@@ -195,7 +195,7 @@
   };
 
   config = {
-    custom.topology = {
+    custom.networking.topology = {
       home = {
         description = "Home Network";
         routerDevice = "cyclone.gw.${config.ogygia.domain}";

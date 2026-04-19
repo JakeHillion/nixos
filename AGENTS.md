@@ -30,6 +30,7 @@ cat closure.nar.zst | ssh boron.cx.neb.jakehillion.me sh -c 'unzstd | sudo nix-s
 
 - `/hosts/` - Host-specific configurations (17 hosts, each in `<fqdn>/default.nix`)
 - `/modules/` - Reusable NixOS modules (networking, services, www, etc.)
+  - `/modules/networking/` - Network topology, router, and DHCP configuration
 - `/models/` - Hardware configuration templates (8 models for different hardware)
 - `/lib/` - Shared Nix utilities (`mkSystem.nix` for host composition)
 - `/pkgs/` - Custom package definitions
@@ -42,15 +43,15 @@ cat closure.nar.zst | ssh boron.cx.neb.jakehillion.me sh -c 'unzstd | sudo nix-s
 ### Network Topology and Router Configuration
 
 The network configuration is abstracted in:
-- `modules/topology.nix` - Defines network layout and properties
-- `modules/router.nix` - Implements router functionality
+- `modules/networking/topology.nix` - Defines network layout and properties
+- `modules/networking/router.nix` - Implements router functionality
 
 To configure a new router:
 
-1. Add the host entry to the corresponding location in `modules/topology.nix`
+1. Add the host entry to the corresponding location in `modules/networking/topology.nix`
 2. Enable the router module in the host configuration:
    ```nix
-   custom.router = {
+   custom.networking.router = {
      auto = true;
    };
    ```
@@ -68,7 +69,7 @@ Key design decisions:
 
 Example topology configuration:
 ```nix
-custom.topology = {
+custom.networking.topology = {
   home = {
     description = "Home Network";
     routerDevice = "router.home.example.com";

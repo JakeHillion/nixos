@@ -1,11 +1,11 @@
 { config, pkgs, lib, ... }:
 
 let
-  cfg = config.custom.router;
-  topology = config.custom.topology;
+  cfg = config.custom.networking.router;
+  topology = config.custom.networking.topology;
 in
 {
-  options.custom.router = {
+  options.custom.networking.router = {
     auto = lib.mkOption {
       type = lib.types.bool;
       default = false;

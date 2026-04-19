@@ -17,13 +17,13 @@
     ./impermanence.nix
     ./locations.nix
     ./nebula
+    ./networking
     ./oci-containers
     ./ogygia.nix
-    ./prometheus
     ./profiles
+    ./prometheus
     ./qnap-display.nix
     ./rekey.nix
-    ./router.nix
     ./sched_ext.nix
     ./services
     ./shell
@@ -31,7 +31,6 @@
     ./storj.nix
     ./syncthing.nix
     ./tang
-    ./topology.nix
     ./users.nix
     ./www
   ];
