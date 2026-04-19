@@ -81,9 +81,6 @@ in
           dataDir = lib.mkIf config.custom.impermanence.enable
             "${config.custom.impermanence.base}/system/var/lib/etcd";
         };
-
-        # Add data directory to impermanence if not using the services.etcd.dataDir override
-        custom.impermanence.extraDirs = lib.mkIf (!config.custom.impermanence.enable) [ ];
       }
     ))
   ];
