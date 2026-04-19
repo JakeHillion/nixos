@@ -221,30 +221,68 @@ in
 
 #### Impermanence Configuration
 
-For systems using impermanence (ephemeral root filesystem), service data must be explicitly persisted. The repository uses two patterns:
+For systems with ephemeral root filesystems, service data must be explicitly persisted. The repository uses two primary patterns, applied in order of preference:
 
-**Pattern 1: Override service data directories (Preferred)**
+**Pattern 1: Override the Service's Data Directory (Preferred)**
+
+When the upstream NixOS module provides a configurable data directory option, override it in the service's module:
+
 ```nix
-# In modules/impermanence.nix
-services.matrix-synapse.dataDir = "${cfg.base}/system/var/lib/matrix-synapse";
-services.gitea.stateDir = "${cfg.base}/system/var/lib/gitea";
-services.jellyfin.dataDir = "${cfg.base}/services/jellyfin";
+# In the service's module (e.g., modules/services/<name>.nix)
+config = lib.mkIf cfg.enable {
+  services.<service>.dataDir = lib.mkIf config.custom.impermanence.enable
+    "${config.custom.impermanence.base}/services/<service>";
+  
+  # Use mkOverride 999 if the option has a low-priority default
+  services.<service>.dataDir = lib.mkIf config.custom.impermanence.enable
+    (lib.mkOverride 999 "${config.custom.impermanence.base}/services/<service>");
+  
+  # Ensure the persistent directory exists with correct ownership
+  systemd.tmpfiles.rules = lib.optionals config.custom.impermanence.enable [
+    "d ${config.custom.impermanence.base}/services/<service> 0750 <user> <group> - -"
+  ];
+};
 ```
 
-**Pattern 2: Add directories to impermanence bind mounts (Fallback)**
+**Path conventions:**
+- Most services: `${config.custom.impermanence.base}/services/<service>`
+- System-level services (systemd units in `/var/lib`): `${config.custom.impermanence.base}/system/var/lib/<service>`
+
+**Configuration options typically used:** `dataDir`, `stateDir`, `dataPath`, or service-specific options (e.g., `databaseDir`, `viewIndexDir`)
+
+**Pattern 2: Persist via extraDirs (Fallback)**
+
+When the service does not support configuring its data directory, add the default path to `extraDirs`:
+
 ```nix
-# In modules/impermanence.nix - directories array
-(lib.lists.optional config.services.zigbee2mqtt.enable config.services.zigbee2mqtt.dataDir)
-(lib.lists.optional config.custom.services.unifi.enable "/var/lib/unifi")
+# In the service's module
+config = lib.mkIf cfg.enable {
+  custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable 
+    [ "/var/lib/<service>" ];
+};
 ```
 
-**IMPORTANT**: Every new service that stores data must be configured for impermanence using Pattern 1 when possible. Services without configurable data directories fall back to Pattern 2.
+**DynamicUser Services**
 
-**Adding a new service with impermanence:**
-1. Check if the service has a configurable data directory option
-2. If yes, override it to point to `${cfg.base}/system/var/lib/servicename` or `${cfg.base}/services/servicename`
-3. If no, add the default data directory to the impermanence directories list
-4. Use conditional configuration with `lib.mkIf config.services.servicename.enable`
+Services using `DynamicUser = true` store data in `/var/lib/private/<service>`. These require both persistence and a service dependency:
+
+```nix
+config = lib.mkIf cfg.enable {
+  custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable 
+    [ "/var/lib/private/<service>" ];
+  
+  systemd.services.<service> = {
+    after = [ "network-online.target" ] 
+      ++ lib.optionals config.custom.impermanence.enable [ "fix-var-lib-private-permissions.service" ];
+    wants = [ "network-online.target" ] 
+      ++ lib.optionals config.custom.impermanence.enable [ "fix-var-lib-private-permissions.service" ];
+  };
+};
+```
+
+**Cross-Cutting Services**
+
+Add truly cross-cutting services (those that may be enabled from any module, e.g., PostgreSQL, Bluetooth) directly to `modules/impermanence.nix`. Most services should handle their own persistence within their module.
 
 ## Git Workflow
 
