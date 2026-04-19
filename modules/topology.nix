@@ -415,6 +415,11 @@
                 hwAddress = "8c:4f:00:09:cb:34";
                 dhcpReservation = true;
               };
+              "14" = {
+                hostname = "fph-sat1-lr";
+                hwAddress = "3c:0f:02:c2:fd:90";
+                dhcpReservation = true;
+              };
             };
           };
 
