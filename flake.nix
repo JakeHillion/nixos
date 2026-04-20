@@ -34,7 +34,7 @@
     nixos-generators.url = "github:nix-community/nixos-generators";
     nixos-generators.inputs.nixpkgs.follows = "nixpkgs";
 
-    ogygia.url = "github:JakeHillion/ogygia-nix";
+    ogygia.url = "github:JakeHillion/ogygia-nix/feature/ttokpunvmkql";
     ogygia.inputs.nixpkgs.follows = "nixpkgs";
 
     async-coder.url = "git+https://gitea.hillion.co.uk/JakeHillion/async-coder.git";
