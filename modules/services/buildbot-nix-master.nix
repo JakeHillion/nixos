@@ -127,6 +127,12 @@ in
         tokenFile = config.age.secrets."buildbot-nix/gitea-token".path;
         topic = cfg.topic;
       };
+      branches = {
+        renovate = {
+          matchGlob = "renovate/*";
+          registerGCRoots = true;
+        };
+      };
     };
 
     # buildbot-nix unconditionally enables nginx on cfg.domain; we front it
