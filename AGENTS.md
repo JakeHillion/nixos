@@ -28,7 +28,7 @@ cat closure.nar.zst | ssh boron.cx.neb.jakehillion.me sh -c 'unzstd | sudo nix-s
 
 ## Project Structure
 
-- `/hosts/` - Host-specific configurations (17 hosts, each in `<fqdn>/default.nix`)
+- `/hosts/` - Host-specific configurations (18 hosts, each in `<fqdn>/default.nix`)
 - `/modules/` - Reusable NixOS modules (networking, services, www, etc.)
   - `/modules/networking/` - Network topology, router, and DHCP configuration
 - `/models/` - Hardware configuration templates (8 models for different hardware)
@@ -37,6 +37,14 @@ cat closure.nar.zst | ssh boron.cx.neb.jakehillion.me sh -c 'unzstd | sudo nix-s
 - `/secrets/` - Encrypted secrets via agenix
 - `/scripts/` - Utility scripts
 - `/tests/` - Module tests with snapshot verification
+
+## Ogygia and Domain Configuration
+
+This repository follows [ogygia-nix](https://github.com/JakeHillion/ogygia-nix) methodologies. Ogygia provides fleet coordination, configuration revision tracking, and peer-to-peer binary caching (irisd).
+
+The key option is `config.ogygia.domain` which resolves to `"neb.jakehillion.me"` and is used in **47+ files** for constructing host FQDNs. Host names in the codebase use the pattern `<name>.<location>.${config.ogygia.domain}` (e.g., `boron.cx.${config.ogygia.domain}` → `boron.cx.neb.jakehillion.me`). Never hardcode the domain — always use `config.ogygia.domain`.
+
+The `custom.ogygia.enable` option (enabled by default in `modules/defaults.nix`) wraps the upstream ogygia module, configuring domain, git remote, nebula, irisd, and etcd integration.
 
 ## Key Modules and Abstractions
 
@@ -59,49 +67,11 @@ To configure a new router:
 Key design decisions:
 - One router per location (defined as `routerDevice` at location level)
 - Gateway addresses are always .1 in each subnet (e.g., 10.0.0.1 for 10.0.0.0/24)
-- VLANs are supported via the `vlanId` parameter
 - DHCP is configured automatically for networks with `dhcpEnabled = true`
 - Router firewall (nftables) is configured based on the topology
-- Networks can be configured with or without internet access
-- Port forwarding and router services are configurable in the topology
-- Port forwarding rules can reference devices by FQDN instead of IP address
-- NAT loopback/reflection allows internal clients to access services via external WAN IP (configurable per port forwarding rule)
+- Port forwarding rules can reference devices by FQDN instead of IP address (resolved from the `devices` attribute in each network)
 
-Example topology configuration:
-```nix
-custom.networking.topology = {
-  home = {
-    description = "Home Network";
-    routerDevice = "router.home.example.com";
-    wanInterface = "eth0";
-    networks = {
-      lan = {
-        subnet = "10.0.0.0/24";
-        interface = "eth1";
-        dhcpEnabled = true;
-        dhcpPool = { start = "10.0.0.64"; end = "10.0.0.254"; };
-        reservedIps = {
-          "20" = {
-            hostname = "desktop";
-            fqdn = "desktop.example.com";
-            hwAddress = "00:11:22:33:44:66";
-            dhcpReservation = true;
-          };
-        };
-        internetAccess = true;
-        trustedNetwork = true;
-      };
-      iot = {
-        vlanId = 10;
-        subnet = "10.0.10.0/24";
-        interface = "eth1";
-        internetAccess = true;
-        trustedNetwork = false;
-      };
-    };
-  };
-};
-```
+Read `modules/networking/topology.nix` and `modules/networking/router.nix` directly when making changes — they contain the full schema with all available options (DNS servers, NTP servers, VLANs, WAN MAC/IP, port forwarding with protocol/loopback/internalPort, etc.).
 
 ## Common Tasks
 
@@ -112,20 +82,13 @@ custom.networking.topology = {
 3. Create a `system` file with the architecture (e.g., `x86_64-linux`)
 4. If needed, add a `hardware-configuration.nix` file
 
-### Networking Conventions
-
-- Home network uses 10.x.x.x subnets
-- Gateway is always .1 in each subnet
-- DHCP ranges typically start at .64 and end at .254
-- Port forwarding rules can reference devices by FQDN (resolved from `reservedIps`)
-
 ### Secret Management
 
 Secrets are managed with agenix. Place module-specific secrets (API keys, SSH keys) next to the module that uses them. Generic secrets (like Restic shared passwords) go in `/secrets/`.
 
 ## Coding Conventions
 
-- **Avoid global `with lib;`**: Use fully qualified names (e.g., `lib.mkOption`, `lib.strings.concatStringsSep`)
+- **Avoid global `with lib;`**: Use fully qualified names (e.g., `lib.mkOption`, `lib.strings.concatStringsSep`). The main codebase (modules/, hosts/, lib/) strictly follows this — only pkgs/ uses `with lib;` in meta blocks.
 - **Format before commit**: Always run `nix fmt` before committing
 
 ## Service Configuration and Management
@@ -136,16 +99,16 @@ The repository uses a centralized service orchestration system through `modules/
 
 #### How locations.autoServe Works
 
-1. **Service Registry**: `modules/locations.nix` maintains a mapping of services to their host locations:
+1. **Service Registry**: `modules/locations.nix` maintains a mapping of services to their host locations using `config.ogygia.domain` for FQDNs:
    ```nix
    services = {
-     attic = "phoenix.st.neb.jakehillion.me";
-     gitea = "boron.cx.neb.jakehillion.me";
-     restic = "phoenix.st.neb.jakehillion.me";
+     gitea = "boron.cx.${config.ogygia.domain}";
+     restic = "phoenix.st.${config.ogygia.domain}";
      # Services can also run on multiple hosts
      authoritative_dns = [
-       "boron.cx.neb.jakehillion.me"
-       "router.home.neb.jakehillion.me"
+       "boron.cx.${config.ogygia.domain}"
+       "cyclone.gw.${config.ogygia.domain}"
+       "slider.pop.${config.ogygia.domain}"
      ];
    };
    ```
@@ -181,34 +144,73 @@ in
 }
 ```
 
-#### World-Accessible vs Internal Services
+#### Web Service Architecture
 
-**World-Accessible Services** (using `custom.www.global.enable = true`):
-- Managed by `modules/www/global.nix`
-- Use Cloudflare integration and ACME certificates
-- Examples: Gitea, blog, PrivateBin, Matrix
-- Exposed via public domains like `*.hillion.co.uk`
+The repository uses **two different architectures** for exposing services:
 
-**Internal Services** (using `custom.www.nebula.enable = true`):
-- Managed by `modules/www/nebula.nix`
-- Accessible only via Nebula VPN network
-- Use internal CA for TLS certificates
-- Examples: Restic, Downloads, internal tools
+**World-Accessible Services** (gitea, matrix, blog, ntfy, etc.):
+- `modules/www/global.nix` is a **monolithic module** that hardcodes ALL world-accessible virtual hosts in one place
+- Service modules (e.g., `modules/services/gitea/`) configure ONLY the service itself — they do NOT configure their own web presence
+- When `custom.www.global.enable = true` is set on a host, it creates Caddy virtual hosts that proxy to services by looking up their locations via `config.custom.locations.locations.services`
+- Uses Cloudflare DNS for ACME certificates, exposed via `*.hillion.co.uk` domains
+
+**Internal Services** (restic, downloads, privatebin, immich, etc.):
+- `modules/www/nebula.nix` is a **framework** that service modules actively use
+- Service modules set `custom.www.nebula.enable = true` and define their own `virtualHosts` entries
+- When enabled, nebula.nix wraps virtual hosts with internal TLS and binds to the Nebula VPN IP only
+- Accessible only via Nebula VPN, uses a custom ACME DNS provider (not an internal CA)
+
+| Aspect | World-Accessible (global.nix) | Internal (nebula.nix) |
+|--------|-------------------------------|-----------------------|
+| Virtual hosts | Hardcoded in global.nix | Defined by each service module |
+| Who enables | Set at host level | Service module sets it itself |
+| TLS | Cloudflare + ACME | Custom DNS provider + ACME |
+| Network | Public internet | Nebula VPN only |
 
 #### Adding a New Service
 
-1. **Create the service module** in `/modules/services/servicename.nix`
-2. **Add to locations.nix**:
+**For an internal service** (most common):
+
+1. **Create the service module** in `/modules/services/<name>/default.nix`:
+   ```nix
+   { config, lib, ... }:
+   let
+     cfg = config.custom.services.servicename;
+   in
+   {
+     options.custom.services.servicename = {
+       enable = lib.mkEnableOption "servicename";
+     };
+
+     config = lib.mkIf cfg.enable {
+       # ... service configuration ...
+
+       custom.www.nebula = {
+         enable = true;
+         virtualHosts."servicename.${config.ogygia.domain}".extraConfig = ''
+           reverse_proxy http://localhost:<port>
+         '';
+       };
+     };
+   }
+   ```
+
+2. **Register in locations.nix** (so other services can discover it):
    ```nix
    services = {
      # ... existing services
-     servicename = "hostname.domain.tld";
+     servicename = "hostname.${config.ogygia.domain}";
    };
    ```
-3. **Configure web access** (if needed):
-   - For world access: Enable `custom.www.global.enable = true`
-   - For internal access: Enable `custom.www.nebula.enable = true`
-4. **Add backup configuration** (if needed) with restic integration
+
+3. **Add backup configuration** (if needed) with restic integration
+
+**For a world-accessible service** (less common):
+
+1. **Create the service module** in `/modules/services/<name>/default.nix` — configure the service but do NOT configure web presence
+2. **Register in locations.nix** as above
+3. **Add the virtual host to `modules/www/global.nix`** — add a new entry in `services.caddy.virtualHosts` that proxies to the service
+4. **Add TLS certificate secrets** — place encrypted certs in `/secrets/` and reference them in the global.nix virtual host
 
 #### Service Integration Points
 
@@ -222,9 +224,9 @@ in
 
 #### Impermanence Configuration
 
-For systems with ephemeral root filesystems, service data must be explicitly persisted. The repository uses two primary patterns, applied in order of preference:
+For systems with ephemeral root filesystems, service data must be explicitly persisted. The repository uses two patterns:
 
-**Pattern 1: Override the Service's Data Directory (Preferred)**
+**Pattern 1: Override the Service's Data Directory**
 
 When the upstream NixOS module provides a configurable data directory option, override it in the service's module:
 
@@ -233,15 +235,10 @@ When the upstream NixOS module provides a configurable data directory option, ov
 config = lib.mkIf cfg.enable {
   services.<service>.dataDir = lib.mkIf config.custom.impermanence.enable
     "${config.custom.impermanence.base}/services/<service>";
-  
+
   # Use mkOverride 999 if the option has a low-priority default
   services.<service>.dataDir = lib.mkIf config.custom.impermanence.enable
     (lib.mkOverride 999 "${config.custom.impermanence.base}/services/<service>");
-  
-  # Ensure the persistent directory exists with correct ownership
-  systemd.tmpfiles.rules = lib.optionals config.custom.impermanence.enable [
-    "d ${config.custom.impermanence.base}/services/<service> 0750 <user> <group> - -"
-  ];
 };
 ```
 
@@ -249,19 +246,21 @@ config = lib.mkIf cfg.enable {
 - Most services: `${config.custom.impermanence.base}/services/<service>`
 - System-level services (systemd units in `/var/lib`): `${config.custom.impermanence.base}/system/var/lib/<service>`
 
-**Configuration options typically used:** `dataDir`, `stateDir`, `dataPath`, or service-specific options (e.g., `databaseDir`, `viewIndexDir`)
+**Configuration options typically used:** `dataDir`, `stateDir`, `dataPath`, or service-specific options
 
-**Pattern 2: Persist via extraDirs (Fallback)**
+**Pattern 2: Persist via extraDirs**
 
 When the service does not support configuring its data directory, add the default path to `extraDirs`:
 
 ```nix
 # In the service's module
 config = lib.mkIf cfg.enable {
-  custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable 
+  custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable
     [ "/var/lib/<service>" ];
 };
 ```
+
+Both patterns are in active use across the codebase. Check existing service modules for precedent when adding a new service.
 
 **DynamicUser Services**
 
@@ -269,17 +268,19 @@ Services using `DynamicUser = true` store data in `/var/lib/private/<service>`. 
 
 ```nix
 config = lib.mkIf cfg.enable {
-  custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable 
+  custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable
     [ "/var/lib/private/<service>" ];
-  
+
   systemd.services.<service> = {
-    after = [ "network-online.target" ] 
+    after = [ "network-online.target" ]
       ++ lib.optionals config.custom.impermanence.enable [ "fix-var-lib-private-permissions.service" ];
-    wants = [ "network-online.target" ] 
+    wants = [ "network-online.target" ]
       ++ lib.optionals config.custom.impermanence.enable [ "fix-var-lib-private-permissions.service" ];
   };
 };
 ```
+
+Note: DynamicUser services using `CacheDirectory` instead of `StateDirectory` store data in `/var/cache` and typically do not need persistence or the fix service.
 
 **Cross-Cutting Services**
 
