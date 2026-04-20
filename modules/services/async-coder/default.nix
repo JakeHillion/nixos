@@ -77,6 +77,25 @@ in
           provider = "fireworks-ai";
           base_port = 18900;
         };
+
+        permission = {
+          bash = {
+            "git fetch" = "deny";
+            "git fetch *" = "deny";
+            "git status" = "allow";
+            "git status *" = "allow";
+            "git diff" = "allow";
+            "git diff *" = "allow";
+            "git log" = "allow";
+            "git log *" = "allow";
+            "head *" = "allow";
+            "tail *" = "allow";
+            "nix build *" = "allow";
+            "nix flake check" = "allow";
+            "nix flake check *" = "allow";
+          };
+          edit = "allow";
+        };
       };
     };
   };
