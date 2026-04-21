@@ -52,11 +52,11 @@ in
           matrix = "boron.cx.${config.ogygia.domain}";
           mautrix_discord = "warlock.cx.${config.ogygia.domain}";
           mosquitto = "stinger.pop.${config.ogygia.domain}";
-          ntfy = "boron.cx.${config.ogygia.domain}";
-          nix-builder = [
+          nix-iris-push = [
             "slider.pop.${config.ogygia.domain}"
             "boron.cx.${config.ogygia.domain}"
           ];
+          ntfy = "boron.cx.${config.ogygia.domain}";
           offline-youtube = "phoenix.st.${config.ogygia.domain}";
           ollama = "merlin.rig.${config.ogygia.domain}";
           personal_agent = "fanboy.cx.${config.ogygia.domain}";

@@ -28,7 +28,7 @@
     ./matrix
     ./mautrix-discord
     ./mosquitto.nix
-    ./nix-builder
+    ./nix-iris-push
     ./nix-prefetch-repos.nix
     ./nix-remote-builder.nix
     ./ntfy.nix

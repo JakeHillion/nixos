@@ -51,9 +51,6 @@ in
   "modules/services/mastodon/social.hillion.co.uk/vapid_private_key.age".publicKeys = jake_users ++ [ ];
   "modules/services/mastodon/social.hillion.co.uk/mastodon_at_social.hillion.co.uk.age".publicKeys = jake_users ++ [ ];
 
-  # Nix Builder
-  "modules/services/nix-builder/gitea-token.age".publicKeys = [ neb.cx.boron neb.pop.slider ];
-
   # Chia Secrets
   "secrets/chia/farmer.key.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
 

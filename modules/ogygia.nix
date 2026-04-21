@@ -39,8 +39,11 @@ in
 
     nix.settings = {
       trusted-public-keys = [
-        "nix-builder-boron-260125:rYsNk2FjznUnYDLjgnQJL8U+NM2XTDwK5Z9xsOTDH98="
-        "nix-builder-slider-260210:A+ijnja8EoaWXElfqbo3h9y8lJbF21p717gZkAHhYQ0="
+        "nix-builder-boron-260125:rYsNk2FjznUnYDLjgnQJL8U+NM2XTDwK5Z9xsOTDH98=" # deprecated as of 26/04/2026
+        "nix-builder-slider-260210:A+ijnja8EoaWXElfqbo3h9y8lJbF21p717gZkAHhYQ0=" # deprecated as of 26/04/2026
+
+        "boron-260426:Y5ndbb3OWR2hOQqC/BQKe1z2kFz9u8oLHnx22GPmKEM="
+        "slider-260426:X+O6qmXb806017xciFOECVRxwNCKsMSp1nZlH4KcFpE="
       ];
       fallback = true;
       connect-timeout = 15;
