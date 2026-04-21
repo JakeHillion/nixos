@@ -5,6 +5,7 @@ let
   user = config.custom.user;
 
   kimi = "fireworks-ai/accounts/fireworks/routers/kimi-k2p5-turbo";
+  kimi-k2-6 = "fireworks-ai/accounts/fireworks/routers/kimi-k2p6";
   glm = "ollama/glm-5.1";
 
   opencodeConfig = {
@@ -21,6 +22,10 @@ let
       models = {
         "accounts/fireworks/routers/kimi-k2p5-turbo" = {
           name = "Kimi K2.5 Turbo (Firepass)";
+          limit = { context = 256000; output = 65536; };
+        };
+        "accounts/fireworks/routers/kimi-k2p6" = {
+          name = "Kimi K2.6 (Firepass)";
           limit = { context = 256000; output = 65536; };
         };
       };
@@ -47,27 +52,37 @@ let
 
   omoConfig = {
     "$schema" = "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/oh-my-opencode.schema.json";
+    disabled_agents = [ "hephaestus" ];
     agents = {
-      sisyphus = { model = glm; fallback_models = [ kimi ]; };
-      hephaestus = { model = glm; allow_non_gpt_model = true; fallback_models = [ kimi ]; };
-      prometheus = { model = glm; fallback_models = [ kimi ]; };
-      metis = { model = glm; fallback_models = [ kimi ]; };
-      atlas = { model = kimi; };
+      # GLM for strategic reasoning, K2.6 when quota exhausted
+      sisyphus = { model = glm; fallback_models = [ kimi-k2-6 ]; };
+      prometheus = { model = glm; fallback_models = [ kimi-k2-6 ]; };
+      metis = { model = glm; fallback_models = [ kimi-k2-6 ]; };
+      oracle = { model = glm; fallback_models = [ kimi-k2-6 ]; };
+      momus = { model = glm; fallback_models = [ kimi-k2-6 ]; };
+
+      # K2.6 primary — active coordination and visual work
+      atlas = { model = kimi-k2-6; };
+      multimodal-looker = { model = kimi-k2-6; };
+
+      # K2.5 free — pure utility, volume absorption
       explore = { model = kimi; };
       librarian = { model = kimi; };
-      multimodal-looker = { model = kimi; };
-      oracle = { model = glm; fallback_models = [ kimi ]; };
-      momus = { model = glm; fallback_models = [ kimi ]; };
     };
     categories = {
+      # GLM for max reasoning, K2.6 fallback
+      ultrabrain = { model = glm; fallback_models = [ kimi-k2-6 ]; };
+      unspecified-high = { model = glm; fallback_models = [ kimi-k2-6 ]; };
+
+      # K2.6 primary — execution categories where it leads
+      deep = { model = kimi-k2-6; };
+      visual-engineering = { model = kimi-k2-6; };
+      artistry = { model = kimi-k2-6; };
+
+      # K2.5 free — high volume, good enough
       quick = { model = kimi; };
       unspecified-low = { model = kimi; };
-      unspecified-high = { model = glm; fallback_models = [ kimi ]; };
       writing = { model = kimi; };
-      visual-engineering = { model = kimi; };
-      ultrabrain = { model = glm; fallback_models = [ kimi ]; };
-      deep = { model = glm; fallback_models = [ kimi ]; };
-      artistry = { model = glm; fallback_models = [ kimi ]; };
     };
   };
 in
