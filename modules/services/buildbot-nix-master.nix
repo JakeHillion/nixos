@@ -114,6 +114,7 @@ in
       domain = cfg.domain;
       workersFile = workersJsonPath;
       admins = cfg.admins;
+      buildSystems = [ "x86_64-linux" "aarch64-linux" ];
       authBackend = "gitea";
       # Fronted by Caddy in modules/www/global.nix; emit https:// URLs.
       useHTTPS = true;

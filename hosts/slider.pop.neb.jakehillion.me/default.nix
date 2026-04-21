@@ -14,10 +14,11 @@
 
     custom.tang.enable = true;
 
-    # Accept remote builds from devboxes
+    # Accept remote builds
     custom.services.nix-remote-builder = {
       enable = true;
       authorizedHosts = [
+        "boron.cx.neb.jakehillion.me"
         "maverick.cx.neb.jakehillion.me"
         "rooster.cx.neb.jakehillion.me"
         "bob.lt.neb.jakehillion.me"

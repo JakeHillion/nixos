@@ -54,9 +54,21 @@
       chmod 0700 /cache/nix-builds
     '';
     nix = {
+      distributedBuilds = true;
       settings = {
+        builders-use-substitutes = true;
         build-dir = "/cache/nix-builds/";
       };
+      buildMachines = [{
+        hostName = "slider.pop.${config.ogygia.domain}";
+        system = "aarch64-linux";
+        protocol = "ssh-ng";
+        maxJobs = 4;
+        speedFactor = 1;
+        supportedFeatures = [ "nixos-test" "big-parallel" "kvm" ];
+        sshUser = "nix-builder";
+        sshKey = "${config.custom.impermanence.base}/system/etc/ssh/ssh_host_ed25519_key";
+      }];
     };
 
     ## Custom Services
