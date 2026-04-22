@@ -29,7 +29,6 @@ in
       };
 
       etcd = {
-        enable = true;
         endpoints = config.custom.services.etcd.endpoints;
       };
     };
