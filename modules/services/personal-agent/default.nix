@@ -15,7 +15,6 @@ in
       (map (s: "personal-agent/${s}") [
         "17track_token"
         "calendar_password"
-        "fireworks_token"
         "matrix_password"
         "todoist_token"
       ])
@@ -23,7 +22,14 @@ in
         file = ./. + "/${lib.removePrefix "personal-agent/" name}.age";
         owner = "personal-agent";
         group = "personal-agent";
-      });
+      })
+    // {
+      "personal-agent/canopywave_token" = {
+        rekeyFile = ../../../secrets/ai/canopy-wave-unlimited.age;
+        owner = "personal-agent";
+        group = "personal-agent";
+      };
+    };
 
     users.users.personal-agent.uid = config.ids.uids.personal-agent;
     users.groups.personal-agent.gid = config.ids.gids.personal-agent;
@@ -43,12 +49,12 @@ in
           trusted_users = [ "@jake:hillion.co.uk" ];
         };
         llm = {
-          default_model = "Kimi K2.5 Turbo";
+          default_model = "Kimi K2.6";
           providers = [{
-            name = "fireworks";
-            base_url = "https://api.fireworks.ai/inference/v1";
-            token_file = config.age.secrets."personal-agent/fireworks_token".path;
-            models = [{ id = "accounts/fireworks/routers/kimi-k2p5-turbo"; name = "Kimi K2.5 Turbo"; }];
+            name = "canopywave";
+            base_url = "https://inference.canopywave.io/v1";
+            token_file = config.age.secrets."personal-agent/canopywave_token".path;
+            models = [{ id = "moonshotai/kimi-k2.6"; name = "Kimi K2.6"; }];
           }];
         };
 
