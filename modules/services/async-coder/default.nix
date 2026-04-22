@@ -15,13 +15,19 @@ in
       (map (s: "async-coder/${s}") [
         "${shortHost}.password"
         "gitea-token"
-        "opencode-api-key"
       ])
       (name: {
         file = ./. + "/${lib.removePrefix "async-coder/" name}.age";
         owner = "async-coder";
         group = "async-coder";
-      });
+      })
+    // {
+      "async-coder/canopywave-api-key" = {
+        rekeyFile = ../../../secrets/ai/canopy-wave-unlimited.age;
+        owner = "async-coder";
+        group = "async-coder";
+      };
+    };
 
     users.users.async-coder.uid = config.ids.uids.async-coder;
     users.groups.async-coder.gid = config.ids.gids.async-coder;
@@ -70,11 +76,11 @@ in
         };
 
         opencode = {
-          api_key_file = config.age.secrets."async-coder/opencode-api-key".path;
-          api_url = "https://api.fireworks.ai/inference/v1";
-          model = "accounts/fireworks/routers/kimi-k2p6";
-          cheap_fast_model = "accounts/fireworks/models/gpt-oss-20b";
-          provider = "fireworks-ai";
+          api_key_file = config.age.secrets."async-coder/canopywave-api-key".path;
+          api_url = "https://inference.canopywave.io/v1";
+          model = "moonshotai/kimi-k2.6";
+          cheap_fast_model = "minimax/minimax-m2.5";
+          provider = "canopywave";
           base_port = 18900;
         };
       };
