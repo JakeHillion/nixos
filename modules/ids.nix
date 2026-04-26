@@ -25,6 +25,7 @@
       etcd = 409;
       buildbot = 410;
       buildbot-worker = 411;
+      open-webui = 412;
       mautrix-discord = 413;
 
       ## Consistent People
@@ -51,6 +52,7 @@
       etcd = 409;
       buildbot = 410;
       buildbot-worker = 411;
+      open-webui = 412;
       mautrix-discord = 413;
       mautrix-discord-registration = 414;
 

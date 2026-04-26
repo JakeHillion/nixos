@@ -34,6 +34,7 @@
     ./ntfy.nix
     ./offline-youtube
     ./ollama.nix
+    ./openwebui
     ./personal-agent
     ./privatebin.nix
     ./radicale.nix

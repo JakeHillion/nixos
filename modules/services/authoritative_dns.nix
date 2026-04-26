@@ -56,6 +56,7 @@ let
     homebox                           21600 CNAME ${locations.services.homebox}.
     immich                            21600 CNAME ${locations.services.immich}.
     ollama                            21600 CNAME ${locations.services.ollama}.
+    openwebui                         21600 CNAME ${locations.services.openwebui}.
     privatebin                        21600 CNAME ${locations.services.privatebin}.
     prometheus                        21600 CNAME ${locations.services.prometheus}.
     radicale                          21600 CNAME ${locations.services.radicale}.
