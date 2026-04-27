@@ -41,7 +41,7 @@ in
       script = "${acmeDnsApiScript}/bin/acme-dns-api";
 
       environment = {
-        ACME_DNS_DOMAIN = domain;
+        ACME_DNS_DOMAIN = lib.concatStringsSep ", " [ domain "home.jakehillion.me" "iot.home.jakehillion.me" ];
         ACME_DNS_LISTEN_ADDR = config.custom.dns.nebula.ipv4;
         ACME_DNS_KNOTC = knotc;
         ACME_DNS_KNOT_NAMESERVER = knotListenAddr;

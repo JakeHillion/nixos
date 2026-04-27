@@ -10,11 +10,14 @@ use Socket qw(inet_ntoa);
 use POSIX qw(strftime);
 
 # Get configuration from environment variables
-my $DOMAIN = $ENV{ACME_DNS_DOMAIN} // die "ACME_DNS_DOMAIN not set\n";
+my $DOMAINS_STR = $ENV{ACME_DNS_DOMAIN} // die "ACME_DNS_DOMAIN not set\n";
 my $LISTEN_ADDR = $ENV{ACME_DNS_LISTEN_ADDR} // die "ACME_DNS_LISTEN_ADDR not set\n";
 my $KNOTC = $ENV{ACME_DNS_KNOTC} // die "ACME_DNS_KNOTC not set\n";
 my $KNOT_NAMESERVER = $ENV{ACME_DNS_KNOT_NAMESERVER} // die "ACME_DNS_KNOT_NAMESERVER not set\n";
 my $PORT = 8553;
+
+# Parse comma-separated list of domains
+my @DOMAINS = sort { length($b) <=> length($a) } split(/,\s*/, $DOMAINS_STR);
 
 # Disable output buffering
 $| = 1;
@@ -23,6 +26,20 @@ sub log_msg {
     my ($msg) = @_;
     my $ts = strftime("%Y-%m-%d %H:%M:%S", localtime);
     print "[$ts] $msg\n";
+}
+
+# Find which domain a FQDN belongs to (longest match first)
+sub find_domain_for_fqdn {
+    my ($fqdn) = @_;
+    $fqdn =~ s/\.$//;
+    foreach my $domain (@DOMAINS) {
+        my $dotted = $domain;
+        $dotted =~ s/\.$//;
+        if ($fqdn eq $dotted || $fqdn =~ /\.\Q$dotted\E$/) {
+            return $dotted;
+        }
+    }
+    return undef;
 }
 
 # DNS resolver for validation - query local authoritative Knot
@@ -78,29 +95,29 @@ sub validate_client {
 }
 
 sub add_txt_record {
-    my ($fqdn, $value) = @_;
+    my ($fqdn, $value, $domain) = @_;
 
     # Remove trailing dot and domain suffix to get relative name
     $fqdn =~ s/\.$//;
-    $fqdn =~ s/\.\Q$DOMAIN\E$//;
+    $fqdn =~ s/\.\Q$domain\E$//;
 
-    log_msg("Adding TXT record: $fqdn = $value");
+    log_msg("Adding TXT record: $fqdn in zone $domain = $value");
 
     # Use knotc for atomic zone transaction
-    log_msg("Running: knotc zone-begin $DOMAIN");
-    system($KNOTC, "zone-begin", $DOMAIN) == 0
+    log_msg("Running: knotc zone-begin $domain");
+    system($KNOTC, "zone-begin", $domain) == 0
         or do { log_msg("zone-begin failed"); return (0, "zone-begin failed"); };
 
-    log_msg("Running: knotc zone-set $DOMAIN $fqdn 60 TXT \"$value\"");
-    my $ret = system($KNOTC, "zone-set", $DOMAIN, $fqdn, "60", "TXT", "\"$value\"");
+    log_msg("Running: knotc zone-set $domain $fqdn 60 TXT \"$value\"");
+    my $ret = system($KNOTC, "zone-set", $domain, $fqdn, "60", "TXT", "\"$value\"");
     if ($ret != 0) {
         log_msg("zone-set failed (exit code $ret), aborting");
-        system($KNOTC, "zone-abort", $DOMAIN);
+        system($KNOTC, "zone-abort", $domain);
         return (0, "zone-set failed");
     }
 
-    log_msg("Running: knotc zone-commit $DOMAIN");
-    system($KNOTC, "zone-commit", $DOMAIN) == 0
+    log_msg("Running: knotc zone-commit $domain");
+    system($KNOTC, "zone-commit", $domain) == 0
         or do { log_msg("zone-commit failed"); return (0, "zone-commit failed"); };
 
     log_msg("TXT record added successfully");
@@ -108,29 +125,29 @@ sub add_txt_record {
 }
 
 sub remove_txt_record {
-    my ($fqdn, $value) = @_;
+    my ($fqdn, $value, $domain) = @_;
 
     # Remove trailing dot and domain suffix to get relative name
     $fqdn =~ s/\.$//;
-    $fqdn =~ s/\.\Q$DOMAIN\E$//;
+    $fqdn =~ s/\.\Q$domain\E$//;
 
-    log_msg("Removing TXT record: $fqdn");
+    log_msg("Removing TXT record: $fqdn in zone $domain");
 
     # Use knotc for atomic zone transaction
-    log_msg("Running: knotc zone-begin $DOMAIN");
-    system($KNOTC, "zone-begin", $DOMAIN) == 0
+    log_msg("Running: knotc zone-begin $domain");
+    system($KNOTC, "zone-begin", $domain) == 0
         or do { log_msg("zone-begin failed"); return (0, "zone-begin failed"); };
 
-    log_msg("Running: knotc zone-unset $DOMAIN $fqdn TXT");
-    my $ret = system($KNOTC, "zone-unset", $DOMAIN, $fqdn, "TXT");
+    log_msg("Running: knotc zone-unset $domain $fqdn TXT");
+    my $ret = system($KNOTC, "zone-unset", $domain, $fqdn, "TXT");
     if ($ret != 0) {
         log_msg("zone-unset failed (exit code $ret), aborting");
-        system($KNOTC, "zone-abort", $DOMAIN);
+        system($KNOTC, "zone-abort", $domain);
         return (0, "zone-unset failed");
     }
 
-    log_msg("Running: knotc zone-commit $DOMAIN");
-    system($KNOTC, "zone-commit", $DOMAIN) == 0
+    log_msg("Running: knotc zone-commit $domain");
+    system($KNOTC, "zone-commit", $domain) == 0
         or do { log_msg("zone-commit failed"); return (0, "zone-commit failed"); };
 
     log_msg("TXT record removed successfully");
@@ -173,11 +190,13 @@ sub handle_request {
         return (RC_BAD_REQUEST, "Missing fqdn or value");
     }
 
-    # Validate that the FQDN is within our domain
-    unless ($fqdn =~ /\.\Q$DOMAIN\E\.?$/) {
-        log_msg("Rejected: FQDN $fqdn is not within $DOMAIN");
-        return (RC_FORBIDDEN, "FQDN $fqdn is not within $DOMAIN");
+    # Find which domain this FQDN belongs to
+    my $matched_domain = find_domain_for_fqdn($fqdn);
+    unless (defined $matched_domain) {
+        log_msg("Rejected: FQDN $fqdn is not within any managed domain");
+        return (RC_FORBIDDEN, "FQDN $fqdn is not within any managed domain");
     }
+    log_msg("Matched domain: $matched_domain");
 
     # Validate client IP matches DNS resolution
     log_msg("Validating client IP $client_ip for $fqdn");
@@ -189,7 +208,7 @@ sub handle_request {
     log_msg("Client validation passed");
 
     if ($path eq '/present') {
-        my ($ok, $result) = add_txt_record($fqdn, $value);
+        my ($ok, $result) = add_txt_record($fqdn, $value, $matched_domain);
         if ($ok) {
             log_msg("Response: 200 OK - $result");
             return (RC_OK, encode_json({status => "ok", message => $result}));
@@ -198,7 +217,7 @@ sub handle_request {
             return (RC_INTERNAL_SERVER_ERROR, $result);
         }
     } elsif ($path eq '/cleanup') {
-        my ($ok, $result) = remove_txt_record($fqdn, $value);
+        my ($ok, $result) = remove_txt_record($fqdn, $value, $matched_domain);
         if ($ok) {
             log_msg("Response: 200 OK - $result");
             return (RC_OK, encode_json({status => "ok", message => $result}));
@@ -219,7 +238,7 @@ my $d = HTTP::Daemon->new(
     ReuseAddr => 1,
 ) || die "Failed to create HTTP daemon: $!";
 
-log_msg("ACME DNS API listening on $LISTEN_ADDR:$PORT");
+log_msg("ACME DNS API listening on $LISTEN_ADDR:$PORT for domains: " . join(', ', @DOMAINS));
 
 while (my $conn = $d->accept) {
     while (my $req = $conn->get_request) {

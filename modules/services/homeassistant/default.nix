@@ -76,33 +76,15 @@ in
         };
       };
 
-      caddy = {
+      custom.www.nebula = {
         enable = true;
-
         virtualHosts = {
-          "homeassistant.iot.hillion.co.uk" = {
-            listenAddresses = [ "10.239.19.8" ];
-            extraConfig = ''
-              tls {
-                ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
-              }
-
-              @blocked not remote_ip 10.239.19.4
-              respond @blocked "<h1>Access Denied</h1>" 403
-
-              reverse_proxy http://localhost:8123
-            '';
-          };
-
-          "homeassistant.home.hillion.co.uk" = {
-            listenAddresses = [ "10.64.50.29" ];
-            extraConfig = ''
-              tls {
-                ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
-              }
-              reverse_proxy http://localhost:8123
-            '';
-          };
+          "homeassistant.iot.home.jakehillion.me".extraConfig = ''
+            reverse_proxy http://localhost:8123
+          '';
+          "homeassistant.home.jakehillion.me".extraConfig = ''
+            reverse_proxy http://localhost:8123
+          '';
         };
       };
 

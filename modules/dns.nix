@@ -99,6 +99,14 @@ in
                   iceman = "172.20.0.14"; # removed 06/07/2025
                 };
               };
+              home = {
+                homeassistant = "172.20.0.9";
+                stinger = "172.20.0.9";
+                iot = {
+                  homeassistant = "172.20.0.9";
+                  stinger = "172.20.0.9";
+                };
+              };
             };
           };
         };

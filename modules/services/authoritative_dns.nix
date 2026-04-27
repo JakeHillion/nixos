@@ -32,11 +32,11 @@ let
     secondaryNebulaIps;
   secondaryRemoteIds = map (r: r.id) secondaryRemotes;
 
-  zoneContent = ''
-    $ORIGIN ${domain}.
+  soaRecords = zoneDomain: ''
+    $ORIGIN ${zoneDomain}.
     $TTL 86400
 
-    ${domain}. IN SOA ns1.jakehillion.me. hostmaster.jakehillion.me. (
+    ${zoneDomain}. IN SOA ns1.jakehillion.me. hostmaster.jakehillion.me. (
         1           ;Serial
         7200        ;Refresh
         3600        ;Retry
@@ -47,6 +47,9 @@ let
     @                                 86400 NS ns1.jakehillion.me.
     @                                 86400 NS ns2.jakehillion.me.
     @                                 86400 NS ns3.jakehillion.me.
+  '';
+
+  nebZoneContent = (soaRecords domain) + ''
 
     ca                                21600 CNAME warlock.cx.${domain}.
     couchdb                           21600 CNAME ${locations.services.couchdb}.
@@ -79,7 +82,17 @@ let
 
   '' + (makeRecords "A" config.custom.dns.authoritative.ipv4.me.jakehillion.neb);
 
-  zoneFile = pkgs.writeText "${domain}.zone" zoneContent;
+  homeZoneContent = (soaRecords "home.jakehillion.me") + "\n" + (makeRecords "A" config.custom.dns.authoritative.ipv4.me.jakehillion.home);
+
+  iotHomeZoneContent = (soaRecords "iot.home.jakehillion.me") + "\n" + (makeRecords "A" config.custom.dns.authoritative.ipv4.me.jakehillion.home.iot);
+
+  zones = {
+    "${domain}" = nebZoneContent;
+    "home.jakehillion.me" = homeZoneContent;
+    "iot.home.jakehillion.me" = iotHomeZoneContent;
+  };
+
+  zoneFiles = lib.mapAttrs (name: content: pkgs.writeText "${name}.zone" content) zones;
 in
 {
   options.custom.services.authoritative_dns = {
@@ -89,7 +102,7 @@ in
       type = lib.types.str;
       default = domain;
       readOnly = true;
-      description = "The domain served by this authoritative DNS server";
+      description = "The primary domain served by this authoritative DNS server";
     };
   };
 
@@ -137,19 +150,21 @@ in
           zsk-lifetime = 0;
         }];
 
-        zone = [{
-          domain = domain;
-          file = zoneFile;
-          acl = [ "localhost" "transfer_secondaries" ];
-          notify = secondaryRemoteIds;
-          # Don't sync changes back to the zone file (it's in the read-only Nix store)
-          # Dynamic updates are kept in journal only
-          zonefile-sync = -1;
-          zonefile-load = "difference-no-serial";
-          journal-content = "all";
-          dnssec-signing = true;
-          dnssec-policy = "default";
-        }];
+        zone = lib.attrsets.mapAttrsToList
+          (zoneDomain: file: {
+            domain = zoneDomain;
+            file = file;
+            acl = [ "localhost" "transfer_secondaries" ];
+            notify = secondaryRemoteIds;
+            # Don't sync changes back to the zone file (it's in the read-only Nix store)
+            # Dynamic updates are kept in journal only
+            zonefile-sync = -1;
+            zonefile-load = "difference-no-serial";
+            journal-content = "all";
+            dnssec-signing = true;
+            dnssec-policy = "default";
+          })
+          zoneFiles;
       };
     })
 
@@ -167,13 +182,15 @@ in
           action = [ "notify" ];
         }];
 
-        zone = [{
-          domain = domain;
-          master = [ "primary" ];
-          acl = [ "notify_primary" ];
-          zonefile-sync = -1;
-          journal-content = "all";
-        }];
+        zone = lib.attrsets.mapAttrsToList
+          (zoneDomain: file: {
+            domain = zoneDomain;
+            master = [ "primary" ];
+            acl = [ "notify_primary" ];
+            zonefile-sync = -1;
+            journal-content = "all";
+          })
+          zoneFiles;
       };
     })
   ]);
