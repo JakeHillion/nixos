@@ -167,6 +167,8 @@ in
             default_config = { };
 
             homeassistant = {
+              internal_url = "http://10.239.19.8:8123";
+
               auth_providers = [
                 { type = "homeassistant"; }
                 {
