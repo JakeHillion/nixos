@@ -5,12 +5,14 @@ let
   user = config.custom.user;
 
   kimi = "canopywave/moonshotai/kimi-k2.6";
+  minimax = "canopywave/minimax/minimax-m2.5";
   glm = "ollama/glm-5.1";
 
   opencodeConfig = {
     "$schema" = "https://opencode.ai/config.json";
+    enabled_providers = [ "canopywave" "ollama" ];
     model = kimi;
-    small_model = kimi;
+    small_model = minimax;
     provider.canopywave = {
       npm = "@ai-sdk/openai-compatible";
       name = "CanopyWave";
@@ -22,6 +24,10 @@ let
         "moonshotai/kimi-k2.6" = {
           name = "Kimi K2.6 (CanopyWave)";
           limit = { context = 256000; output = 65536; };
+        };
+        "minimax/minimax-m2.5" = {
+          name = "MiniMax M2.5 (CanopyWave)";
+          limit = { context = 205000; output = 65536; };
         };
       };
     };
@@ -74,10 +80,10 @@ let
       visual-engineering = { model = kimi; };
       artistry = { model = kimi; };
 
-      # K2.5 free — high volume, good enough
-      quick = { model = kimi; };
-      unspecified-low = { model = kimi; };
-      writing = { model = kimi; };
+      # M2.5 small model — high volume, good enough
+      quick = { model = minimax; };
+      unspecified-low = { model = minimax; };
+      writing = { model = minimax; };
     };
   };
 in
