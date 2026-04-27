@@ -73,6 +73,28 @@ Key design decisions:
 
 Read `modules/networking/topology.nix` and `modules/networking/router.nix` directly when making changes — they contain the full schema with all available options (DNS servers, NTP servers, VLANs, WAN MAC/IP, port forwarding with protocol/loopback/internalPort, etc.).
 
+### DNS Configuration
+
+DNS is split across two modules:
+
+- **`modules/dns.nix`** — Centralised DNS/IP mappings for the entire fleet.
+  - Exposes `config.custom.dns.authoritative.ipv4` (and `.ipv6`), a read-only nested attribute set mapping FQDNs to IP addresses (e.g. `me.jakehillion.neb.cx.boron = "172.20.0.1"`).
+  - Derives `config.custom.dns.nebula.ipv4` for the current host from those mappings.
+  - Populates `networking.hosts` so every host can resolve every other fleet host locally.
+  - Contains an assertion that all Nebula IPs are unique.
+
+- **`modules/services/authoritative_dns.nix`** — Authoritative DNS service using Knot DNS.
+  - Runs on the hosts listed in `locations.services.authoritative_dns`. The first host is the primary, the rest are secondaries.
+  - Generates the zone file from two sources:
+    - **A records** — produced automatically from `config.custom.dns.authoritative.ipv4`.
+    - **CNAMEs** — hardcoded in the module for services and aliases (e.g. `couchdb`, `immich`, `deluge.downloads`).
+  - Primary pushes zone transfers to secondaries over Nebula.
+  - DNSSEC signing is enabled with algorithm `ecdsap256sha256` and eternal KSK/ZSK lifetimes.
+  - Knot listens only on the Nebula IP (`${config.custom.dns.nebula.ipv4}@53`).
+  - The service depends on `nebula-online@jakehillion.service`.
+
+When adding a new host, update `modules/dns.nix` with its Nebula IP so it is resolvable both locally and via the authoritative server.
+
 ## Common Tasks
 
 ### Adding a New Host
