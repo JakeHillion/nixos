@@ -25,6 +25,7 @@
       etcd = 409;
       buildbot = 410;
       buildbot-worker = 411;
+      mautrix-discord = 413;
 
       ## Consistent People
       jake = 1000;
@@ -50,6 +51,8 @@
       etcd = 409;
       buildbot = 410;
       buildbot-worker = 411;
+      mautrix-discord = 413;
+      mautrix-discord-registration = 414;
 
       ## Consistent Groups
       mediaaccess = 1200;

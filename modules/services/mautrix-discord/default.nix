@@ -9,6 +9,10 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    users.users.mautrix-discord.uid = config.ids.uids.mautrix-discord;
+    users.groups.mautrix-discord.gid = config.ids.gids.mautrix-discord;
+    users.groups.mautrix-discord-registration.gid = config.ids.gids.mautrix-discord-registration;
+
     nixpkgs.config.permittedInsecurePackages = [
       "olm-3.2.16"
     ];
