@@ -52,7 +52,7 @@ in
         echo "[nix-iris-push] No signing key found, skipping push" >&2
         exit 0
       fi
-      echo "$OUT_PATHS" | ${pkgs.ogygia}/bin/ogygia iris push --signing-key "$SIGNING_KEY" || {
+      echo "$OUT_PATHS" | ${pkgs.ogygia}/bin/ogygia iris push --no-closure --signing-key "$SIGNING_KEY" || {
         echo "[nix-iris-push] Push failed (non-fatal)" >&2
         exit 0
       }
