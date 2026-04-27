@@ -66,6 +66,7 @@ in
           radicale = "boron.cx.${config.ogygia.domain}";
           renovate = "boron.cx.${config.ogygia.domain}";
           restic = "phoenix.st.${config.ogygia.domain}";
+          searxng = "warlock.cx.${config.ogygia.domain}";
           status = "boron.cx.${config.ogygia.domain}";
           tang = [
             "boron.cx.${config.ogygia.domain}"

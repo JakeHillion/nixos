@@ -40,6 +40,7 @@
     ./radicale.nix
     ./renovate
     ./restic
+    ./searxng
     ./status.nix
     ./tang.nix
     ./unifi.nix

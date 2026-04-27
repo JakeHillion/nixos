@@ -45,6 +45,9 @@ in
         ANONYMIZED_TELEMETRY = "False";
         OPENAI_API_BASE_URLS = "https://inference.canopywave.io/v1";
         OPENAI_API_MODELS = "moonshotai/kimi-k2.6,minimax/minimax-m2.5";
+        ENABLE_WEB_SEARCH = "True";
+        WEB_SEARCH_ENGINE = "searxng";
+        SEARXNG_QUERY_URL = "https://searxng.${config.ogygia.domain}/search?q=<query>";
       };
     };
 
