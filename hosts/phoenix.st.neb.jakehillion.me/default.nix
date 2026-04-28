@@ -87,6 +87,8 @@ in
 
       backups.enable = true;
     };
+    systemd.services.syncthing.after = [ "zfs-mount.service" ];
+    systemd.services.syncthing.requires = [ "zfs-mount.service" ];
 
     ## Chia
     age.secrets."chia/farmer.key" = {
