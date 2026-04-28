@@ -194,8 +194,14 @@
               config = { allowUnfree = true; };
             };
             nixosMachines = nixpkgs.lib.mapAttrs'
-              (name: config: nixpkgs.lib.nameValuePair "nixos-${name}" config.config.system.build.toplevel)
-              (nixpkgs.lib.filterAttrs (_: config: config.pkgs.system == system) self.nixosConfigurations);
+              (name: nixos: nixpkgs.lib.nameValuePair "nixos-${name}"
+                (nixos.extendModules {
+                  modules = [{
+                    system.configurationRevision = nixpkgs.lib.mkForce "0000000000000000000000000000000000000000";
+                  }];
+                }).config.system.build.toplevel
+              )
+              (nixpkgs.lib.filterAttrs (_: nixos: nixos.pkgs.system == system) self.nixosConfigurations);
           in
           {
             checks = {
