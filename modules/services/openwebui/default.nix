@@ -48,6 +48,13 @@ in
         ENABLE_WEB_SEARCH = "True";
         WEB_SEARCH_ENGINE = "searxng";
         SEARXNG_QUERY_URL = "https://searxng.${config.ogygia.domain}/search?q=<query>";
+        WEB_SEARCH_RESULT_COUNT = "5";
+        WEB_SEARCH_CONCURRENT_REQUESTS = "10";
+        RAG_EMBEDDING_MODEL = "BAAI/bge-large-en-v1.5";
+        CHUNK_SIZE = "4000";
+        CHUNK_OVERLAP = "400";
+        RAG_TOP_K = "30";
+        ENABLE_RAG_HYBRID_SEARCH = "True";
       };
     };
 
