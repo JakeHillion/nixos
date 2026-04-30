@@ -276,6 +276,12 @@
                 hwAddress = "38:05:25:34:02:37";
                 dhcpReservation = true;
               };
+              "31" = {
+                hostname = "darkstar";
+                fqdn = "darkstar.skunk.${config.ogygia.domain}";
+                hwAddress = "6c:cf:39:00:b1:30";
+                dhcpReservation = true;
+              };
             };
             portForwarding = [
               {
