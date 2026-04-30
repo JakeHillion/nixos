@@ -138,8 +138,7 @@ in
               --max-jobs 0 \
               --option always-allow-substitutes true \
               --no-link \
-              ".#checks.$system.nixos-${config.networking.fqdn}"
-
+              ".#checks.$system.\"nixos-${config.networking.fqdn}\""
             # Stage 2: Build the real system closure. Only the trivial top-level
             # symlink tree + build-revision text file differ from stage 1, so
             # this is safe to build locally even on underpowered hosts.
