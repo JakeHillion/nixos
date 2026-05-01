@@ -6,6 +6,7 @@ let
 
   kimi = "canopywave/moonshotai/kimi-k2.6";
   glm = "ollama/glm-5.1";
+  deepseek = "ollama/deepseek-v4-pro";
 
   opencodeConfig = {
     "$schema" = "https://opencode.ai/config.json";
@@ -37,6 +38,10 @@ let
           name = "GLM-5.1 (Ollama Pro)";
           limit = { context = 202752; output = 65536; };
         };
+        "deepseek-v4-pro" = {
+          name = "DeepSeek V4 Pro (Ollama Pro)";
+          limit = { context = 1000000; output = 384000; };
+        };
       };
     };
     plugin = [
@@ -49,12 +54,17 @@ let
     "$schema" = "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/oh-my-opencode.schema.json";
     disabled_agents = [ "hephaestus" ];
     agents = {
-      # GLM for strategic reasoning, K2.6 when quota exhausted
+      # Communicators — GLM for strategic reasoning, K2.6 when quota exhausted
       sisyphus = { model = glm; fallback_models = [ kimi ]; };
       prometheus = { model = glm; fallback_models = [ kimi ]; };
       metis = { model = glm; fallback_models = [ kimi ]; };
-      oracle = { model = glm; fallback_models = [ kimi ]; };
-      momus = { model = glm; fallback_models = [ kimi ]; };
+
+      # Deep Specialists — DeepSeek V4 Pro with Think Max, K2.6 fallback
+      # (GLM not in fallback: shares Ollama Pro quota with DeepSeek.)
+      # DeepSeek V4 Pro's API takes reasoning_effort ∈ {"high","max"};
+      # variant = "max" maps to the Think Max tier, "high" to Think High.
+      oracle = { model = deepseek; variant = "max"; fallback_models = [ kimi ]; };
+      momus = { model = deepseek; variant = "max"; fallback_models = [ kimi ]; };
 
       # K2.6 primary — active coordination and visual work
       atlas = { model = kimi; };
@@ -65,12 +75,17 @@ let
       librarian = { model = kimi; };
     };
     categories = {
+      # DeepSeek V4 Pro Think Max, K2.6 fallback
+      ultrabrain = { model = deepseek; variant = "max"; fallback_models = [ kimi ]; };
+
       # GLM for max reasoning, K2.6 fallback
-      ultrabrain = { model = glm; fallback_models = [ kimi ]; };
       unspecified-high = { model = glm; fallback_models = [ kimi ]; };
 
+      # DeepSeek V4 Pro Think High, K2.6 fallback
+      # (DeepSeek's reasoning_effort space is just {"high","max"} — no medium.)
+      deep = { model = deepseek; variant = "high"; fallback_models = [ kimi ]; };
+
       # K2.6 primary — execution categories where it leads
-      deep = { model = kimi; };
       visual-engineering = { model = kimi; };
       artistry = { model = kimi; };
 
