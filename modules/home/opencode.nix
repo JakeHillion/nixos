@@ -5,6 +5,7 @@ let
   user = config.custom.user;
 
   kimi = "canopywave/moonshotai/kimi-k2.6";
+  minimax = "canopywave/minimax/minimax-m2.5";
   glm = "ollama/glm-5.1";
   deepseek = "ollama/deepseek-v4-pro";
 
@@ -23,6 +24,10 @@ let
         "moonshotai/kimi-k2.6" = {
           name = "Kimi K2.6 (CanopyWave)";
           limit = { context = 256000; output = 65536; };
+        };
+        "minimax/minimax-m2.5" = {
+          name = "MiniMax M2.5 (CanopyWave)";
+          limit = { context = 204800; output = 131072; };
         };
       };
     };
@@ -70,9 +75,9 @@ let
       atlas = { model = kimi; };
       multimodal-looker = { model = kimi; };
 
-      # K2.5 free — pure utility, volume absorption
-      explore = { model = kimi; };
-      librarian = { model = kimi; };
+      # M2.5 primary — utility runners, speed over intelligence
+      explore = { model = minimax; };
+      librarian = { model = minimax; };
     };
     categories = {
       # DeepSeek V4 Pro Think Max, K2.6 fallback
@@ -89,8 +94,10 @@ let
       visual-engineering = { model = kimi; };
       artistry = { model = kimi; };
 
-      # K2.5 free — high volume, good enough
-      quick = { model = kimi; };
+      # M2.5 — fast, cheap utility tasks
+      quick = { model = minimax; };
+
+      # K2.6 — high volume, good enough
       unspecified-low = { model = kimi; };
       writing = { model = kimi; };
     };
