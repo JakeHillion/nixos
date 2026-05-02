@@ -128,11 +128,11 @@
         "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
-        "lastModified": 1777306322,
-        "narHash": "sha256-L5X4xaPNsic70oxqTAHFy4wvbj+jAvQqb4x8zcjjUsA=",
+        "lastModified": 1777322501,
+        "narHash": "sha256-hY3lrbeR6iFW3wywavG/I0c+3NnFGnb4UWgoRBvBND8=",
         "ref": "refs/heads/main",
-        "rev": "c6e80ed557a7a655632987f6f57f424d3d409185",
-        "revCount": 101,
+        "rev": "caa010ccc1cca75b8c7bc4a616ab57603d4dc1da",
+        "revCount": 102,
         "type": "git",
         "url": "https://gitea.hillion.co.uk/JakeHillion/async-coder.git"
       },
@@ -143,7 +143,6 @@
     },
     "buildbot-nix": {
       "inputs": {
-        "flake-parts": "flake-parts_3",
         "hercules-ci-effects": "hercules-ci-effects",
         "nixpkgs": [
           "nixpkgs"
@@ -151,11 +150,11 @@
         "treefmt-nix": "treefmt-nix_4"
       },
       "locked": {
-        "lastModified": 1777184952,
-        "narHash": "sha256-i+2vWeCydljTb6OHZuGL3l/9YCD0SbM+j9RlhsQmaxk=",
+        "lastModified": 1777374248,
+        "narHash": "sha256-ZjMVL93D+shoXwjvby22eReS79juQBnVvR64N1NDTDA=",
         "owner": "nix-community",
         "repo": "buildbot-nix",
-        "rev": "46cb08dffdd9b7856cb69a1f82bc679e5374b33e",
+        "rev": "5ca06fe10f60f52c5a0b481978aeacf8c0b7c9ee",
         "type": "github"
       },
       "original": {
@@ -273,11 +272,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1776613567,
-        "narHash": "sha256-gC9Cp5ibBmGD5awCA9z7xy6MW6iJufhazTYJOiGlCUI=",
+        "lastModified": 1777713215,
+        "narHash": "sha256-8GzXDOXckDWwST8TY5DbwYFjdvQLlP7K9CLSVx6iTTo=",
         "owner": "nix-community",
         "repo": "disko",
-        "rev": "32f4236bfc141ae930b5ba2fb604f561fed5219d",
+        "rev": "63b4e7e6cf75307c1d26ac3762b886b5b0247267",
         "type": "github"
       },
       "original": {
@@ -437,6 +436,7 @@
       "inputs": {
         "nixpkgs-lib": [
           "buildbot-nix",
+          "hercules-ci-effects",
           "nixpkgs"
         ]
       },
@@ -449,9 +449,8 @@
         "type": "github"
       },
       "original": {
-        "owner": "hercules-ci",
-        "repo": "flake-parts",
-        "type": "github"
+        "id": "flake-parts",
+        "type": "indirect"
       }
     },
     "flake-parts_4": {
@@ -615,10 +614,7 @@
     },
     "hercules-ci-effects": {
       "inputs": {
-        "flake-parts": [
-          "buildbot-nix",
-          "flake-parts"
-        ],
+        "flake-parts": "flake-parts_3",
         "nixpkgs": [
           "buildbot-nix",
           "nixpkgs"
@@ -666,11 +662,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777308348,
-        "narHash": "sha256-DJx9wnerjsOqKOo8I7/u5ENRhRWFF2mbYcACF+mn5LU=",
+        "lastModified": 1777733408,
+        "narHash": "sha256-lyKV2GtkMPS1Mp8bKJ8sBr7LPCzL4GnVnQQYa4e7UsQ=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "a28e848a01044f47679453aae75f6253bef7903e",
+        "rev": "9ce9f7f128c5834bb71a4f5c62232187371379b6",
         "type": "github"
       },
       "original": {
@@ -794,11 +790,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1777077449,
-        "narHash": "sha256-AIiMJiqvGrN4HyLEbKAoCSRRYn0rnlW5VbKNIMIYqm4=",
+        "lastModified": 1777428379,
+        "narHash": "sha256-ypxFOeDz+CqADEQNL72haqGjvZQdBR5Vc7pyx2JDttI=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "a4bf06618f0b5ee50f14ed8f0da77d34ecc19160",
+        "rev": "755f5aa91337890c432639c60b6064bb7fe67769",
         "type": "github"
       },
       "original": {
@@ -810,11 +806,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1777069904,
-        "narHash": "sha256-r6dlx4vGzwalUUvMCOKAX6p6DOwyb5CowoBL6x9w6qk=",
+        "lastModified": 1777717916,
+        "narHash": "sha256-LLPZ4J8ab5IfVbAQPfkYEQp/H1GBC8JvfeMVPEvaMJA=",
         "owner": "JakeHillion",
         "repo": "nixpkgs2",
-        "rev": "54086c813a0a061ab5db150eb7aa27de0c4e8b19",
+        "rev": "50bf00f4c7bac1a10871c5fecba0605b4e9813d9",
         "type": "github"
       },
       "original": {
@@ -837,11 +833,11 @@
         "treefmt-nix": "treefmt-nix_7"
       },
       "locked": {
-        "lastModified": 1776809447,
-        "narHash": "sha256-Wo1DGeoidJ4zntl/k6do+THHS1LL54GhM/e4budUwtY=",
+        "lastModified": 1777729176,
+        "narHash": "sha256-n4eSnaw/wTZItwDwYH3mLmxaf6EqUevCDRHjK4T2bf8=",
         "owner": "JakeHillion",
         "repo": "ogygia-nix",
-        "rev": "d2da1593a83007ef29730aad700a291f98581818",
+        "rev": "12ce88c325b8542770d407ee063a5fb835f718e6",
         "type": "github"
       },
       "original": {
