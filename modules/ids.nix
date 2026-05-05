@@ -27,6 +27,7 @@
       buildbot-worker = 411;
       open-webui = 412;
       mautrix-discord = 413;
+      gitea-actions-vm = 415;
 
       ## Consistent People
       jake = 1000;
@@ -55,6 +56,7 @@
       open-webui = 412;
       mautrix-discord = 413;
       mautrix-discord-registration = 414;
+      gitea-actions-vm = 415;
 
       ## Consistent Groups
       mediaaccess = 1200;

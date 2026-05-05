@@ -1,0 +1,136 @@
+# Builds a customised Ubuntu 26.04 LTS qcow2 in the Nix store with the Gitea
+# Actions runner binary and a boot-time systemd unit that runs act_runner
+# ephemerally (one job, then power off).
+#
+# The base image is fetched as a fixed-output derivation. It is then mounted
+# inside a vmTools.runInLinuxVM build VM, customised, and re-emitted at $out.
+# Partition + filesystem auto-grow at first boot via cloud-initramfs-growroot
+# (in the initramfs) and systemd-growfs (via the rootfs mount option), so the
+# overlay's larger virtual size at runtime is picked up without manual resize.
+{ lib
+, runCommand
+, fetchurl
+, vmTools
+, qemu
+, util-linux
+, e2fsprogs
+, closureInfo
+, gitea-actions-runner
+, nodejs_24
+,
+}:
+
+let
+  ubuntuImg = fetchurl {
+    url = "https://cloud-images.ubuntu.com/releases/26.04/release-20260421/ubuntu-26.04-server-cloudimg-amd64.img";
+    hash = "sha256-jtIoyfCKUBIvpyMHYj2fiNkgm6JufoSe3VhPpnXjSGM=";
+  };
+
+  # Extra tools to expose on the in-VM PATH alongside act_runner. Each package's
+  # bin/* entries get symlinked into /usr/local/bin/. Node 24 is the floor —
+  # GitHub Actions removes Node 20 from its hosted runners on 2026-09-16, and
+  # most JS-based actions (actions/checkout, etc.) refuse to run without it.
+  extraPaths = [ nodejs_24 ];
+  toolPaths = [ gitea-actions-runner ] ++ extraPaths;
+
+  runnerClosure = closureInfo { rootPaths = toolPaths; };
+in
+vmTools.runInLinuxVM (runCommand "gitea-actions-vm-image"
+{
+  diskImage = "image.qcow2";
+  memSize = 1024;
+
+  preVM = ''
+    mkdir -p $out
+    cp ${ubuntuImg} image.qcow2
+    chmod +w image.qcow2
+  '';
+
+  postVM = ''
+    mv image.qcow2 $out/image.qcow2
+  '';
+
+  nativeBuildInputs = [ util-linux e2fsprogs ];
+
+  meta = with lib; {
+    description = "Ubuntu 26.04 LTS qcow2 customised for ephemeral Gitea Actions runners";
+    platforms = [ "x86_64-linux" ];
+  };
+} ''
+  set -eu
+
+  mkdir -p /mnt
+  mount /dev/vda1 /mnt
+
+  # Add a `runner` user matching GitHub-hosted runners (UID/GID 1001, HOME
+  # /home/runner, locked password). Most actions assume that name and that
+  # HOME, and `sudo apt-get install …` is near-universal in workflows. Bake
+  # the user into the image so it doesn't need recreating on every boot.
+  echo 'runner:x:1001:1001:Runner:/home/runner:/bin/bash' >> /mnt/etc/passwd
+  echo 'runner:x:1001:'                                  >> /mnt/etc/group
+  echo 'runner:!:19500:0:99999:7:::'                     >> /mnt/etc/shadow
+  echo 'runner:!::'                                      >> /mnt/etc/gshadow
+
+  install -d -m 0755 -o 1001 -g 1001 /mnt/home/runner
+  install -d -m 0755 -o 1001 -g 1001 /mnt/var/lib/gitea-runner
+  install -d -m 0755 -o 1001 -g 1001 /mnt/var/lib/gitea-runner-jobs
+  # cidata mountpoint stays root-owned; the unit's ExecStartPre mounts here
+  # as root and copies credentials out into runner-owned /var/lib paths.
+  install -d -m 0755 /mnt/etc/gitea-runner
+
+  install -Dm440 /dev/stdin /mnt/etc/sudoers.d/runner <<'EOF'
+  runner ALL=(ALL:ALL) NOPASSWD:ALL
+  Defaults env_keep += "DEBIAN_FRONTEND"
+  EOF
+
+  # Copy the act_runner Nix closure into the image's /nix/store. The
+  # gitea-actions-runner binary is dynamically linked against Nix-store
+  # glibc, so we need its full closure (glibc, tzdata, iana-etc, mailcap)
+  # alongside it for the binary to resolve at runtime.
+  mkdir -p /mnt/nix/store
+  while read -r storePath; do
+    cp -a "$storePath" /mnt/nix/store/
+  done < ${runnerClosure}/store-paths
+
+  # Stable user-space entry points: symlink every tool's bin/* into
+  # /usr/local/bin so the runner unit and the actions it spawns find them
+  # without needing /nix/store on PATH.
+  mkdir -p /mnt/usr/local/bin
+  for pkg in ${toString toolPaths}; do
+    for f in "$pkg"/bin/*; do
+      [ -e "$f" ] || continue
+      ln -sf "$f" "/mnt/usr/local/bin/$(basename "$f")"
+    done
+  done
+
+  # systemd unit for the runner. The unit runs act_runner directly via
+  # WorkingDirectory= and ExecStartPre=+ does the mount + credential copy
+  # as root, so no separate startup shell script is needed.
+  install -Dm644 ${./runner.service} /mnt/etc/systemd/system/gitea-runner.service
+
+  # Wire enable for our service. cloud-init.target.wants (rather than
+  # multi-user.target.wants) so we order strictly after cloud-final.service.
+  mkdir -p /mnt/etc/systemd/system/cloud-init.target.wants
+  ln -sf /etc/systemd/system/gitea-runner.service \
+    /mnt/etc/systemd/system/cloud-init.target.wants/gitea-runner.service
+
+  # Restrict cloud-init to the NoCloud datasource so it doesn't waste boot
+  # time scanning EC2/Azure/etc. metadata endpoints. The cidata ISO mounted
+  # at runtime carries network-config (static IP per instance) plus our
+  # runner credentials.
+  install -Dm644 /dev/stdin /mnt/etc/cloud/cloud.cfg.d/99-runner.cfg <<'EOF'
+  datasource_list: [ NoCloud, None ]
+  EOF
+
+  # Fresh machine-id per VM boot (systemd will regenerate on first boot).
+  : > /mnt/etc/machine-id
+
+  # Disable snapd — slow, not needed.
+  rm -f /mnt/etc/systemd/system/multi-user.target.wants/snapd.service \
+        /mnt/etc/systemd/system/multi-user.target.wants/snapd.seeded.service \
+        /mnt/etc/systemd/system/multi-user.target.wants/snapd.socket \
+        /mnt/etc/systemd/system/sockets.target.wants/snapd.socket
+
+  umount /mnt
+  sync
+'')

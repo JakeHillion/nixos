@@ -17,6 +17,11 @@ in
         type = lib.types.str;
         default = "/cache";
       };
+      extraDirs = lib.mkOption {
+        type = with lib.types; listOf str;
+        default = [ ];
+        description = "Directories to persist on the cache mount (wiped on boot, on real storage in the meantime).";
+      };
     };
 
     extraDirs = lib.mkOption {
@@ -77,7 +82,8 @@ in
         "${cfg.cache.path}/system" = {
           hideMounts = true;
 
-          directories = (lib.lists.optional config.services.postgresqlBackup.enable config.services.postgresqlBackup.location);
+          directories = cfg.cache.extraDirs ++
+            (lib.lists.optional config.services.postgresqlBackup.enable config.services.postgresqlBackup.location);
         };
       })
     ];
