@@ -1,0 +1,15 @@
+[Unit]
+Description=Gitea Actions Runner (ephemeral, --once)
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=/dev/disk/by-label/RUNNERSTATE
+
+[Service]
+Type=simple
+ExecStart=/usr/local/sbin/gitea-runner-startup
+ExecStopPost=/sbin/poweroff -f
+Restart=no
+TimeoutStartSec=5min
+
+[Install]
+WantedBy=multi-user.target

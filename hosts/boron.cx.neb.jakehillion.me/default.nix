@@ -82,6 +82,10 @@
           capacity = 4;
           dockerMemoryHigh = 12 * 1024 * 1024 * 1024; # 8 GiB
         };
+        gitea.actions-vm = {
+          enable = true;
+          instances = 1;
+        };
         matrix.mautrix_discord = true;
       };
     };
