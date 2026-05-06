@@ -33,6 +33,17 @@
       '';
     };
 
+    ## TEMPORARY: move WAN MAC spoof off enp2s0 onto the spare SFP+ port
+    ## for line testing. Revert once the test is done.
+    networking.interfaces."enp2s0".macAddress = lib.mkForce null;
+    networking.interfaces."enp1s0f1" = {
+      useDHCP = true;
+      macAddress = config.custom.networking.topology.home.wanMacAddress;
+    };
+    boot.initrd.postDeviceCommands = lib.mkForce ''
+      ip link set dev enp1s0f1 address ${config.custom.networking.topology.home.wanMacAddress}
+    '';
+
     ## WireGuard VPN Server
     networking.wireguard.interfaces."wg0" = {
       ips = [ "10.200.0.1/24" ];
