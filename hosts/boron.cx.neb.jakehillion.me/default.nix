@@ -79,12 +79,12 @@
         gitea.actions = {
           enable = true;
           tokenSecret = ../../modules/services/gitea/actions/boron.age;
-          capacity = 2;
+          capacity = 1;
           dockerMemoryHigh = 12 * 1024 * 1024 * 1024; # 8 GiB
         };
         gitea.actions-vm = {
           enable = true;
-          instances = 2;
+          instances = 4;
         };
         matrix.mautrix_discord = true;
       };
