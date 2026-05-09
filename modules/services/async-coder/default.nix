@@ -32,6 +32,47 @@ in
     users.users.async-coder.uid = config.ids.uids.async-coder;
     users.groups.async-coder.gid = config.ids.gids.async-coder;
 
+    users.users.async-coder.subUidRanges = lib.mkIf config.virtualisation.podman.enable
+      [{ startUid = 100000; count = 65536; }];
+    users.users.async-coder.subGidRanges = lib.mkIf config.virtualisation.podman.enable
+      [{ startGid = 100000; count = 65536; }];
+
+    systemd.services.async-coder = lib.mkIf config.virtualisation.podman.enable {
+      path = [
+        config.virtualisation.podman.package
+        (pkgs.runCommand "docker-podman-shim" { } ''
+          mkdir -p $out/bin
+          ln -s ${config.virtualisation.podman.package}/bin/podman $out/bin/docker
+        '')
+      ];
+      serviceConfig = {
+        NoNewPrivileges = lib.mkForce false;
+        RuntimeDirectory = "async-coder";
+        RuntimeDirectoryMode = "0700";
+        Environment = [
+          "XDG_RUNTIME_DIR=/run/async-coder"
+          "DOCKER_HOST=unix:///run/async-coder/podman/podman.sock"
+        ];
+      };
+    };
+
+    systemd.services.async-coder-podman-socket = lib.mkIf config.virtualisation.podman.enable {
+      description = "Rootless podman API socket for async-coder";
+      wantedBy = [ "async-coder.service" ];
+      before = [ "async-coder.service" ];
+      serviceConfig = {
+        Type = "simple";
+        User = "async-coder";
+        Group = "async-coder";
+        RuntimeDirectory = "async-coder/podman";
+        RuntimeDirectoryMode = "0700";
+        Environment = [ "XDG_RUNTIME_DIR=/run/async-coder" ];
+        ExecStart = "${config.virtualisation.podman.package}/bin/podman system service --time=0 unix:///run/async-coder/podman/podman.sock";
+        Restart = "on-failure";
+        RestartSec = "5s";
+      };
+    };
+
     services.async-coder = {
       enable = true;
       opencode-package = pkgs.unstable.opencode;
