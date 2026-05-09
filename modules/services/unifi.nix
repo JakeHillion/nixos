@@ -39,6 +39,7 @@ in
       enable = true;
       unifiPackage = pkgs.unstable.unifi;
       mongodbPackage = pkgs.mongodb-7_0;
+      jrePackage = pkgs.jdk25_headless;
     };
   };
 }
