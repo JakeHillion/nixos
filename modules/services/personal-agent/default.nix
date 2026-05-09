@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   cfg = config.custom.services.personal_agent;
@@ -22,14 +22,9 @@ in
         file = ./. + "/${lib.removePrefix "personal-agent/" name}.age";
         owner = "personal-agent";
         group = "personal-agent";
-      })
-    // {
-      "personal-agent/canopywave_token" = {
-        rekeyFile = ../../../secrets/ai/canopy-wave-unlimited.age;
-        owner = "personal-agent";
-        group = "personal-agent";
-      };
-    };
+      });
+
+    custom.services.llm_proxy.enable = true;
 
     users.users.personal-agent.uid = config.ids.uids.personal-agent;
     users.groups.personal-agent.gid = config.ids.gids.personal-agent;
@@ -51,9 +46,9 @@ in
         llm = {
           default_model = "Kimi K2.6";
           providers = [{
-            name = "canopywave";
-            base_url = "https://inference.canopywave.io/v1";
-            token_file = config.age.secrets."personal-agent/canopywave_token".path;
+            name = "llm-proxy";
+            base_url = "http://127.0.0.1:9100/v1/immediate";
+            token_file = pkgs.writeText "personal-agent-dummy-token" "unused";
             models = [{ id = "moonshotai/kimi-k2.6"; name = "Kimi K2.6"; }];
           }];
         };

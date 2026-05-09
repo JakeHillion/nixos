@@ -20,14 +20,9 @@ in
         file = ./. + "/${lib.removePrefix "async-coder/" name}.age";
         owner = "async-coder";
         group = "async-coder";
-      })
-    // {
-      "async-coder/canopywave-api-key" = {
-        rekeyFile = ../../../secrets/ai/canopy-wave-unlimited.age;
-        owner = "async-coder";
-        group = "async-coder";
-      };
-    };
+      });
+
+    custom.services.llm_proxy.enable = true;
 
     users.users.async-coder.uid = config.ids.uids.async-coder;
     users.groups.async-coder.gid = config.ids.gids.async-coder;
@@ -117,11 +112,11 @@ in
         };
 
         opencode = {
-          api_key_file = config.age.secrets."async-coder/canopywave-api-key".path;
-          api_url = "https://inference.canopywave.io/v1";
+          api_key_file = pkgs.writeText "async-coder-dummy-key" "unused";
+          api_url = "http://127.0.0.1:9100/v1/batch/10000";
           model = "moonshotai/kimi-k2.6";
           cheap_fast_model = "minimax/minimax-m2.5";
-          provider = "canopywave";
+          provider = "llm-proxy";
           base_port = 18900;
         };
       };

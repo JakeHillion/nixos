@@ -4,46 +4,36 @@ let
   cfg = config.custom.home.opencode;
   user = config.custom.user;
 
-  kimi = "canopywave/moonshotai/kimi-k2.6";
-  minimax = "canopywave/minimax/minimax-m2.5";
-  glm = "ollama/glm-5.1";
-  deepseek = "ollama/deepseek-v4-pro";
+  kimi = "llm-proxy/moonshotai/kimi-k2.6";
+  minimax = "llm-proxy/minimax/minimax-m2.5";
+  glm = "llm-proxy/zai/glm-5.1";
+  deepseek = "llm-proxy/deepseek/deepseek-v4-pro";
 
   opencodeConfig = {
     "$schema" = "https://opencode.ai/config.json";
     model = kimi;
     small_model = kimi;
-    provider.canopywave = {
+    provider.llm-proxy = {
       npm = "@ai-sdk/openai-compatible";
-      name = "CanopyWave";
+      name = "LLM Proxy";
       options = {
-        baseURL = "https://inference.canopywave.io/v1";
-        apiKey = "{file:${config.age.secrets."opencode/canopywave-api-key".path}}";
+        baseURL = "http://127.0.0.1:9100/v1/batch/0";
+        apiKey = "unused";
       };
       models = {
         "moonshotai/kimi-k2.6" = {
-          name = "Kimi K2.6 (CanopyWave)";
+          name = "Kimi K2.6";
           limit = { context = 256000; output = 65536; };
         };
         "minimax/minimax-m2.5" = {
-          name = "MiniMax M2.5 (CanopyWave)";
+          name = "MiniMax M2.5";
           limit = { context = 204800; output = 131072; };
         };
-      };
-    };
-    provider.ollama = {
-      npm = "@ai-sdk/openai-compatible";
-      name = "Ollama Cloud";
-      options = {
-        baseURL = "https://ollama.com/v1";
-        apiKey = "{file:${config.age.secrets."opencode/ollama-api-key".path}}";
-      };
-      models = {
-        "glm-5.1" = {
+        "zai/glm-5.1" = {
           name = "GLM-5.1 (Ollama Pro)";
           limit = { context = 202752; output = 65536; };
         };
-        "deepseek-v4-pro" = {
+        "deepseek/deepseek-v4-pro" = {
           name = "DeepSeek V4 Pro (Ollama Pro)";
           limit = { context = 1000000; output = 384000; };
         };
@@ -107,17 +97,7 @@ in
   options.custom.home.opencode.enable = lib.mkEnableOption "OpenCode setup";
 
   config = lib.mkIf cfg.enable {
-    age.secrets."opencode/canopywave-api-key" = {
-      rekeyFile = ../../secrets/ai/canopy-wave-unlimited.age;
-      owner = user;
-      group = "users";
-    };
-
-    age.secrets."opencode/ollama-api-key" = {
-      rekeyFile = ./opencode-ollama-api-key.age;
-      owner = user;
-      group = "users";
-    };
+    custom.services.llm_proxy.enable = true;
 
     home-manager.users.${user} = {
       home.packages = [ pkgs.unstable.opencode ];

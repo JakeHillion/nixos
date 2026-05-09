@@ -97,6 +97,7 @@
           "opencode-plugin" = final.callPackage ./pkgs/opencode-plugin { };
           "oh-my-openagent" = final.callPackage ./pkgs/oh-my-openagent { };
           "gitea-actions-vm-image" = final.callPackage ./pkgs/gitea-actions-vm-image { };
+          "llm-proxy" = final.callPackage ./pkgs/llm-proxy.nix { };
         })
       ];
       mkSystem = import ./lib/mkSystem.nix { inherit inputs; };
@@ -105,6 +106,7 @@
         programs.nixpkgs-fmt.enable = true;
         programs.gofumpt.enable = true;
         programs.black.enable = true;
+        programs.rustfmt.enable = true;
         settings.formatter.black.options = [ "--line-length" "79" ];
       };
     in
@@ -178,6 +180,7 @@
           };
 
           packages.caddy-with-dns = pkgs.caddy-with-dns;
+          packages.llm-proxy = pkgs.llm-proxy;
 
           devShells.default = pkgs.mkShell {
             packages = [

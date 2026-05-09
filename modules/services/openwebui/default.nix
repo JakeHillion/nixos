@@ -9,6 +9,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    custom.services.llm_proxy.enable = true;
+
     users.users.open-webui = {
       uid = config.ids.uids.open-webui;
       isSystemUser = true;
@@ -43,16 +45,13 @@ in
         SCARF_NO_ANALYTICS = "True";
         DO_NOT_TRACK = "True";
         ANONYMIZED_TELEMETRY = "False";
-        OPENAI_API_BASE_URLS = "https://inference.canopywave.io/v1";
+        OPENAI_API_BASE_URLS = "http://127.0.0.1:9100/v1/immediate";
         OPENAI_API_MODELS = "moonshotai/kimi-k2.6,minimax/minimax-m2.5";
+        OPENAI_API_KEYS = "unused";
         ENABLE_WEB_SEARCH = "True";
         WEB_SEARCH_ENGINE = "searxng";
         SEARXNG_QUERY_URL = "https://searxng.${config.ogygia.domain}/search?q=<query>";
       };
-    };
-
-    age.secrets."openwebui/canopywave-api-key" = {
-      rekeyFile = ../../../secrets/ai/canopy-wave-unlimited.age;
     };
 
     services.postgresql = {
@@ -81,29 +80,9 @@ in
       wantedBy = [ "open-webui.service" ];
     };
 
-    systemd.services.open-webui-env = {
-      description = "Generate OpenWebUI environment file with API key";
-      serviceConfig = {
-        Type = "oneshot";
-        User = "root";
-      };
-      script = ''
-        mkdir -p /run/open-webui
-        {
-          echo "OPENAI_API_KEYS=$(cat ${config.age.secrets."openwebui/canopywave-api-key".path})"
-        } > /run/open-webui/env
-        chown open-webui:open-webui /run/open-webui/env
-        chmod 600 /run/open-webui/env
-      '';
-      after = [ "open-webui-pgvector-init.service" ];
-      before = [ "open-webui.service" ];
-      wantedBy = [ "open-webui.service" ];
-    };
-
     systemd.services.open-webui = {
-      after = [ "open-webui-env.service" "open-webui-pgvector-init.service" "postgresql-setup.service" ];
-      requires = [ "open-webui-env.service" "open-webui-pgvector-init.service" "postgresql-setup.service" ];
-      serviceConfig.EnvironmentFile = lib.mkForce "/run/open-webui/env";
+      after = [ "open-webui-pgvector-init.service" "postgresql-setup.service" ];
+      requires = [ "open-webui-pgvector-init.service" "postgresql-setup.service" ];
     };
 
     systemd.tmpfiles.rules = lib.mkIf config.custom.impermanence.enable [
