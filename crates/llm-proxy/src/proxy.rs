@@ -13,7 +13,7 @@ use futures_util::StreamExt;
 use tracing::{info, warn};
 
 use crate::config::{self, Config, ResolvedProvider};
-use crate::scheduler::{Scheduler, Tier};
+use crate::scheduler::{Scheduler, Tier, TimedResponse};
 
 pub struct AppState {
     pub bind: SocketAddr,
@@ -120,6 +120,8 @@ struct LogCtx {
     logical_model: Option<String>,
     provider: Option<String>,
     upstream_model: Option<String>,
+    wait_ms: u64,
+    hold_ms: u64,
 }
 
 async fn handle_inner(state: Arc<AppState>, tier: Tier, body: Bytes) -> (Response, LogCtx) {
@@ -176,7 +178,7 @@ async fn handle_inner(state: Arc<AppState>, tier: Tier, body: Bytes) -> (Respons
         }
     };
 
-    let resp = match state
+    let timed = match state
         .scheduler
         .run(&provider_name, &upstream_model, tier, send)
         .await
@@ -191,7 +193,10 @@ async fn handle_inner(state: Arc<AppState>, tier: Tier, body: Bytes) -> (Respons
         }
     };
 
-    (forward_response(resp), ctx)
+    ctx.wait_ms = timed.wait_ms;
+    ctx.hold_ms = timed.hold_ms;
+
+    (forward_response(timed.response), ctx)
 }
 
 fn log_request(tier: Tier, ctx: &LogCtx, response: &Response, elapsed: Duration) {
@@ -206,6 +211,8 @@ fn log_request(tier: Tier, ctx: &LogCtx, response: &Response, elapsed: Duration)
         upstream_model = ctx.upstream_model.as_deref().unwrap_or("-"),
         status = response.status().as_u16(),
         elapsed_ms = elapsed.as_millis() as u64,
+        wait_ms = ctx.wait_ms,
+        hold_ms = ctx.hold_ms,
         "request",
     );
 }

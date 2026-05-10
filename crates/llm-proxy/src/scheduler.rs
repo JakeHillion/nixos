@@ -1,5 +1,5 @@
 use std::future::Future;
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use anyhow::{Context, Result};
 use etcd_client::{Client, GetOptions, PutOptions, SortOrder, SortTarget, WatchOptions};
@@ -17,6 +17,12 @@ pub enum Tier {
     Batch {
         slack_ms: i64,
     },
+}
+
+pub struct TimedResponse {
+    pub response: reqwest::Response,
+    pub wait_ms: u64,
+    pub hold_ms: u64,
 }
 
 #[derive(Clone)]
@@ -39,7 +45,7 @@ impl Scheduler {
         upstream_model: &str,
         tier: Tier,
         attempt: F,
-    ) -> reqwest::Result<reqwest::Response>
+    ) -> reqwest::Result<TimedResponse>
     where
         F: FnMut() -> Fut + Send,
         Fut: Future<Output = reqwest::Result<reqwest::Response>> + Send,
@@ -59,7 +65,7 @@ impl Scheduler {
         provider: &str,
         upstream_model: &str,
         mut attempt: F,
-    ) -> reqwest::Result<reqwest::Response>
+    ) -> reqwest::Result<TimedResponse>
     where
         F: FnMut() -> Fut + Send,
         Fut: Future<Output = reqwest::Result<reqwest::Response>> + Send,
@@ -67,7 +73,11 @@ impl Scheduler {
         // Happy path: no etcd interaction.
         let resp = attempt().await?;
         if resp.status().as_u16() != 429 {
-            return Ok(resp);
+            return Ok(TimedResponse {
+                response: resp,
+                wait_ms: 0,
+                hold_ms: 0,
+            });
         }
 
         // 429: register a fleet-wide marker so batch tasks on this (provider, model) yield.
@@ -82,7 +92,11 @@ impl Scheduler {
                 if let Some(state) = etcd_state.take() {
                     state.cleanup().await;
                 }
-                return Ok(resp);
+                return Ok(TimedResponse {
+                    response: resp,
+                    wait_ms: 0,
+                    hold_ms: 0,
+                });
             }
         }
     }
@@ -93,17 +107,28 @@ impl Scheduler {
         upstream_model: &str,
         deadline_ms: i64,
         mut attempt: F,
-    ) -> reqwest::Result<reqwest::Response>
+    ) -> reqwest::Result<TimedResponse>
     where
         F: FnMut() -> Fut + Send,
         Fut: Future<Output = reqwest::Result<reqwest::Response>> + Send,
     {
+        let started = Instant::now();
+        let mut hold_ms = 0u64;
+        let mut hold_start: Option<Instant> = None;
+
         let mut state = match self
             .enqueue_batch(provider, upstream_model, deadline_ms)
             .await
         {
             Some(s) => s,
-            None => return attempt().await,
+            None => {
+                let resp = attempt().await?;
+                return Ok(TimedResponse {
+                    response: resp,
+                    wait_ms: 0,
+                    hold_ms: 0,
+                });
+            }
         };
 
         let batch_pfx = batch_prefix(provider, upstream_model);
@@ -123,7 +148,13 @@ impl Scheduler {
             Err(e) => {
                 warn!(error = %e, "opening batch watch failed; bypassing scheduler");
                 state.cleanup().await;
-                return attempt().await;
+                let resp = attempt().await?;
+                let total = started.elapsed().as_millis() as u64;
+                return Ok(TimedResponse {
+                    response: resp,
+                    wait_ms: total - hold_ms,
+                    hold_ms,
+                });
             }
         };
         let (_imm_watcher, mut imm_stream) = match state
@@ -135,7 +166,13 @@ impl Scheduler {
             Err(e) => {
                 warn!(error = %e, "opening immediate watch failed; bypassing scheduler");
                 state.cleanup().await;
-                return attempt().await;
+                let resp = attempt().await?;
+                let total = started.elapsed().as_millis() as u64;
+                return Ok(TimedResponse {
+                    response: resp,
+                    wait_ms: total - hold_ms,
+                    hold_ms,
+                });
             }
         };
 
@@ -144,12 +181,24 @@ impl Scheduler {
             // Wait until I'm the head of the batch queue and no immediate is active.
             loop {
                 match state.can_proceed(&batch_pfx, &imm_pfx).await {
-                    Ok(true) => break,
+                    Ok(true) => {
+                        hold_start = Some(Instant::now());
+                        break;
+                    }
                     Ok(false) => {}
                     Err(e) => {
                         warn!(error = %e, "etcd can_proceed failed; bypassing scheduler");
                         state.cleanup().await;
-                        return attempt().await;
+                        if let Some(start) = hold_start.take() {
+                            hold_ms += start.elapsed().as_millis() as u64;
+                        }
+                        let resp = attempt().await?;
+                        let total = started.elapsed().as_millis() as u64;
+                        return Ok(TimedResponse {
+                            response: resp,
+                            wait_ms: total - hold_ms,
+                            hold_ms,
+                        });
                     }
                 }
                 tokio::select! {
@@ -157,14 +206,32 @@ impl Scheduler {
                         if let Err(e) = msg {
                             warn!(error = %e, "batch watch error; bypassing scheduler");
                             state.cleanup().await;
-                            return attempt().await;
+                            if let Some(start) = hold_start.take() {
+                                hold_ms += start.elapsed().as_millis() as u64;
+                            }
+                            let resp = attempt().await?;
+                            let total = started.elapsed().as_millis() as u64;
+                            return Ok(TimedResponse {
+                                response: resp,
+                                wait_ms: total - hold_ms,
+                                hold_ms,
+                            });
                         }
                     }
                     msg = imm_stream.message() => {
                         if let Err(e) = msg {
                             warn!(error = %e, "immediate watch error; bypassing scheduler");
                             state.cleanup().await;
-                            return attempt().await;
+                            if let Some(start) = hold_start.take() {
+                                hold_ms += start.elapsed().as_millis() as u64;
+                            }
+                            let resp = attempt().await?;
+                            let total = started.elapsed().as_millis() as u64;
+                            return Ok(TimedResponse {
+                                response: resp,
+                                wait_ms: total - hold_ms,
+                                hold_ms,
+                            });
                         }
                     }
                 }
@@ -173,7 +240,20 @@ impl Scheduler {
             let resp = attempt().await?;
             if resp.status().as_u16() != 429 {
                 state.cleanup().await;
-                return Ok(resp);
+                if let Some(start) = hold_start.take() {
+                    hold_ms += start.elapsed().as_millis() as u64;
+                }
+                let total = started.elapsed().as_millis() as u64;
+                return Ok(TimedResponse {
+                    response: resp,
+                    wait_ms: total - hold_ms,
+                    hold_ms,
+                });
+            }
+
+            // 429: end this hold slice, then yield back to wait_for_turn.
+            if let Some(start) = hold_start.take() {
+                hold_ms += start.elapsed().as_millis() as u64;
             }
 
             // Hold our slot, but yield back to wait_for_turn the moment an
@@ -188,7 +268,13 @@ impl Scheduler {
                     if let Err(e) = msg {
                         warn!(error = %e, "immediate watch error; bypassing scheduler");
                         state.cleanup().await;
-                        return attempt().await;
+                        let resp = attempt().await?;
+                        let total = started.elapsed().as_millis() as u64;
+                        return Ok(TimedResponse {
+                            response: resp,
+                            wait_ms: total - hold_ms,
+                            hold_ms,
+                        });
                     }
                 }
             }
