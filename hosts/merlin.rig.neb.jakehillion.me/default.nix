@@ -35,11 +35,6 @@
     custom.locations.autoServe = true;
     custom.profiles.devbox = true;
 
-    custom.services.ollama.models = [
-      "deepseek-coder-v2:16b"
-      "qwen2.5-coder:14b"
-    ];
-
     custom.users.jake.password = true;
     security.sudo.wheelNeedsPassword = lib.mkForce true;
     custom.desktop.sway.enable = true;

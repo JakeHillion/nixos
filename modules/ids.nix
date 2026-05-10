@@ -12,7 +12,7 @@
       frigate = 200;
       nebula-jakehillion = 205;
       immich = 206;
-      ollama = 210;
+      # ollama = 210; # Removed 2026-05-10
       privatebin = 211;
       jellyfin = 216;
       radicale = 401;
@@ -43,7 +43,7 @@
       frigate = 200;
       nebula-jakehillion = 205;
       immich = 206;
-      ollama = 210;
+      # ollama = 210; # Removed 2026-05-10
       jellyfin = 216;
       radicale = 401;
       homebox = 402;

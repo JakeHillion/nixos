@@ -76,8 +76,6 @@ in
           unstable.codex
           tea
         ];
-        shellAliases.aider =
-          ''OLLAMA_API_BASE="http://ollama.${config.ogygia.domain}" ${pkgs.aider-chat}/bin/aider --model ollama_chat/qwen2.5-coder:14b'';
       };
 
       programs.gpg.enable = true;

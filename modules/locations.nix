@@ -58,7 +58,6 @@ in
           ];
           ntfy = "boron.cx.${config.ogygia.domain}";
           offline-youtube = "phoenix.st.${config.ogygia.domain}";
-          ollama = "merlin.rig.${config.ogygia.domain}";
           openwebui = "warlock.cx.${config.ogygia.domain}";
           personal_agent = "fanboy.cx.${config.ogygia.domain}";
           privatebin = "boron.cx.${config.ogygia.domain}";
