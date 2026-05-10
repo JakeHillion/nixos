@@ -136,7 +136,7 @@ impl Scheduler {
 
         // Watches span the lifetime of this run so events that arrive between
         // checks (or during an in-flight attempt) aren't missed.
-        let (_batch_watcher, mut batch_stream) = match state
+        let mut batch_stream = match state
             .client
             .watch(
                 batch_pfx.as_bytes(),
@@ -157,7 +157,7 @@ impl Scheduler {
                 });
             }
         };
-        let (_imm_watcher, mut imm_stream) = match state
+        let mut imm_stream = match state
             .client
             .watch(imm_pfx.as_bytes(), Some(WatchOptions::new().with_prefix()))
             .await
