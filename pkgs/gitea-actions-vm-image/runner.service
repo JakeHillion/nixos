@@ -1,5 +1,5 @@
 [Unit]
-Description=Gitea Actions Runner (ephemeral, --once)
+Description=Gitea Actions Runner (ephemeral)
 # Wait for cloud-init's final stage so the cidata's network-config has been
 # applied (static IP on ens3) before act_runner tries to reach Gitea.
 # WantedBy=cloud-init.target rather than multi-user.target — cloud-init.target
@@ -24,6 +24,13 @@ ExecStart=/usr/local/bin/act_runner daemon --config /var/lib/gitea-runner/config
 ExecStopPost=+/sbin/poweroff -f
 Restart=no
 TimeoutStartSec=5min
+# SIGTERM goes only to act_runner (the main process), not to its job's
+# child processes — act_runner is expected to drain the current job on
+# SIGTERM and exit when it's done. SIGKILL escalates to the whole cgroup
+# after TimeoutStopSec as a safety net; the reconcile unit drops a /run
+# drop-in raising this to infinity during rebuilds.
+TimeoutStopSec=30min
+KillMode=mixed
 # Mirror runner output to /dev/console (ttyS0 here) so the host's
 # `journalctl -fu gitea-actions-vm-N` shows live runner state — ttyS0 is
 # bridged to the host unit's stdout via qemu's -serial mon:stdio.

@@ -14,6 +14,7 @@
 , qemu
 , util-linux
 , e2fsprogs
+, dpkg
 , closureInfo
 , gitea-actions-runner
 , nodejs_24
@@ -24,6 +25,20 @@ let
   ubuntuImg = fetchurl {
     url = "https://cloud-images.ubuntu.com/releases/26.04/release-20260421/ubuntu-26.04-server-cloudimg-amd64.img";
     hash = "sha256-jtIoyfCKUBIvpyMHYj2fiNkgm6JufoSe3VhPpnXjSGM=";
+  };
+
+  # qemu-guest-agent isn't in the Ubuntu cloud image manifest, so we pull the
+  # .deb from the archive and extract it directly. liburing2 is a dependency
+  # that's also missing from the cloud image (libc6/libudev1/libglib2/libnuma1
+  # are already present). Versions/hashes from
+  # http://archive.ubuntu.com/ubuntu/dists/resolute/{universe,main}/binary-amd64/Packages.gz.
+  qemuGuestAgentDeb = fetchurl {
+    url = "http://archive.ubuntu.com/ubuntu/pool/universe/q/qemu/qemu-guest-agent_10.2.1+ds-1ubuntu3_amd64.deb";
+    hash = "sha256-YTzGw0OVvmy4k1MKsYJV8uKoEVuLuJTHBXTOR44d2mc=";
+  };
+  liburing2Deb = fetchurl {
+    url = "http://archive.ubuntu.com/ubuntu/pool/main/libu/liburing/liburing2_2.14-1_amd64.deb";
+    hash = "sha256-wPHtVdLqpuXRIkUTt4fHE0jGq5g+nEF4pBen/6w6igA=";
   };
 
   # Extra tools to expose on the in-VM PATH alongside act_runner. Each package's
@@ -50,7 +65,7 @@ vmTools.runInLinuxVM (runCommand "gitea-actions-vm-image"
     mv image.qcow2 $out/image.qcow2
   '';
 
-  nativeBuildInputs = [ util-linux e2fsprogs ];
+  nativeBuildInputs = [ util-linux e2fsprogs dpkg ];
 
   meta = with lib; {
     description = "Ubuntu 26.04 LTS qcow2 customised for ephemeral Gitea Actions runners";
@@ -113,6 +128,20 @@ vmTools.runInLinuxVM (runCommand "gitea-actions-vm-image"
   mkdir -p /mnt/etc/systemd/system/cloud-init.target.wants
   ln -sf /etc/systemd/system/gitea-runner.service \
     /mnt/etc/systemd/system/cloud-init.target.wants/gitea-runner.service
+
+  # Install qemu-guest-agent (and its only missing dependency, liburing2) so
+  # the host can probe in-guest state via QGA — used both for the graceful-
+  # shutdown handshake and for the nixos-rebuild idle-restart logic. Cloud
+  # image manifest only includes the deps libc6/libudev1/libglib2/libnuma1;
+  # we extract the .debs directly with dpkg-deb to avoid running maintainer
+  # scripts inside the image. The enable symlink replaces the postinst's
+  # `systemctl enable`.
+  for deb in ${qemuGuestAgentDeb} ${liburing2Deb}; do
+    dpkg-deb --extract "$deb" /mnt
+  done
+  mkdir -p /mnt/etc/systemd/system/multi-user.target.wants
+  ln -sf /lib/systemd/system/qemu-guest-agent.service \
+    /mnt/etc/systemd/system/multi-user.target.wants/qemu-guest-agent.service
 
   # Restrict cloud-init to the NoCloud datasource so it doesn't waste boot
   # time scanning EC2/Azure/etc. metadata endpoints. The cidata ISO mounted

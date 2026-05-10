@@ -113,6 +113,15 @@ let
       # Hand off to QEMU. We exec so systemd tracks the qemu pid as the unit's
       # main process, and the VM's poweroff (issued by the in-VM runner unit
       # after one job) translates to a clean unit exit + restart.
+      #
+      # -chardev/virtio-serial/virtserialport: the qemu-guest-agent channel.
+      # ExecStop and reconcile both use it to ask the guest to
+      # `systemctl stop gitea-runner.service`, which lets act_runner drain
+      # the current job before exiting. The in-VM unit's
+      # ExecStopPost=poweroff -f then halts the VM via reboot(2), so we
+      # never trigger guest systemd's poweroff.target (which would break
+      # any service start that races the shutdown — e.g. apt's ubuntu-fan
+      # triggers during `apt install docker`).
       exec qemu-system-x86_64 \
         -enable-kvm -cpu host \
         -smp ${toString cfg.vcpus} \
@@ -123,10 +132,208 @@ let
         -device virtio-net-pci,netdev=net0,mac=${vmMac i} \
         -device virtio-balloon-pci,free-page-reporting=on \
         -device virtio-rng-pci \
+        -chardev socket,path="$RUNTIME_DIRECTORY/qga.sock",server=on,wait=off,id=qga0 \
+        -device virtio-serial \
+        -device virtserialport,chardev=qga0,name=org.qemu.guest_agent.0 \
         -smbios type=1,serial=ds=nocloud \
         -nographic -serial mon:stdio
     '';
   };
+
+  # Send a shell snippet to a VM's QGA socket, run it via `sh -c`, and
+  # block until it exits or the host timeout elapses. Args:
+  # `<qga-sock> <timeout-seconds> <shell-snippet>`. Per qemu-ga(8) we
+  # send 0xff + guest-sync at the start so a parser left mid-message
+  # by a previous client (e.g. one that timed out without reading the
+  # reply) doesn't poison this session. Forwards the guest's stderr.
+  # Exit: 0 on guest exit 0, 1 on guest exit nonzero, 2 on host/agent
+  # error or timeout.
+  qgaShellScript = pkgs.writers.writePython3 "gitea-actions-vm-qga-shell" { } ''
+    import base64
+    import json
+    import random
+    import socket
+    import sys
+    import time
+
+
+    def main():
+        if len(sys.argv) != 4:
+            print(
+                "usage: gitea-actions-vm-qga-shell <qga-sock> "
+                "<timeout-seconds> <shell-snippet>",
+                file=sys.stderr,
+            )
+            return 2
+        qga_path = sys.argv[1]
+        try:
+            timeout = float(sys.argv[2])
+        except ValueError:
+            print(f"invalid timeout: {sys.argv[2]}", file=sys.stderr)
+            return 2
+        snippet = sys.argv[3]
+
+        try:
+            s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            s.settimeout(5)
+            s.connect(qga_path)
+        except (FileNotFoundError, ConnectionRefusedError, OSError) as e:
+            print(f"qga connect failed: {e}", file=sys.stderr)
+            return 2
+
+        f = s.makefile("rwb", buffering=0)
+
+        def call(cmd):
+            f.write((json.dumps(cmd) + "\n").encode())
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    return json.loads(line.decode())
+                except json.JSONDecodeError:
+                    continue
+            return None
+
+        sync_id = random.randint(1, 2 ** 31 - 1)
+        f.write(b"\xff" + (json.dumps({
+            "execute": "guest-sync",
+            "arguments": {"id": sync_id},
+        }) + "\n").encode())
+        synced = False
+        for _ in range(16):
+            line = f.readline()
+            if not line:
+                break
+            try:
+                r = json.loads(line.strip().decode())
+            except (json.JSONDecodeError, UnicodeDecodeError):
+                continue
+            if r.get("return") == sync_id:
+                synced = True
+                break
+        if not synced:
+            print("qga sync failed", file=sys.stderr)
+            return 2
+
+        r = call({
+            "execute": "guest-exec",
+            "arguments": {
+                "path": "/bin/sh",
+                "arg": ["-c", snippet],
+                "capture-output": True,
+            },
+        })
+        if not r or "return" not in r:
+            print(f"guest-exec failed: {r}", file=sys.stderr)
+            return 2
+        pid = r["return"]["pid"]
+
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            r = call({
+                "execute": "guest-exec-status",
+                "arguments": {"pid": pid},
+            })
+            if not r or "return" not in r:
+                return 2
+            if r["return"]["exited"]:
+                err_b64 = r["return"].get("err-data", "")
+                if err_b64:
+                    try:
+                        sys.stderr.write(
+                            base64.b64decode(err_b64)
+                            .decode(errors="replace")
+                        )
+                    except (ValueError, OSError):
+                        pass
+                code = r["return"].get("exitcode", -1)
+                if code != 0:
+                    print(
+                        f"guest command exited with {code}",
+                        file=sys.stderr,
+                    )
+                    return 1
+                return 0
+            time.sleep(0.2)
+
+        print("guest command timed out", file=sys.stderr)
+        return 2
+
+
+    sys.exit(main())
+  '';
+
+  # Run inside a VM ahead of a reconcile-driven stop: drops a
+  # transient systemd override on gitea-runner.service so its
+  # SIGTERM→SIGKILL escalation is lifted, then daemon-reloads. After
+  # this, `systemctl stop gitea-runner.service` blocks in act_runner's
+  # SIGTERM handler for as long as the current job needs. The override
+  # lives in /run so it disappears on the next VM boot; manual stops
+  # via the host unit continue to use the unit file's TimeoutStopSec.
+  prepareDrainSnippet = ''
+    set -eu
+    dir=/run/systemd/system/gitea-runner.service.d
+    mkdir -p "$dir"
+    cat > "$dir/no-stop-timeout.conf" <<'CONF'
+    [Service]
+    TimeoutStopSec=infinity
+    CONF
+    systemctl daemon-reload
+  '';
+
+  # ExecStop: ask the guest to `systemctl stop gitea-runner.service`
+  # via QGA, then block until qemu (the unit's main process) exits as
+  # the guest's ExecStopPost=poweroff -f reboot()s the VM. The wait
+  # matters: without it, ExecStop returns in milliseconds and
+  # systemd's KillMode=control-group SIGTERMs qemu, killing the VM
+  # mid-drain. TimeoutStopSec=31min on the host unit caps the loop;
+  # beyond that systemd aborts ExecStop and SIGKILLs qemu. The guest's
+  # gitea-runner.service has its own TimeoutStopSec=30min, so worst
+  # case is act_runner draining for 30 min, then poweroff -f, then
+  # qemu exit.
+  vmStopScript = i: pkgs.writeShellScript "gitea-actions-vm-stop-${toString i}" ''
+    ${qgaShellScript} "$RUNTIME_DIRECTORY/qga.sock" 10 \
+      'systemctl --no-block stop gitea-runner.service' || true
+    while kill -0 "$MAINPID" 2>/dev/null; do
+      sleep 2
+    done
+  '';
+
+  # For each running VM, lift the in-guest stop timeout via QGA, then
+  # ask the guest to systemctl-stop the runner unit. act_runner drains
+  # its current job for as long as needed; when it exits, the unit's
+  # ExecStopPost reboot()s the VM, qemu exits, and Restart=always on
+  # the host unit launches a fresh VM with the new ExecStart.
+  # Idempotent: re-running on a VM whose unit is already stopping is a
+  # no-op (override write is unconditional, daemon-reload is
+  # idempotent, systemctl stop on an already-stopping unit is ignored).
+  reconcileScript = pkgs.writeShellScript "gitea-actions-vm-reconcile" ''
+    set -u
+    for i in ${lib.concatMapStringsSep " " toString instanceIds}; do
+      unit="gitea-actions-vm-$i"
+      qga="/run/gitea-actions-vm/$i/qga.sock"
+
+      if ! ${pkgs.systemd}/bin/systemctl is-active --quiet "$unit"; then
+        echo "$unit: not active, skipping"
+        continue
+      fi
+
+      if [ ! -S "$qga" ]; then
+        echo "$unit: qga socket missing, skipping"
+        continue
+      fi
+
+      if ! ${qgaShellScript} "$qga" 30 ${lib.escapeShellArg prepareDrainSnippet}; then
+        echo "$unit: failed to install drain override, skipping shutdown"
+        continue
+      fi
+
+      echo "$unit: draining via systemctl stop gitea-runner.service (no timeout)"
+      ${qgaShellScript} "$qga" 10 \
+        'systemctl --no-block stop gitea-runner.service' || true
+    done
+  '';
 
   mkInstanceService = i: lib.nameValuePair "gitea-actions-vm-${toString i}" {
     description = "Gitea Actions VM runner #${toString i}";
@@ -144,17 +351,29 @@ let
       "network-addresses-${bridgeName}.service"
     ];
 
+    # nixos-rebuild must never restart a VM directly. If a VM is running a CI
+    # job we'd interrupt it; if it's idle, the reconcile unit
+    # (gitea-actions-vm-reconcile, below) picks it up. Either way, when a VM
+    # eventually exits naturally (ephemeral runner finishes its one job),
+    # systemd auto-restarts it (Restart=always) and the new spec applies.
+    restartIfChanged = false;
+    stopIfChanged = false;
+
     serviceConfig = {
       Type = "simple";
       ExecStart = "${runnerLauncher i}/bin/gitea-actions-vm-launch-${toString i}";
+      ExecStop = "${vmStopScript i}";
       Restart = "always";
       RestartSec = "5s";
+      TimeoutStopSec = "31min";
 
       User = "gitea-actions-vm";
       Group = "gitea-actions-vm";
       SupplementaryGroups = [ "kvm" ];
       CacheDirectory = "gitea-actions-vm/${toString i}";
       CacheDirectoryMode = "0700";
+      RuntimeDirectory = "gitea-actions-vm/${toString i}";
+      RuntimeDirectoryMode = "0700";
 
       LoadCredential = "token:${config.age.secrets."gitea-actions-vm/token".path}";
 
@@ -282,6 +501,25 @@ in
       allow ${bridgeName}
     '';
 
-    systemd.services = lib.listToAttrs (map mkInstanceService instanceIds);
+    systemd.services = lib.listToAttrs (map mkInstanceService instanceIds) // {
+      # Restart idle VMs after a config change. Pinned to each runnerLauncher
+      # derivation via restartTriggers — switch-to-configuration restarts this
+      # unit whenever any launcher's hash changes (vcpus, memory, image, ...),
+      # which runs the reconcile script after the systemd daemon-reload, so
+      # the subsequent `systemctl restart gitea-actions-vm-N` picks up the
+      # new ExecStart. Busy VMs are skipped and cycle to the new spec on
+      # their next ephemeral exit.
+      gitea-actions-vm-reconcile = {
+        description = "Reconcile Gitea Actions VMs to current config (restart idle ones)";
+        wantedBy = [ "multi-user.target" ];
+        after = map (i: "gitea-actions-vm-${toString i}.service") instanceIds;
+        restartTriggers = map runnerLauncher instanceIds;
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          ExecStart = "${reconcileScript}";
+        };
+      };
+    };
   };
 }
