@@ -186,6 +186,10 @@
             packages = [
               agenix-rekey.packages.${system}.default
               pkgs.age
+              pkgs.cargo
+              pkgs.clippy
+              pkgs.rustc
+              pkgs.rustfmt
             ];
           };
         }))
