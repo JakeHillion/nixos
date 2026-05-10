@@ -182,7 +182,7 @@ in
 
     labels = lib.mkOption {
       type = with lib.types; listOf str;
-      default = [ "ubuntu-26.04-vm" "ubuntu-vm" ];
+      default = [ "ubuntu-26.04-vm" "ubuntu-vm" "ubuntu-26.04" ];
       description = ''
         Labels advertised to Gitea by each runner. Note: no `:docker://...`
         suffix — jobs run directly inside the VM, not in a nested Docker
