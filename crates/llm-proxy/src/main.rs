@@ -32,7 +32,7 @@ async fn main() -> Result<()> {
             axum::routing::post(proxy::immediate_chat_completions),
         )
         .route(
-            "/v1/batch/:slack_ms/chat/completions",
+            "/v1/batch/{slack_ms}/chat/completions",
             axum::routing::post(proxy::batch_chat_completions),
         )
         .route(
@@ -40,7 +40,7 @@ async fn main() -> Result<()> {
             axum::routing::get(proxy::list_models),
         )
         .route(
-            "/v1/batch/:slack_ms/models",
+            "/v1/batch/{slack_ms}/models",
             axum::routing::get(proxy::list_models),
         )
         .with_state(state.clone());
