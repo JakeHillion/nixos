@@ -42,11 +42,8 @@ in
       ];
       serviceConfig = {
         NoNewPrivileges = lib.mkForce false;
-        RuntimeDirectory = "async-coder";
-        RuntimeDirectoryMode = "0700";
         Environment = [
-          "XDG_RUNTIME_DIR=/run/async-coder"
-          "DOCKER_HOST=unix:///run/async-coder/podman/podman.sock"
+          "DOCKER_HOST=unix:///run/async-coder-podman/podman.sock"
         ];
       };
     };
@@ -59,10 +56,10 @@ in
         Type = "simple";
         User = "async-coder";
         Group = "async-coder";
-        RuntimeDirectory = "async-coder/podman";
+        RuntimeDirectory = "async-coder-podman";
         RuntimeDirectoryMode = "0700";
-        Environment = [ "XDG_RUNTIME_DIR=/run/async-coder" ];
-        ExecStart = "${config.virtualisation.podman.package}/bin/podman system service --time=0 unix:///run/async-coder/podman/podman.sock";
+        Environment = [ "XDG_RUNTIME_DIR=/run/async-coder-podman" ];
+        ExecStart = "${config.virtualisation.podman.package}/bin/podman system service --time=0 unix:///run/async-coder-podman/podman.sock";
         Restart = "on-failure";
         RestartSec = "5s";
       };
