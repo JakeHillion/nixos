@@ -2,6 +2,11 @@
 
 let
   cfg = config.custom.services.prometheus;
+  allHosts = builtins.map
+    (
+      x: "${lib.concatStringsSep "." (lib.take 2 (lib.splitString "." x))}.${config.ogygia.domain}"
+    )
+    (builtins.attrNames (builtins.readDir ../../hosts));
 in
 {
   options.custom.services.prometheus = {
@@ -23,15 +28,17 @@ in
         {
           job_name = "node";
           static_configs = [{
+            targets = lib.lists.flatten (builtins.map (x: [ "${x}:9000" "${x}:9001" ]) allHosts);
+          }];
+        }
+        {
+          job_name = "llm-proxy";
+          static_configs = [{
             targets =
               let
-                hosts = builtins.map
-                  (
-                    x: "${lib.concatStringsSep "." (lib.take 2 (lib.splitString "." x))}.${config.ogygia.domain}"
-                  )
-                  (builtins.attrNames (builtins.readDir ../../hosts));
+                hosts = builtins.filter (x: x != "bob.lt.${config.ogygia.domain}") allHosts;
               in
-              lib.lists.flatten (builtins.map (x: [ "${x}:9000" "${x}:9001" ]) hosts);
+              builtins.map (x: "${x}:9101") hosts;
           }];
         }
       ];

@@ -4,7 +4,7 @@ let
   cfg = config.custom.services.llm_proxy;
   tomlFormat = pkgs.formats.toml { };
 
-  configFile = tomlFormat.generate "llm-proxy.toml" {
+  configFile = tomlFormat.generate "llm-proxy.toml" ({
     bind = "${cfg.bindAddress}:${toString cfg.port}";
     etcd.endpoints = config.custom.services.etcd.endpoints;
     scheduler = {
@@ -20,7 +20,9 @@ let
         models = p.models;
       })
       cfg.providers;
-  };
+  } // lib.optionalAttrs cfg.prometheus.enable {
+    prometheus_bind = "${cfg.prometheus.bindAddress}:${toString cfg.prometheus.port}";
+  });
 in
 {
   options.custom.services.llm_proxy = {
@@ -94,6 +96,24 @@ in
           };
         };
       });
+    };
+
+    prometheus = {
+      enable = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Whether to expose a Prometheus /metrics endpoint.";
+      };
+      bindAddress = lib.mkOption {
+        type = lib.types.str;
+        default = config.custom.dns.nebula.ipv4;
+        description = "Address to bind the Prometheus metrics endpoint.";
+      };
+      port = lib.mkOption {
+        type = lib.types.port;
+        default = 9101;
+        description = "Port for the Prometheus metrics endpoint.";
+      };
     };
   };
 

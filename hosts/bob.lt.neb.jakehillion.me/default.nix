@@ -92,5 +92,7 @@
       ];
       allowedUDPPorts = lib.mkForce [ ];
     };
+
+    custom.services.llm_proxy.prometheus.enable = false;
   };
 }

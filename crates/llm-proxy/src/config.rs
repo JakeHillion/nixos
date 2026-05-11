@@ -11,6 +11,8 @@ pub struct Config {
     pub etcd: EtcdConfig,
     #[serde(default)]
     pub scheduler: SchedulerConfig,
+    #[serde(default)]
+    pub prometheus_bind: Option<SocketAddr>,
     pub providers: HashMap<String, ProviderConfig>,
 }
 

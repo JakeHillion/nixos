@@ -23,6 +23,14 @@ async fn main() -> Result<()> {
     let cfg = config::load(&config_path).with_context(|| format!("loading {config_path}"))?;
     info!(?cfg.bind, "starting llm-proxy");
 
+    if let Some(addr) = cfg.prometheus_bind {
+        metrics_exporter_prometheus::PrometheusBuilder::new()
+            .with_http_listener(addr)
+            .install_recorder()
+            .expect("failed to install prometheus recorder");
+        info!(%addr, "prometheus metrics enabled");
+    }
+
     let scheduler = scheduler::Scheduler::new(cfg.etcd.clone(), cfg.scheduler.clone()).await;
     let state = Arc::new(proxy::AppState::new(cfg, scheduler)?);
 

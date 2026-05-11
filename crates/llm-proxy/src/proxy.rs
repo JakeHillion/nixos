@@ -10,6 +10,7 @@ use axum::http::{HeaderMap, HeaderName, HeaderValue, StatusCode};
 use axum::response::Response;
 use bytes::Bytes;
 use futures_util::StreamExt;
+use tokio::sync::mpsc;
 use tracing::{info, warn};
 
 use crate::config::{self, Config, ResolvedProvider};
@@ -122,6 +123,7 @@ struct LogCtx {
     upstream_model: Option<String>,
     wait_ms: u64,
     hold_ms: u64,
+    is_streaming: bool,
 }
 
 async fn handle_inner(state: Arc<AppState>, tier: Tier, body: Bytes) -> (Response, LogCtx) {
@@ -132,6 +134,7 @@ async fn handle_inner(state: Arc<AppState>, tier: Tier, body: Bytes) -> (Respons
         Err(e) => return (error_response(StatusCode::BAD_REQUEST, &e.to_string()), ctx),
     };
     ctx.logical_model = Some(logical_model.clone());
+    ctx.is_streaming = parse_streaming(&body);
 
     let (provider_name, upstream_model) = match state.model_index.get(&logical_model) {
         Some(v) => v.clone(),
@@ -196,7 +199,10 @@ async fn handle_inner(state: Arc<AppState>, tier: Tier, body: Bytes) -> (Respons
     ctx.wait_ms = timed.wait_ms;
     ctx.hold_ms = timed.hold_ms;
 
-    (forward_response(timed.response), ctx)
+    (
+        forward_response(timed.response, ctx.is_streaming, logical_model),
+        ctx,
+    )
 }
 
 fn log_request(tier: Tier, ctx: &LogCtx, response: &Response, elapsed: Duration) {
@@ -204,12 +210,23 @@ fn log_request(tier: Tier, ctx: &LogCtx, response: &Response, elapsed: Duration)
         Tier::Immediate => "immediate".to_string(),
         Tier::Batch { slack_ms } => format!("batch:{slack_ms}"),
     };
+    let status = response.status();
+    if ctx.is_streaming && status.is_success() {
+        warn!(
+            tier = %tier_str,
+            logical_model = ctx.logical_model.as_deref().unwrap_or("-"),
+            provider = ctx.provider.as_deref().unwrap_or("-"),
+            upstream_model = ctx.upstream_model.as_deref().unwrap_or("-"),
+            status = status.as_u16(),
+            "token metrics unavailable for streaming request",
+        );
+    }
     info!(
         tier = %tier_str,
         logical_model = ctx.logical_model.as_deref().unwrap_or("-"),
         provider = ctx.provider.as_deref().unwrap_or("-"),
         upstream_model = ctx.upstream_model.as_deref().unwrap_or("-"),
-        status = response.status().as_u16(),
+        status = status.as_u16(),
         elapsed_ms = elapsed.as_millis() as u64,
         wait_ms = ctx.wait_ms,
         hold_ms = ctx.hold_ms,
@@ -217,7 +234,11 @@ fn log_request(tier: Tier, ctx: &LogCtx, response: &Response, elapsed: Duration)
     );
 }
 
-fn forward_response(resp: reqwest::Response) -> Response {
+fn forward_response(
+    resp: reqwest::Response,
+    is_streaming: bool,
+    logical_model: String,
+) -> Response {
     let status =
         StatusCode::from_u16(resp.status().as_u16()).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
     let mut headers = HeaderMap::new();
@@ -232,20 +253,76 @@ fn forward_response(resp: reqwest::Response) -> Response {
             headers.insert(name, val);
         }
     }
-    // Convert a mid-body upstream error into a clean end-of-stream so hyper
-    // emits the terminator chunk. Strict clients (aiohttp) reject a chunked
-    // body that ends without it; lenient clients silently truncate. We
-    // prefer truncation either way.
-    let stream = resp.bytes_stream().filter_map(|item| async move {
-        match item {
-            Ok(b) => Some(Ok::<Bytes, std::convert::Infallible>(b)),
-            Err(e) => {
-                warn!(error = %e, "upstream body stream error; truncating response");
-                None
+
+    // For non-streaming successful responses, tee the body so we can parse
+    // usage metrics without blocking the client.
+    let body = if !is_streaming && status.is_success() {
+        let (tx, mut rx) = mpsc::unbounded_channel::<Bytes>();
+
+        let stream = resp.bytes_stream().filter_map(move |item| {
+            if let Ok(ref b) = item {
+                let _ = tx.send(b.clone());
             }
-        }
-    });
-    let body = Body::from_stream(stream);
+            async move {
+                match item {
+                    Ok(b) => Some(Ok::<Bytes, std::convert::Infallible>(b)),
+                    Err(e) => {
+                        warn!(error = %e, "upstream body stream error; truncating response");
+                        None
+                    }
+                }
+            }
+        });
+
+        tokio::spawn(async move {
+            let mut buf = Vec::new();
+            while let Some(b) = rx.recv().await {
+                buf.extend_from_slice(&b);
+            }
+            if let Ok(json) = serde_json::from_slice::<serde_json::Value>(&buf) {
+                if let Some(usage) = json.get("usage") {
+                    let prompt = usage
+                        .get("prompt_tokens")
+                        .and_then(|v| v.as_u64())
+                        .unwrap_or(0);
+                    let completion = usage
+                        .get("completion_tokens")
+                        .and_then(|v| v.as_u64())
+                        .unwrap_or(0);
+                    let cached = usage
+                        .get("prompt_tokens_details")
+                        .and_then(|d| d.get("cached_tokens"))
+                        .and_then(|v| v.as_u64())
+                        .unwrap_or(0);
+
+                    metrics::counter!("llm_proxy_input_tokens_total", "model" => logical_model.clone())
+                        .increment(prompt);
+                    metrics::counter!("llm_proxy_output_tokens_total", "model" => logical_model.clone())
+                        .increment(completion);
+                    metrics::counter!(
+                        "llm_proxy_cached_input_tokens_total",
+                        "model" => logical_model
+                    )
+                    .increment(cached);
+                }
+            }
+        });
+
+        Body::from_stream(stream)
+    } else {
+        // Streaming or error: pass through directly.
+        let stream = resp.bytes_stream().filter_map(|item| async move {
+            match item {
+                Ok(b) => Some(Ok::<Bytes, std::convert::Infallible>(b)),
+                Err(e) => {
+                    warn!(error = %e, "upstream body stream error; truncating response");
+                    None
+                }
+            }
+        });
+        Body::from_stream(stream)
+    };
+
     let mut response = Response::new(body);
     *response.status_mut() = status;
     *response.headers_mut() = headers;
@@ -285,6 +362,13 @@ fn parse_model(body: &Bytes) -> Result<String> {
         .and_then(|m| m.as_str())
         .ok_or_else(|| anyhow!("missing 'model' field"))?
         .to_string())
+}
+
+fn parse_streaming(body: &Bytes) -> bool {
+    serde_json::from_slice::<serde_json::Value>(body)
+        .ok()
+        .and_then(|v| v.get("stream").and_then(|s| s.as_bool()))
+        .unwrap_or(false)
 }
 
 fn rewrite_model(body: &Bytes, upstream_model: &str) -> Result<Bytes> {
