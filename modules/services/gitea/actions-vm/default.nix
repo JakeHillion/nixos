@@ -83,7 +83,11 @@ let
 
         cat > config.yaml <<EOF
       log:
-        level: info
+        # debug (not info) so act_runner skips its NullLogger override and the
+        # wrapped nektos/act job logger writes step stdout/stderr to its own
+        # stdout — visible on the host journal via /dev/console. Step output
+        # still ships to Gitea over the live-log API independently.
+        level: debug
       runner:
         file: .runner
         capacity: 1

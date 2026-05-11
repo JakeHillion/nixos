@@ -24,6 +24,11 @@ ExecStart=/usr/local/bin/act_runner daemon --config /var/lib/gitea-runner/config
 ExecStopPost=+/sbin/poweroff -f
 Restart=no
 TimeoutStartSec=5min
+# Mirror runner output to /dev/console (ttyS0 here) so the host's
+# `journalctl -fu gitea-actions-vm-N` shows live runner state — ttyS0 is
+# bridged to the host unit's stdout via qemu's -serial mon:stdio.
+StandardOutput=journal+console
+StandardError=journal+console
 
 [Install]
 WantedBy=cloud-init.target
