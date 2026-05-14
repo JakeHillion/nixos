@@ -99,13 +99,12 @@ in
 
   config = lib.mkIf cfg.enable {
     custom.services.llm_proxy.providers = {
-      canopywave = lib.mkDefault {
-        url = "https://inference.canopywave.io/v1";
-        apiKeyCredential = "canopywave-api-key";
-        apiKeyFile = config.age.secrets."llm-proxy/canopywave-api-key".path;
+      firepass = lib.mkDefault {
+        url = "https://api.fireworks.ai/inference/v1";
+        apiKeyCredential = "fireworks-fire-pass-api-key";
+        apiKeyFile = config.age.secrets."llm-proxy/fireworks-fire-pass-api-key".path;
         models = {
-          "moonshotai/kimi-k2.6" = "moonshotai/kimi-k2.6";
-          "minimax/minimax-m2.5" = "minimax/minimax-m2.5";
+          "moonshotai/kimi-k2.6" = "accounts/fireworks/routers/kimi-k2p6-turbo";
         };
       };
       ollama-cloud = lib.mkDefault {
@@ -113,17 +112,18 @@ in
         apiKeyCredential = "ollama-cloud-api-key";
         apiKeyFile = config.age.secrets."llm-proxy/ollama-cloud-api-key".path;
         models = {
-          "zai/glm-5.1" = "glm-5.1";
           "deepseek/deepseek-v4-pro" = "deepseek-v4-pro";
+          "minimax/minimax-m2.5" = "minimax-m2.5";
+          "zai/glm-5.1" = "glm-5.1";
         };
       };
     };
 
-    age.secrets."llm-proxy/canopywave-api-key" = {
-      rekeyFile = ./canopy-wave-unlimited.age;
-    };
     age.secrets."llm-proxy/ollama-cloud-api-key" = {
       rekeyFile = ./ollama-cloud.age;
+    };
+    age.secrets."llm-proxy/fireworks-fire-pass-api-key" = {
+      rekeyFile = ./fireworks-fire-pass.age;
     };
 
     systemd.services.llm-proxy = {

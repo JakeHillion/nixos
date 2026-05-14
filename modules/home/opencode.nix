@@ -65,9 +65,9 @@ let
       atlas = { model = kimi; };
       multimodal-looker = { model = kimi; };
 
-      # M2.5 primary — utility runners, speed over intelligence
-      explore = { model = minimax; };
-      librarian = { model = minimax; };
+      # K2.6 — utility runners, speed over intelligence
+      explore = { model = kimi; };
+      librarian = { model = kimi; };
     };
     categories = {
       # DeepSeek V4 Pro Think Max, K2.6 fallback
@@ -84,10 +84,8 @@ let
       visual-engineering = { model = kimi; };
       artistry = { model = kimi; };
 
-      # M2.5 — fast, cheap utility tasks
-      quick = { model = minimax; };
-
       # K2.6 — high volume, good enough
+      quick = { model = kimi; };
       unspecified-low = { model = kimi; };
       writing = { model = kimi; };
     };
