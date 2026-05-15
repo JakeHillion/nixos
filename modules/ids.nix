@@ -8,7 +8,7 @@
       chia = 185;
       gitea = 186;
       node-exporter = 188;
-      step-ca = 198;
+      # step-ca = 198; # Removed 2026-05-16
       frigate = 200;
       nebula-jakehillion = 205;
       immich = 206;
@@ -39,7 +39,7 @@
       chia = 185;
       gitea = 186;
       node-exporter = 188;
-      step-ca = 198;
+      # step-ca = 198; # Removed 2026-05-16
       frigate = 200;
       nebula-jakehillion = 205;
       immich = 206;

@@ -2,6 +2,12 @@
 
 let
   cfg = config.custom.services.homeassistant;
+
+  acmeApiHost =
+    let
+      authDns = config.custom.locations.locations.services.authoritative_dns;
+    in
+    if builtins.isList authDns then builtins.head authDns else authDns;
 in
 {
   options.custom.services.homeassistant = {
@@ -80,26 +86,18 @@ in
         enable = true;
 
         virtualHosts = {
-          "homeassistant.iot.hillion.co.uk" = {
+          "homeassistant.iot.home.jakehillion.me" = {
             listenAddresses = [ "10.239.19.8" ];
             extraConfig = ''
               tls {
-                ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
+                dns jakehillion {
+                  api_endpoint http://${acmeApiHost}:8553
+                }
               }
 
               @blocked not remote_ip 10.239.19.4
               respond @blocked "<h1>Access Denied</h1>" 403
 
-              reverse_proxy http://localhost:8123
-            '';
-          };
-
-          "homeassistant.home.hillion.co.uk" = {
-            listenAddresses = [ "10.64.50.29" ];
-            extraConfig = ''
-              tls {
-                ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
-              }
               reverse_proxy http://localhost:8123
             '';
           };

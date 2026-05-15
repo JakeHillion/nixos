@@ -86,7 +86,6 @@
     };
 
     custom.auto_updater.enable = true;
-    custom.ca.consumer.enable = true;
     custom.compressed_ram.enable = true;
     custom.dns.enable = true;
     custom.home.defaults = true;
