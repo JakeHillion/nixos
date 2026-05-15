@@ -41,17 +41,30 @@ in
           avatar = ./higgins.png;
           password_file = config.age.secrets."personal-agent/matrix_password".path;
           device_display_name = "personal-agent";
-          trusted_users = [ "@jake:hillion.co.uk" ];
+          trusted_user = "@jake:hillion.co.uk";
         };
+
         llm = {
-          default_model = "Kimi K2.6";
-          providers = [{
-            name = "llm-proxy";
-            base_url = "http://127.0.0.1:9100/v1/immediate";
-            token_file = pkgs.writeText "personal-agent-dummy-token" "unused";
-            models = [{ id = "moonshotai/kimi-k2.6"; name = "Kimi K2.6"; }];
-          }];
+          default_model = "Kimi K2.6 (immediate)";
+          batch_model = "Kimi K2.6 (batch60k)";
+
+          providers = [
+            {
+              name = "llm-proxy-immediate";
+              base_url = "http://127.0.0.1:9100/v1/immediate";
+              token_file = pkgs.writeText "personal-agent-dummy-token" "unused";
+              models = [{ id = "moonshotai/kimi-k2.6"; name = "Kimi K2.6 (immediate)"; }];
+            }
+            {
+              name = "llm-proxy-batch60k";
+              base_url = "http://127.0.0.1:9100/v1/batch/60000";
+              token_file = pkgs.writeText "personal-agent-dummy-token" "unused";
+              models = [{ id = "moonshotai/kimi-k2.6"; name = "Kimi K2.6 (batch60k)"; }];
+            }
+          ];
         };
+
+        memory.nightly.enabled = true;
 
         calendar = {
           private = {
