@@ -26,11 +26,38 @@
         # Allow LAN to reach fanboy Nebula port
         iifname "enp1s0f0" oifname "openclaw" ip daddr 10.116.242.2 udp dport 4242 counter accept comment "LAN to fanboy Nebula"
         iifname "openclaw" oifname "enp1s0f0" ct state { established, related } counter accept comment "Established back from openclaw"
+
+        # Cellular failover: internet-enabled networks out, established back
+        iifname { "enp1s0f0", "iot", "exo", "openclaw" } oifname "cellular" counter accept comment "LAN to cellular failover"
+        iifname "cellular" oifname { "enp1s0f0", "iot", "exo", "openclaw" } ct state { established, related } counter accept comment "Cellular to LAN established"
+        iifname "wg0" oifname "cellular" counter accept comment "WireGuard to cellular failover"
+        iifname "cellular" oifname "wg0" ct state { established, related } counter accept comment "Cellular to WireGuard established"
       '';
       extraNatRules = ''
         # WireGuard NAT masquerading
         iifname "wg0" oifname "enp2s0" masquerade comment "WireGuard NAT"
+
+        # Cellular failover NAT masquerading
+        oifname "cellular" masquerade comment "Cellular NAT"
       '';
+    };
+
+    ## Cellular VLAN on SFP+ port (high metric so primary WAN stays default)
+    networking.vlans.cellular = {
+      id = 5;
+      interface = "enp1s0f0";
+    };
+    networking.interfaces.cellular = {
+      ipv4.addresses = [{
+        address = "10.69.186.2";
+        prefixLength = 24;
+      }];
+      ipv4.routes = [{
+        address = "0.0.0.0";
+        prefixLength = 0;
+        via = "10.69.186.1";
+        options.metric = "2048";
+      }];
     };
 
     ## WireGuard VPN Server
