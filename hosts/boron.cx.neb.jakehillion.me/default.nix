@@ -84,7 +84,7 @@
         };
         gitea.actions-vm = {
           enable = true;
-          instances = 4;
+          instances = 3;
         };
         matrix.mautrix_discord = true;
       };
