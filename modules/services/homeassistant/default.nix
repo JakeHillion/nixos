@@ -124,6 +124,7 @@ in
           enable = true;
           uri = "tcp://0.0.0.0:10300";
 
+          model = "distil-small.en";
           language = "en";
         };
       };
@@ -163,6 +164,10 @@ in
         config = lib.mkMerge [
           {
             default_config = { };
+
+            assist_pipeline = {
+              debug_recording_dir = "${config.services.home-assistant.configDir}/voice-debug";
+            };
 
             homeassistant = {
               internal_url = "https://homeassistant.iot.home.jakehillion.me";
