@@ -83,6 +83,13 @@ in
         '';
         "gitea.hillion.co.uk".extraConfig = ''
           tls ${./certs/gitea.hillion.co.uk.pem} ${config.age.secrets."caddy/gitea.hillion.co.uk.pem".path}
+
+          @blocked_ua header_regexp User-Agent "(?i)((MSIE|Trident)/|meta-webindexer|DotBot|MJ12bot|Amzn-SearchBot|SemrushBot|DataForSeoBot|Claude-SearchBot)"
+          respond @blocked_ua 403
+
+          @blocked_net header_regexp Cf-Connecting-Ip "^39\.101\."
+          respond @blocked_net 403
+
           reverse_proxy http://${locations.services.gitea}:3000
         '';
         "links.hillion.co.uk".extraConfig = ''
