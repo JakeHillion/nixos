@@ -95,7 +95,7 @@ in
                 }
               }
 
-              @blocked not remote_ip 10.239.19.4
+              @blocked not remote_ip 10.239.19.4 10.239.19.14
               respond @blocked "<h1>Access Denied</h1>" 403
 
               reverse_proxy http://localhost:8123
@@ -165,6 +165,8 @@ in
             default_config = { };
 
             homeassistant = {
+              internal_url = "https://homeassistant.iot.home.jakehillion.me";
+
               auth_providers = [
                 { type = "homeassistant"; }
                 {
