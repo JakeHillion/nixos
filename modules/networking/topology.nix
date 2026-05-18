@@ -427,6 +427,16 @@
                 hwAddress = "3c:0f:02:c2:fd:90";
                 dhcpReservation = true;
               };
+              "15" = {
+                hostname = "athom-without-relay-plug";
+                hwAddress = "00:70:07:6d:ee:77";
+                dhcpReservation = true;
+              };
+              "16" = {
+                hostname = "athom-without-relay-plug";
+                hwAddress = "00:70:07:fc:33:cc";
+                dhcpReservation = true;
+              };
             };
           };
 
