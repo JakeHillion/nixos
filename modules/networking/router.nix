@@ -374,9 +374,14 @@ in
         enable = true;
 
         settings = {
-          # Configure interfaces for DHCP
+          # Configure interfaces for DHCP.
+          # dhcp-socket-type = "udp" prevents the same DHCP query being processed
+          # twice when an interface (e.g. enp1s0f0) has 802.1Q sub-interfaces (e.g.
+          # iot@enp1s0f0): a raw AF_PACKET socket on the parent sees tagged frames
+          # too, so Kea would offer a lease from both the parent and child subnets.
           interfaces-config = {
             interfaces = lib.attrsets.mapAttrsToList getInterfaceName dhcpNetworks;
+            dhcp-socket-type = "udp";
           };
 
           lease-database = {
