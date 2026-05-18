@@ -24,12 +24,12 @@
         iifname "enp2s0" oifname "wg0" ct state related,established accept comment "WAN to WireGuard established"
 
         # Allow LAN to reach fanboy Nebula port
-        iifname "enp1s0f0" oifname "openclaw" ip daddr 10.116.242.2 udp dport 4242 counter accept comment "LAN to fanboy Nebula"
-        iifname "openclaw" oifname "enp1s0f0" ct state { established, related } counter accept comment "Established back from openclaw"
+        iifname "lan" oifname "openclaw" ip daddr 10.116.242.2 udp dport 4242 counter accept comment "LAN to fanboy Nebula"
+        iifname "openclaw" oifname "lan" ct state { established, related } counter accept comment "Established back from openclaw"
 
         # Cellular failover: internet-enabled networks out, established back
-        iifname { "enp1s0f0", "iot", "exo", "openclaw" } oifname "cellular" counter accept comment "LAN to cellular failover"
-        iifname "cellular" oifname { "enp1s0f0", "iot", "exo", "openclaw" } ct state { established, related } counter accept comment "Cellular to LAN established"
+        iifname { "lan", "iot", "exo", "openclaw" } oifname "cellular" counter accept comment "LAN to cellular failover"
+        iifname "cellular" oifname { "lan", "iot", "exo", "openclaw" } ct state { established, related } counter accept comment "Cellular to LAN established"
         iifname "wg0" oifname "cellular" counter accept comment "WireGuard to cellular failover"
         iifname "cellular" oifname "wg0" ct state { established, related } counter accept comment "Cellular to WireGuard established"
       '';

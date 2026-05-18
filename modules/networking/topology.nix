@@ -206,6 +206,7 @@
         networks = {
           lan = {
             description = "Main LAN Network";
+            vlanId = 1;
             subnet = "10.64.50.0/24";
             interface = "enp1s0f0";
             dhcpEnabled = true;
