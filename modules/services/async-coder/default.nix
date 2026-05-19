@@ -20,7 +20,15 @@ in
         file = ./. + "/${lib.removePrefix "async-coder/" name}.age";
         owner = "async-coder";
         group = "async-coder";
-      });
+      })
+    // {
+      "async-coder/context7-api-key" = {
+        rekeyFile = ../../home/claude/context7-api-key.age;
+        owner = "async-coder";
+        group = "async-coder";
+        mode = "0400";
+      };
+    };
 
     custom.services.llm_proxy.enable = true;
 
@@ -115,6 +123,17 @@ in
           cheap_fast_model = "minimax/minimax-m2.5";
           provider = "llm-proxy";
           base_port = 18900;
+          mcp = {
+            context7 = {
+              type = "remote";
+              url = "https://mcp.context7.com/mcp";
+              headers = {
+                CONTEXT7_API_KEY = {
+                  "$file" = config.age.secrets."async-coder/context7-api-key".path;
+                };
+              };
+            };
+          };
         };
       };
     };
