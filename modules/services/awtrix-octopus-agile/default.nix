@@ -33,7 +33,7 @@ let
       AWTRIX_HOST=${lib.escapeShellArg cfg.awtrixHost}
       APP_NAME=${lib.escapeShellArg cfg.appName}
       PRODUCT_CODE="AGILE-24-10-01"
-      TARIFF_CODE="E-1R-AGILE-24-10-01-L"
+      TARIFF_CODE="E-1R-AGILE-24-10-01-C"
       API_BASE="https://api.octopus.energy/v1/products/$PRODUCT_CODE/electricity-tariffs/$TARIFF_CODE/standard-unit-rates"
 
       while true; do
