@@ -6,6 +6,7 @@
     ./async-coder
     ./authoritative_dns.nix
     ./awtrix-fireworks-tokens
+    ./awtrix-octopus-agile
     ./blackmagic-cam-importer
     ./buildbot-nix-master.nix
     ./buildbot-nix-worker.nix

@@ -29,6 +29,7 @@ in
           buildbot-nix-master = "boron.cx.${config.ogygia.domain}";
           buildbot-nix-worker = "boron.cx.${config.ogygia.domain}";
           awtrix-fireworks-tokens = "stinger.pop.${config.ogygia.domain}";
+          awtrix-octopus-agile = "stinger.pop.${config.ogygia.domain}";
           blackmagic-cam-importer = "phoenix.st.${config.ogygia.domain}";
           couchdb = "warlock.cx.${config.ogygia.domain}";
           downloads = "phoenix.st.${config.ogygia.domain}";
