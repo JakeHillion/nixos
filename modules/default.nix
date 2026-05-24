@@ -2,7 +2,7 @@
 
 {
   imports = [
-    ./auto_updater.nix
+    ./auto-updater.nix
     ./backups
     ./chia.nix
     ./compressed_ram.nix

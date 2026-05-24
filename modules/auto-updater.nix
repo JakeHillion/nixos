@@ -35,17 +35,17 @@ in
       "d ${location} 0755 root root - -"
     ];
 
-    systemd.timers.auto_updater = {
+    systemd.timers."auto-updater" = {
       wantedBy = [ "timers.target" ];
       timerConfig = {
         OnBootSec = "15m";
         OnUnitInactiveSec = "60m";
         RandomizedDelaySec = "30m";
-        Unit = "auto_updater.service";
+        Unit = "auto-updater.service";
       };
     };
 
-    systemd.services.auto_updater = {
+    systemd.services."auto-updater" = {
       description = "Automatically update NixOS configuration if already on main.";
 
       after = [ "network-online.target" ];
