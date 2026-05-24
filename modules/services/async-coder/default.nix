@@ -102,6 +102,7 @@ in
               { owner = "JakeHillion"; name = "nixos"; jujutsu_mode = true; envrc = true; }
               { owner = "JakeHillion"; name = "personal-agent"; envrc = true; }
               { owner = "JakeHillion"; name = "testquorum"; envrc = true; }
+              { owner = "jjtechholdings"; name = "monorepo"; }
             ];
           };
 
