@@ -43,7 +43,6 @@ in
 
   # Backups Secrets
   "secrets/git/git_backups_ecdsa.age".publicKeys = jake_users ++ [ neb.st.phoenix neb.cx.warlock ];
-  "secrets/git/git_backups_remotes.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
 
   # Mastodon Secrets
   "modules/services/mastodon/social.hillion.co.uk/otp_secret_file.age".publicKeys = jake_users ++ [ ];
