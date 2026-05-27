@@ -28,6 +28,7 @@
       open-webui = 412;
       mautrix-discord = 413;
       gitea-actions-vm = 415;
+      backup-git = 416;
 
       ## Consistent People
       jake = 1000;
@@ -57,6 +58,7 @@
       mautrix-discord = 413;
       mautrix-discord-registration = 414;
       gitea-actions-vm = 415;
+      backup-git = 416;
 
       ## Consistent Groups
       mediaaccess = 1200;
