@@ -14,9 +14,6 @@
     custom.tang.enable = true;
     custom.auto_updater.allowReboot = true;
 
-    ## Git Sync
-    custom.services.git-sync.enable = true;
-
     networking = {
       vlans = {
         iot = {
