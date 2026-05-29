@@ -124,35 +124,29 @@ in
             "L ${details.home}/local - ${user} ${details.group} - ${cfg.base}/users/${user}"
           ])
         cfg.users);
-    } // (lib.foldl' lib.recursiveUpdate { } (builtins.map
-      (subdir:
-        let
-          usesPrivateDir = builtins.any
+    };
+
+    system.activationScripts =
+      let
+        usesPrivateDir = subdir:
+          builtins.any
             (dir: lib.strings.hasPrefix "/var/${subdir}/private/"
               (if builtins.isString dir then dir else dir.directory or dir.dirPath or ""))
             (lib.lists.flatten (lib.attrsets.mapAttrsToList
               (path: cfg: cfg.directories or [ ])
               config.environment.persistence));
-        in
+      in
+      lib.optionalAttrs (usesPrivateDir "lib")
         {
-          services."fix-var-${subdir}-private-permissions" = lib.mkIf usesPrivateDir {
-            description = "Fix /var/${subdir}/private permissions";
-            serviceConfig = {
-              Type = "oneshot";
-              ExecStart = "${lib.getExe' pkgs.coreutils "chmod"} 0700 /var/${subdir}/private";
-              User = "root";
-            };
+          fix-var-lib-private-permissions = {
+            text = "${lib.getExe' pkgs.coreutils "chmod"} 0700 /var/lib/private";
+            deps = [ "createPersistentStorageDirs" ];
           };
-
-          timers."fix-var-${subdir}-private-permissions" = lib.mkIf usesPrivateDir {
-            description = "Fix /var/${subdir}/private permissions every 30 seconds";
-            wantedBy = [ "timers.target" ];
-            timerConfig = {
-              OnBootSec = "30s";
-              OnUnitActiveSec = "30s";
-              Unit = "fix-var-${subdir}-private-permissions.service";
-            };
-          };
-        }) [ "lib" "cache" ]));
+        } // lib.optionalAttrs (usesPrivateDir "cache") {
+        fix-var-cache-private-permissions = {
+          text = "${lib.getExe' pkgs.coreutils "chmod"} 0700 /var/cache/private";
+          deps = [ "createPersistentStorageDirs" ];
+        };
+      };
   };
 }
