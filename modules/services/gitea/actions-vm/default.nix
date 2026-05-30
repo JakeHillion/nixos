@@ -22,7 +22,7 @@ let
     name = "gitea-actions-vm-launch-${toString i}";
     runtimeInputs = with pkgs; [
       coreutils
-      gitea-actions-runner
+      unstable.gitea-actions-runner
       qemu_kvm
       util-linux
       xorriso
@@ -74,7 +74,7 @@ let
 
       (
         cd "$stage"
-        act_runner register \
+        gitea-runner register \
           --no-interactive --ephemeral \
           --instance "${cfg.giteaUrl}" \
           --token "$(cat "$CREDENTIALS_DIRECTORY/token")" \

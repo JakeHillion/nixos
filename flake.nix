@@ -96,7 +96,9 @@
           "qnaplcd" = final.callPackage ./pkgs/qnaplcd.nix { inherit qnaplcd-menu; };
           "opencode-plugin" = final.callPackage ./pkgs/opencode-plugin { };
           "oh-my-openagent" = final.callPackage ./pkgs/oh-my-openagent { };
-          "gitea-actions-vm-image" = final.callPackage ./pkgs/gitea-actions-vm-image { };
+          "gitea-actions-vm-image" = final.callPackage ./pkgs/gitea-actions-vm-image {
+            gitea-actions-runner = final.unstable.gitea-actions-runner;
+          };
           "llm-proxy" = final.callPackage ./pkgs/llm-proxy.nix { };
         })
       ];
