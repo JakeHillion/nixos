@@ -78,7 +78,7 @@ in
                   jakes-iphone = "172.20.0.13";
                 };
                 pop = {
-                  hangman = "172.20.0.23";
+                  # hangman = "172.20.0.23"; # removed 01/06/2026
                   li = "172.20.0.7";
                   slider = "172.20.0.21";
                   sodium = "172.20.0.8"; # removed 18/04/2025
