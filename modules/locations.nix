@@ -41,7 +41,6 @@ in
           firefly-iii = "warlock.cx.${config.ogygia.domain}";
           firefly-iii-data-importer = "warlock.cx.${config.ogygia.domain}";
           frigate = "phoenix.st.${config.ogygia.domain}";
-          git = "boron.cx.${config.ogygia.domain}";
           gitea = "boron.cx.${config.ogygia.domain}";
           hearthd = "stinger.pop.${config.ogygia.domain}";
           homeassistant = "stinger.pop.${config.ogygia.domain}";

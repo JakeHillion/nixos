@@ -15,7 +15,6 @@
     ./etcd.nix
     ./firefly-iii
     ./frigate.nix
-    ./git.nix
     ./gitea
     ./hearthd
     ./homeassistant
