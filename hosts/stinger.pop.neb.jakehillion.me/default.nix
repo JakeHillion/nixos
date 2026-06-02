@@ -67,7 +67,7 @@
         # Cache settings - larger cache for better performance
         cache-size = 10000;
         # Only bind to localhost to prevent external access
-        listen-address = "127.0.0.1";
+        listen-address = [ "127.0.0.1" "::1" ];
         bind-interfaces = true;
         # Don't read /etc/resolv.conf
         no-resolv = true;
