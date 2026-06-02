@@ -101,6 +101,28 @@
     # Disable systemd-timesyncd since we're using chrony
     services.timesyncd.enable = false;
 
+    ## IoT IPv6: SLAAC over ULA fd57:5aa6:c07e::/64
+    networking.interfaces.iot.ipv6.addresses = [{
+      address = "fd57:5aa6:c07e::1";
+      prefixLength = 64;
+    }];
+
+    services.radvd = {
+      enable = true;
+      config = ''
+        interface iot {
+          AdvSendAdvert on;
+          AdvManagedFlag off;
+          AdvOtherConfigFlag off;
+          prefix fd57:5aa6:c07e::/64 {
+            AdvOnLink on;
+            AdvAutonomous on;
+            AdvRouterAddr on;
+          };
+        };
+      '';
+    };
+
     ## Knot DNS - public listen address
     services.knot.settings.server.listen = [
       "185.240.111.53@53"
