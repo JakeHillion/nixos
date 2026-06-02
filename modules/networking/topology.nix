@@ -427,6 +427,11 @@
                 hwAddress = "3c:0f:02:c2:fd:90";
                 dhcpReservation = true;
               };
+              "15" = {
+                hostname = "slzb-06mu";
+                hwAddress = "52:78:7d:d7:1a:5c";
+                dhcpReservation = true;
+              };
             };
           };
 

@@ -33,6 +33,7 @@
     ./nix-remote-builder.nix
     ./ntfy.nix
     ./offline-youtube
+    ./openthread-border-router.nix
     ./openwebui
     ./personal-agent
     ./privatebin.nix

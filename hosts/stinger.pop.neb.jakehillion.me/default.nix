@@ -102,6 +102,7 @@
           ];
           allowedUDPPorts = lib.mkForce [
             443 # HTTP 3
+            5353 # mDNS (OTBR / Thread SRP)
           ];
         };
       };
