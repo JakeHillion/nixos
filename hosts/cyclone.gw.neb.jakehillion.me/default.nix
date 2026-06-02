@@ -118,6 +118,7 @@
           AdvSendAdvert on;
           AdvManagedFlag off;
           AdvOtherConfigFlag off;
+          AdvDefaultLifetime 0;
           prefix fd25:b6e8:09ff::/64 {
             AdvOnLink on;
             AdvAutonomous on;
@@ -128,6 +129,7 @@
           AdvSendAdvert on;
           AdvManagedFlag off;
           AdvOtherConfigFlag off;
+          AdvDefaultLifetime 0;
           prefix fd57:5aa6:c07e::/64 {
             AdvOnLink on;
             AdvAutonomous on;
