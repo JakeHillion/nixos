@@ -96,7 +96,8 @@
           ];
           allowedUDPPorts = lib.mkForce [
             443 # HTTP 3
-            5353 # HomeKit
+            5353 # HomeKit / mDNS
+            49191 # OTBR MeshCoP BorderAgent
           ];
         };
         iot = {

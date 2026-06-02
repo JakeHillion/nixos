@@ -22,6 +22,8 @@ in
   config = lib.mkIf cfg.enable {
     services.home-assistant.configDir = lib.mkIf config.custom.impermanence.enable (lib.mkOverride 999 "/data/home-assistant");
 
+    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/lib/private/matter-server" ];
+
     age.secrets = {
       "backups/homeassistant/restic/mig29" = lib.mkIf cfg.backup {
         rekeyFile = ../../../secrets/restic/mig29.age;
@@ -128,6 +130,20 @@ in
         };
       };
 
+      matter-server = {
+        enable = true;
+        logLevel = "debug";
+        extraArgs = [
+          # Only the local Home Assistant talks to this.
+          "--listen-address"
+          "127.0.0.1"
+          # OTBR publishes Thread devices via avahi on iot; without this,
+          # CHIP picks eth0 and never resolves the OMR-prefix AAAAs.
+          "--primary-interface"
+          "iot"
+        ];
+      };
+
       home-assistant = {
         enable = true;
 
@@ -141,6 +157,7 @@ in
           "fully_kiosk"
           "google_assistant"
           "homekit"
+          "matter"
           "met"
           "mobile_app"
           "mqtt"
@@ -165,6 +182,15 @@ in
         config = lib.mkMerge [
           {
             default_config = { };
+
+            logger = {
+              default = "info";
+              logs = {
+                "homeassistant.components.matter" = "debug";
+                "matter_server" = "debug";
+                "chip" = "debug";
+              };
+            };
 
             homeassistant = {
               internal_url = "https://homeassistant.iot.home.jakehillion.me";

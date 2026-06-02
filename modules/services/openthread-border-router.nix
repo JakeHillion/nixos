@@ -53,7 +53,16 @@ in
 
     services.openthread-border-router = {
       enable = true;
-      package = pkgs.unstable.openthread-border-router;
+      # OpenThread picks an ephemeral UDP port for the primary MeshCoP
+      # BorderAgent unless OPENTHREAD_CONFIG_BORDER_AGENT_UDP_PORT is set at
+      # compile time. Pin to 49191 so the firewall rule can be a single port.
+      package = pkgs.unstable.openthread-border-router.overrideAttrs (old: {
+        env = (old.env or { }) // {
+          NIX_CFLAGS_COMPILE =
+            (old.env.NIX_CFLAGS_COMPILE or "")
+              + " -DOPENTHREAD_CONFIG_BORDER_AGENT_UDP_PORT=49191";
+        };
+      });
       backboneInterfaces = [ cfg.backboneInterface ];
       radio.url = "spinel+hdlc+uart:///run/otbr/ttyOTBR?uart-baudrate=460800&uart-init-deassert";
       radio.extraDevices = [ "trel://${cfg.backboneInterface}" ];
