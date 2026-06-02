@@ -101,7 +101,11 @@
     # Disable systemd-timesyncd since we're using chrony
     services.timesyncd.enable = false;
 
-    ## IoT IPv6: SLAAC over ULA fd57:5aa6:c07e::/64
+    ## Internal IPv6: SLAAC over ULAs
+    networking.interfaces.lan.ipv6.addresses = [{
+      address = "fd25:b6e8:09ff::1";
+      prefixLength = 64;
+    }];
     networking.interfaces.iot.ipv6.addresses = [{
       address = "fd57:5aa6:c07e::1";
       prefixLength = 64;
@@ -110,6 +114,16 @@
     services.radvd = {
       enable = true;
       config = ''
+        interface lan {
+          AdvSendAdvert on;
+          AdvManagedFlag off;
+          AdvOtherConfigFlag off;
+          prefix fd25:b6e8:09ff::/64 {
+            AdvOnLink on;
+            AdvAutonomous on;
+            AdvRouterAddr on;
+          };
+        };
         interface iot {
           AdvSendAdvert on;
           AdvManagedFlag off;

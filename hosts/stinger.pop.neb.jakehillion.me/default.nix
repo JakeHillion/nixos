@@ -55,6 +55,10 @@
         ];
       };
     };
+    # Force-accept RAs on eth0 despite forwarding=1 (set by OTBR for the
+    # Thread mesh). Without this, eth0 ignores RAs and never SLAACs.
+    boot.kernel.sysctl."net.ipv6.conf.eth0.accept_ra" = 2;
+
     # Use local dnsmasq as caching resolver
     networking.nameservers = lib.mkForce [ "127.0.0.1" ];
 
