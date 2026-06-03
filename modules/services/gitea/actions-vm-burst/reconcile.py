@@ -183,143 +183,179 @@ def launch_one(vm_name, zone):
     stage = work / "stage"
     stage.mkdir(parents=True, exist_ok=True)
 
-    # `gitea-runner register --ephemeral` writes .runner into cwd.
-    subprocess.check_call(
-        [
-            "gitea-runner",
-            "register",
-            "--no-interactive",
-            "--ephemeral",
-            "--instance",
-            GITEA_URL,
-            "--token",
-            GITEA_REG_TOKEN,
-            "--name",
-            vm_name,
-            "--labels",
-            RUNNER_LABELS,
-        ],
-        cwd=stage,
-    )
-
-    write_cidata_files(stage, vm_name)
-
-    # ISO9660 with volume identifier "cidata" -- recognised by cloud-init's
-    # NoCloud datasource and surfaces as /dev/disk/by-label/cidata, which
-    # is what the in-VM runner.service mounts.
-    subprocess.check_call(
-        [
-            "xorriso",
-            "-as",
-            "mkisofs",
-            "-output",
-            str(work / "cidata.raw"),
-            "-volid",
-            "cidata",
-            "-joliet",
-            "-rock",
-            str(stage),
-        ]
-    )
-
-    # GCE image upload format: tar.gz containing a single `disk.raw`.
-    subprocess.check_call(
-        [
-            "tar",
-            "-Sczf",
-            str(work / "cidata.tar.gz"),
-            "-C",
-            str(work),
-            "--transform=s#cidata.raw#disk.raw#",
-            "cidata.raw",
-        ]
-    )
-
     gcs_uri = f"gs://{GCS_BUCKET}/{vm_name}.tar.gz"
-    subprocess.check_call(
-        [
-            "gcloud",
-            "storage",
-            "cp",
-            str(work / "cidata.tar.gz"),
-            gcs_uri,
-            "--quiet",
-        ]
-    )
-
     cidata_image = f"{vm_name}-cidata"
-    subprocess.check_call(
-        [
-            "gcloud",
-            "compute",
-            "images",
-            "create",
-            cidata_image,
-            "--source-uri",
-            gcs_uri,
-            "--quiet",
-        ]
-    )
+    gcs_created = False
+    image_created = False
+    vm_create_attempted = False
 
-    subprocess.check_call(
-        [
-            "gcloud",
-            "compute",
-            "instances",
-            "create",
-            vm_name,
-            f"--zone={zone}",
-            f"--machine-type={MACHINE_TYPE}",
-            f"--image={IMAGE_NAME}",
-            f"--image-project={GCP_PROJECT}",
-            f"--boot-disk-size={BOOT_DISK_SIZE_GB}GB",
-            "--labels=role=gitea-actions-burst",
-            # size=4: hyperdisk-balanced (N4 default) has a 4 GiB minimum,
-            # GCE pads zeros after the ~1 MiB ISO. udev still tags
-            # /dev/disk/by-label/cidata from the filesystem signature at
-            # the start of the disk. mode=ro isn't valid for hyperdisk;
-            # the in-VM unit mounts ISO with -o ro and the disk is
-            # auto-deleted with the VM, so rw at the GCE layer is safe.
-            f"--create-disk=name={vm_name}-cidata,image={cidata_image},"
-            f"image-project={GCP_PROJECT},auto-delete=yes,size=4,"
-            "device-name=cidata",
-            "--no-restart-on-failure",
-            "--maintenance-policy=TERMINATE",
-            f"--max-run-duration={MAX_RUN_DURATION}",
-            "--instance-termination-action=STOP",
-            # Burst VMs don't call any GCP APIs from inside; skip the
-            # default Compute SA attachment so we don't need
-            # iam.serviceAccountUser on it.
-            "--no-service-account",
-            "--no-scopes",
-            "--quiet",
-        ]
-    )
+    try:
+        # `gitea-runner register --ephemeral` writes .runner into cwd.
+        subprocess.check_call(
+            [
+                "gitea-runner",
+                "register",
+                "--no-interactive",
+                "--ephemeral",
+                "--instance",
+                GITEA_URL,
+                "--token",
+                GITEA_REG_TOKEN,
+                "--name",
+                vm_name,
+                "--labels",
+                RUNNER_LABELS,
+            ],
+            cwd=stage,
+        )
 
+        write_cidata_files(stage, vm_name)
 
-def cleanup_dead(dead):
-    for inst in dead:
-        name = inst["name"]
-        zone = inst.get("_zone_name") or inst["zone"].rsplit("/", 1)[-1]
-        try:
+        # ISO9660 with volume identifier "cidata" -- recognised by cloud-init's
+        # NoCloud datasource and surfaces as /dev/disk/by-label/cidata, which
+        # is what the in-VM runner.service mounts.
+        subprocess.check_call(
+            [
+                "xorriso",
+                "-as",
+                "mkisofs",
+                "-output",
+                str(work / "cidata.raw"),
+                "-volid",
+                "cidata",
+                "-joliet",
+                "-rock",
+                str(stage),
+            ]
+        )
+
+        # GCE image upload format: tar.gz containing a single `disk.raw`.
+        subprocess.check_call(
+            [
+                "tar",
+                "-Sczf",
+                str(work / "cidata.tar.gz"),
+                "-C",
+                str(work),
+                "--transform=s#cidata.raw#disk.raw#",
+                "cidata.raw",
+            ]
+        )
+
+        subprocess.check_call(
+            [
+                "gcloud",
+                "storage",
+                "cp",
+                str(work / "cidata.tar.gz"),
+                gcs_uri,
+                "--quiet",
+            ]
+        )
+        gcs_created = True
+
+        subprocess.check_call(
+            [
+                "gcloud",
+                "compute",
+                "images",
+                "create",
+                cidata_image,
+                "--source-uri",
+                gcs_uri,
+                "--quiet",
+            ]
+        )
+        image_created = True
+
+        vm_create_attempted = True
+        subprocess.check_call(
+            [
+                "gcloud",
+                "compute",
+                "instances",
+                "create",
+                vm_name,
+                f"--zone={zone}",
+                f"--machine-type={MACHINE_TYPE}",
+                f"--image={IMAGE_NAME}",
+                f"--image-project={GCP_PROJECT}",
+                f"--boot-disk-size={BOOT_DISK_SIZE_GB}GB",
+                "--labels=role=gitea-actions-burst",
+                # size=4: hyperdisk-balanced (N4 default) has a 4 GiB minimum,
+                # GCE pads zeros after the ~1 MiB ISO. udev still tags
+                # /dev/disk/by-label/cidata from the filesystem signature at
+                # the start of the disk. mode=ro isn't valid for hyperdisk;
+                # the in-VM unit mounts ISO with -o ro and the disk is
+                # auto-deleted with the VM, so rw at the GCE layer is safe.
+                f"--create-disk=name={vm_name}-cidata,image={cidata_image},"
+                f"image-project={GCP_PROJECT},auto-delete=yes,size=4,"
+                "device-name=cidata",
+                "--no-restart-on-failure",
+                "--maintenance-policy=TERMINATE",
+                f"--max-run-duration={MAX_RUN_DURATION}",
+                "--instance-termination-action=STOP",
+                # Burst VMs don't call any GCP APIs from inside; skip the
+                # default Compute SA attachment so we don't need
+                # iam.serviceAccountUser on it.
+                "--no-service-account",
+                "--no-scopes",
+                "--quiet",
+            ]
+        )
+    except Exception:
+        # Best-effort reverse-order cleanup. Any straggler that survives
+        # here is still picked up later by sweep_orphans().
+        if vm_create_attempted:
+            # `create` can fail after the VM resource exists (e.g. disk
+            # creation succeeded, post-create polling timed out), so try
+            # the delete regardless of where the exception fired.
             subprocess.run(
                 [
                     "gcloud",
                     "compute",
                     "instances",
                     "delete",
-                    name,
+                    vm_name,
                     f"--zone={zone}",
                     "--quiet",
                 ],
-                check=True,
+                check=False,
             )
-        except subprocess.CalledProcessError as e:
-            print(
-                f"cleanup: delete instance {name} failed: {e}", file=sys.stderr
+        if image_created:
+            subprocess.run(
+                [
+                    "gcloud",
+                    "compute",
+                    "images",
+                    "delete",
+                    cidata_image,
+                    "--quiet",
+                ],
+                check=False,
             )
-            continue
-        # Best-effort: the cidata image + GCS object aren't auto-deleted.
+        if gcs_created:
+            subprocess.run(
+                [
+                    "gcloud",
+                    "storage",
+                    "rm",
+                    gcs_uri,
+                    "--quiet",
+                ],
+                check=False,
+            )
+        raise
+
+
+def cleanup_dead(dead):
+    # Image and GCS first; VM last. Transient failures on the trailing
+    # resources are recovered by sweep_orphans() on a subsequent pass
+    # once the VM no longer shields them.
+    for inst in dead:
+        name = inst["name"]
+        zone = inst.get("_zone_name") or inst["zone"].rsplit("/", 1)[-1]
+
         subprocess.run(
             [
                 "gcloud",
@@ -337,6 +373,119 @@ def cleanup_dead(dead):
                 "storage",
                 "rm",
                 f"gs://{GCS_BUCKET}/{name}.tar.gz",
+                "--quiet",
+            ],
+            check=False,
+        )
+
+        try:
+            subprocess.run(
+                [
+                    "gcloud",
+                    "compute",
+                    "instances",
+                    "delete",
+                    name,
+                    f"--zone={zone}",
+                    "--quiet",
+                ],
+                check=True,
+            )
+        except subprocess.CalledProcessError as e:
+            print(
+                f"cleanup: delete instance {name} failed: {e}", file=sys.stderr
+            )
+
+
+ORPHAN_AGE_SECONDS = 5 * 60
+
+
+def sweep_orphans(live_vm_names):
+    # Backstop for both launch_one partial-failure paths that escape
+    # local cleanup and cleanup_dead's check=False image/GCS deletes.
+    # Per-VM resources are name-prefixed (gitea-burst-<hex>...), so we
+    # filter strictly to that prefix and leave the shared base image
+    # (gitea-actions-vm-<hash>) alone. The age threshold guards against
+    # listing eventual-consistency races against a just-launched VM
+    # that hasn't yet surfaced in list_burst_instances().
+    now = int(time.time())
+
+    try:
+        out = subprocess.check_output(
+            [
+                "gcloud",
+                "compute",
+                "images",
+                "list",
+                "--filter=name~^gitea-burst-.*-cidata$",
+                "--format=value(name,creationTimestamp)",
+            ]
+        )
+    except subprocess.CalledProcessError as e:
+        print(f"sweep: images list failed: {e}", file=sys.stderr)
+        out = b""
+    for line in out.decode().splitlines():
+        parts = line.split()
+        if len(parts) != 2:
+            continue
+        img_name, ts = parts
+        vm_name = img_name[: -len("-cidata")]
+        if vm_name in live_vm_names:
+            continue
+        try:
+            age = now - iso_to_epoch(ts)
+        except ValueError:
+            continue
+        if age < ORPHAN_AGE_SECONDS:
+            continue
+        print(
+            f"sweep: deleting orphan image {img_name} (age={age}s)", flush=True
+        )
+        subprocess.run(
+            ["gcloud", "compute", "images", "delete", img_name, "--quiet"],
+            check=False,
+        )
+
+    try:
+        out = subprocess.check_output(
+            [
+                "gcloud",
+                "storage",
+                "objects",
+                "list",
+                f"gs://{GCS_BUCKET}/gitea-burst-*.tar.gz",
+                "--format=value(name,timeCreated)",
+            ]
+        )
+    except subprocess.CalledProcessError as e:
+        print(f"sweep: storage objects list failed: {e}", file=sys.stderr)
+        return
+    for line in out.decode().splitlines():
+        parts = line.split()
+        if len(parts) != 2:
+            continue
+        obj_name, ts = parts
+        if not obj_name.endswith(".tar.gz"):
+            continue
+        vm_name = obj_name[: -len(".tar.gz")]
+        if vm_name in live_vm_names:
+            continue
+        try:
+            age = now - iso_to_epoch(ts)
+        except ValueError:
+            continue
+        if age < ORPHAN_AGE_SECONDS:
+            continue
+        print(
+            f"sweep: deleting orphan GCS object {obj_name} (age={age}s)",
+            flush=True,
+        )
+        subprocess.run(
+            [
+                "gcloud",
+                "storage",
+                "rm",
+                f"gs://{GCS_BUCKET}/{obj_name}",
                 "--quiet",
             ],
             check=False,
@@ -416,6 +565,12 @@ def reconcile(last_launched):
 
     if dead:
         cleanup_dead(dead)
+
+    # All currently-known burst VMs (alive + dead). Used by sweep_orphans
+    # to decide which per-VM resources have no owner. Newly-launched VMs
+    # in this sweep aren't in `instances`, but the sweep's age threshold
+    # protects them.
+    sweep_orphans({i["name"] for i in instances})
 
     return cap
 
