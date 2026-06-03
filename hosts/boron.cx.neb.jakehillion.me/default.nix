@@ -86,6 +86,13 @@
           enable = true;
           instances = 3;
         };
+        # Burst-to-cloud Gitea Actions runners.
+        # See modules/services/gitea/actions-vm-burst/README.md.
+        gitea.actions-vm-burst = {
+          enable = true;
+          gcpProject = "continuous-integration-498314";
+          gcsBucket = "testquorum-ci-vm-images";
+        };
         matrix.mautrix_discord = true;
       };
     };
