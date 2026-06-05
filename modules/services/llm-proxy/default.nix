@@ -113,6 +113,7 @@ in
         apiKeyFile = config.age.secrets."llm-proxy/ollama-cloud-api-key".path;
         models = {
           "deepseek/deepseek-v4-pro" = "deepseek-v4-pro";
+          "deepseek/deepseek-v4-flash" = "deepseek-v4-flash";
           "minimax/minimax-m2.5" = "minimax-m2.5";
           "zai/glm-5.1" = "glm-5.1";
         };
