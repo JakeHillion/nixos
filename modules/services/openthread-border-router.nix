@@ -1,12 +1,9 @@
-{ config, lib, pkgs, nixpkgs-unstable, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   cfg = config.custom.services.openthread-border-router;
 in
 {
-  imports = [ "${nixpkgs-unstable}/nixos/modules/services/home-automation/openthread-border-router.nix" ];
-  disabledModules = [ "services/home-automation/openthread-border-router.nix" ];
-
   options.custom.services.openthread-border-router = {
     enable = lib.mkEnableOption "openthread-border-router";
 

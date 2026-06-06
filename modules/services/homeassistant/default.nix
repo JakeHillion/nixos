@@ -133,15 +133,13 @@ in
       matter-server = {
         enable = true;
         logLevel = "debug";
-        extraArgs = [
+        extraArgs = {
           # Only the local Home Assistant talks to this.
-          "--listen-address"
-          "127.0.0.1"
+          listen-address = "127.0.0.1";
           # OTBR publishes Thread devices via avahi on iot; without this,
           # CHIP picks eth0 and never resolves the OMR-prefix AAAAs.
-          "--primary-interface"
-          "iot"
-        ];
+          primary-interface = "iot";
+        };
       };
 
       home-assistant = {
