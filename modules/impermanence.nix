@@ -45,7 +45,37 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    fileSystems.${cfg.base}.neededForBoot = true;
+    fileSystems = {
+      ${cfg.base}.neededForBoot = true;
+    } // (
+      # nixpkgs 26.05 dropped the "auto" default for fileSystems.<name>.fsType.
+      # impermanence creates bind-mount fileSystems entries without setting
+      # fsType, so supply "none" for every persisted directory.
+      let
+        inherit (lib) attrsets lists strings;
+        collectRootDirs = pcfg:
+          builtins.map
+            (d: if builtins.isString d then d else d.directory)
+            (pcfg.directories or [ ]);
+        collectUserDirs = pcfg:
+          lists.flatten (attrsets.mapAttrsToList
+            (user: ucfg:
+              let homeDir = config.users.users.${user}.home or "/home/${user}"; in
+              builtins.map
+                (d:
+                  let sub = if builtins.isString d then d else d.directory; in
+                  "${homeDir}/${sub}")
+                (ucfg.directories or [ ]))
+            (pcfg.users or { }));
+        allDirs = lists.flatten (attrsets.mapAttrsToList
+          (_: pcfg: collectRootDirs pcfg ++ collectUserDirs pcfg)
+          config.environment.persistence);
+        prependSlash = d: if strings.hasPrefix "/" d then d else "/" + d;
+      in
+      attrsets.listToAttrs (builtins.map
+        (d: { name = prependSlash d; value = { fsType = lib.mkDefault "none"; }; })
+        allDirs)
+    );
 
     services = {
       openssh.hostKeys = [
