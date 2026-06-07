@@ -45,16 +45,31 @@
         ".ssh/id_rsa"
       ];
     };
-    # TODO: migrate cache subvolume reset to a systemd service in initrd and drop this override.
-    boot.initrd.systemd.enable = lib.mkForce false;
-    boot.initrd.postDeviceCommands = lib.mkAfter ''
-      btrfs subvolume delete /cache/system
-      btrfs subvolume snapshot /cache/empty_snapshot /cache/system
+    boot.initrd.systemd.services.reset-cache-subvolumes = {
+      description = "Wipe /cache/{system,nix-builds} to empty snapshots before stage 2";
+      wantedBy = [ "initrd.target" ];
+      after = [ "cryptsetup.target" ];
+      requires = [ "cryptsetup.target" ];
+      before = [ "initrd-fs.target" ];
+      unitConfig.DefaultDependencies = "no";
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+      };
+      script = ''
+        mkdir -p /reset-cache
+        mount -t btrfs -o subvol=cache /dev/mapper/disk0-crypt /reset-cache
 
-      btrfs subvolume delete /cache/nix-builds
-      btrfs subvolume snapshot /cache/empty_snapshot /cache/nix-builds
-      chmod 0700 /cache/nix-builds
-    '';
+        btrfs subvolume delete /reset-cache/system
+        btrfs subvolume snapshot /reset-cache/empty_snapshot /reset-cache/system
+
+        btrfs subvolume delete /reset-cache/nix-builds
+        btrfs subvolume snapshot /reset-cache/empty_snapshot /reset-cache/nix-builds
+        chmod 0700 /reset-cache/nix-builds
+
+        umount /reset-cache
+      '';
+    };
     nix = {
       distributedBuilds = true;
       settings = {
