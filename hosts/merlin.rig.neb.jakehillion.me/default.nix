@@ -15,18 +15,11 @@
     boot.kernelParams = [
       "ip=dhcp"
     ];
-    # TODO: refactor onto custom.tang and drop this override.
-    boot.initrd.systemd.enable = lib.mkForce false;
-    boot.initrd = {
-      availableKernelModules = [ "igc" ];
-      network.enable = true;
-      clevis = {
-        enable = true;
-        useTang = true;
-        devices = {
-          "disk0-crypt".secretFile = "/data/disk_encryption.jwe";
-        };
-      };
+    custom.tang = {
+      enable = true;
+      networkingModule = "igc";
+      secretFile = "/data/disk_encryption.jwe";
+      devices = [ "disk0-crypt" ];
     };
 
     # BeeLink GTi14 has stability issues on 6.12 (and probably a bit before).
