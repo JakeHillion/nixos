@@ -39,6 +39,11 @@
           }
         ];
       };
+      # The vlan declaration auto-creates an empty networking.interfaces.eth0
+      # entry; in nixpkgs 26.05's strict initrd networkd generator that
+      # produced a second `40-eth0` network claiming DHCP=yes (no addresses)
+      # while the enp1s0 rename produced DHCP=no. Pin both to no.
+      interfaces.eth0.useDHCP = false;
       defaultGateway = "10.64.50.1";
       vlans = {
         iot = {
