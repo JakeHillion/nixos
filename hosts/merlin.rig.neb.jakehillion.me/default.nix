@@ -15,6 +15,8 @@
     boot.kernelParams = [
       "ip=dhcp"
     ];
+    # TODO: refactor onto custom.tang and drop this override.
+    boot.initrd.systemd.enable = lib.mkForce false;
     boot.initrd = {
       availableKernelModules = [ "igc" ];
       network.enable = true;

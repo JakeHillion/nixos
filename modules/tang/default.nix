@@ -23,6 +23,9 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    # TODO: migrate to systemd stage 1 init (boot.initrd.systemd.network.*) and drop this override.
+    boot.initrd.systemd.enable = lib.mkForce false;
+
     boot.initrd = {
       network.enable = true;
       availableKernelModules = [ cfg.networkingModule ];

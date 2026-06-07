@@ -4,6 +4,8 @@
   options.custom.defaults = lib.mkEnableOption "defaults";
 
   config = lib.mkIf config.custom.defaults {
+    boot.initrd.systemd.enable = lib.mkDefault true;
+
     hardware.enableAllFirmware = true;
     nix = {
       settings = {

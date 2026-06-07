@@ -45,6 +45,8 @@
         ".ssh/id_rsa"
       ];
     };
+    # TODO: migrate cache subvolume reset to a systemd service in initrd and drop this override.
+    boot.initrd.systemd.enable = lib.mkForce false;
     boot.initrd.postDeviceCommands = lib.mkAfter ''
       btrfs subvolume delete /cache/system
       btrfs subvolume snapshot /cache/empty_snapshot /cache/system
