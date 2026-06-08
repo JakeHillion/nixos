@@ -174,6 +174,7 @@ in
         ];
         customComponents = with pkgs.home-assistant-custom-components; [
           adaptive_lighting
+          octopus_energy
         ];
         customLovelaceModules = with pkgs.home-assistant-custom-lovelace-modules; [
           button-card
