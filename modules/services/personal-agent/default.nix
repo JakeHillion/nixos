@@ -22,7 +22,13 @@ in
         file = ./. + "/${lib.removePrefix "personal-agent/" name}.age";
         owner = "personal-agent";
         group = "personal-agent";
-      });
+      }) // {
+      "personal-agent/wafer-ai-api-key" = {
+        rekeyFile = ../llm-proxy/wafer-ai.age;
+        owner = "personal-agent";
+        group = "personal-agent";
+      };
+    };
 
     custom.services.llm_proxy.enable = true;
 
@@ -45,15 +51,15 @@ in
         };
 
         llm = {
-          default_model = "DeepSeek V4 Pro (immediate)";
+          default_model = "DeepSeek V4 Pro (wafer)";
           batch_model = "DeepSeek V4 Flash (batch60k)";
 
           providers = [
             {
-              name = "llm-proxy-immediate";
-              base_url = "http://127.0.0.1:9100/v1/immediate";
-              token_file = pkgs.writeText "personal-agent-dummy-token" "unused";
-              models = [{ id = "deepseek/deepseek-v4-pro"; name = "DeepSeek V4 Pro (immediate)"; }];
+              name = "wafer.ai";
+              base_url = "https://pass.wafer.ai/v1";
+              token_file = config.age.secrets."personal-agent/wafer-ai-api-key".path;
+              models = [{ id = "deepseek-v4-pro"; name = "DeepSeek V4 Pro (wafer)"; }];
             }
             {
               name = "llm-proxy-batch60k";
