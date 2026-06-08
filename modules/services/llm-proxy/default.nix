@@ -112,10 +112,17 @@ in
         apiKeyCredential = "ollama-cloud-api-key";
         apiKeyFile = config.age.secrets."llm-proxy/ollama-cloud-api-key".path;
         models = {
-          "deepseek/deepseek-v4-pro" = "deepseek-v4-pro";
-          "deepseek/deepseek-v4-flash" = "deepseek-v4-flash";
           "minimax/minimax-m2.5" = "minimax-m2.5";
           "zai/glm-5.1" = "glm-5.1";
+        };
+      };
+      opencode-go = lib.mkDefault {
+        url = "https://opencode.ai/zen/go/v1";
+        apiKeyCredential = "opencode-go-api-key";
+        apiKeyFile = config.age.secrets."llm-proxy/opencode-go-api-key".path;
+        models = {
+          "deepseek/deepseek-v4-pro" = "deepseek-v4-pro";
+          "deepseek/deepseek-v4-flash" = "deepseek-v4-flash";
         };
       };
     };
@@ -125,6 +132,9 @@ in
     };
     age.secrets."llm-proxy/fireworks-fire-pass-api-key" = {
       rekeyFile = ./fireworks-fire-pass.age;
+    };
+    age.secrets."llm-proxy/opencode-go-api-key" = {
+      rekeyFile = ./opencode-go.age;
     };
 
     systemd.services.llm-proxy = {
