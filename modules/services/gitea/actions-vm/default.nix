@@ -93,6 +93,13 @@ let
         capacity: 1
         fetch_timeout: 5s
         fetch_interval: 2s
+        # On SIGTERM, act_runner cancels polling and waits up to this for
+        # the in-flight job (if any) to finish before exiting. The in-VM
+        # gitea-runner-cycle.timer fires SIGTERM hourly to recover from
+        # the "unregistered runner" wedge; this needs to be >= the job
+        # timeout (default 3h, matching Gitea's server-side cap) so that
+        # a cycle that races a long job drains it instead of killing it.
+        shutdown_timeout: 6h
       host:
         # Pin the job workspace parent away from the runner state directory
         # (/var/lib/gitea-runner) so the action can't see the .runner

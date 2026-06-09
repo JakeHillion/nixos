@@ -123,11 +123,22 @@ vmTools.runInLinuxVM (runCommand "gitea-actions-vm-image"
   # as root, so no separate startup shell script is needed.
   install -Dm644 ${./runner.service} /mnt/etc/systemd/system/gitea-runner.service
 
+  # Periodic cycle timer — see runner-cycle.{service,timer} for rationale.
+  # Recovers act_runner from the "unregistered runner" wedge by SIGTERMing
+  # the main process; in-flight jobs drain via runner.shutdown_timeout.
+  install -Dm644 ${./runner-cycle.service} /mnt/etc/systemd/system/gitea-runner-cycle.service
+  install -Dm644 ${./runner-cycle.timer}   /mnt/etc/systemd/system/gitea-runner-cycle.timer
+
   # Wire enable for our service. cloud-init.target.wants (rather than
   # multi-user.target.wants) so we order strictly after cloud-final.service.
   mkdir -p /mnt/etc/systemd/system/cloud-init.target.wants
   ln -sf /etc/systemd/system/gitea-runner.service \
     /mnt/etc/systemd/system/cloud-init.target.wants/gitea-runner.service
+
+  # Enable the cycle timer via timers.target.wants.
+  mkdir -p /mnt/etc/systemd/system/timers.target.wants
+  ln -sf /etc/systemd/system/gitea-runner-cycle.timer \
+    /mnt/etc/systemd/system/timers.target.wants/gitea-runner-cycle.timer
 
   # Install qemu-guest-agent (and its only missing dependency, liburing2) so
   # the host can probe in-guest state via QGA — used both for the graceful-

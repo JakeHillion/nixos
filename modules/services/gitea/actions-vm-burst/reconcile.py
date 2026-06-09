@@ -169,6 +169,10 @@ def write_cidata_files(stage, vm_name):
         "  capacity: 1\n"
         "  fetch_timeout: 5s\n"
         "  fetch_interval: 2s\n"
+        # Drain an in-flight job on SIGTERM (the in-VM cycle timer fires
+        # hourly to recover from the "unregistered runner" wedge); needs
+        # to exceed the job timeout so a cycle never kills a long job.
+        "  shutdown_timeout: 6h\n"
         "host:\n"
         "  workdir_parent: /var/lib/gitea-runner-jobs\n"
     )
