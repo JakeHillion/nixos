@@ -22,31 +22,16 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable (lib.mkMerge [
-    {
-      boot.initrd = {
-        availableKernelModules = [ cfg.networkingModule ];
+  config = lib.mkIf cfg.enable {
+    boot.initrd = {
+      availableKernelModules = [ cfg.networkingModule ];
 
-        clevis = {
-          enable = true;
-          useTang = true;
-
-          devices = builtins.listToAttrs (builtins.map
-            (dev: {
-              name = dev;
-              value = { secretFile = cfg.secretFile; };
-            })
-            cfg.devices);
-        };
-      };
-    }
-
-    # Stage 1 systemd init: configure systemd-networkd directly in initrd. We
-    # don't go via boot.initrd.network.enable because that auto-translates the
-    # full stage 2 networking.interfaces.* into boot.initrd.systemd.network,
-    # which doesn't tolerate stage 2 route schemas (e.g. cyclone's cellular VLAN).
-    (lib.mkIf config.boot.initrd.systemd.enable {
-      boot.initrd.systemd.network = {
+      # Configure systemd-networkd directly in initrd. We don't go via
+      # boot.initrd.network.enable because that auto-translates the full
+      # stage 2 networking.interfaces.* into boot.initrd.systemd.network,
+      # which doesn't tolerate stage 2 route schemas (e.g. cyclone's
+      # cellular VLAN).
+      systemd.network = {
         enable = true;
         # Fallback DHCP on the tang interface. Hosts that set a static
         # `ip=...` kernel parameter get a higher-priority 91-*.network from
@@ -56,12 +41,18 @@ in
           networkConfig.DHCP = "yes";
         };
       };
-    })
 
-    # Legacy initrd: kept for hosts still using stage 1 init scripts
-    # (e.g. boron.cx until its postDeviceCommands are migrated).
-    (lib.mkIf (!config.boot.initrd.systemd.enable) {
-      boot.initrd.network.enable = true;
-    })
-  ]);
+      clevis = {
+        enable = true;
+        useTang = true;
+
+        devices = builtins.listToAttrs (builtins.map
+          (dev: {
+            name = dev;
+            value = { secretFile = cfg.secretFile; };
+          })
+          cfg.devices);
+      };
+    };
+  };
 }
