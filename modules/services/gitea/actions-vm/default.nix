@@ -42,9 +42,9 @@ let
       rm -f "$work/overlay.qcow2"
       qemu-img create -F qcow2 -b "$base" -f qcow2 "$work/overlay.qcow2" 40G
 
-      # Stage the cidata directory: cloud-init NoCloud reads meta-data and
-      # network-config; our in-VM runner service reads .runner + config.yaml.
-      # cloud-init silently ignores files it doesn't recognise.
+      # Stage the cidata directory: cloud-init NoCloud reads meta-data,
+      # network-config and user-data; the per-VM runner credentials travel
+      # inside user-data as write_files.
       stage="$work/cidata-stage"
       rm -rf "$stage"
       mkdir -p "$stage"
@@ -68,9 +68,6 @@ let
           nameservers:
             addresses: [1.1.1.1, 8.8.8.8]
       EOF
-
-      # Empty user-data — we don't run cloud-init boot scripts.
-      : > "$stage/user-data"
 
       (
         cd "$stage"
@@ -108,6 +105,27 @@ let
         workdir_parent: /var/lib/gitea-runner-jobs
       EOF
       )
+
+      # The runner credentials ride the standard cloud-init user-data path:
+      # write_files places them in /var/lib/gitea-runner before the in-VM
+      # runner unit starts (it orders after cloud-final). The cloud burst
+      # substrates use the identical user-data, only delivered via their
+      # native metadata services instead of the NoCloud ISO.
+      cat > "$stage/user-data" <<EOF
+      #cloud-config
+      write_files:
+        - path: /var/lib/gitea-runner/.runner
+          encoding: b64
+          content: $(base64 -w0 "$stage/.runner")
+          owner: runner:runner
+          permissions: "0600"
+        - path: /var/lib/gitea-runner/config.yaml
+          encoding: b64
+          content: $(base64 -w0 "$stage/config.yaml")
+          owner: runner:runner
+          permissions: "0644"
+      EOF
+      rm "$stage/.runner" "$stage/config.yaml"
 
       # ISO9660 with label cidata — recognised by cloud-init's NoCloud
       # datasource. RO from the guest's perspective by virtue of the format.

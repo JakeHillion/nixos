@@ -18,6 +18,10 @@ let
       | gzip -n -9 > $out
   '';
 
+  # Cloud image name, keyed on the content hash of the underlying qcow2 so
+  # the provider-side image is re-uploaded exactly when the image changes.
+  imageName = "gitea-actions-vm-${builtins.substring 11 32 (toString pkgs.gitea-actions-vm-image)}";
+
   reconcileScript = pkgs.writers.writePython3 "gitea-actions-vm-burst-reconcile"
     {
       libraries = with pkgs.python3Packages; [ requests ];
@@ -26,7 +30,7 @@ let
 
   reconcileWrapper = pkgs.writeShellApplication {
     name = "gitea-actions-vm-burst-reconcile-wrapper";
-    runtimeInputs = with pkgs; [ coreutils gcloud unstable.gitea-actions-runner xorriso gnutar gzip ];
+    runtimeInputs = with pkgs; [ coreutils gcloud unstable.gitea-actions-runner ];
     text = ''
       set -euo pipefail
       : "''${CREDENTIALS_DIRECTORY:?}"
@@ -71,7 +75,7 @@ in
 
     gcsBucket = lib.mkOption {
       type = lib.types.str;
-      description = "GCS bucket used to stage the runner image and per-VM cidata tarballs.";
+      description = "GCS bucket used to stage the runner image when creating the GCE custom image.";
     };
 
     repos = lib.mkOption {
@@ -187,6 +191,7 @@ in
         BOOT_DISK_SIZE_GB = toString cfg.bootDiskSizeGb;
         MAX_RUN_DURATION = cfg.maxRunDuration;
         RUNNER_LABELS = labelsCsv;
+        IMAGE_NAME = imageName;
         IMAGE_TARBALL = "${imageTarball}";
         POLL_INTERVAL = toString cfg.pollInterval;
       };

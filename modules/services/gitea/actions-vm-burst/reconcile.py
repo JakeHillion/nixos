@@ -1,3 +1,4 @@
+import base64
 import json
 import os
 import random
@@ -21,6 +22,7 @@ MACHINE_TYPE = os.environ["MACHINE_TYPE"]
 BOOT_DISK_SIZE_GB = os.environ["BOOT_DISK_SIZE_GB"]
 RUNNER_LABELS = os.environ["RUNNER_LABELS"]
 MAX_RUN_DURATION = os.environ["MAX_RUN_DURATION"]
+IMAGE_NAME = os.environ["IMAGE_NAME"]
 IMAGE_TARBALL = os.environ["IMAGE_TARBALL"]
 POLL_INTERVAL = int(os.environ["POLL_INTERVAL"])
 
@@ -30,10 +32,20 @@ RT_DIR = Path(os.environ["RUNTIME_DIRECTORY"])
 GITEA_API_TOKEN = (CREDS_DIR / "gitea-api-token").read_text().strip()
 GITEA_REG_TOKEN = (CREDS_DIR / "gitea-registration-token").read_text().strip()
 
-# Image name tracks the content hash of the prebuilt tarball — the GCE
-# custom image and the GCS object share that name.
-IMAGE_NAME = (
-    "gitea-actions-vm-" + os.path.basename(IMAGE_TARBALL).split("-")[0]
+CONFIG_YAML = (
+    "log:\n"
+    "  level: debug\n"
+    "runner:\n"
+    "  file: .runner\n"
+    "  capacity: 1\n"
+    "  fetch_timeout: 5s\n"
+    "  fetch_interval: 2s\n"
+    # Drain an in-flight job on SIGTERM (the in-VM cycle timer fires
+    # hourly to recover from the "unregistered runner" wedge); needs
+    # to exceed the job timeout so a cycle never kills a long job.
+    "  shutdown_timeout: 6h\n"
+    "host:\n"
+    "  workdir_parent: /var/lib/gitea-runner-jobs\n"
 )
 
 ALIVE_STATES = {
@@ -146,129 +158,65 @@ def random_vm_name():
     return f"gitea-burst-{random.randint(0, 2 ** 32 - 1):08x}"
 
 
-def write_cidata_files(stage, vm_name):
-    (stage / "meta-data").write_text(
-        f"instance-id: {vm_name}\nlocal-hostname: {vm_name}\n"
-    )
-    # DHCP-only network-config. GCE assigns DHCP on the primary NIC; we
-    # match any predictable kernel name so the same config works
-    # regardless of GCE's NIC naming.
-    (stage / "network-config").write_text(
-        "version: 2\nethernets:\n"
-        "  primary:\n"
-        "    match:\n"
-        '      name: "e*"\n'
-        "    dhcp4: true\n"
-    )
-    (stage / "user-data").write_text("")
-    (stage / "config.yaml").write_text(
-        "log:\n"
-        "  level: debug\n"
-        "runner:\n"
-        "  file: .runner\n"
-        "  capacity: 1\n"
-        "  fetch_timeout: 5s\n"
-        "  fetch_interval: 2s\n"
-        # Drain an in-flight job on SIGTERM (the in-VM cycle timer fires
-        # hourly to recover from the "unregistered runner" wedge); needs
-        # to exceed the job timeout so a cycle never kills a long job.
-        "  shutdown_timeout: 6h\n"
-        "host:\n"
-        "  workdir_parent: /var/lib/gitea-runner-jobs\n"
+def write_user_data(stage):
+    # #cloud-config user-data carrying the per-VM runner credentials;
+    # cloud-init's write_files places them before the in-VM runner unit
+    # starts (it orders after cloud-final). Identical content to what the
+    # local actions-vm module puts on its NoCloud ISO — only the transport
+    # differs (instance metadata here). JSON is a YAML subset, so emit the
+    # cloud-config without needing a YAML library.
+    runner_b64 = base64.b64encode((stage / ".runner").read_bytes()).decode()
+    config_b64 = base64.b64encode(CONFIG_YAML.encode()).decode()
+    files = [
+        {
+            "path": "/var/lib/gitea-runner/.runner",
+            "encoding": "b64",
+            "content": runner_b64,
+            "owner": "runner:runner",
+            "permissions": "0600",
+        },
+        {
+            "path": "/var/lib/gitea-runner/config.yaml",
+            "encoding": "b64",
+            "content": config_b64,
+            "owner": "runner:runner",
+            "permissions": "0644",
+        },
+    ]
+    path = stage / "user-data"
+    path.write_text("#cloud-config\n" + json.dumps({"write_files": files}))
+    return path
+
+
+def register_runner(stage, vm_name):
+    # `gitea-runner register --ephemeral` writes .runner into cwd.
+    subprocess.check_call(
+        [
+            "gitea-runner",
+            "register",
+            "--no-interactive",
+            "--ephemeral",
+            "--instance",
+            GITEA_URL,
+            "--token",
+            GITEA_REG_TOKEN,
+            "--name",
+            vm_name,
+            "--labels",
+            RUNNER_LABELS,
+        ],
+        cwd=stage,
     )
 
 
 def launch_one(vm_name, zone):
-    work = RT_DIR / vm_name
-    stage = work / "stage"
+    stage = RT_DIR / vm_name / "stage"
     stage.mkdir(parents=True, exist_ok=True)
 
-    gcs_uri = f"gs://{GCS_BUCKET}/{vm_name}.tar.gz"
-    cidata_image = f"{vm_name}-cidata"
-    gcs_created = False
-    image_created = False
-    vm_create_attempted = False
+    register_runner(stage, vm_name)
+    user_data = write_user_data(stage)
 
     try:
-        # `gitea-runner register --ephemeral` writes .runner into cwd.
-        subprocess.check_call(
-            [
-                "gitea-runner",
-                "register",
-                "--no-interactive",
-                "--ephemeral",
-                "--instance",
-                GITEA_URL,
-                "--token",
-                GITEA_REG_TOKEN,
-                "--name",
-                vm_name,
-                "--labels",
-                RUNNER_LABELS,
-            ],
-            cwd=stage,
-        )
-
-        write_cidata_files(stage, vm_name)
-
-        # ISO9660 with volume identifier "cidata" -- recognised by cloud-init's
-        # NoCloud datasource and surfaces as /dev/disk/by-label/cidata, which
-        # is what the in-VM runner.service mounts.
-        subprocess.check_call(
-            [
-                "xorriso",
-                "-as",
-                "mkisofs",
-                "-output",
-                str(work / "cidata.raw"),
-                "-volid",
-                "cidata",
-                "-joliet",
-                "-rock",
-                str(stage),
-            ]
-        )
-
-        # GCE image upload format: tar.gz containing a single `disk.raw`.
-        subprocess.check_call(
-            [
-                "tar",
-                "-Sczf",
-                str(work / "cidata.tar.gz"),
-                "-C",
-                str(work),
-                "--transform=s#cidata.raw#disk.raw#",
-                "cidata.raw",
-            ]
-        )
-
-        subprocess.check_call(
-            [
-                "gcloud",
-                "storage",
-                "cp",
-                str(work / "cidata.tar.gz"),
-                gcs_uri,
-                "--quiet",
-            ]
-        )
-        gcs_created = True
-
-        subprocess.check_call(
-            [
-                "gcloud",
-                "compute",
-                "images",
-                "create",
-                cidata_image,
-                "--source-uri",
-                gcs_uri,
-                "--quiet",
-            ]
-        )
-        image_created = True
-
-        vm_create_attempted = True
         subprocess.check_call(
             [
                 "gcloud",
@@ -282,15 +230,10 @@ def launch_one(vm_name, zone):
                 f"--image-project={GCP_PROJECT}",
                 f"--boot-disk-size={BOOT_DISK_SIZE_GB}GB",
                 "--labels=role=gitea-actions-burst",
-                # size=4: hyperdisk-balanced (N4 default) has a 4 GiB minimum,
-                # GCE pads zeros after the ~1 MiB ISO. udev still tags
-                # /dev/disk/by-label/cidata from the filesystem signature at
-                # the start of the disk. mode=ro isn't valid for hyperdisk;
-                # the in-VM unit mounts ISO with -o ro and the disk is
-                # auto-deleted with the VM, so rw at the GCE layer is safe.
-                f"--create-disk=name={vm_name}-cidata,image={cidata_image},"
-                f"image-project={GCP_PROJECT},auto-delete=yes,size=4,"
-                "device-name=cidata",
+                # cloud-init's GCE datasource reads
+                # instance/attributes/user-data from the metadata server
+                # and applies the write_files above.
+                f"--metadata-from-file=user-data={user_data}",
                 "--no-restart-on-failure",
                 "--maintenance-policy=TERMINATE",
                 f"--max-run-duration={MAX_RUN_DURATION}",
@@ -304,80 +247,30 @@ def launch_one(vm_name, zone):
             ]
         )
     except Exception:
-        # Best-effort reverse-order cleanup. Any straggler that survives
-        # here is still picked up later by sweep_orphans().
-        if vm_create_attempted:
-            # `create` can fail after the VM resource exists (e.g. disk
-            # creation succeeded, post-create polling timed out), so try
-            # the delete regardless of where the exception fired.
-            subprocess.run(
-                [
-                    "gcloud",
-                    "compute",
-                    "instances",
-                    "delete",
-                    vm_name,
-                    f"--zone={zone}",
-                    "--quiet",
-                ],
-                check=False,
-            )
-        if image_created:
-            subprocess.run(
-                [
-                    "gcloud",
-                    "compute",
-                    "images",
-                    "delete",
-                    cidata_image,
-                    "--quiet",
-                ],
-                check=False,
-            )
-        if gcs_created:
-            subprocess.run(
-                [
-                    "gcloud",
-                    "storage",
-                    "rm",
-                    gcs_uri,
-                    "--quiet",
-                ],
-                check=False,
-            )
-        raise
-
-
-def cleanup_dead(dead):
-    # Image and GCS first; VM last. Transient failures on the trailing
-    # resources are recovered by sweep_orphans() on a subsequent pass
-    # once the VM no longer shields them.
-    for inst in dead:
-        name = inst["name"]
-        zone = inst.get("_zone_name") or inst["zone"].rsplit("/", 1)[-1]
-
+        # `create` can fail after the VM resource exists (e.g. disk
+        # creation succeeded, post-create polling timed out), so try a
+        # best-effort delete before re-raising. A straggler that survives
+        # this is force-stopped by --max-run-duration and reaped by
+        # cleanup_dead.
         subprocess.run(
             [
                 "gcloud",
                 "compute",
-                "images",
+                "instances",
                 "delete",
-                f"{name}-cidata",
+                vm_name,
+                f"--zone={zone}",
                 "--quiet",
             ],
             check=False,
         )
-        subprocess.run(
-            [
-                "gcloud",
-                "storage",
-                "rm",
-                f"gs://{GCS_BUCKET}/{name}.tar.gz",
-                "--quiet",
-            ],
-            check=False,
-        )
+        raise
 
+
+def cleanup_dead(dead):
+    for inst in dead:
+        name = inst["name"]
+        zone = inst.get("_zone_name") or inst["zone"].rsplit("/", 1)[-1]
         try:
             subprocess.run(
                 [
@@ -401,13 +294,15 @@ ORPHAN_AGE_SECONDS = 5 * 60
 
 
 def sweep_orphans(live_vm_names):
-    # Backstop for both launch_one partial-failure paths that escape
-    # local cleanup and cleanup_dead's check=False image/GCS deletes.
-    # Per-VM resources are name-prefixed (gitea-burst-<hex>...), so we
-    # filter strictly to that prefix and leave the shared base image
-    # (gitea-actions-vm-<hash>) alone. The age threshold guards against
-    # listing eventual-consistency races against a just-launched VM
-    # that hasn't yet surfaced in list_burst_instances().
+    # Reaps the per-VM cidata images and GCS tarballs created by the
+    # previous launch scheme — user-data now rides instance metadata, so
+    # new VMs create neither, but resources leaked before the switch
+    # still need deleting. Per-VM resources are name-prefixed
+    # (gitea-burst-<hex>...), so we filter strictly to that prefix and
+    # leave the shared base image (gitea-actions-vm-<hash>) alone. The
+    # age threshold guards against eventual-consistency races against a
+    # just-launched VM that hasn't yet surfaced in
+    # list_burst_instances().
     now = int(time.time())
 
     try:
