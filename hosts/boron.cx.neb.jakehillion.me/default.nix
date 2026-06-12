@@ -109,6 +109,7 @@
           enable = true;
           gcpProject = "continuous-integration-498314";
           gcsBucket = "testquorum-ci-vm-images";
+          hetzner.enable = true;
         };
         matrix.mautrix_discord = true;
       };

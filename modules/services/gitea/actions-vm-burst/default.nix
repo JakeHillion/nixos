@@ -22,6 +22,18 @@ let
   # the provider-side image is re-uploaded exactly when the image changes.
   imageName = "gitea-actions-vm-${builtins.substring 11 32 (toString pkgs.gitea-actions-vm-image)}";
 
+  # Hetzner upload format: hcloud-upload-image streams a (optionally
+  # compressed) raw disk image onto a rescue-booted temporary server, so a
+  # raw conversion is needed; qcow2 input is capped at the rescue system's
+  # 960 MB ramdisk and would be too tight for this image.
+  hetznerImage = pkgs.runCommand "gitea-actions-vm-image-hetzner.raw.zst"
+    {
+      nativeBuildInputs = with pkgs; [ qemu-utils zstd ];
+    } ''
+    qemu-img convert -O raw ${pkgs.gitea-actions-vm-image}/image.qcow2 disk.raw
+    zstd -T0 -c disk.raw > $out
+  '';
+
   reconcileScript = pkgs.writers.writePython3 "gitea-actions-vm-burst-reconcile"
     {
       libraries = with pkgs.python3Packages; [ requests ];
@@ -30,7 +42,8 @@ let
 
   reconcileWrapper = pkgs.writeShellApplication {
     name = "gitea-actions-vm-burst-reconcile-wrapper";
-    runtimeInputs = with pkgs; [ coreutils gcloud unstable.gitea-actions-runner ];
+    runtimeInputs = with pkgs; [ coreutils gcloud unstable.gitea-actions-runner ]
+      ++ lib.optional cfg.hetzner.enable pkgs.hcloud-upload-image;
     text = ''
       set -euo pipefail
       : "''${CREDENTIALS_DIRECTORY:?}"
@@ -139,6 +152,30 @@ in
       default = [ "ubuntu-26.04-vm" "ubuntu-vm" "ubuntu-26.04" ];
       description = "Runner labels advertised to Gitea. Matches the local actions-vm pool so jobs route to either substrate.";
     };
+
+    hetzner = {
+      enable = lib.mkEnableOption "falling back to Hetzner Cloud when a GCP launch fails" // {
+        description = ''
+          Whether to fall back to Hetzner Cloud when a GCP launch fails.
+
+          Hetzner API tokens are scoped to a single Hetzner Cloud project,
+          so the token in hcloud-token.age both authenticates and bounds
+          the blast radius. Create it in a dedicated project: the
+          reconciler deletes servers as part of its cleanup sweep and must
+          not share a project with anything it doesn't manage.
+        '';
+      };
+
+      serverType = lib.mkOption {
+        type = lib.types.str;
+        default = "cx43";
+        description = ''
+          Hetzner Cloud server type for burst VMs. Capacity for shared-CPU
+          types comes and goes per location, so the reconciler tries every
+          location before giving up on a launch.
+        '';
+      };
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -159,6 +196,12 @@ in
       rekeyFile = ./sa-key.json.age;
       mode = "0400";
     };
+    # Must be a token for a dedicated Hetzner Cloud project — see the
+    # hetzner.enable option description.
+    age.secrets."gitea-actions-vm-burst/hcloud-token" = lib.mkIf cfg.hetzner.enable {
+      rekeyFile = ./hcloud-token.age;
+      mode = "0400";
+    };
 
     systemd.services.gitea-actions-vm-burst = {
       description = "Burst Gitea Actions runners to GCP";
@@ -176,7 +219,8 @@ in
           "gitea-api-token:${config.age.secrets."gitea-actions-vm-burst/gitea-api-token".path}"
           "gitea-registration-token:${config.age.secrets."gitea-actions-vm-burst/registration-token".path}"
           "gcp-sa-key:${config.age.secrets."gitea-actions-vm-burst/sa-key.json".path}"
-        ];
+        ] ++ lib.optional cfg.hetzner.enable
+          "hcloud-token:${config.age.secrets."gitea-actions-vm-burst/hcloud-token".path}";
         ExecStart = lib.getExe reconcileWrapper;
       };
       environment = {
@@ -194,6 +238,10 @@ in
         IMAGE_NAME = imageName;
         IMAGE_TARBALL = "${imageTarball}";
         POLL_INTERVAL = toString cfg.pollInterval;
+      } // lib.optionalAttrs cfg.hetzner.enable {
+        HETZNER_ENABLED = "1";
+        HETZNER_SERVER_TYPE = cfg.hetzner.serverType;
+        HETZNER_IMAGE = "${hetznerImage}";
       };
     };
   };

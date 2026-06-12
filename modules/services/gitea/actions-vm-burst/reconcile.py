@@ -2,8 +2,10 @@ import base64
 import json
 import os
 import random
+import re
 import subprocess
 import sys
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
@@ -26,11 +28,20 @@ IMAGE_NAME = os.environ["IMAGE_NAME"]
 IMAGE_TARBALL = os.environ["IMAGE_TARBALL"]
 POLL_INTERVAL = int(os.environ["POLL_INTERVAL"])
 
+HETZNER_ENABLED = os.environ.get("HETZNER_ENABLED") == "1"
+HETZNER_SERVER_TYPE = os.environ.get("HETZNER_SERVER_TYPE", "")
+HETZNER_IMAGE = os.environ.get("HETZNER_IMAGE", "")
+
 CREDS_DIR = Path(os.environ["CREDENTIALS_DIRECTORY"])
 RT_DIR = Path(os.environ["RUNTIME_DIRECTORY"])
 
 GITEA_API_TOKEN = (CREDS_DIR / "gitea-api-token").read_text().strip()
 GITEA_REG_TOKEN = (CREDS_DIR / "gitea-registration-token").read_text().strip()
+HCLOUD_TOKEN = (
+    (CREDS_DIR / "hcloud-token").read_text().strip() if HETZNER_ENABLED else ""
+)
+
+HCLOUD_API = "https://api.hetzner.cloud/v1"
 
 CONFIG_YAML = (
     "log:\n"
@@ -57,6 +68,20 @@ ALIVE_STATES = {
     "SUSPENDED",
 }
 DEAD_STATES = {"TERMINATED", "STOPPING", "STOPPED"}
+
+HETZNER_ALIVE_STATES = {"initializing", "starting", "running"}
+
+
+def parse_duration(s):
+    # gcloud duration syntax: 30m, 1h, 2h30m, ...
+    m = re.fullmatch(r"(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?", s)
+    if not m or not any(m.groups()):
+        raise ValueError(f"invalid duration: {s}")
+    h, mi, sec = (int(x) if x else 0 for x in m.groups())
+    return h * 3600 + mi * 60 + sec
+
+
+MAX_RUN_SECONDS = parse_duration(MAX_RUN_DURATION)
 
 
 def gitea_session():
@@ -209,13 +234,9 @@ def register_runner(stage, vm_name):
     )
 
 
-def launch_one(vm_name, zone):
-    stage = RT_DIR / vm_name / "stage"
-    stage.mkdir(parents=True, exist_ok=True)
-
-    register_runner(stage, vm_name)
-    user_data = write_user_data(stage)
-
+def launch_gcp(vm_name, zone, user_data):
+    if zone is None:
+        raise RuntimeError(f"no UP zones in region {GCP_REGION}")
     try:
         subprocess.check_call(
             [
@@ -265,6 +286,123 @@ def launch_one(vm_name, zone):
             check=False,
         )
         raise
+
+
+def hcloud_request(method, path, **kwargs):
+    r = requests.request(
+        method,
+        f"{HCLOUD_API}{path}",
+        headers={"Authorization": f"Bearer {HCLOUD_TOKEN}"},
+        timeout=30,
+        **kwargs,
+    )
+    r.raise_for_status()
+    return r.json() if r.text else {}
+
+
+def launch_hetzner(vm_name, user_data):
+    image = hetzner_image_id()
+    # Capacity for the configured server type comes and goes per location,
+    # so try every location (in random order, to spread load) before
+    # giving up on this launch.
+    locations = [
+        loc["name"] for loc in hcloud_request("GET", "/locations")["locations"]
+    ]
+    random.shuffle(locations)
+    errors = []
+    for location in locations:
+        try:
+            hcloud_request(
+                "POST",
+                "/servers",
+                json={
+                    "name": vm_name,
+                    "server_type": HETZNER_SERVER_TYPE,
+                    "image": image,
+                    "location": location,
+                    "user_data": user_data,
+                    "labels": {"role": "gitea-actions-burst"},
+                },
+            )
+            return
+        except requests.HTTPError as e:
+            body = e.response.text[:200] if e.response is not None else ""
+            errors.append(f"{location}: {e} {body}")
+    raise RuntimeError(
+        "hetzner launch failed in all locations: " + "; ".join(errors)
+    )
+
+
+def launch_one(vm_name, zone):
+    stage = RT_DIR / vm_name / "stage"
+    stage.mkdir(parents=True, exist_ok=True)
+
+    register_runner(stage, vm_name)
+    user_data = write_user_data(stage)
+
+    try:
+        launch_gcp(vm_name, zone, user_data)
+        return "gcp"
+    except Exception as e:
+        if not HETZNER_ENABLED:
+            raise
+        print(
+            f"gcp launch of {vm_name} failed ({e}); trying hetzner",
+            file=sys.stderr,
+            flush=True,
+        )
+
+    launch_hetzner(vm_name, user_data.read_text())
+    return "hetzner"
+
+
+def list_hetzner_servers():
+    servers = []
+    page = 1
+    while True:
+        resp = hcloud_request(
+            "GET",
+            "/servers",
+            params={
+                "label_selector": "role=gitea-actions-burst",
+                "page": page,
+                "per_page": 50,
+            },
+        )
+        servers.extend(resp["servers"])
+        page = resp["meta"]["pagination"]["next_page"]
+        if not page:
+            return servers
+
+
+def split_hetzner_servers(servers):
+    # A runner VM powers itself off after its single job, which on Hetzner
+    # leaves the server in "off" (still billed) rather than anything
+    # self-cleaning — so off servers are dead and get deleted. Hetzner also
+    # has no equivalent of GCE's --max-run-duration; enforce the same
+    # backstop here by treating anything older as dead even if running.
+    now = time.time()
+    alive, dead = [], []
+    for srv in servers:
+        if srv["status"] == "deleting":
+            continue
+        age = now - iso_to_epoch(srv["created"])
+        if srv["status"] in HETZNER_ALIVE_STATES and age <= MAX_RUN_SECONDS:
+            alive.append(srv)
+        else:
+            dead.append(srv)
+    return alive, dead
+
+
+def cleanup_dead_hetzner(dead):
+    for srv in dead:
+        try:
+            hcloud_request("DELETE", f"/servers/{srv['id']}")
+        except requests.HTTPError as e:
+            print(
+                f"cleanup: delete hetzner server {srv['name']} failed: {e}",
+                file=sys.stderr,
+            )
 
 
 def cleanup_dead(dead):
@@ -387,6 +525,52 @@ def sweep_orphans(live_vm_names):
         )
 
 
+_hetzner_image_id = None
+_hetzner_image_lock = threading.Lock()
+
+
+def hetzner_image_id():
+    # Lazy + cached: normally resolved once at startup, but a failure
+    # there (e.g. transient API error) only degrades Hetzner launches —
+    # each later launch retries the lookup/upload instead of taking the
+    # whole reconciler (and with it GCP bursting) down.
+    global _hetzner_image_id
+    with _hetzner_image_lock:
+        if _hetzner_image_id is None:
+            _hetzner_image_id = ensure_image_hetzner()
+        return _hetzner_image_id
+
+
+def ensure_image_hetzner():
+    # The snapshot is found via a label carrying the image name (itself
+    # keyed on the qcow2 content hash). hcloud-upload-image boots a
+    # temporary server into the rescue system, streams the raw image onto
+    # its disk, and snapshots it.
+    params = {
+        "type": "snapshot",
+        "label_selector": f"gitea-actions-vm-image={IMAGE_NAME}",
+    }
+    found = hcloud_request("GET", "/images", params=params)["images"]
+    if not found:
+        print(f"uploading hetzner snapshot {IMAGE_NAME}", flush=True)
+        subprocess.check_call(
+            [
+                "hcloud-upload-image",
+                "upload",
+                f"--image-path={HETZNER_IMAGE}",
+                "--architecture=x86",
+                "--compression=zstd",
+                f"--description={IMAGE_NAME}",
+                f"--labels=gitea-actions-vm-image={IMAGE_NAME}",
+            ],
+            env={**os.environ, "HCLOUD_TOKEN": HCLOUD_TOKEN},
+        )
+        found = hcloud_request("GET", "/images", params=params)["images"]
+        if not found:
+            raise RuntimeError("hetzner snapshot missing after upload")
+    return found[0]["id"]
+
+
 def ensure_image():
     # One-shot at startup. Idempotent on the GCE side: describe → if
     # found we're done; otherwise upload the prebuilt tarball + create
@@ -427,30 +611,41 @@ def reconcile(last_launched):
     instances = list_burst_instances()
     alive = [i for i in instances if i.get("status") in ALIVE_STATES]
     dead = [i for i in instances if i.get("status") in DEAD_STATES]
+    h_servers = list_hetzner_servers() if HETZNER_ENABLED else []
+    h_alive, h_dead = split_hetzner_servers(h_servers)
 
     queued = count_queued_jobs()
-    cap = min(last_launched + 1, MAX_INSTANCES - len(alive), queued)
+    # MAX_INSTANCES caps burst VMs across both providers combined.
+    cap = min(
+        last_launched + 1,
+        MAX_INSTANCES - len(alive) - len(h_alive),
+        queued,
+    )
     cap = max(0, cap)
 
     print(
         f"queued={queued} alive={len(alive)} dead={len(dead)} "
+        f"hetzner_alive={len(h_alive)} hetzner_dead={len(h_dead)} "
         f"last_launched={last_launched} cap={cap}",
         flush=True,
     )
 
     if cap:
         zones = list_zones_in_region()
-        if not zones:
+        if not zones and not HETZNER_ENABLED:
             print(f"no UP zones in region {GCP_REGION}", file=sys.stderr)
             return last_launched
-        plan = [(random_vm_name(), random.choice(zones)) for _ in range(cap)]
+        plan = [
+            (random_vm_name(), random.choice(zones) if zones else None)
+            for _ in range(cap)
+        ]
         with ThreadPoolExecutor(max_workers=cap) as pool:
             futures = {pool.submit(launch_one, n, z): n for n, z in plan}
             for f in as_completed(futures):
                 name = futures[f]
                 try:
-                    f.result()
-                    print(f"launched: {name}", flush=True)
+                    provider = f.result()
+                    print(f"launched on {provider}: {name}", flush=True)
                 except Exception as e:
                     print(
                         f"launch {name} failed: {e}",
@@ -460,6 +655,8 @@ def reconcile(last_launched):
 
     if dead:
         cleanup_dead(dead)
+    if h_dead:
+        cleanup_dead_hetzner(h_dead)
 
     # All currently-known burst VMs (alive + dead). Used by sweep_orphans
     # to decide which per-VM resources have no owner. Newly-launched VMs
@@ -472,6 +669,16 @@ def reconcile(last_launched):
 
 def main():
     ensure_image()
+    if HETZNER_ENABLED:
+        try:
+            hetzner_image_id()
+        except Exception as e:
+            print(
+                f"hetzner snapshot ensure failed ({e}); "
+                "will retry on first hetzner launch",
+                file=sys.stderr,
+                flush=True,
+            )
     last_launched = 0
     while True:
         try:

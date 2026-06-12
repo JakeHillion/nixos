@@ -153,11 +153,11 @@ vmTools.runInLinuxVM (runCommand "gitea-actions-vm-image"
 
   # Restrict cloud-init to the datasources we actually boot on so it doesn't
   # waste boot time scanning other providers' metadata endpoints: NoCloud for
-  # local QEMU (cidata ISO with static network-config) and GCE for burst VMs
-  # (metadata server). On every substrate the per-VM runner credentials
-  # arrive as user-data (#cloud-config write_files).
+  # local QEMU (cidata ISO with static network-config), GCE and Hetzner for
+  # burst VMs (metadata servers). On every substrate the per-VM runner
+  # credentials arrive as user-data (#cloud-config write_files).
   install -Dm644 /dev/stdin /mnt/etc/cloud/cloud.cfg.d/99-runner.cfg <<'EOF'
-  datasource_list: [ NoCloud, GCE, None ]
+  datasource_list: [ NoCloud, GCE, Hetzner, None ]
   EOF
 
   # Fresh machine-id per VM boot (systemd will regenerate on first boot).
