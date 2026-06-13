@@ -99,19 +99,13 @@ in
 
   config = lib.mkIf cfg.enable {
     custom.services.llm_proxy.providers = {
-      firepass = lib.mkDefault {
-        url = "https://api.fireworks.ai/inference/v1";
-        apiKeyCredential = "fireworks-fire-pass-api-key";
-        apiKeyFile = config.age.secrets."llm-proxy/fireworks-fire-pass-api-key".path;
-        models = {
-          "moonshotai/kimi-k2.6" = "accounts/fireworks/routers/kimi-k2p6-turbo";
-        };
-      };
       ollama-cloud = lib.mkDefault {
         url = "https://ollama.com/v1";
         apiKeyCredential = "ollama-cloud-api-key";
         apiKeyFile = config.age.secrets."llm-proxy/ollama-cloud-api-key".path;
         models = {
+          "moonshotai/kimi-k2.6" = "kimi-k2.6";
+          "moonshotai/kimi-k2.7-code" = "kimi-k2.7-code";
           "minimax/minimax-m2.5" = "minimax-m2.5";
           "zai/glm-5.1" = "glm-5.1";
         };
@@ -129,9 +123,6 @@ in
 
     age.secrets."llm-proxy/ollama-cloud-api-key" = {
       rekeyFile = ./ollama-cloud.age;
-    };
-    age.secrets."llm-proxy/fireworks-fire-pass-api-key" = {
-      rekeyFile = ./fireworks-fire-pass.age;
     };
     age.secrets."llm-proxy/opencode-go-api-key" = {
       rekeyFile = ./opencode-go.age;
