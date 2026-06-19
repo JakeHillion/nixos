@@ -23,7 +23,7 @@ in
         gitlinker-nvim # after plenary-nvim
         telescope-nvim
       ];
-      extraLuaConfig = ''
+      initLua = ''
         -- Early mapleader for default bindings
         vim.g.mapleader = ","
 
