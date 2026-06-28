@@ -34,6 +34,9 @@
     security.sudo.wheelNeedsPassword = lib.mkForce true;
     custom.desktop.sway.enable = true;
 
+    ## Gaming
+    custom.games.steam.enable = true;
+
     ## Impermanence
     custom.impermanence = {
       enable = true;
