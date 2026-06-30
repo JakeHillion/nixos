@@ -876,11 +876,11 @@
         "treefmt-nix": "treefmt-nix_9"
       },
       "locked": {
-        "lastModified": 1780762067,
-        "narHash": "sha256-Def97sHSjbLZJzKOds6FVTPXkdbXUln8wkLEuSJsiLY=",
+        "lastModified": 1782823727,
+        "narHash": "sha256-uERUGfJAHreRJg0blGsqoOxXOF+WcFqB7831jz5pjmM=",
         "ref": "refs/heads/main",
-        "rev": "a88d92942c11cefcaf362c99bc3d7bf7b622059e",
-        "revCount": 72,
+        "rev": "ba04f90fa63987194c4265fbb83a5e5f722c82f5",
+        "revCount": 73,
         "type": "git",
         "url": "https://gitea.hillion.co.uk/JakeHillion/personal-agent.git"
       },
