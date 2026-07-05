@@ -28,8 +28,8 @@
         iifname "openclaw" oifname "lan" ct state { established, related } counter accept comment "Established back from openclaw"
 
         # Cellular failover: internet-enabled networks out, established back
-        iifname { "lan", "iot", "exo", "openclaw" } oifname "cellular" counter accept comment "LAN to cellular failover"
-        iifname "cellular" oifname { "lan", "iot", "exo", "openclaw" } ct state { established, related } counter accept comment "Cellular to LAN established"
+        iifname { "lan", "iot", "openclaw" } oifname "cellular" counter accept comment "LAN to cellular failover"
+        iifname "cellular" oifname { "lan", "iot", "openclaw" } ct state { established, related } counter accept comment "Cellular to LAN established"
         iifname "wg0" oifname "cellular" counter accept comment "WireGuard to cellular failover"
         iifname "cellular" oifname "wg0" ct state { established, related } counter accept comment "Cellular to WireGuard established"
       '';
