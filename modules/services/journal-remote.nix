@@ -35,8 +35,8 @@ in
 
     # Bind socket to Nebula IP only
     systemd.sockets.systemd-journal-remote = {
-      after = [ "nebula-online@jakehillion.service" ];
-      requires = [ "nebula-online@jakehillion.service" ];
+      after = [ "nebula-online@ogygia.service" ];
+      requires = [ "nebula-online@ogygia.service" ];
       listenStreams = lib.mkForce [
         ""
         "${config.custom.dns.nebula.ipv4}:19532"

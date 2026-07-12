@@ -12,6 +12,15 @@
     custom.locations.autoServe = true;
     custom.tang.enable = true;
 
+    ogygia.nebula = {
+      groups = [ "legacy-full-access" ];
+      pubKey = ''
+        -----BEGIN NEBULA X25519 PUBLIC KEY-----
+        sjbhqAOvEFiMWEBTIc/6mb8BlDE4n/lQF8tM78IZWFo=
+        -----END NEBULA X25519 PUBLIC KEY-----
+      '';
+    };
+
     ## Interactive password
     custom.users.jake.password = true;
 

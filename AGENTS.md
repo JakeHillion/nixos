@@ -91,7 +91,7 @@ DNS is split across two modules:
   - Primary pushes zone transfers to secondaries over Nebula.
   - DNSSEC signing is enabled with algorithm `ecdsap256sha256` and eternal KSK/ZSK lifetimes.
   - Knot listens only on the Nebula IP (`${config.custom.dns.nebula.ipv4}@53`).
-  - The service depends on `nebula-online@jakehillion.service`.
+  - The service depends on `nebula-online@ogygia.service`.
 
 When adding a new host, update `modules/dns.nix` with its Nebula IP so it is resolvable both locally and via the authoritative server.
 
