@@ -66,9 +66,15 @@ in
         # `ogygia nebula` CLI reads and writes them.
         certDir = ../nebula;
 
-        # Reproduce the legacy allow-all inbound posture. Per-host cert groups
-        # live in each host's own config (see ogygia.nebula.groups there).
         firewall.inbound = [
+          # SSH is allowed from every mesh peer, no group required. This keeps
+          # admin and inter-host SSH working once legacy-full-access is retired,
+          # and (unlike the group rule below) also lets groupless hosts such as
+          # fanboy reach the rest of the fleet over Nebula.
+          { host = "any"; port = 22; proto = "tcp"; }
+
+          # Reproduce the legacy allow-all inbound posture. Per-host cert groups
+          # live in each host's own config (see ogygia.nebula.groups there).
           { groups = [ "legacy-full-access" ]; port = "any"; proto = "any"; }
         ];
 
