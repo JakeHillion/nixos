@@ -4,6 +4,11 @@ let
   cfg = config.custom.services.async_coder;
   fqdnParts = lib.splitString "." config.networking.fqdn;
   shortHost = "${builtins.elemAt fqdnParts 0}.${builtins.elemAt fqdnParts 1}";
+
+  skillsDir = pkgs.linkFarm "async-coder-skills" [
+    { name = "commit.md"; path = ../../home/claude/commit-skill/SKILL.md; }
+    { name = "github-fetch.md"; path = ../../home/claude/github-fetch-skill/SKILL.md; }
+  ];
 in
 {
   options.custom.services.async_coder = {
@@ -22,15 +27,56 @@ in
         group = "async-coder";
       })
     // {
-      "async-coder/canopywave-api-key" = {
-        rekeyFile = ../../../secrets/ai/canopy-wave-unlimited.age;
+      "async-coder/context7-api-key" = {
+        rekeyFile = ../../home/claude/context7-api-key.age;
         owner = "async-coder";
         group = "async-coder";
+        mode = "0400";
       };
     };
 
+    custom.services.llm_proxy.enable = true;
+
     users.users.async-coder.uid = config.ids.uids.async-coder;
     users.groups.async-coder.gid = config.ids.gids.async-coder;
+
+    users.users.async-coder.subUidRanges = lib.mkIf config.virtualisation.podman.enable
+      [{ startUid = 100000; count = 65536; }];
+    users.users.async-coder.subGidRanges = lib.mkIf config.virtualisation.podman.enable
+      [{ startGid = 100000; count = 65536; }];
+
+    systemd.services.async-coder = lib.mkIf config.virtualisation.podman.enable {
+      path = [
+        config.virtualisation.podman.package
+        (pkgs.runCommand "docker-podman-shim" { } ''
+          mkdir -p $out/bin
+          ln -s ${config.virtualisation.podman.package}/bin/podman $out/bin/docker
+        '')
+      ];
+      serviceConfig = {
+        NoNewPrivileges = lib.mkForce false;
+        Environment = [
+          "DOCKER_HOST=unix:///run/async-coder-podman/podman.sock"
+        ];
+      };
+    };
+
+    systemd.services.async-coder-podman-socket = lib.mkIf config.virtualisation.podman.enable {
+      description = "Rootless podman API socket for async-coder";
+      wantedBy = [ "async-coder.service" ];
+      before = [ "async-coder.service" ];
+      serviceConfig = {
+        Type = "simple";
+        User = "async-coder";
+        Group = "async-coder";
+        RuntimeDirectory = "async-coder-podman";
+        RuntimeDirectoryMode = "0700";
+        Environment = [ "XDG_RUNTIME_DIR=/run/async-coder-podman" ];
+        ExecStart = "${config.virtualisation.podman.package}/bin/podman system service --time=0 unix:///run/async-coder-podman/podman.sock";
+        Restart = "on-failure";
+        RestartSec = "5s";
+      };
+    };
 
     services.async-coder = {
       enable = true;
@@ -49,6 +95,9 @@ in
         git_author_name = "Jake Hillion";
         git_author_email = "jake@hillion.co.uk";
 
+        skills_path = skillsDir;
+        allowed_skills = [ "commit" "github-fetch" ];
+
         forges = {
           gitea = {
             type = "gitea";
@@ -58,9 +107,10 @@ in
 
             repositories = [
               { owner = "JakeHillion"; name = "async-coder"; envrc = true; }
-              { owner = "JakeHillion"; name = "nixos"; jujutsu_mode = true; }
+              { owner = "JakeHillion"; name = "nixos"; jujutsu_mode = true; envrc = true; }
               { owner = "JakeHillion"; name = "personal-agent"; envrc = true; }
               { owner = "JakeHillion"; name = "testquorum"; envrc = true; }
+              { owner = "jjtechholdings"; name = "monorepo"; }
             ];
           };
 
@@ -76,12 +126,23 @@ in
         };
 
         opencode = {
-          api_key_file = config.age.secrets."async-coder/canopywave-api-key".path;
-          api_url = "https://inference.canopywave.io/v1";
-          model = "moonshotai/kimi-k2.6";
+          api_key_file = pkgs.writeText "async-coder-dummy-key" "unused";
+          api_url = "http://127.0.0.1:9100/v1/batch/10000";
+          model = "moonshotai/kimi-k2.7-code";
           cheap_fast_model = "minimax/minimax-m2.5";
-          provider = "canopywave";
+          provider = "llm-proxy";
           base_port = 18900;
+          mcp = {
+            context7 = {
+              type = "remote";
+              url = "https://mcp.context7.com/mcp";
+              headers = {
+                CONTEXT7_API_KEY = {
+                  "$file" = config.age.secrets."async-coder/context7-api-key".path;
+                };
+              };
+            };
+          };
         };
       };
     };

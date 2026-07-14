@@ -48,19 +48,19 @@ let
     @                                 86400 NS ns2.jakehillion.me.
     @                                 86400 NS ns3.jakehillion.me.
 
-    ca                                21600 CNAME warlock.cx.${domain}.
     couchdb                           21600 CNAME ${locations.services.couchdb}.
     firefly                           21600 CNAME ${locations.services.firefly-iii}.
     firefly-importer                  21600 CNAME ${locations.services.firefly-iii-data-importer}.
     frigate                           21600 CNAME ${locations.services.frigate}.
+    hearthd                           21600 CNAME ${locations.services.hearthd}.
     homebox                           21600 CNAME ${locations.services.homebox}.
     immich                            21600 CNAME ${locations.services.immich}.
-    ollama                            21600 CNAME ${locations.services.ollama}.
     openwebui                         21600 CNAME ${locations.services.openwebui}.
     privatebin                        21600 CNAME ${locations.services.privatebin}.
     prometheus                        21600 CNAME ${locations.services.prometheus}.
     radicale                          21600 CNAME ${locations.services.radicale}.
     restic                            21600 CNAME ${locations.services.restic}.
+    searxng                           21600 CNAME ${locations.services.searxng}.
     status                            21600 CNAME ${locations.services.status}.
     wallpapers                        21600 CNAME phoenix.st.${domain}.
 
@@ -80,6 +80,31 @@ let
   '' + (makeRecords "A" config.custom.dns.authoritative.ipv4.me.jakehillion.neb);
 
   zoneFile = pkgs.writeText "${domain}.zone" zoneContent;
+
+  homeDomain = "home.jakehillion.me";
+  homeZoneContent = ''
+    $ORIGIN ${homeDomain}.
+    $TTL 86400
+
+    ${homeDomain}. IN SOA ns1.jakehillion.me. hostmaster.jakehillion.me. (
+        1           ;Serial
+        7200        ;Refresh
+        3600        ;Retry
+        1209600     ;Expire
+        3600        ;Negative response caching TTL
+    )
+
+    @                                 86400 NS ns1.jakehillion.me.
+    @                                 86400 NS ns2.jakehillion.me.
+    @                                 86400 NS ns3.jakehillion.me.
+
+    @                                 86400 A 185.240.111.53
+
+    homeassistant.iot                  21600 CNAME stinger.iot.${homeDomain}.
+
+  '' + (makeRecords "A" config.custom.dns.authoritative.ipv4.me.jakehillion.home);
+
+  homeZoneFile = pkgs.writeText "${homeDomain}.zone" homeZoneContent;
 in
 {
   options.custom.services.authoritative_dns = {
@@ -137,19 +162,32 @@ in
           zsk-lifetime = 0;
         }];
 
-        zone = [{
-          domain = domain;
-          file = zoneFile;
-          acl = [ "localhost" "transfer_secondaries" ];
-          notify = secondaryRemoteIds;
-          # Don't sync changes back to the zone file (it's in the read-only Nix store)
-          # Dynamic updates are kept in journal only
-          zonefile-sync = -1;
-          zonefile-load = "difference-no-serial";
-          journal-content = "all";
-          dnssec-signing = true;
-          dnssec-policy = "default";
-        }];
+        zone = [
+          {
+            domain = domain;
+            file = zoneFile;
+            acl = [ "localhost" "transfer_secondaries" ];
+            notify = secondaryRemoteIds;
+            # Don't sync changes back to the zone file (it's in the read-only Nix store)
+            # Dynamic updates are kept in journal only
+            zonefile-sync = -1;
+            zonefile-load = "difference-no-serial";
+            journal-content = "all";
+            dnssec-signing = true;
+            dnssec-policy = "default";
+          }
+          {
+            domain = homeDomain;
+            file = homeZoneFile;
+            acl = [ "localhost" "transfer_secondaries" ];
+            notify = secondaryRemoteIds;
+            zonefile-sync = -1;
+            zonefile-load = "difference-no-serial";
+            journal-content = "all";
+            dnssec-signing = true;
+            dnssec-policy = "default";
+          }
+        ];
       };
     })
 
@@ -167,13 +205,22 @@ in
           action = [ "notify" ];
         }];
 
-        zone = [{
-          domain = domain;
-          master = [ "primary" ];
-          acl = [ "notify_primary" ];
-          zonefile-sync = -1;
-          journal-content = "all";
-        }];
+        zone = [
+          {
+            domain = domain;
+            master = [ "primary" ];
+            acl = [ "notify_primary" ];
+            zonefile-sync = -1;
+            journal-content = "all";
+          }
+          {
+            domain = homeDomain;
+            master = [ "primary" ];
+            acl = [ "notify_primary" ];
+            zonefile-sync = -1;
+            journal-content = "all";
+          }
+        ];
       };
     })
   ]);

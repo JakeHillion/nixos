@@ -1,9 +1,12 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, nixpkgs-unstable, ... }:
 
 let
   cfg = config.custom.services.zigbee2mqtt;
 in
 {
+  imports = [ "${nixpkgs-unstable}/nixos/modules/services/home-automation/zigbee2mqtt.nix" ];
+  disabledModules = [ "services/home-automation/zigbee2mqtt.nix" ];
+
   options.custom.services.zigbee2mqtt = {
     enable = lib.mkEnableOption "zigbee2mqtt";
 
@@ -30,6 +33,7 @@ in
 
     services.zigbee2mqtt = {
       enable = true;
+      package = pkgs.unstable.zigbee2mqtt;
       settings = {
         permit_join = false;
         mqtt = {

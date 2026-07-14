@@ -14,12 +14,6 @@
     custom.tang.enable = true;
     custom.auto_updater.allowReboot = true;
 
-    ## CA server
-    custom.ca.service.enable = true;
-
-    ## Git Sync
-    custom.services.git-sync.enable = true;
-
     networking = {
       vlans = {
         iot = {

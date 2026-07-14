@@ -10,11 +10,19 @@ use Socket qw(inet_ntoa);
 use POSIX qw(strftime);
 
 # Get configuration from environment variables
-my $DOMAIN = $ENV{ACME_DNS_DOMAIN} // die "ACME_DNS_DOMAIN not set\n";
+my $DOMAINS_STR = $ENV{ACME_DNS_DOMAINS} // die "ACME_DNS_DOMAINS not set\n";
+my @DOMAINS = split(/,/, $DOMAINS_STR);
 my $LISTEN_ADDR = $ENV{ACME_DNS_LISTEN_ADDR} // die "ACME_DNS_LISTEN_ADDR not set\n";
 my $KNOTC = $ENV{ACME_DNS_KNOTC} // die "ACME_DNS_KNOTC not set\n";
 my $KNOT_NAMESERVER = $ENV{ACME_DNS_KNOT_NAMESERVER} // die "ACME_DNS_KNOT_NAMESERVER not set\n";
 my $PORT = 8553;
+
+# Map Nebula IPs to their corresponding IoT IPs for validation.
+# When Caddy requests a cert for an IoT host, it connects via Nebula
+# but the DNS record resolves to the IoT IP.
+my %NEBULA_TO_IOT = (
+    "172.20.0.9" => "10.239.19.8",  # stinger
+);
 
 # Disable output buffering
 $| = 1;
@@ -72,35 +80,52 @@ sub validate_client {
     # Compare IPs
     if ($client_ip eq $resolved_ip) {
         return (1, "OK");
-    } else {
-        return (0, "Client IP $client_ip does not match resolved IP $resolved_ip for $host_fqdn");
     }
+
+    # Allow Nebula clients to validate against their IoT IPs
+    if (exists $NEBULA_TO_IOT{$client_ip} && $NEBULA_TO_IOT{$client_ip} eq $resolved_ip) {
+        return (1, "OK (Nebula-IoT mapping)");
+    }
+
+    return (0, "Client IP $client_ip does not match resolved IP $resolved_ip for $host_fqdn");
+}
+
+sub get_zone_for_fqdn {
+    my ($fqdn) = @_;
+    $fqdn =~ s/\.$//;  # Remove trailing dot
+    # Check domains in reverse order of specificity (longest first)
+    for my $d (sort { length($b) <=> length($a) } @DOMAINS) {
+        if ($fqdn =~ /\.\Q$d\E$|^\Q$d\E$/) {
+            return $d;
+        }
+    }
+    return undef;
 }
 
 sub add_txt_record {
-    my ($fqdn, $value) = @_;
+    my ($fqdn, $value, $zone) = @_;
 
     # Remove trailing dot and domain suffix to get relative name
     $fqdn =~ s/\.$//;
-    $fqdn =~ s/\.\Q$DOMAIN\E$//;
+    $fqdn =~ s/\.\Q$zone\E$//;
 
-    log_msg("Adding TXT record: $fqdn = $value");
+    log_msg("Adding TXT record: $fqdn in zone $zone = $value");
 
     # Use knotc for atomic zone transaction
-    log_msg("Running: knotc zone-begin $DOMAIN");
-    system($KNOTC, "zone-begin", $DOMAIN) == 0
+    log_msg("Running: knotc zone-begin $zone");
+    system($KNOTC, "zone-begin", $zone) == 0
         or do { log_msg("zone-begin failed"); return (0, "zone-begin failed"); };
 
-    log_msg("Running: knotc zone-set $DOMAIN $fqdn 60 TXT \"$value\"");
-    my $ret = system($KNOTC, "zone-set", $DOMAIN, $fqdn, "60", "TXT", "\"$value\"");
+    log_msg("Running: knotc zone-set $zone $fqdn 60 TXT \"$value\"");
+    my $ret = system($KNOTC, "zone-set", $zone, $fqdn, "60", "TXT", "\"$value\"");
     if ($ret != 0) {
         log_msg("zone-set failed (exit code $ret), aborting");
-        system($KNOTC, "zone-abort", $DOMAIN);
+        system($KNOTC, "zone-abort", $zone);
         return (0, "zone-set failed");
     }
 
-    log_msg("Running: knotc zone-commit $DOMAIN");
-    system($KNOTC, "zone-commit", $DOMAIN) == 0
+    log_msg("Running: knotc zone-commit $zone");
+    system($KNOTC, "zone-commit", $zone) == 0
         or do { log_msg("zone-commit failed"); return (0, "zone-commit failed"); };
 
     log_msg("TXT record added successfully");
@@ -108,29 +133,29 @@ sub add_txt_record {
 }
 
 sub remove_txt_record {
-    my ($fqdn, $value) = @_;
+    my ($fqdn, $value, $zone) = @_;
 
     # Remove trailing dot and domain suffix to get relative name
     $fqdn =~ s/\.$//;
-    $fqdn =~ s/\.\Q$DOMAIN\E$//;
+    $fqdn =~ s/\.\Q$zone\E$//;
 
-    log_msg("Removing TXT record: $fqdn");
+    log_msg("Removing TXT record: $fqdn from zone $zone");
 
     # Use knotc for atomic zone transaction
-    log_msg("Running: knotc zone-begin $DOMAIN");
-    system($KNOTC, "zone-begin", $DOMAIN) == 0
+    log_msg("Running: knotc zone-begin $zone");
+    system($KNOTC, "zone-begin", $zone) == 0
         or do { log_msg("zone-begin failed"); return (0, "zone-begin failed"); };
 
-    log_msg("Running: knotc zone-unset $DOMAIN $fqdn TXT");
-    my $ret = system($KNOTC, "zone-unset", $DOMAIN, $fqdn, "TXT");
+    log_msg("Running: knotc zone-unset $zone $fqdn TXT");
+    my $ret = system($KNOTC, "zone-unset", $zone, $fqdn, "TXT");
     if ($ret != 0) {
         log_msg("zone-unset failed (exit code $ret), aborting");
-        system($KNOTC, "zone-abort", $DOMAIN);
+        system($KNOTC, "zone-abort", $zone);
         return (0, "zone-unset failed");
     }
 
-    log_msg("Running: knotc zone-commit $DOMAIN");
-    system($KNOTC, "zone-commit", $DOMAIN) == 0
+    log_msg("Running: knotc zone-commit $zone");
+    system($KNOTC, "zone-commit", $zone) == 0
         or do { log_msg("zone-commit failed"); return (0, "zone-commit failed"); };
 
     log_msg("TXT record removed successfully");
@@ -173,10 +198,11 @@ sub handle_request {
         return (RC_BAD_REQUEST, "Missing fqdn or value");
     }
 
-    # Validate that the FQDN is within our domain
-    unless ($fqdn =~ /\.\Q$DOMAIN\E\.?$/) {
-        log_msg("Rejected: FQDN $fqdn is not within $DOMAIN");
-        return (RC_FORBIDDEN, "FQDN $fqdn is not within $DOMAIN");
+    # Validate that the FQDN is within one of our managed domains
+    my $zone = get_zone_for_fqdn($fqdn);
+    unless (defined $zone) {
+        log_msg("Rejected: FQDN $fqdn is not within any managed domain");
+        return (RC_FORBIDDEN, "FQDN $fqdn is not within any managed domain");
     }
 
     # Validate client IP matches DNS resolution
@@ -189,7 +215,7 @@ sub handle_request {
     log_msg("Client validation passed");
 
     if ($path eq '/present') {
-        my ($ok, $result) = add_txt_record($fqdn, $value);
+        my ($ok, $result) = add_txt_record($fqdn, $value, $zone);
         if ($ok) {
             log_msg("Response: 200 OK - $result");
             return (RC_OK, encode_json({status => "ok", message => $result}));
@@ -198,7 +224,7 @@ sub handle_request {
             return (RC_INTERNAL_SERVER_ERROR, $result);
         }
     } elsif ($path eq '/cleanup') {
-        my ($ok, $result) = remove_txt_record($fqdn, $value);
+        my ($ok, $result) = remove_txt_record($fqdn, $value, $zone);
         if ($ok) {
             log_msg("Response: 200 OK - $result");
             return (RC_OK, encode_json({status => "ok", message => $result}));

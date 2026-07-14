@@ -1,0 +1,15 @@
+[Unit]
+Description=Periodically cycle the Gitea Actions runner
+
+[Timer]
+# First cycle 1h after boot, then every 1h thereafter. Recovers VMs whose
+# act_runner is stuck in the unauth poll loop (the runner can't detect this
+# itself — fetchTask treats every error the same and loops forever).
+OnBootSec=1h
+OnUnitActiveSec=1h
+# Spread cycles across runners so all N VMs don't drain + relaunch at once.
+RandomizedDelaySec=10min
+Unit=gitea-runner-cycle.service
+
+[Install]
+WantedBy=timers.target

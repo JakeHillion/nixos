@@ -39,6 +39,11 @@
           }
         ];
       };
+      # The vlan declaration auto-creates an empty networking.interfaces.eth0
+      # entry; in nixpkgs 26.05's strict initrd networkd generator that
+      # produced a second `40-eth0` network claiming DHCP=yes (no addresses)
+      # while the enp1s0 rename produced DHCP=no. Pin both to no.
+      interfaces.eth0.useDHCP = false;
       defaultGateway = "10.64.50.1";
       vlans = {
         iot = {
@@ -55,6 +60,10 @@
         ];
       };
     };
+    # Force-accept RAs on eth0 despite forwarding=1 (set by OTBR for the
+    # Thread mesh). Without this, eth0 ignores RAs and never SLAACs.
+    boot.kernel.sysctl."net.ipv6.conf.eth0.accept_ra" = 2;
+
     # Use local dnsmasq as caching resolver
     networking.nameservers = lib.mkForce [ "127.0.0.1" ];
 
@@ -67,7 +76,7 @@
         # Cache settings - larger cache for better performance
         cache-size = 10000;
         # Only bind to localhost to prevent external access
-        listen-address = "127.0.0.1";
+        listen-address = [ "127.0.0.1" "::1" ];
         bind-interfaces = true;
         # Don't read /etc/resolv.conf
         no-resolv = true;
@@ -92,7 +101,8 @@
           ];
           allowedUDPPorts = lib.mkForce [
             443 # HTTP 3
-            5353 # HomeKit
+            5353 # HomeKit / mDNS
+            49191 # OTBR MeshCoP BorderAgent
           ];
         };
         iot = {
@@ -102,6 +112,7 @@
           ];
           allowedUDPPorts = lib.mkForce [
             443 # HTTP 3
+            5353 # mDNS (OTBR / Thread SRP)
           ];
         };
       };

@@ -48,7 +48,7 @@ in
         "nixcache.jakehillion.me-1:HQsjYdrcs3ilS/ngtlbTQXU4Xfsm+va5NN7yoK0wKMg="
         "ogygia.cachix.org-1:xb4bnMPeWgSP81Xs0Vl7ZU4Ez7Ul65qp/EoZ40pDaWo="
         "sched-ext.cachix.org-1:dtoM9QOUUqJs3JkmSgVoKYp9cLY0BrupOqp4DVz35/g="
-        "nixcache.testquorum.dev-1:w8eYAwlsCrkOoPWvRFZa/haM19qkHu0kAHD0zkGN+0g="
+        "nixcache.testquorum.dev-1:aS+CJF8O8Ebirc6hypMfq/061h5TJlbsej1+zUJHPec="
       ];
     };
 
@@ -76,8 +76,6 @@ in
           unstable.codex
           tea
         ];
-        shellAliases.aider =
-          ''OLLAMA_API_BASE="http://ollama.${config.ogygia.domain}" ${pkgs.aider-chat}/bin/aider --model ollama_chat/qwen2.5-coder:14b'';
       };
 
       programs.gpg.enable = true;

@@ -1,0 +1,16 @@
+Treat eval-warning runs as success in Gitea status reports so that benign
+evaluation warnings do not block PRs that require `buildbot/nix-eval`. The
+warning count is still appended to the status description by
+`NixEvalWarningsFormatter`, and the buildbot UI continues to mark the step
+itself as `WARNINGS`.
+
+--- a/buildbot_nix/gitea_projects.py
++++ b/buildbot_nix/gitea_projects.py
+@@ -208,6 +208,7 @@ class GiteaBackend(GitBackend):
+             token=Interpolate(self.config.token),
+             context=Interpolate("buildbot/%(prop:status_name)s"),
+             context_pr=Interpolate("buildbot/%(prop:status_name)s"),
++            warningAsSuccess=True,
+             generators=[
+                 BuildNixEvalStatusGenerator(),
+             ],

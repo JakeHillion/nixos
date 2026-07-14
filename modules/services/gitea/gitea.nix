@@ -55,6 +55,19 @@ in
     users.users.gitea.uid = config.ids.uids.gitea;
     users.groups.gitea.gid = config.ids.gids.gitea;
 
+    services.anubis.instances.gitea = {
+      settings = {
+        BIND = "${config.custom.dns.nebula.ipv4}:8923";
+        BIND_NETWORK = "tcp";
+        METRICS_BIND = "127.0.0.1:8924";
+        METRICS_BIND_NETWORK = "tcp";
+        TARGET = "http://127.0.0.1:${toString cfg.httpPort}";
+        DIFFICULTY = 4;
+        OG_PASSTHROUGH = true;
+        WEBMASTER_EMAIL = "jake@hillion.co.uk";
+      };
+    };
+
     services.gitea = {
       enable = true;
       package = pkgs.unstable.gitea;

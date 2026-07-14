@@ -29,6 +29,7 @@ in
           buildbot-nix-master = "boron.cx.${config.ogygia.domain}";
           buildbot-nix-worker = "boron.cx.${config.ogygia.domain}";
           awtrix-fireworks-tokens = "stinger.pop.${config.ogygia.domain}";
+          awtrix-octopus-agile = "stinger.pop.${config.ogygia.domain}";
           blackmagic-cam-importer = "phoenix.st.${config.ogygia.domain}";
           couchdb = "warlock.cx.${config.ogygia.domain}";
           downloads = "phoenix.st.${config.ogygia.domain}";
@@ -40,7 +41,6 @@ in
           firefly-iii = "warlock.cx.${config.ogygia.domain}";
           firefly-iii-data-importer = "warlock.cx.${config.ogygia.domain}";
           frigate = "phoenix.st.${config.ogygia.domain}";
-          git = "boron.cx.${config.ogygia.domain}";
           gitea = "boron.cx.${config.ogygia.domain}";
           hearthd = "stinger.pop.${config.ogygia.domain}";
           homeassistant = "stinger.pop.${config.ogygia.domain}";
@@ -58,7 +58,7 @@ in
           ];
           ntfy = "boron.cx.${config.ogygia.domain}";
           offline-youtube = "phoenix.st.${config.ogygia.domain}";
-          ollama = "merlin.rig.${config.ogygia.domain}";
+          openthread-border-router = "stinger.pop.${config.ogygia.domain}";
           openwebui = "warlock.cx.${config.ogygia.domain}";
           personal_agent = "fanboy.cx.${config.ogygia.domain}";
           privatebin = "boron.cx.${config.ogygia.domain}";
@@ -66,6 +66,7 @@ in
           radicale = "boron.cx.${config.ogygia.domain}";
           renovate = "boron.cx.${config.ogygia.domain}";
           restic = "phoenix.st.${config.ogygia.domain}";
+          searxng = "warlock.cx.${config.ogygia.domain}";
           status = "boron.cx.${config.ogygia.domain}";
           tang = [
             "boron.cx.${config.ogygia.domain}"

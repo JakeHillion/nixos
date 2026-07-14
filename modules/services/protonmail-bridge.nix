@@ -54,8 +54,8 @@ in
     systemd.services.protonmail-bridge = {
       description = "ProtonMail Bridge";
       wantedBy = [ "multi-user.target" ];
-      after = [ "network-online.target" ] ++ lib.optionals config.custom.impermanence.enable [ "fix-var-lib-private-permissions.service" ];
-      wants = [ "network-online.target" ] ++ lib.optionals config.custom.impermanence.enable [ "fix-var-lib-private-permissions.service" ];
+      after = [ "network-online.target" ];
+      wants = [ "network-online.target" ];
 
       serviceConfig = {
         Type = "simple";

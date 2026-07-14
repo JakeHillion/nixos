@@ -2,6 +2,12 @@
 
 let
   cfg = config.custom.services.homeassistant;
+
+  acmeApiHost =
+    let
+      authDns = config.custom.locations.locations.services.authoritative_dns;
+    in
+    if builtins.isList authDns then builtins.head authDns else authDns;
 in
 {
   options.custom.services.homeassistant = {
@@ -15,6 +21,8 @@ in
 
   config = lib.mkIf cfg.enable {
     services.home-assistant.configDir = lib.mkIf config.custom.impermanence.enable (lib.mkOverride 999 "/data/home-assistant");
+
+    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/lib/private/matter-server" ];
 
     age.secrets = {
       "backups/homeassistant/restic/mig29" = lib.mkIf cfg.backup {
@@ -80,26 +88,18 @@ in
         enable = true;
 
         virtualHosts = {
-          "homeassistant.iot.hillion.co.uk" = {
+          "homeassistant.iot.home.jakehillion.me" = {
             listenAddresses = [ "10.239.19.8" ];
             extraConfig = ''
               tls {
-                ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
+                dns jakehillion {
+                  api_endpoint http://${acmeApiHost}:8553
+                }
               }
 
-              @blocked not remote_ip 10.239.19.4
+              @blocked not remote_ip 10.239.19.4 10.239.19.14
               respond @blocked "<h1>Access Denied</h1>" 403
 
-              reverse_proxy http://localhost:8123
-            '';
-          };
-
-          "homeassistant.home.hillion.co.uk" = {
-            listenAddresses = [ "10.64.50.29" ];
-            extraConfig = ''
-              tls {
-                ca https://ca.${config.ogygia.domain}:8443/acme/acme/directory
-              }
               reverse_proxy http://localhost:8123
             '';
           };
@@ -130,6 +130,18 @@ in
         };
       };
 
+      matter-server = {
+        enable = true;
+        logLevel = "debug";
+        extraArgs = {
+          # Only the local Home Assistant talks to this.
+          listen-address = "127.0.0.1";
+          # OTBR publishes Thread devices via avahi on iot; without this,
+          # CHIP picks eth0 and never resolves the OMR-prefix AAAAs.
+          primary-interface = "iot";
+        };
+      };
+
       home-assistant = {
         enable = true;
 
@@ -143,13 +155,16 @@ in
           "fully_kiosk"
           "google_assistant"
           "homekit"
+          "matter"
           "met"
           "mobile_app"
           "mqtt"
+          "otbr"
           "otp"
           "smartthings"
           "sonos"
           "sun"
+          "thread"
           "unifi"
           "wake_on_lan"
           "waze_travel_time"
@@ -157,6 +172,7 @@ in
         ];
         customComponents = with pkgs.home-assistant-custom-components; [
           adaptive_lighting
+          octopus_energy
         ];
         customLovelaceModules = with pkgs.home-assistant-custom-lovelace-modules; [
           button-card
@@ -166,7 +182,18 @@ in
           {
             default_config = { };
 
+            logger = {
+              default = "info";
+              logs = {
+                "homeassistant.components.matter" = "debug";
+                "matter_server" = "debug";
+                "chip" = "debug";
+              };
+            };
+
             homeassistant = {
+              internal_url = "https://homeassistant.iot.home.jakehillion.me";
+
               auth_providers = [
                 { type = "homeassistant"; }
                 {

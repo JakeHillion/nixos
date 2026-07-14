@@ -12,6 +12,13 @@ in
     age.secrets."hearthd/locations.toml".file = ./locations.toml.age;
     age.secrets."hearthd/mqtt.toml".file = ./mqtt.toml.age;
 
+    custom.www.nebula = {
+      enable = true;
+      virtualHosts."hearthd.${config.ogygia.domain}".extraConfig = ''
+        reverse_proxy http://127.0.0.1:8565
+      '';
+    };
+
     services.hearthd = {
       enable = true;
 
@@ -30,7 +37,7 @@ in
         locations.default = "home";
 
         http = {
-          listen = config.custom.dns.nebula.ipv4;
+          listen = "127.0.0.1";
           port = 8565;
         };
 

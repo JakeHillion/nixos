@@ -206,6 +206,7 @@
         networks = {
           lan = {
             description = "Main LAN Network";
+            vlanId = 1;
             subnet = "10.64.50.0/24";
             interface = "enp1s0f0";
             dhcpEnabled = true;
@@ -274,6 +275,12 @@
                 hostname = "maverick";
                 fqdn = "maverick.cx.${config.ogygia.domain}";
                 hwAddress = "38:05:25:34:02:37";
+                dhcpReservation = true;
+              };
+              "31" = {
+                hostname = "darkstar";
+                fqdn = "darkstar.skunk.${config.ogygia.domain}";
+                hwAddress = "6c:cf:39:00:b1:30";
                 dhcpReservation = true;
               };
             };
@@ -418,6 +425,11 @@
               "14" = {
                 hostname = "fph-sat1-lr";
                 hwAddress = "3c:0f:02:c2:fd:90";
+                dhcpReservation = true;
+              };
+              "15" = {
+                hostname = "slzb-06mu";
+                hwAddress = "52:78:7d:d7:1a:5c";
                 dhcpReservation = true;
               };
             };

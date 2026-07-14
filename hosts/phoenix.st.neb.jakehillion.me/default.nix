@@ -87,6 +87,8 @@ in
 
       backups.enable = true;
     };
+    systemd.services.syncthing.after = [ "zfs-mount.service" ];
+    systemd.services.syncthing.requires = [ "zfs-mount.service" ];
 
     ## Chia
     age.secrets."chia/farmer.key" = {
@@ -112,9 +114,6 @@ in
       enable = true;
       extraRepos = [ "https://gitea.hillion.co.uk/JakeHillion/nixos.git" ];
     };
-
-    ## Git Sync
-    custom.services.git-sync.enable = true;
 
     ## Downloads
     custom.services.downloads = {
