@@ -29,6 +29,13 @@
 
     custom.defaults = true;
 
+    # This device is currently broken/offline, so its Nebula key couldn't be
+    # grabbed for the ogygia-managed overlay. If it's brought back to life,
+    # gather its pubkey and add it to the Ogygia-managed Nebula (set
+    # ogygia.nebula.groups + pubKey, sign with `ogygia nebula rekey`) and drop
+    # this override.
+    ogygia.nebula.enable = lib.mkForce false;
+
     custom.tang = {
       enable = true;
       networkingModule = "r8169";

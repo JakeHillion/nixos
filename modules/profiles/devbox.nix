@@ -8,8 +8,6 @@ in
   options.custom.profiles.devbox = lib.mkEnableOption "devbox profile";
 
   config = lib.mkIf cfg {
-    age.secrets.devbox-cachix-netrc.file = ./devbox-cachix-netrc.age;
-    nix.settings.netrc-file = config.age.secrets.devbox-cachix-netrc.path;
     environment.systemPackages = with pkgs; [
       jq # handy and claude always tries to invoke it
     ];
@@ -33,8 +31,6 @@ in
     custom.home.nix-trusted-settings = {
       enable = true;
       substituters = [
-        "https://exo-internal.cachix.org"
-        "https://exo.cachix.org"
         "https://hearthd.cachix.org"
         "https://nixcache.jakehillion.me"
         "https://ogygia.cachix.org"
@@ -42,8 +38,6 @@ in
         "https://nixcache.testquorum.dev"
       ];
       trustedPublicKeys = [
-        "exo-internal.cachix.org-1:4kcxdKKQspZqUcdXZHOeppVJmVQsaha0U5eHB3Akg5A="
-        "exo.cachix.org-1:okq7hl624TBeAR3kV+g39dUFSiaZgLRkLsFBCuJ2NZI="
         "hearthd.cachix.org-1:Lt/GTziCLrilXymMR1tEX1TZkv5ZEqF6JKfyS5aGEqY="
         "nixcache.jakehillion.me-1:HQsjYdrcs3ilS/ngtlbTQXU4Xfsm+va5NN7yoK0wKMg="
         "ogygia.cachix.org-1:xb4bnMPeWgSP81Xs0Vl7ZU4Ez7Ul65qp/EoZ40pDaWo="

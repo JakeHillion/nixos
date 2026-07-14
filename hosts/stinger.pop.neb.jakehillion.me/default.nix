@@ -16,6 +16,15 @@
     custom.locations.autoServe = true;
     custom.impermanence.enable = true;
 
+    ogygia.nebula = {
+      groups = [ "legacy-full-access" ];
+      pubKey = ''
+        -----BEGIN NEBULA X25519 PUBLIC KEY-----
+        tKsz6tQke2pxIpxnZrqtERvTLNAbAUzC7w1pAKprITg=
+        -----END NEBULA X25519 PUBLIC KEY-----
+      '';
+    };
+
     custom.tang = {
       enable = true;
       networkingModule = "r8169";
