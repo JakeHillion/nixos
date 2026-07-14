@@ -40,9 +40,6 @@
     ## Auto-updater with reboot
     custom.auto_updater.allowReboot = true;
 
-    ## Disable services that require outbound Nebula connections
-    ## (fanboy's Nebula cert blocks outbound to other Nebula hosts)
-    services.journald.upload.enable = lib.mkForce false;
     custom.hostinfo.enable = lib.mkForce false;
   };
 }
