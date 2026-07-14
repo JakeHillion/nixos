@@ -101,18 +101,6 @@ in
 
     programs.sway.enable = true;
 
-    # indicator-sound-switcher's tray icon (indicator-sound-switcher-symbolic)
-    # ships only inside its own package, and only as an SVG. Scope two things
-    # to the Sway session (rather than installing anything into a profile) so
-    # the tray host (Waybar) can display it:
-    #   - expose the package's icons to the icon-theme lookup via XDG_DATA_DIRS
-    #   - provide the librsvg gdk-pixbuf loader so the SVG can be rendered
-    #     (PNG/JPEG are built into gdk-pixbuf; SVG needs the external loader)
-    programs.sway.extraSessionCommands = ''
-      export XDG_DATA_DIRS="${pkgs.indicator-sound-switcher}/share:$XDG_DATA_DIRS"
-      export GDK_PIXBUF_MODULE_FILE="${pkgs.librsvg}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache"
-    '';
-
     # Enable Firefox for desktop environment
     custom.desktop.firefox.enable = true;
 
@@ -148,48 +136,39 @@ in
             done
           '';
 
-          # Waybar replaces sway's built-in swaybar. Battery is only shown on
-          # laptops. Styling is intentionally left to Waybar's built-in default
-          # for now; a custom stylesheet can come later.
-          waybarConfig = (formats.json { }).generate "waybar-config.json" {
-            layer = "top";
-            position = "top";
+          status_command = pkgs.writeShellScript "sway_status" (
+            if config.custom.profiles.laptop then ''
+              # Get battery information using acpi
+              BATTERY_INFO=$(${pkgs.acpi}/bin/acpi -b 2>/dev/null | head -1)
+              if [ -n "$BATTERY_INFO" ]; then
+                BATTERY_CAPACITY=$(echo "$BATTERY_INFO" | ${pkgs.gnugrep}/bin/grep -oE '[0-9]+%' | head -1 | tr -d '%')
+                BATTERY_STATUS=$(echo "$BATTERY_INFO" | cut -d: -f2 | cut -d, -f1 | tr -d ' ')
 
-            modules-left = [ "sway/workspaces" "sway/mode" ];
-            modules-center = [ "clock" ];
-            modules-right = lib.optionals config.custom.profiles.laptop [ "battery" ] ++ [ "tray" ];
+                # Set battery icon based on status and level
+                if [ "$BATTERY_STATUS" = "Charging" ]; then
+                  BATTERY_ICON="⚡"
+                elif [ "$BATTERY_CAPACITY" -lt 20 ]; then
+                  BATTERY_ICON="🪫"
+                else
+                  BATTERY_ICON="🔋"
+                fi
 
-            "sway/workspaces".disable-scroll = true;
-
-            clock = {
-              interval = 1;
-              format = "{:%Y-%m-%d %H:%M:%S}";
-            };
-
-            battery = {
-              interval = 5;
-              states.warning = 20;
-              format = "🔋 {capacity}%";
-              format-warning = "🪫 {capacity}%";
-              format-charging = "⚡ {capacity}%";
-            };
-
-            tray = {
-              icon-size = 16;
-              spacing = 10;
-            };
-          };
+                echo "$BATTERY_ICON$BATTERY_CAPACITY | $(date +'%Y-%m-%d %X')"
+              else
+                date +'%Y-%m-%d %X'
+              fi
+            '' else ''
+              date +'%Y-%m-%d %X'
+            ''
+          );
         in
         ''
           ### Configure binary paths from the Nix store
           set $config_watcher "${config_watcher}"
+          set $status_command "${status_command}"
           set $swaylock "${swaylock-effects}/bin/swaylock"
           set $term "${alacritty}/bin/alacritty"
           set $tmux "${tmux}/bin/tmux"
-          set $swayosd_client "${swayosd}/bin/swayosd-client"
-          set $swayosd_server "${swayosd}/bin/swayosd-server"
-          set $indicator_sound_switcher "${indicator-sound-switcher}/bin/indicator-sound-switcher"
-          set $waybar "${waybar}/bin/waybar -c ${waybarConfig}"
 
         '' + builtins.readFile ./config + lib.optionalString (cfg.extraConfig != "") ''
 

@@ -15,6 +15,7 @@
     ./ids.nix
     ./impermanence.nix
     ./locations.nix
+    ./nebula
     ./networking
     ./oci-containers
     ./ogygia.nix

@@ -12,15 +12,6 @@
     custom.auto_updater.allowReboot = true;
     custom.locations.autoServe = true;
 
-    ogygia.nebula = {
-      groups = [ "legacy-full-access" ];
-      pubKey = ''
-        -----BEGIN NEBULA X25519 PUBLIC KEY-----
-        KTR7RgldyK19cKMSgmAgnrn+YZZ9+x8SLV+Dvn2NR2Q=
-        -----END NEBULA X25519 PUBLIC KEY-----
-      '';
-    };
-
     custom.tang.enable = true;
 
     # Accept remote builds
