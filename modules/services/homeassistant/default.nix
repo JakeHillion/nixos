@@ -8,19 +8,6 @@ let
       authDns = config.custom.locations.locations.services.authoritative_dns;
     in
     if builtins.isList authDns then builtins.head authDns else authDns;
-
-  # Override the nixpkgs ecoflow_cloud (pinned to v1.4.1) with the latest
-  # tagged release, which adds Wave 3 support. Drop this once nixpkgs ships a
-  # release >= 1.5.0.
-  ecoflow_cloud = pkgs.home-assistant-custom-components.ecoflow_cloud.overrideAttrs (old: rec {
-    version = "1.5.0-beta3";
-    src = pkgs.fetchFromGitHub {
-      owner = "tolwi";
-      repo = "hassio-ecoflow-cloud";
-      tag = "v${version}";
-      hash = "sha256-qG/z2MHZDd5S7KWwvRViWJqEFIGBS2hNWi3w71rXB+o=";
-    };
-  });
 in
 {
   options.custom.services.homeassistant = {
@@ -33,14 +20,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    # The caddy vhost below solves DNS-01 challenges against the acme-dns-api on
-    # ${acmeApiHost}:8553 over Nebula. Grant that path at the point of use so it
-    # doesn't depend on the broad legacy-full-access group (see modules/www/nebula.nix).
-    ogygia.nebula.groups = [ "acme-dns-client" ];
-
     services.home-assistant.configDir = lib.mkIf config.custom.impermanence.enable (lib.mkOverride 999 "/data/home-assistant");
-
-    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/lib/private/matter-server" ];
 
     age.secrets = {
       "backups/homeassistant/restic/mig29" = lib.mkIf cfg.backup {
@@ -148,18 +128,6 @@ in
         };
       };
 
-      matter-server = {
-        enable = true;
-        logLevel = "debug";
-        extraArgs = {
-          # Only the local Home Assistant talks to this.
-          listen-address = "127.0.0.1";
-          # OTBR publishes Thread devices via avahi on iot; without this,
-          # CHIP picks eth0 and never resolves the OMR-prefix AAAAs.
-          primary-interface = "iot";
-        };
-      };
-
       home-assistant = {
         enable = true;
 
@@ -173,28 +141,21 @@ in
           "fully_kiosk"
           "google_assistant"
           "homekit"
-          "matter"
           "met"
           "mobile_app"
           "mqtt"
-          "otbr"
           "otp"
           "smartthings"
           "sonos"
           "sun"
-          "thread"
           "unifi"
           "wake_on_lan"
           "waze_travel_time"
           "wyoming"
         ];
-        customComponents = [
-          ecoflow_cloud
-        ]
-        ++ (with pkgs.home-assistant-custom-components; [
+        customComponents = with pkgs.home-assistant-custom-components; [
           adaptive_lighting
-          octopus_energy
-        ]);
+        ];
         customLovelaceModules = with pkgs.home-assistant-custom-lovelace-modules; [
           button-card
         ];
@@ -202,15 +163,6 @@ in
         config = lib.mkMerge [
           {
             default_config = { };
-
-            logger = {
-              default = "info";
-              logs = {
-                "homeassistant.components.matter" = "debug";
-                "matter_server" = "debug";
-                "chip" = "debug";
-              };
-            };
 
             homeassistant = {
               internal_url = "https://homeassistant.iot.home.jakehillion.me";

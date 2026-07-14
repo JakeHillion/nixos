@@ -42,7 +42,7 @@ in
   "modules/services/matrix/matrix.hillion.co.uk/syncv3_secret.age".publicKeys = jake_users ++ [ neb.cx.boron ];
 
   # Backups Secrets
-  "secrets/git/git_backups_ecdsa.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
+  "secrets/git/git_backups_ecdsa.age".publicKeys = jake_users ++ [ neb.st.phoenix neb.cx.warlock ];
 
   # Mastodon Secrets
   "modules/services/mastodon/social.hillion.co.uk/otp_secret_file.age".publicKeys = jake_users ++ [ ];
@@ -56,8 +56,8 @@ in
   # Storj Secrets
   "secrets/storj/auth.age".publicKeys = jake_users ++ [ ];
 
-  # Dashboard secrets
-  "secrets/dashboard/ssh.key.age".publicKeys = jake_users ++ [ neb.cx.boron ];
+  # Version tracker secrets
+  "secrets/version_tracker/ssh.key.age".publicKeys = jake_users ++ [ neb.cx.boron ];
 
   # Home Automation secrets
   "secrets/mqtt/zigbee2mqtt.age".publicKeys = jake_users ++ [ neb.pop.stinger ];
@@ -142,6 +142,14 @@ in
   # async-coder secrets
   "modules/services/async-coder/gitea-token.age".publicKeys = jake_users ++ [ neb.cx.maverick ];
   "modules/services/async-coder/maverick.cx.password.age".publicKeys = [ neb.cx.maverick ];
+
+  # Cachix private cache credentials
+  "modules/profiles/devbox-cachix-netrc.age".publicKeys = jake_users ++ [
+    neb.cx.maverick
+    neb.cx.rooster
+    neb.lt.bob
+    neb.rig.merlin
+  ];
 
   # personal-agent secrets
   "modules/services/personal-agent/17track_token.age".publicKeys = [ neb.cx.fanboy ];

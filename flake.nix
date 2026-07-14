@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:JakeHillion/nixpkgs2/nixos-unstable";
 
     nixos-hardware.url = "github:nixos/nixos-hardware";
@@ -10,7 +10,7 @@
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
 
-    darwin.url = "github:lnl7/nix-darwin/nix-darwin-26.05";
+    darwin.url = "github:lnl7/nix-darwin/nix-darwin-25.11";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
 
     agenix.url = "github:ryantm/agenix";
@@ -21,7 +21,7 @@
     agenix-rekey.url = "github:oddlama/agenix-rekey";
     agenix-rekey.inputs.nixpkgs.follows = "nixpkgs";
 
-    home-manager.url = "github:nix-community/home-manager/release-26.05";
+    home-manager.url = "github:nix-community/home-manager/release-25.11";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     home-manager-unstable.url = "github:nix-community/home-manager";
     home-manager-unstable.inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -34,7 +34,7 @@
     nixos-generators.url = "github:nix-community/nixos-generators";
     nixos-generators.inputs.nixpkgs.follows = "nixpkgs";
 
-    ogygia.url = "github:JakeHillion/ogygia-nix?ref=jj/uumwwzmytqlw";
+    ogygia.url = "github:JakeHillion/ogygia-nix";
     ogygia.inputs.nixpkgs.follows = "nixpkgs";
 
     async-coder.url = "git+https://gitea.hillion.co.uk/JakeHillion/async-coder.git";
@@ -96,9 +96,7 @@
           "qnaplcd" = final.callPackage ./pkgs/qnaplcd.nix { inherit qnaplcd-menu; };
           "opencode-plugin" = final.callPackage ./pkgs/opencode-plugin { };
           "oh-my-openagent" = final.callPackage ./pkgs/oh-my-openagent { };
-          "gitea-actions-vm-image" = final.callPackage ./pkgs/gitea-actions-vm-image {
-            gitea-actions-runner = final.unstable.gitea-actions-runner;
-          };
+          "gitea-actions-vm-image" = final.callPackage ./pkgs/gitea-actions-vm-image { };
           "llm-proxy" = final.callPackage ./pkgs/llm-proxy.nix { };
         })
       ];

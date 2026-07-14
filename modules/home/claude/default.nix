@@ -64,16 +64,6 @@ in
           }' "$target" > "$target.tmp"
         ${pkgs.coreutils}/bin/mv "$target.tmp" "$target"
       '';
-
-      # Disable zoxide cd hook inside Claude Code subshells to avoid cd breakage.
-      # Claude Code sets CLAUDECODE=1 in all subprocesses it spawns (Bash tool,
-      # hooks, MCP, etc.), so we check for that and strip the cd function back out
-      # after zoxide loads unconditionally (mkAfter ensures this runs after zoxide init).
-      programs.zsh.initContent = lib.mkAfter ''
-        if [[ -n "$CLAUDECODE" ]]; then
-          unfunction cd 2>/dev/null || true
-        fi
-      '';
     };
   };
 }

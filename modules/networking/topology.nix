@@ -427,11 +427,6 @@
                 hwAddress = "3c:0f:02:c2:fd:90";
                 dhcpReservation = true;
               };
-              "15" = {
-                hostname = "slzb-06mu";
-                hwAddress = "52:78:7d:d7:1a:5c";
-                dhcpReservation = true;
-              };
             };
           };
 
@@ -451,6 +446,21 @@
           };
 
           # Note: VLAN 4 = mtu9000, VLAN 5 = cellular (configured on switch, not in topology)
+
+          exo = {
+            description = "Exo Devices Network";
+            vlanId = 6;
+            subnet = "10.185.42.0/24";
+            interface = "enp1s0f0";
+            dhcpEnabled = true;
+            dhcpPool = {
+              start = "10.185.42.64";
+              end = "10.185.42.254";
+            };
+            dnsServers = [ "1.1.1.1" "8.8.8.8" ];
+            internetAccess = true;
+            trustedNetwork = false;
+          };
 
           openclaw = {
             description = "OpenClaw Network";

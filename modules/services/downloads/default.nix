@@ -234,7 +234,6 @@ in
             deluge-natpmp = {
               description = "Configure a NAT-PMP port and configure Deluge with it.";
               after = [ "network-online.target" ];
-              wants = [ "network-online.target" ];
               wantedBy = [ "multi-user.target" ];
 
               serviceConfig.User = "deluge";

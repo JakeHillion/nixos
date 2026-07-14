@@ -10,15 +10,6 @@
 
     custom.defaults = true;
     custom.profiles.devbox = true;
-
-    ogygia.nebula = {
-      groups = [ "legacy-full-access" ];
-      pubKey = ''
-        -----BEGIN NEBULA X25519 PUBLIC KEY-----
-        P2Gg44sdLtmFj+GnmBkkwg+BlDswRQFixBY3TfE9d3Y=
-        -----END NEBULA X25519 PUBLIC KEY-----
-      '';
-    };
     custom.home.neomutt.backup = false;
     custom.sched_ext = {
       enable = true;

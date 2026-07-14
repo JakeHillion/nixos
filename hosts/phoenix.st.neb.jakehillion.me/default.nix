@@ -38,15 +38,6 @@ in
     custom.locations.autoServe = true;
     custom.impermanence.enable = true;
 
-    ogygia.nebula = {
-      groups = [ "legacy-full-access" ];
-      pubKey = ''
-        -----BEGIN NEBULA X25519 PUBLIC KEY-----
-        ux3uLoS3qwU2Ik0Cc06LxezR+EFAOtj1KHSxd+OBSyk=
-        -----END NEBULA X25519 PUBLIC KEY-----
-      '';
-    };
-
     custom.tang = {
       enable = true;
       networkingModule = "ixgbe";
@@ -123,6 +114,9 @@ in
       enable = true;
       extraRepos = [ "https://gitea.hillion.co.uk/JakeHillion/nixos.git" ];
     };
+
+    ## Git Sync
+    custom.services.git-sync.enable = true;
 
     ## Downloads
     custom.services.downloads = {
