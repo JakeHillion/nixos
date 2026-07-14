@@ -76,6 +76,9 @@ in
           # Reproduce the legacy allow-all inbound posture. Per-host cert groups
           # live in each host's own config (see ogygia.nebula.groups there).
           { groups = [ "legacy-full-access" ]; port = "any"; proto = "any"; }
+
+          # Allow ICMP from any peer, no group, so ping works as a diagnostic.
+          { host = "any"; port = "any"; proto = "icmp"; }
         ];
 
         topology = {
