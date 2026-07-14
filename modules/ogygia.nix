@@ -66,10 +66,29 @@ in
         # `ogygia nebula` CLI reads and writes them.
         certDir = ../nebula;
 
-        # Reproduce the legacy allow-all inbound posture. Per-host cert groups
-        # live in each host's own config (see ogygia.nebula.groups there).
+        # irisd-client is fleet-wide (every host pulls from the peer cache).
+        # etcd-client follows hostinfod, the etcd publisher, so a host that
+        # disables it (fanboy) gets no etcd access.
+        groups = [ "irisd-client" ]
+          ++ lib.optional config.ogygia.hostinfod.enable "etcd-client";
+
         firewall.inbound = [
+          # SSH is allowed from every mesh peer, no group required. This keeps
+          # admin and inter-host SSH working once legacy-full-access is retired,
+          # and (unlike the group rule below) also lets groupless hosts such as
+          # fanboy reach the rest of the fleet over Nebula.
+          { host = "any"; port = 22; proto = "tcp"; }
+
+          # Reproduce the legacy allow-all inbound posture. Per-host cert groups
+          # live in each host's own config (see ogygia.nebula.groups there).
+          { groups = [ "irisd-client" ]; port = 35742; proto = "tcp"; }
+
+          # Reproduce the legacy allow-all inbound posture. Per-host cert groups
+          # live in each host's own config (see ogygia.nebula.groups there).
           { groups = [ "legacy-full-access" ]; port = "any"; proto = "any"; }
+
+          # Allow ICMP from any peer, no group, so ping works as a diagnostic.
+          { host = "any"; port = "any"; proto = "icmp"; }
         ];
 
         topology = {

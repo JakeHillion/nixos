@@ -10,10 +10,7 @@
 
     custom.defaults = true;
 
-    # fanboy's legacy cert carries no groups (restrictive, no outbound to the
-    # mesh) — keep that posture on the ogygia cert too.
     ogygia.nebula = {
-      groups = [ ];
       pubKey = ''
         -----BEGIN NEBULA X25519 PUBLIC KEY-----
         feVWt36KaTvWq4HGDcSVw5De/bwhZInBP2Def1rjJAM=
@@ -40,9 +37,7 @@
     ## Auto-updater with reboot
     custom.auto_updater.allowReboot = true;
 
-    ## Disable services that require outbound Nebula connections
-    ## (fanboy's Nebula cert blocks outbound to other Nebula hosts)
-    services.journald.upload.enable = lib.mkForce false;
+    ogygia.hostinfod.enable = lib.mkForce false;
     custom.hostinfo.enable = lib.mkForce false;
   };
 }

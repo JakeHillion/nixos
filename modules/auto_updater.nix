@@ -130,24 +130,22 @@ in
             exit 0
           fi
 
-          if [ "$(${hostname} -f)" != "fanboy.cx.neb.jakehillion.me" ]; then
-            system="$(${pkgs.coreutils}/bin/uname -m)-linux"
+          system="$(${pkgs.coreutils}/bin/uname -m)-linux"
 
-            # Stage 1: Pull all heavy dependencies from cache using the pinned hash.
-            ${nix} build \
-              --max-jobs 0 \
-              --option always-allow-substitutes true \
-              --no-link \
-              ".#checks.$system.\"nixos-${config.networking.fqdn}\""
-            # Stage 2: Build the real system closure. Only the trivial top-level
-            # symlink tree + build-revision text file differ from stage 1, so
-            # this is safe to build locally even on underpowered hosts.
-            ${nix} build \
-              --option always-allow-substitutes true \
-              --no-link \
-              --print-out-paths \
-              '.#nixosConfigurations."${config.networking.fqdn}".config.system.build.toplevel'
-          fi
+          # Stage 1: Pull all heavy dependencies from cache using the pinned hash.
+          ${nix} build \
+            --max-jobs 0 \
+            --option always-allow-substitutes true \
+            --no-link \
+            ".#checks.$system.\"nixos-${config.networking.fqdn}\""
+          # Stage 2: Build the real system closure. Only the trivial top-level
+          # symlink tree + build-revision text file differ from stage 1, so
+          # this is safe to build locally even on underpowered hosts.
+          ${nix} build \
+            --option always-allow-substitutes true \
+            --no-link \
+            --print-out-paths \
+            '.#nixosConfigurations."${config.networking.fqdn}".config.system.build.toplevel'
 
           if ! is_in_main "$nextboot_sha"; then
             echo "✱ next boot system SHA $nextboot_sha is NOT in origin/main. Running 'nixos-rebuild test'..."

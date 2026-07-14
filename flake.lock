@@ -128,11 +128,11 @@
         "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
-        "lastModified": 1780677465,
-        "narHash": "sha256-EQFcCljjD/d4Y+CWIys5kZ1W6WzAtHp7NMUc21vZgFw=",
+        "lastModified": 1783021031,
+        "narHash": "sha256-iteSHrc1Cywo1/mHQ/+svTuDYFeEfnInomCdRdZkHIQ=",
         "ref": "refs/heads/main",
-        "rev": "f0f2a9844bbdefba1c228077e0ff8ea00efdc166",
-        "revCount": 121,
+        "rev": "a3550869e6cd6e9bcc828bb8a6afcbafc7faca3c",
+        "revCount": 123,
         "type": "git",
         "url": "https://gitea.hillion.co.uk/JakeHillion/async-coder.git"
       },
@@ -149,11 +149,11 @@
         "treefmt-nix": "treefmt-nix_4"
       },
       "locked": {
-        "lastModified": 1782090778,
-        "narHash": "sha256-vCNAUjpAGccqVWFkMmPiPIGGPJjlTN3F488d/4+YVUE=",
+        "lastModified": 1783833875,
+        "narHash": "sha256-G+hRtNJ/Nnr6VFMQp2UZdx/ckJDR/RJoK0Fy/yx1/YY=",
         "owner": "nix-community",
         "repo": "buildbot-nix",
-        "rev": "e2338a195c2561cc1dbddf56ee2c893ed281c5b2",
+        "rev": "147af587241e2af85399402da60a4f44fdb1e5d7",
         "type": "github"
       },
       "original": {
@@ -229,11 +229,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1781772065,
-        "narHash": "sha256-xIbRSwDB1GBAUsWsQZUjudGfAGQt3BOpsWaO/ugVa4w=",
+        "lastModified": 1783744694,
+        "narHash": "sha256-2cp6N3rrwnGYLTx9l6N+NI+kwrCWxvJUbj5WJhvB29A=",
         "owner": "lnl7",
         "repo": "nix-darwin",
-        "rev": "adda04f0bf4819575b1978c2f8d78401b3c2be12",
+        "rev": "c3e90c89649b07d1a96e4b9dd6cd0d6e44b91a74",
         "type": "github"
       },
       "original": {
@@ -577,11 +577,11 @@
         "treefmt-nix": "treefmt-nix_5"
       },
       "locked": {
-        "lastModified": 1780768279,
-        "narHash": "sha256-XpTU0pjloyAEn1ut8tMRxF8tG32KYPSm5CjSIv1O8+Q=",
+        "lastModified": 1784009282,
+        "narHash": "sha256-YrGRF8E4nZBFBbL1n8ziSjXI6qDqnkBBW+FU9ox6NoE=",
         "owner": "JakeHillion",
         "repo": "hearthd",
-        "rev": "d5e8c974bed3b5f51b4b6202efc3f27daff9c085",
+        "rev": "caeb40577f51cc0f4ed20cd345b9ff8b448825bb",
         "type": "github"
       },
       "original": {
@@ -597,11 +597,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1781981105,
-        "narHash": "sha256-/1nNBbA7PrSQpTc9Qazkhl4kIPg+TNl0CjxS3UQJKlw=",
+        "lastModified": 1783740085,
+        "narHash": "sha256-qajyHfZY29G2oEQk+uHxmsJcRoBUBXP9maTpFlwP/dI=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "7bfff44b465909f69a442701293bc0badcf476dc",
+        "rev": "3cd22efe6471dc7365c822bd9ad73a21e55f38fb",
         "type": "github"
       },
       "original": {
@@ -618,11 +618,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1782522538,
-        "narHash": "sha256-CvOaUvJ+mXlxU3m2cPWKcOAhtKETsPUYhq+Xa5ewBp4=",
+        "lastModified": 1783963347,
+        "narHash": "sha256-r376E2XpakiXwModDHIxlvB6qLq4iFVEq730vxOO4JY=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "8d8a6cc50ddc60748791a14ee1163c865ec57635",
+        "rev": "a45a7c451455a51ae740ec3bce4024b312809c29",
         "type": "github"
       },
       "original": {
@@ -734,11 +734,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1782562157,
-        "narHash": "sha256-a7+T6QSeowynwZ1ZJJbP8T8ntAytvrui8kFGJmIZt2c=",
+        "lastModified": 1783792734,
+        "narHash": "sha256-50rvY9GdFvpYDcMLcD/4cWSi0hVxArT5wsGlVsHy8eY=",
         "owner": "nixos",
         "repo": "nixos-hardware",
-        "rev": "a9cf7546a938c737b079e738de73934a13de9784",
+        "rev": "8efb4337e857949f4cfac86d12ef1066f417f31f",
         "type": "github"
       },
       "original": {
@@ -762,11 +762,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1782491616,
-        "narHash": "sha256-bXhIBBP5N/WWw4ie+SZxInxFrgj7rduWXMhDhaUuHzg=",
+        "lastModified": 1783830768,
+        "narHash": "sha256-j7eVRJWzxYIm3NeUQg8vWxlnufqIsbL/uWEQrxtOgbo=",
         "owner": "JakeHillion",
         "repo": "nixpkgs2",
-        "rev": "3e789273f87d1ec57d7ddb888a6b9ce27ad15b25",
+        "rev": "8819c24d2b230c93707f1a354df5677d953917fd",
         "type": "github"
       },
       "original": {
@@ -778,11 +778,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1782375420,
-        "narHash": "sha256-wiPYmEuHbJvleW489n6+lamL7JSJg3pcKUYwURU9CkI=",
+        "lastModified": 1783856661,
+        "narHash": "sha256-ZGP04e+Q6WyQJGA9ZvI5CL6+heGQldbAG9U1T9NGvmU=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "4062d36ebeae843c750011eef6b61ec9a9dbc9a9",
+        "rev": "569d578509928497eddc3fdbf94a799027050be4",
         "type": "github"
       },
       "original": {
@@ -830,11 +830,11 @@
         "treefmt-nix": "treefmt-nix_8"
       },
       "locked": {
-        "lastModified": 1782823727,
-        "narHash": "sha256-uERUGfJAHreRJg0blGsqoOxXOF+WcFqB7831jz5pjmM=",
+        "lastModified": 1783930014,
+        "narHash": "sha256-KzX3HzrLKdIszG4wQ4n6oHZplkw3SESJshHGO/VzVwk=",
         "ref": "refs/heads/main",
-        "rev": "ba04f90fa63987194c4265fbb83a5e5f722c82f5",
-        "revCount": 73,
+        "rev": "02aae5f90fba8f07b7df087b0e7fb571689d6fb2",
+        "revCount": 74,
         "type": "git",
         "url": "https://gitea.hillion.co.uk/JakeHillion/personal-agent.git"
       },
