@@ -8,6 +8,19 @@ let
       authDns = config.custom.locations.locations.services.authoritative_dns;
     in
     if builtins.isList authDns then builtins.head authDns else authDns;
+
+  # Override the nixpkgs ecoflow_cloud (pinned to v1.4.1) with the latest
+  # tagged release, which adds Wave 3 support. Drop this once nixpkgs ships a
+  # release >= 1.5.0.
+  ecoflow_cloud = pkgs.home-assistant-custom-components.ecoflow_cloud.overrideAttrs (old: rec {
+    version = "1.5.0-beta3";
+    src = pkgs.fetchFromGitHub {
+      owner = "tolwi";
+      repo = "hassio-ecoflow-cloud";
+      tag = "v${version}";
+      hash = "sha256-qG/z2MHZDd5S7KWwvRViWJqEFIGBS2hNWi3w71rXB+o=";
+    };
+  });
 in
 {
   options.custom.services.homeassistant = {
@@ -20,6 +33,11 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    # The caddy vhost below solves DNS-01 challenges against the acme-dns-api on
+    # ${acmeApiHost}:8553 over Nebula. Grant that path at the point of use so it
+    # doesn't depend on the broad legacy-full-access group (see modules/www/nebula.nix).
+    ogygia.nebula.groups = [ "acme-dns-client" ];
+
     services.home-assistant.configDir = lib.mkIf config.custom.impermanence.enable (lib.mkOverride 999 "/data/home-assistant");
 
     custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/lib/private/matter-server" ];
@@ -170,10 +188,13 @@ in
           "waze_travel_time"
           "wyoming"
         ];
-        customComponents = with pkgs.home-assistant-custom-components; [
+        customComponents = [
+          ecoflow_cloud
+        ]
+        ++ (with pkgs.home-assistant-custom-components; [
           adaptive_lighting
           octopus_energy
-        ];
+        ]);
         customLovelaceModules = with pkgs.home-assistant-custom-lovelace-modules; [
           button-card
         ];

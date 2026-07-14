@@ -14,6 +14,15 @@
       userExtraFiles.jake = [ ".ssh/id_ecdsa" ".ssh/id_rsa" ];
     };
 
+    ogygia.nebula = {
+      groups = [ "legacy-full-access" ];
+      pubKey = ''
+        -----BEGIN NEBULA X25519 PUBLIC KEY-----
+        979iQEavCnEeeH1jj8LdSYVWHtVV4un4ZXCgJTRjfwU=
+        -----END NEBULA X25519 PUBLIC KEY-----
+      '';
+    };
+
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
 

@@ -12,6 +12,16 @@
     boot.loader.efi.canTouchEfiVariables = true;
 
     custom.defaults = true;
+
+    ogygia.nebula = {
+      groups = [ "legacy-full-access" ];
+      pubKey = ''
+        -----BEGIN NEBULA X25519 PUBLIC KEY-----
+        dwJizOwI7tfcNVl/er9lzj98f26vfMtXebiUXAlSOwU=
+        -----END NEBULA X25519 PUBLIC KEY-----
+      '';
+    };
+
     boot.kernelParams =
       let
         ifcfg = builtins.head config.networking.interfaces.enp6s0.ipv4.addresses;
@@ -115,9 +125,12 @@
       };
     };
 
-    # TODO: make this a group instead of a single host
-    services.nebula.networks.jakehillion.firewall.inbound = [
-      { host = "fanboy.cx"; port = "8553"; proto = "tcp"; }
+    # Allow hosts running an internal-TLS service to reach the DNS-01 challenge
+    # API. They pick up the acme-dns-client group automatically via the Caddy
+    # modules (see modules/www/nebula.nix), so this grants access without
+    # requiring the broad legacy-full-access group — the path for retiring it.
+    ogygia.nebula.firewall.inbound = [
+      { groups = [ "acme-dns-client" ]; port = "8553"; proto = "tcp"; }
     ];
 
     services.knot.settings.server.listen = [

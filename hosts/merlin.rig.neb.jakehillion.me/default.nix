@@ -27,12 +27,24 @@
     boot.kernelPackages = pkgs.linuxPackages_latest;
 
     custom.defaults = true;
+
+    ogygia.nebula = {
+      groups = [ "legacy-full-access" ];
+      pubKey = ''
+        -----BEGIN NEBULA X25519 PUBLIC KEY-----
+        3VyaqyfXwXwYu7hMrfm75uFUcmpXcI73aK43G22OhwU=
+        -----END NEBULA X25519 PUBLIC KEY-----
+      '';
+    };
     custom.locations.autoServe = true;
     custom.profiles.devbox = true;
 
     custom.users.jake.password = true;
     security.sudo.wheelNeedsPassword = lib.mkForce true;
     custom.desktop.sway.enable = true;
+
+    ## Gaming
+    custom.games.steam.enable = true;
 
     ## Impermanence
     custom.impermanence = {

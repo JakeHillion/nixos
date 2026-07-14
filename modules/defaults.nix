@@ -83,17 +83,16 @@
       settings.Upload.URL = "http://${config.custom.locations.locations.services.journal_remote}:19532";
     };
     systemd.services.systemd-journal-upload = {
-      after = [ "nebula-online@jakehillion.service" ];
-      requires = [ "nebula-online@jakehillion.service" ];
+      after = [ "nebula-online@ogygia.service" ];
+      requires = [ "nebula-online@ogygia.service" ];
     };
+    ogygia.nebula.groups = lib.mkIf config.services.journald.upload.enable [ "journal-client" ];
 
     custom.auto_updater.enable = true;
     custom.compressed_ram.enable = true;
     custom.dns.enable = true;
     custom.home.defaults = true;
-    custom.hostinfo.enable = true;
     custom.locations.autoServe = true;
-    custom.nebula.enable = true;
     custom.ogygia.enable = true;
     custom.prometheus.client.enable = true;
     custom.shell.enable = true;

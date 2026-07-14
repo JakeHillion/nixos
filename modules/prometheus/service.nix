@@ -9,6 +9,9 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    # This host scrapes every peer's metrics, so carry the group they admit.
+    ogygia.nebula.groups = [ "prometheus-scraper" ];
+
     custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/lib/${config.services.prometheus.stateDir}" ];
 
     services.prometheus = {
