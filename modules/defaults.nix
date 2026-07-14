@@ -92,7 +92,6 @@
     custom.compressed_ram.enable = true;
     custom.dns.enable = true;
     custom.home.defaults = true;
-    custom.hostinfo.enable = true;
     custom.locations.autoServe = true;
     custom.ogygia.enable = true;
     custom.prometheus.client.enable = true;

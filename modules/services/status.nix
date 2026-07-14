@@ -9,10 +9,20 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    age.secrets."dashboard/ssh.key".file = ../../secrets/dashboard/ssh.key.age;
+
     ogygia.dashboard = {
       enable = true;
       title = "Jake's Home Lab Status";
       serverConfig = { port = 47283; };
+
+      ssh = {
+        enable = true;
+        url = "git@ssh.gitea.hillion.co.uk:JakeHillion/nixos.git";
+        keyFile = config.age.secrets."dashboard/ssh.key".path;
+      };
+
+      archive.enable = true;
     };
 
     custom.www.nebula = {

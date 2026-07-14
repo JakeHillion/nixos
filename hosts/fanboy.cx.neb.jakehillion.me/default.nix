@@ -38,6 +38,5 @@
     custom.auto_updater.allowReboot = true;
 
     ogygia.hostinfod.enable = lib.mkForce false;
-    custom.hostinfo.enable = lib.mkForce false;
   };
 }
