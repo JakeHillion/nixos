@@ -8,11 +8,11 @@
       chia = 185;
       gitea = 186;
       node-exporter = 188;
-      # step-ca = 198; # Removed 2026-05-16
+      step-ca = 198;
       frigate = 200;
       nebula-jakehillion = 205;
       immich = 206;
-      # ollama = 210; # Removed 2026-05-10
+      ollama = 210;
       privatebin = 211;
       jellyfin = 216;
       radicale = 401;
@@ -27,8 +27,6 @@
       buildbot-worker = 411;
       open-webui = 412;
       mautrix-discord = 413;
-      gitea-actions-vm = 415;
-      backup-git = 416;
 
       ## Consistent People
       jake = 1000;
@@ -40,11 +38,11 @@
       chia = 185;
       gitea = 186;
       node-exporter = 188;
-      # step-ca = 198; # Removed 2026-05-16
+      step-ca = 198;
       frigate = 200;
       nebula-jakehillion = 205;
       immich = 206;
-      # ollama = 210; # Removed 2026-05-10
+      ollama = 210;
       jellyfin = 216;
       radicale = 401;
       homebox = 402;
@@ -57,8 +55,6 @@
       open-webui = 412;
       mautrix-discord = 413;
       mautrix-discord-registration = 414;
-      gitea-actions-vm = 415;
-      backup-git = 416;
 
       ## Consistent Groups
       mediaaccess = 1200;

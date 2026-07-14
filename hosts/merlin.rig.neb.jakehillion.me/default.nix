@@ -15,11 +15,16 @@
     boot.kernelParams = [
       "ip=dhcp"
     ];
-    custom.tang = {
-      enable = true;
-      networkingModule = "igc";
-      secretFile = "/data/disk_encryption.jwe";
-      devices = [ "disk0-crypt" ];
+    boot.initrd = {
+      availableKernelModules = [ "igc" ];
+      network.enable = true;
+      clevis = {
+        enable = true;
+        useTang = true;
+        devices = {
+          "disk0-crypt".secretFile = "/data/disk_encryption.jwe";
+        };
+      };
     };
 
     # BeeLink GTi14 has stability issues on 6.12 (and probably a bit before).
@@ -29,6 +34,11 @@
     custom.defaults = true;
     custom.locations.autoServe = true;
     custom.profiles.devbox = true;
+
+    custom.services.ollama.models = [
+      "deepseek-coder-v2:16b"
+      "qwen2.5-coder:14b"
+    ];
 
     custom.users.jake.password = true;
     security.sudo.wheelNeedsPassword = lib.mkForce true;

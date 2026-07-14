@@ -6,7 +6,6 @@
     ./async-coder
     ./authoritative_dns.nix
     ./awtrix-fireworks-tokens
-    ./awtrix-octopus-agile
     ./blackmagic-cam-importer
     ./buildbot-nix-master.nix
     ./buildbot-nix-worker.nix
@@ -15,6 +14,8 @@
     ./etcd.nix
     ./firefly-iii
     ./frigate.nix
+    ./git.nix
+    ./git-sync.nix
     ./gitea
     ./hearthd
     ./homeassistant
@@ -23,7 +24,6 @@
     ./immich.nix
     ./jellyfin.nix
     ./journal-remote.nix
-    ./llm-proxy
     ./mastodon
     ./matrix
     ./mautrix-discord
@@ -33,14 +33,13 @@
     ./nix-remote-builder.nix
     ./ntfy.nix
     ./offline-youtube
-    ./openthread-border-router.nix
+    ./ollama.nix
     ./openwebui
     ./personal-agent
     ./privatebin.nix
     ./radicale.nix
     ./renovate
     ./restic
-    ./searxng
     ./status.nix
     ./tang.nix
     ./unifi.nix

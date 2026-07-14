@@ -57,7 +57,7 @@ in
         }
       ];
       interfaceNamespace = "downloads";
-      preSetup = "test -f /var/run/netns/downloads || ip netns add downloads || test -f /var/run/netns/downloads";
+      preSetup = "test -f /run/netns/downloads || ip netns add downloads || test -f /run/netns/downloads";
     };
 
     ## Host User/Directories
@@ -99,7 +99,7 @@ in
       additionalCapabilities = [ "CAP_NET_ADMIN" ];
       extraFlags = [
         "--resolv-conf=off"
-        "--network-namespace-path=/var/run/netns/downloads"
+        "--network-namespace-path=/run/netns/downloads"
       ];
       # copyResolvConf = false; # Temporarily commented out - upstreaming in https://github.com/NixOS/nixpkgs/pull/450979
 

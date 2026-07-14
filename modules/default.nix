@@ -4,6 +4,7 @@
   imports = [
     ./auto_updater.nix
     ./backups
+    ./ca
     ./chia.nix
     ./compressed_ram.nix
     ./defaults.nix

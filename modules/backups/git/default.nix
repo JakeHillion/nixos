@@ -16,23 +16,14 @@ in
 
   config = lib.mkIf cfg.enable {
     age.secrets."git/git_backups_ecdsa".file = ../../../secrets/git/git_backups_ecdsa.age;
-
+    age.secrets."git/git_backups_remotes".file = ../../../secrets/git/git_backups_remotes.age;
     age.secrets."git-backups/restic/mig29".rekeyFile = ../../../secrets/restic/mig29.age;
-    age.secrets."git/git_backups_remotes".rekeyFile = ./remotes.age;
-
-    users.users.backup-git = {
-      uid = config.ids.uids.backup-git;
-      group = "backup-git";
-      isSystemUser = true;
-    };
-    users.groups.backup-git.gid = config.ids.gids.backup-git;
 
     systemd.services.backup-git = {
       description = "Git repo backup service.";
 
       serviceConfig = {
-        User = "backup-git";
-        Group = "backup-git";
+        DynamicUser = true;
 
         CacheDirectory = "backup-git";
         WorkingDirectory = "%C/backup-git";

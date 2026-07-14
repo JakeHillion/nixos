@@ -45,31 +45,14 @@
         ".ssh/id_rsa"
       ];
     };
-    boot.initrd.systemd.services.reset-cache-subvolumes = {
-      description = "Wipe /cache/{system,nix-builds} to empty snapshots before stage 2";
-      wantedBy = [ "initrd.target" ];
-      after = [ "cryptsetup.target" ];
-      requires = [ "cryptsetup.target" ];
-      before = [ "initrd-fs.target" ];
-      unitConfig.DefaultDependencies = "no";
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
-      };
-      script = ''
-        mkdir -p /reset-cache
-        mount -t btrfs -o subvol=cache /dev/mapper/disk0-crypt /reset-cache
+    boot.initrd.postDeviceCommands = lib.mkAfter ''
+      btrfs subvolume delete /cache/system
+      btrfs subvolume snapshot /cache/empty_snapshot /cache/system
 
-        btrfs subvolume delete /reset-cache/system
-        btrfs subvolume snapshot /reset-cache/empty_snapshot /reset-cache/system
-
-        btrfs subvolume delete /reset-cache/nix-builds
-        btrfs subvolume snapshot /reset-cache/empty_snapshot /reset-cache/nix-builds
-        chmod 0700 /reset-cache/nix-builds
-
-        umount /reset-cache
-      '';
-    };
+      btrfs subvolume delete /cache/nix-builds
+      btrfs subvolume snapshot /cache/empty_snapshot /cache/nix-builds
+      chmod 0700 /cache/nix-builds
+    '';
     nix = {
       distributedBuilds = true;
       settings = {
@@ -96,20 +79,8 @@
         gitea.actions = {
           enable = true;
           tokenSecret = ../../modules/services/gitea/actions/boron.age;
-          capacity = 1;
+          capacity = 4;
           dockerMemoryHigh = 12 * 1024 * 1024 * 1024; # 8 GiB
-        };
-        gitea.actions-vm = {
-          enable = true;
-          instances = 3;
-        };
-        # Burst-to-cloud Gitea Actions runners.
-        # See modules/services/gitea/actions-vm-burst/README.md.
-        gitea.actions-vm-burst = {
-          enable = true;
-          gcpProject = "continuous-integration-498314";
-          gcsBucket = "testquorum-ci-vm-images";
-          hetzner.enable = true;
         };
         matrix.mautrix_discord = true;
       };

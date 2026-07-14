@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, ... }:
 
 let
   cfg = config.custom.services.personal_agent;
@@ -22,9 +22,14 @@ in
         file = ./. + "/${lib.removePrefix "personal-agent/" name}.age";
         owner = "personal-agent";
         group = "personal-agent";
-      });
-
-    custom.services.llm_proxy.enable = true;
+      })
+    // {
+      "personal-agent/canopywave_token" = {
+        rekeyFile = ../../../secrets/ai/canopy-wave-unlimited.age;
+        owner = "personal-agent";
+        group = "personal-agent";
+      };
+    };
 
     users.users.personal-agent.uid = config.ids.uids.personal-agent;
     users.groups.personal-agent.gid = config.ids.gids.personal-agent;
@@ -41,30 +46,17 @@ in
           avatar = ./higgins.png;
           password_file = config.age.secrets."personal-agent/matrix_password".path;
           device_display_name = "personal-agent";
-          trusted_user = "@jake:hillion.co.uk";
+          trusted_users = [ "@jake:hillion.co.uk" ];
         };
-
         llm = {
-          default_model = "DeepSeek V4 Pro (immediate)";
-          batch_model = "DeepSeek V4 Flash (batch60k)";
-
-          providers = [
-            {
-              name = "llm-proxy-immediate";
-              base_url = "http://127.0.0.1:9100/v1/immediate";
-              token_file = pkgs.writeText "personal-agent-dummy-token" "unused";
-              models = [{ id = "deepseek/deepseek-v4-pro"; name = "DeepSeek V4 Pro (immediate)"; }];
-            }
-            {
-              name = "llm-proxy-batch60k";
-              base_url = "http://127.0.0.1:9100/v1/batch/60000";
-              token_file = pkgs.writeText "personal-agent-dummy-token" "unused";
-              models = [{ id = "deepseek/deepseek-v4-flash"; name = "DeepSeek V4 Flash (batch60k)"; }];
-            }
-          ];
+          default_model = "Kimi K2.6";
+          providers = [{
+            name = "canopywave";
+            base_url = "https://inference.canopywave.io/v1";
+            token_file = config.age.secrets."personal-agent/canopywave_token".path;
+            models = [{ id = "moonshotai/kimi-k2.6"; name = "Kimi K2.6"; }];
+          }];
         };
-
-        memory.nightly.enabled = true;
 
         calendar = {
           private = {

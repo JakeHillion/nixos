@@ -2,7 +2,7 @@
   "fileSystems": {
     "/var/lib/postgresql/17": {
       "device": "/data/system/var/lib/postgresql/17",
-      "fsType": "none",
+      "fsType": "auto",
       "options": [
         "x-systemd.requires-mounts-for=/data/system",
         "bind",

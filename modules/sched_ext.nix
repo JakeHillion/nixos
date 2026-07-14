@@ -34,7 +34,7 @@ in
       services.scx = {
         enable = true;
         scheduler = "scx_lavd";
-        package = pkgs.runCommand "scx_lavd" { passthru.schedulers = [ "scx_lavd" ]; } ''
+        package = pkgs.runCommand "scx_lavd" { } ''
           mkdir -p $out/bin
           install ${pkgs.unstable.scx.rustscheds}/bin/scx_lavd $out/bin
         '';

@@ -83,13 +83,6 @@ in
         '';
         "gitea.hillion.co.uk".extraConfig = ''
           tls ${./certs/gitea.hillion.co.uk.pem} ${config.age.secrets."caddy/gitea.hillion.co.uk.pem".path}
-
-          @anubis_assets path /.within.website/*
-          reverse_proxy @anubis_assets http://${locations.services.gitea}:8923
-
-          @expensive path_regexp ^/[^/]+/[^/]+/(blame|commits|commit|compare|graph|activity|search|src/commit|raw/commit)(/.*)?$
-          reverse_proxy @expensive http://${locations.services.gitea}:8923
-
           reverse_proxy http://${locations.services.gitea}:3000
         '';
         "links.hillion.co.uk".extraConfig = ''

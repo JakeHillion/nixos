@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:JakeHillion/nixpkgs2/nixos-unstable";
 
     nixos-hardware.url = "github:nixos/nixos-hardware";
@@ -10,7 +10,7 @@
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
 
-    darwin.url = "github:lnl7/nix-darwin/nix-darwin-26.05";
+    darwin.url = "github:lnl7/nix-darwin/nix-darwin-25.11";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
 
     agenix.url = "github:ryantm/agenix";
@@ -21,7 +21,7 @@
     agenix-rekey.url = "github:oddlama/agenix-rekey";
     agenix-rekey.inputs.nixpkgs.follows = "nixpkgs";
 
-    home-manager.url = "github:nix-community/home-manager/release-26.05";
+    home-manager.url = "github:nix-community/home-manager/release-25.11";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     home-manager-unstable.url = "github:nix-community/home-manager";
     home-manager-unstable.inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -96,10 +96,6 @@
           "qnaplcd" = final.callPackage ./pkgs/qnaplcd.nix { inherit qnaplcd-menu; };
           "opencode-plugin" = final.callPackage ./pkgs/opencode-plugin { };
           "oh-my-openagent" = final.callPackage ./pkgs/oh-my-openagent { };
-          "gitea-actions-vm-image" = final.callPackage ./pkgs/gitea-actions-vm-image {
-            gitea-actions-runner = final.unstable.gitea-actions-runner;
-          };
-          "llm-proxy" = final.callPackage ./pkgs/llm-proxy.nix { };
         })
       ];
       mkSystem = import ./lib/mkSystem.nix { inherit inputs; };
@@ -108,7 +104,6 @@
         programs.nixpkgs-fmt.enable = true;
         programs.gofumpt.enable = true;
         programs.black.enable = true;
-        programs.rustfmt.enable = true;
         settings.formatter.black.options = [ "--line-length" "79" ];
       };
     in
@@ -182,16 +177,11 @@
           };
 
           packages.caddy-with-dns = pkgs.caddy-with-dns;
-          packages.llm-proxy = pkgs.llm-proxy;
 
           devShells.default = pkgs.mkShell {
             packages = [
               agenix-rekey.packages.${system}.default
               pkgs.age
-              pkgs.cargo
-              pkgs.clippy
-              pkgs.rustc
-              pkgs.rustfmt
             ];
           };
         }))
@@ -204,14 +194,8 @@
               config = { allowUnfree = true; };
             };
             nixosMachines = nixpkgs.lib.mapAttrs'
-              (name: nixos: nixpkgs.lib.nameValuePair "nixos-${name}"
-                (nixos.extendModules {
-                  modules = [{
-                    system.configurationRevision = nixpkgs.lib.mkForce "0000000000000000000000000000000000000000";
-                  }];
-                }).config.system.build.toplevel
-              )
-              (nixpkgs.lib.filterAttrs (_: nixos: nixos.pkgs.system == system) self.nixosConfigurations);
+              (name: config: nixpkgs.lib.nameValuePair "nixos-${name}" config.config.system.build.toplevel)
+              (nixpkgs.lib.filterAttrs (_: config: config.pkgs.system == system) self.nixosConfigurations);
           in
           {
             checks = {

@@ -60,7 +60,7 @@ caddy.overrideAttrs (finalAttrs: prevAttrs: {
     '';
 
     outputHashMode = "recursive";
-    outputHash = "sha256-fKLnCAdT+NC1hlGYc+Kb1x2R4I9CD17rE1pN5hgNMjw=";
+    outputHash = "sha256-RndlFg66rwCZwx2YYqfM5xYovEGn3PmVmR4vgXw/zjs=";
     outputHashAlgo = "sha256";
   };
 

@@ -361,14 +361,9 @@ in
       boot.kernel.sysctl = {
         "net.ipv4.conf.all.forwarding" = true;
       };
-      # Set the WAN MAC via a .link file so udev applies it the moment the
-      # interface appears (in initrd too, since stage 2 .link files are bundled
-      # into systemd stage 1's initramfs). Needed for tang/clevis unlock against
-      # an upstream that expects a stable MAC.
-      systemd.network.links."10-${locationCfg.wanInterface}" = lib.mkIf (config.custom.tang.enable && locationCfg.wanMacAddress != null) {
-        matchConfig.OriginalName = locationCfg.wanInterface;
-        linkConfig.MACAddress = locationCfg.wanMacAddress;
-      };
+      boot.initrd.postDeviceCommands = lib.mkIf (config.custom.tang.enable && locationCfg.wanMacAddress != null) ''
+        ip link set dev ${locationCfg.wanInterface} address ${locationCfg.wanMacAddress}
+      '';
 
       custom.impermanence.extraDirs = lib.mkIf (config.custom.impermanence.enable && dhcpNetworks != { }) [
         "/var/lib/private/kea"

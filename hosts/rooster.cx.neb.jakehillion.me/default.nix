@@ -28,11 +28,6 @@
       ];
     };
 
-    custom.services.gitea.actions-vm = {
-      enable = true;
-      instances = 8;
-    };
-
     # Allow performing emulated builds in QEMU
     boot.binfmt.emulatedSystems = [
       "aarch64-linux"

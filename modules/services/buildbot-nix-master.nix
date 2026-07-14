@@ -1,4 +1,4 @@
-{ config, pkgs, lib, buildbot-nix, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   cfg = config.custom.services.buildbot-nix-master;
@@ -108,23 +108,6 @@ in
         group = "buildbot";
       };
     };
-
-    # Patch buildbot-nix to pass warningAsSuccess=True to GiteaStatusPush so
-    # eval warnings don't block PRs requiring buildbot/nix-eval. Re-call the
-    # upstream package definition to avoid a self-loop on the option default.
-    services.buildbot-nix.packages.buildbot-nix =
-      let
-        inherit (config.services.buildbot-nix.packages) python buildbot-gitea;
-        upstream = python.pkgs.callPackage "${buildbot-nix}/packages/buildbot-nix.nix" {
-          inherit buildbot-gitea;
-        };
-      in
-      upstream.overrideAttrs (old: {
-        src = pkgs.applyPatches {
-          inherit (old) src;
-          patches = [ ../../patches/buildbot-nix/gitea-warning-as-success.patch ];
-        };
-      });
 
     services.buildbot-nix.master = {
       enable = true;

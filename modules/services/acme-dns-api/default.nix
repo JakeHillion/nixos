@@ -4,7 +4,6 @@ let
   cfg = config.custom.services.acme_dns_api;
   dnsCfg = config.custom.services.authoritative_dns;
   domain = config.ogygia.domain;
-  homeDomain = "home.jakehillion.me";
   knotc = "${pkgs.knot-dns}/bin/knotc";
 
   # Extract IP from first Knot listen address (format: "IP@port")
@@ -42,7 +41,7 @@ in
       script = "${acmeDnsApiScript}/bin/acme-dns-api";
 
       environment = {
-        ACME_DNS_DOMAINS = "${domain},${homeDomain}";
+        ACME_DNS_DOMAIN = domain;
         ACME_DNS_LISTEN_ADDR = config.custom.dns.nebula.ipv4;
         ACME_DNS_KNOTC = knotc;
         ACME_DNS_KNOT_NAMESERVER = knotListenAddr;
