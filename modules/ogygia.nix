@@ -66,12 +66,22 @@ in
         # `ogygia nebula` CLI reads and writes them.
         certDir = ../nebula;
 
+        # Every fleet host runs irisd and pulls from its peers on 35742, so
+        # carry the irisd-client group fleet-wide and admit it below. This
+        # scopes the p2p binary-cache mesh off the broad legacy-full-access
+        # group.
+        groups = [ "irisd-client" ];
+
         firewall.inbound = [
           # SSH is allowed from every mesh peer, no group required. This keeps
           # admin and inter-host SSH working once legacy-full-access is retired,
           # and (unlike the group rule below) also lets groupless hosts such as
           # fanboy reach the rest of the fleet over Nebula.
           { host = "any"; port = 22; proto = "tcp"; }
+
+          # Reproduce the legacy allow-all inbound posture. Per-host cert groups
+          # live in each host's own config (see ogygia.nebula.groups there).
+          { groups = [ "irisd-client" ]; port = 35742; proto = "tcp"; }
 
           # Reproduce the legacy allow-all inbound posture. Per-host cert groups
           # live in each host's own config (see ogygia.nebula.groups there).
