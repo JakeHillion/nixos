@@ -804,11 +804,11 @@
         "treefmt-nix": "treefmt-nix_6"
       },
       "locked": {
-        "lastModified": 1784021320,
-        "narHash": "sha256-8IYcuWUFDcirSVGM5j27zSPRB0icH5YwaM4CTgH2ag0=",
+        "lastModified": 1784070832,
+        "narHash": "sha256-3pw0SDOLMh++zBBquRYCdMTMRTBXdLuXTDm97+uXhuM=",
         "owner": "JakeHillion",
         "repo": "ogygia-nix",
-        "rev": "d094c380188d154b5e7d954080686bb01b143e09",
+        "rev": "a85f6d39c2fed0a8eb161533db76a960bacede43",
         "type": "github"
       },
       "original": {
