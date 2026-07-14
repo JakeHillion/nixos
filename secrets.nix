@@ -143,6 +143,14 @@ in
   "modules/services/async-coder/gitea-token.age".publicKeys = jake_users ++ [ neb.cx.maverick ];
   "modules/services/async-coder/maverick.cx.password.age".publicKeys = [ neb.cx.maverick ];
 
+  # Cachix private cache credentials
+  "modules/profiles/devbox-cachix-netrc.age".publicKeys = jake_users ++ [
+    neb.cx.maverick
+    neb.cx.rooster
+    neb.lt.bob
+    neb.rig.merlin
+  ];
+
   # personal-agent secrets
   "modules/services/personal-agent/17track_token.age".publicKeys = [ neb.cx.fanboy ];
   "modules/services/personal-agent/matrix_password.age".publicKeys = jake_users ++ [ neb.cx.fanboy ];

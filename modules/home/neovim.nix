@@ -12,14 +12,6 @@ in
     home-manager.users."${config.custom.user}".programs.neovim = {
       enable = true;
 
-      # Adopt the 26.05 defaults explicitly: this config uses no Ruby or
-      # Python3 providers (telescope/plenary/gitlinker are pure Lua, and
-      # basedpyright is an external binary rather than the `:python3`
-      # provider), so dropping them silences the deprecation warning and
-      # trims the closure.
-      withRuby = false;
-      withPython3 = false;
-
       viAlias = true;
       vimAlias = true;
 
@@ -31,7 +23,7 @@ in
         gitlinker-nvim # after plenary-nvim
         telescope-nvim
       ];
-      initLua = ''
+      extraLuaConfig = ''
         -- Early mapleader for default bindings
         vim.g.mapleader = ","
 

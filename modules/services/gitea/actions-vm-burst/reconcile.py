@@ -179,8 +179,8 @@ def list_burst_instances():
     return out_list
 
 
-def random_suffix():
-    return f"{random.randint(0, 2 ** 32 - 1):08x}"
+def random_vm_name():
+    return f"gitea-burst-{random.randint(0, 2 ** 32 - 1):08x}"
 
 
 def write_user_data(stage):
@@ -333,39 +333,25 @@ def launch_hetzner(vm_name, user_data):
     )
 
 
-def prepare_stage(vm_name):
-    # The runner registers under vm_name, so its name in Gitea matches the
-    # cloud VM name (and thus carries the provider). Registration happens
-    # per-provider because it must precede launch (the credentials ride the
-    # VM's user-data) and the provider isn't known until we commit to it.
+def launch_one(vm_name, zone):
     stage = RT_DIR / vm_name / "stage"
     stage.mkdir(parents=True, exist_ok=True)
+
     register_runner(stage, vm_name)
-    return write_user_data(stage)
+    user_data = write_user_data(stage)
 
+    try:
+        launch_gcp(vm_name, zone, user_data)
+        return "gcp"
+    except Exception as e:
+        if not HETZNER_ENABLED:
+            raise
+        print(
+            f"gcp launch of {vm_name} failed ({e}); trying hetzner",
+            file=sys.stderr,
+            flush=True,
+        )
 
-def launch_one(suffix, zone):
-    # GCP first when a zone is available; Hetzner is the fallback.
-    if zone is not None:
-        vm_name = f"gitea-burst-gcp-{suffix}"
-        user_data = prepare_stage(vm_name)
-        try:
-            launch_gcp(vm_name, zone, user_data)
-            return "gcp"
-        except Exception as e:
-            if not HETZNER_ENABLED:
-                raise
-            print(
-                f"gcp launch of {vm_name} failed ({e}); trying hetzner",
-                file=sys.stderr,
-                flush=True,
-            )
-
-    if not HETZNER_ENABLED:
-        raise RuntimeError(f"no UP zones in region {GCP_REGION}")
-
-    vm_name = f"gitea-burst-hetzner-{suffix}"
-    user_data = prepare_stage(vm_name)
     launch_hetzner(vm_name, user_data.read_text())
     return "hetzner"
 
@@ -650,23 +636,19 @@ def reconcile(last_launched):
             print(f"no UP zones in region {GCP_REGION}", file=sys.stderr)
             return last_launched
         plan = [
-            (random_suffix(), random.choice(zones) if zones else None)
+            (random_vm_name(), random.choice(zones) if zones else None)
             for _ in range(cap)
         ]
         with ThreadPoolExecutor(max_workers=cap) as pool:
-            futures = {pool.submit(launch_one, s, z): s for s, z in plan}
+            futures = {pool.submit(launch_one, n, z): n for n, z in plan}
             for f in as_completed(futures):
-                suffix = futures[f]
+                name = futures[f]
                 try:
                     provider = f.result()
-                    print(
-                        f"launched on {provider}: "
-                        f"gitea-burst-{provider}-{suffix}",
-                        flush=True,
-                    )
+                    print(f"launched on {provider}: {name}", flush=True)
                 except Exception as e:
                     print(
-                        f"launch gitea-burst-{suffix} failed: {e}",
+                        f"launch {name} failed: {e}",
                         file=sys.stderr,
                         flush=True,
                     )

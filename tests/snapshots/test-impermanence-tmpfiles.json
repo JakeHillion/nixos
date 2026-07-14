@@ -2,7 +2,8 @@
   "systemd": {
     "tmpfiles": {
       "rules": [
-        "d /etc/nebula 0755 root root - -",
+        "d /data/nebula 0775 nebula-jakehillion nebula-jakehillion - -",
+        "d /data/nebula 0775 nebula-jakehillion nebula-jakehillion - -",
         "d /data/users/root 0700 root root - -",
         "L /root/local - root root - /data/users/root",
         "d /data/users/jake 0700 jake users - -",

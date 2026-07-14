@@ -247,7 +247,7 @@ in
 
                 # Allow trusted networks to access the router
                 iifname {
-                  ${lib.strings.concatStringsSep ",\n      " (map (i: "\"${i}\"") (["lo"] ++ trustedInterfaceNames ++ ["neb.ogygia"]))}
+                  ${lib.strings.concatStringsSep ",\n      " (map (i: "\"${i}\"") (["lo"] ++ trustedInterfaceNames ++ ["neb.jh"]))}
                 } counter accept
 
                 # Allow ICMP from anywhere

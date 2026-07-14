@@ -10,15 +10,6 @@
 
     custom.defaults = true;
     custom.profiles.devbox = true;
-
-    ogygia.nebula = {
-      groups = [ "legacy-full-access" ];
-      pubKey = ''
-        -----BEGIN NEBULA X25519 PUBLIC KEY-----
-        dgwdcpGpB33ngTIedUERJYgeEyHmyzkHNGS9oT2SQC8=
-        -----END NEBULA X25519 PUBLIC KEY-----
-      '';
-    };
     custom.tang.enable = true;
     custom.sched_ext = {
       enable = true;
@@ -40,6 +31,13 @@
     custom.syncthing = {
       enable = true;
       baseDir = "/data/users/jake/sync";
+    };
+
+    ## Tailscale
+    services.tailscale = {
+      enable = true;
+      extraSetFlags = [ "--netfilter-mode=off" ];
+      disableTaildrop = true;
     };
 
     ## General usability

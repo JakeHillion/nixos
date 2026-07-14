@@ -12,15 +12,6 @@
     custom.locations.autoServe = true;
     custom.tang.enable = true;
 
-    ogygia.nebula = {
-      groups = [ "legacy-full-access" ];
-      pubKey = ''
-        -----BEGIN NEBULA X25519 PUBLIC KEY-----
-        sjbhqAOvEFiMWEBTIc/6mb8BlDE4n/lQF8tM78IZWFo=
-        -----END NEBULA X25519 PUBLIC KEY-----
-      '';
-    };
-
     ## Interactive password
     custom.users.jake.password = true;
 
@@ -37,8 +28,8 @@
         iifname "openclaw" oifname "lan" ct state { established, related } counter accept comment "Established back from openclaw"
 
         # Cellular failover: internet-enabled networks out, established back
-        iifname { "lan", "iot", "openclaw" } oifname "cellular" counter accept comment "LAN to cellular failover"
-        iifname "cellular" oifname { "lan", "iot", "openclaw" } ct state { established, related } counter accept comment "Cellular to LAN established"
+        iifname { "lan", "iot", "exo", "openclaw" } oifname "cellular" counter accept comment "LAN to cellular failover"
+        iifname "cellular" oifname { "lan", "iot", "exo", "openclaw" } ct state { established, related } counter accept comment "Cellular to LAN established"
         iifname "wg0" oifname "cellular" counter accept comment "WireGuard to cellular failover"
         iifname "cellular" oifname "wg0" ct state { established, related } counter accept comment "Cellular to WireGuard established"
       '';

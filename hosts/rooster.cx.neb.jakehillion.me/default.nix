@@ -16,15 +16,6 @@
       scheduler = "scx_lavd";
     };
 
-    ogygia.nebula = {
-      groups = [ "legacy-full-access" ];
-      pubKey = ''
-        -----BEGIN NEBULA X25519 PUBLIC KEY-----
-        lK31m9FE2bPrztfQ/UFdtXulyqMUQ+z0JzPbdwb4xEQ=
-        -----END NEBULA X25519 PUBLIC KEY-----
-      '';
-    };
-
     ## Impermanence
     custom.impermanence = {
       enable = true;
