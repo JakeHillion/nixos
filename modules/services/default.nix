@@ -15,6 +15,7 @@
     ./etcd.nix
     ./firefly-iii
     ./frigate.nix
+    ./git.nix
     ./gitea
     ./hearthd
     ./homeassistant
@@ -33,7 +34,6 @@
     ./nix-remote-builder.nix
     ./ntfy.nix
     ./offline-youtube
-    ./openthread-border-router.nix
     ./openwebui
     ./personal-agent
     ./privatebin.nix

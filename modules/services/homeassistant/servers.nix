@@ -28,11 +28,6 @@ let
       ip = config.custom.dns.authoritative.ipv4.me.jakehillion.neb.storage.theon;
       outlet = 5;
     };
-    darkstar_skunk = {
-      name = "Darkstar Skunk";
-      ip = "10.64.50.31";
-      outlet = 6;
-    };
     maverick_cx = {
       name = "Maverick CX";
       ip = config.custom.dns.authoritative.ipv4.me.jakehillion.neb.cx.maverick;

@@ -45,21 +45,21 @@ in
         };
 
         llm = {
-          default_model = "DeepSeek V4 Pro (immediate)";
-          batch_model = "DeepSeek V4 Flash (batch60k)";
+          default_model = "Kimi K2.6 (immediate)";
+          batch_model = "Kimi K2.6 (batch60k)";
 
           providers = [
             {
               name = "llm-proxy-immediate";
               base_url = "http://127.0.0.1:9100/v1/immediate";
               token_file = pkgs.writeText "personal-agent-dummy-token" "unused";
-              models = [{ id = "deepseek/deepseek-v4-pro"; name = "DeepSeek V4 Pro (immediate)"; }];
+              models = [{ id = "moonshotai/kimi-k2.6"; name = "Kimi K2.6 (immediate)"; }];
             }
             {
               name = "llm-proxy-batch60k";
               base_url = "http://127.0.0.1:9100/v1/batch/60000";
               token_file = pkgs.writeText "personal-agent-dummy-token" "unused";
-              models = [{ id = "deepseek/deepseek-v4-flash"; name = "DeepSeek V4 Flash (batch60k)"; }];
+              models = [{ id = "moonshotai/kimi-k2.6"; name = "Kimi K2.6 (batch60k)"; }];
             }
           ];
         };

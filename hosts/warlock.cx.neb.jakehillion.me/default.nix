@@ -10,15 +10,6 @@
 
     custom.defaults = true;
 
-    ogygia.nebula = {
-      groups = [ "legacy-full-access" ];
-      pubKey = ''
-        -----BEGIN NEBULA X25519 PUBLIC KEY-----
-        eIouUmARUnd+D3DWBFR1m76f7R6nSgDyTu+ID5YaDyQ=
-        -----END NEBULA X25519 PUBLIC KEY-----
-      '';
-    };
-
     ## Custom Services
     custom.tang.enable = true;
     custom.auto_updater.allowReboot = true;
