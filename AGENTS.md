@@ -91,7 +91,7 @@ DNS is split across two modules:
   - Primary pushes zone transfers to secondaries over Nebula.
   - DNSSEC signing is enabled with algorithm `ecdsap256sha256` and eternal KSK/ZSK lifetimes.
   - Knot listens only on the Nebula IP (`${config.custom.dns.nebula.ipv4}@53`).
-  - The service depends on `nebula-online@jakehillion.service`.
+  - The service depends on `nebula-online@ogygia.service`.
 
 When adding a new host, update `modules/dns.nix` with its Nebula IP so it is resolvable both locally and via the authoritative server.
 
@@ -286,23 +286,18 @@ Both patterns are in active use across the codebase. Check existing service modu
 
 **DynamicUser Services**
 
-Services using `DynamicUser = true` store data in `/var/lib/private/<service>`. These require both persistence and a service dependency:
+Services using `DynamicUser = true` store data in `/var/lib/private/<service>`. Persist that path:
 
 ```nix
 config = lib.mkIf cfg.enable {
   custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable
     [ "/var/lib/private/<service>" ];
-
-  systemd.services.<service> = {
-    after = [ "network-online.target" ]
-      ++ lib.optionals config.custom.impermanence.enable [ "fix-var-lib-private-permissions.service" ];
-    wants = [ "network-online.target" ]
-      ++ lib.optionals config.custom.impermanence.enable [ "fix-var-lib-private-permissions.service" ];
-  };
 };
 ```
 
-Note: DynamicUser services using `CacheDirectory` instead of `StateDirectory` store data in `/var/cache` and typically do not need persistence or the fix service.
+`/var/lib/private` permissions are fixed to `0700` synchronously by the `fix-var-lib-private-permissions` activation script in `modules/impermanence.nix` before any service starts, so no per-service systemd ordering is needed.
+
+Note: DynamicUser services using `CacheDirectory` instead of `StateDirectory` store data in `/var/cache` and typically do not need persistence.
 
 **Cross-Cutting Services**
 

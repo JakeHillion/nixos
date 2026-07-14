@@ -1,26 +1,23 @@
 [Unit]
 Description=Gitea Actions Runner (ephemeral)
-# Wait for cloud-init's final stage so the cidata's network-config has been
-# applied (static IP on ens3) before act_runner tries to reach Gitea.
+# Wait for cloud-init's final stage so the datasource's network config has
+# been applied and write_files has placed the runner credentials before
+# act_runner tries to reach Gitea.
 # WantedBy=cloud-init.target rather than multi-user.target — cloud-init.target
 # is After=multi-user.target, so combining After=cloud-final with
 # WantedBy=multi-user creates an ordering cycle.
 After=cloud-final.service
 Wants=cloud-final.service
-ConditionPathExists=/dev/disk/by-label/cidata
+# Written by cloud-init from the per-VM user-data (write_files); if it's
+# missing the VM was booted without runner credentials, so stay down.
+ConditionPathExists=/var/lib/gitea-runner/.runner
 
 [Service]
 Type=simple
 User=runner
 Group=runner
 WorkingDirectory=/var/lib/gitea-runner
-# `+` runs the command as root despite User=. Mount the cidata ISO and copy
-# the credentials into runner's writable workdir with the right ownership;
-# act_runner then runs unprivileged from there.
-ExecStartPre=+/bin/mount -o ro /dev/disk/by-label/cidata /etc/gitea-runner
-ExecStartPre=+/usr/bin/install -m 0600 -o runner -g runner /etc/gitea-runner/.runner /var/lib/gitea-runner/.runner
-ExecStartPre=+/usr/bin/install -m 0644 -o runner -g runner /etc/gitea-runner/config.yaml /var/lib/gitea-runner/config.yaml
-ExecStart=/usr/local/bin/act_runner daemon --config /var/lib/gitea-runner/config.yaml
+ExecStart=/usr/local/bin/gitea-runner daemon --config /var/lib/gitea-runner/config.yaml
 ExecStopPost=+/sbin/poweroff -f
 Restart=no
 TimeoutStartSec=5min

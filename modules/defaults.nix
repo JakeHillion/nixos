@@ -4,6 +4,8 @@
   options.custom.defaults = lib.mkEnableOption "defaults";
 
   config = lib.mkIf config.custom.defaults {
+    boot.initrd.systemd.enable = lib.mkDefault true;
+
     hardware.enableAllFirmware = true;
     nix = {
       settings = {
@@ -81,8 +83,8 @@
       settings.Upload.URL = "http://${config.custom.locations.locations.services.journal_remote}:19532";
     };
     systemd.services.systemd-journal-upload = {
-      after = [ "nebula-online@jakehillion.service" ];
-      requires = [ "nebula-online@jakehillion.service" ];
+      after = [ "nebula-online@ogygia.service" ];
+      requires = [ "nebula-online@ogygia.service" ];
     };
 
     custom.auto_updater.enable = true;
@@ -91,7 +93,6 @@
     custom.home.defaults = true;
     custom.hostinfo.enable = true;
     custom.locations.autoServe = true;
-    custom.nebula.enable = true;
     custom.ogygia.enable = true;
     custom.prometheus.client.enable = true;
     custom.shell.enable = true;

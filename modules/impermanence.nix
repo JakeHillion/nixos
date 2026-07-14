@@ -45,7 +45,37 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    fileSystems.${cfg.base}.neededForBoot = true;
+    fileSystems = {
+      ${cfg.base}.neededForBoot = true;
+    } // (
+      # nixpkgs 26.05 dropped the "auto" default for fileSystems.<name>.fsType.
+      # impermanence creates bind-mount fileSystems entries without setting
+      # fsType, so supply "none" for every persisted directory.
+      let
+        inherit (lib) attrsets lists strings;
+        collectRootDirs = pcfg:
+          builtins.map
+            (d: if builtins.isString d then d else d.directory)
+            (pcfg.directories or [ ]);
+        collectUserDirs = pcfg:
+          lists.flatten (attrsets.mapAttrsToList
+            (user: ucfg:
+              let homeDir = config.users.users.${user}.home or "/home/${user}"; in
+              builtins.map
+                (d:
+                  let sub = if builtins.isString d then d else d.directory; in
+                  "${homeDir}/${sub}")
+                (ucfg.directories or [ ]))
+            (pcfg.users or { }));
+        allDirs = lists.flatten (attrsets.mapAttrsToList
+          (_: pcfg: collectRootDirs pcfg ++ collectUserDirs pcfg)
+          config.environment.persistence);
+        prependSlash = d: if strings.hasPrefix "/" d then d else "/" + d;
+      in
+      attrsets.listToAttrs (builtins.map
+        (d: { name = prependSlash d; value = { fsType = lib.mkDefault "none"; }; })
+        allDirs)
+    );
 
     services = {
       openssh.hostKeys = [
@@ -73,7 +103,6 @@ in
           (lib.lists.optional (config.virtualisation.oci-containers.containers != { }) "/var/lib/containers") ++
           (lib.lists.optional config.custom.services.async_coder.enable "/var/lib/async-coder") ++
           (lib.lists.optional config.services.caddy.enable "/var/lib/caddy") ++
-          (lib.lists.optional config.services.tailscale.enable "/var/lib/tailscale") ++
           (lib.lists.optional config.services.unbound.enable "/var/lib/unbound") ++
           (lib.lists.optional config.services.ntfy-sh.enable "/var/lib/private/ntfy-sh");
         };
@@ -124,35 +153,29 @@ in
             "L ${details.home}/local - ${user} ${details.group} - ${cfg.base}/users/${user}"
           ])
         cfg.users);
-    } // (lib.foldl' lib.recursiveUpdate { } (builtins.map
-      (subdir:
-        let
-          usesPrivateDir = builtins.any
+    };
+
+    system.activationScripts =
+      let
+        usesPrivateDir = subdir:
+          builtins.any
             (dir: lib.strings.hasPrefix "/var/${subdir}/private/"
               (if builtins.isString dir then dir else dir.directory or dir.dirPath or ""))
             (lib.lists.flatten (lib.attrsets.mapAttrsToList
               (path: cfg: cfg.directories or [ ])
               config.environment.persistence));
-        in
+      in
+      lib.optionalAttrs (usesPrivateDir "lib")
         {
-          services."fix-var-${subdir}-private-permissions" = lib.mkIf usesPrivateDir {
-            description = "Fix /var/${subdir}/private permissions";
-            serviceConfig = {
-              Type = "oneshot";
-              ExecStart = "${lib.getExe' pkgs.coreutils "chmod"} 0700 /var/${subdir}/private";
-              User = "root";
-            };
+          fix-var-lib-private-permissions = {
+            text = "${lib.getExe' pkgs.coreutils "chmod"} 0700 /var/lib/private";
+            deps = [ "createPersistentStorageDirs" ];
           };
-
-          timers."fix-var-${subdir}-private-permissions" = lib.mkIf usesPrivateDir {
-            description = "Fix /var/${subdir}/private permissions every 30 seconds";
-            wantedBy = [ "timers.target" ];
-            timerConfig = {
-              OnBootSec = "30s";
-              OnUnitActiveSec = "30s";
-              Unit = "fix-var-${subdir}-private-permissions.service";
-            };
-          };
-        }) [ "lib" "cache" ]));
+        } // lib.optionalAttrs (usesPrivateDir "cache") {
+        fix-var-cache-private-permissions = {
+          text = "${lib.getExe' pkgs.coreutils "chmod"} 0700 /var/cache/private";
+          deps = [ "createPersistentStorageDirs" ];
+        };
+      };
   };
 }

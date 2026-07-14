@@ -14,6 +14,15 @@
     custom.defaults = true;
     custom.profiles.laptop = true;
 
+    ogygia.nebula = {
+      groups = [ "legacy-full-access" ];
+      pubKey = ''
+        -----BEGIN NEBULA X25519 PUBLIC KEY-----
+        FbRoBSI8ETeA40d3mjxo1pQW2soFOtRmpWPekLUy/Q0=
+        -----END NEBULA X25519 PUBLIC KEY-----
+      '';
+    };
+
     ## Impermanence
     custom.impermanence = {
       enable = true;

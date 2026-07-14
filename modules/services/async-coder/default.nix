@@ -4,6 +4,11 @@ let
   cfg = config.custom.services.async_coder;
   fqdnParts = lib.splitString "." config.networking.fqdn;
   shortHost = "${builtins.elemAt fqdnParts 0}.${builtins.elemAt fqdnParts 1}";
+
+  skillsDir = pkgs.linkFarm "async-coder-skills" [
+    { name = "commit.md"; path = ../../home/claude/commit-skill/SKILL.md; }
+    { name = "github-fetch.md"; path = ../../home/claude/github-fetch-skill/SKILL.md; }
+  ];
 in
 {
   options.custom.services.async_coder = {
@@ -90,6 +95,9 @@ in
         git_author_name = "Jake Hillion";
         git_author_email = "jake@hillion.co.uk";
 
+        skills_path = skillsDir;
+        allowed_skills = [ "commit" "github-fetch" ];
+
         forges = {
           gitea = {
             type = "gitea";
@@ -120,7 +128,7 @@ in
         opencode = {
           api_key_file = pkgs.writeText "async-coder-dummy-key" "unused";
           api_url = "http://127.0.0.1:9100/v1/batch/10000";
-          model = "moonshotai/kimi-k2.6";
+          model = "moonshotai/kimi-k2.7-code";
           cheap_fast_model = "minimax/minimax-m2.5";
           provider = "llm-proxy";
           base_port = 18900;
