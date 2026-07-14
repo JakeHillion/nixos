@@ -33,11 +33,6 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    # The caddy vhost below solves DNS-01 challenges against the acme-dns-api on
-    # ${acmeApiHost}:8553 over Nebula. Grant that path at the point of use so it
-    # doesn't depend on the broad legacy-full-access group (see modules/www/nebula.nix).
-    ogygia.nebula.groups = [ "acme-dns-client" ];
-
     services.home-assistant.configDir = lib.mkIf config.custom.impermanence.enable (lib.mkOverride 999 "/data/home-assistant");
 
     custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/lib/private/matter-server" ];

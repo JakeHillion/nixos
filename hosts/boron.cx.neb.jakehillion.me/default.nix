@@ -125,12 +125,9 @@
       };
     };
 
-    # Allow hosts running an internal-TLS service to reach the DNS-01 challenge
-    # API. They pick up the acme-dns-client group automatically via the Caddy
-    # modules (see modules/www/nebula.nix), so this grants access without
-    # requiring the broad legacy-full-access group — the path for retiring it.
+    # TODO: make this a group instead of a single host
     ogygia.nebula.firewall.inbound = [
-      { groups = [ "acme-dns-client" ]; port = "8553"; proto = "tcp"; }
+      { host = "fanboy.cx.${config.ogygia.domain}"; port = "8553"; proto = "tcp"; }
     ];
 
     services.knot.settings.server.listen = [

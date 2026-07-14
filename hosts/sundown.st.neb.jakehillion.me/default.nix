@@ -11,6 +11,7 @@
     custom.defaults = true;
 
     ogygia.nebula = {
+      groups = [ "legacy-full-access" ];
       pubKey = ''
         -----BEGIN NEBULA X25519 PUBLIC KEY-----
         djz8PYS2HChYEMxJ6jCmSMEVJETh0Uofwtyr9qeNc1k=

@@ -86,7 +86,6 @@
       after = [ "nebula-online@ogygia.service" ];
       requires = [ "nebula-online@ogygia.service" ];
     };
-    ogygia.nebula.groups = lib.mkIf config.services.journald.upload.enable [ "journal-client" ];
 
     custom.auto_updater.enable = true;
     custom.compressed_ram.enable = true;

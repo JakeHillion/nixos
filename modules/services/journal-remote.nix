@@ -15,14 +15,6 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    # Admit journal upload clients on tcp/19532 over Nebula, so ingestion does
-    # not depend on the broad legacy-full-access group. Clients carry the
-    # journal-client group (see modules/defaults.nix); this is a write-only
-    # ingestion endpoint, so the group grants no read access.
-    ogygia.nebula.firewall.inbound = [
-      { groups = [ "journal-client" ]; port = 19532; proto = "tcp"; }
-    ];
-
     services.journald.remote = {
       enable = true;
       listen = "http";
