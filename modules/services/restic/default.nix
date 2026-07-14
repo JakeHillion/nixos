@@ -302,8 +302,8 @@ in
       {
         services = {
           caddy = {
-            requires = [ "nebula-online@jakehillion.service" ];
-            after = [ "nebula-online@jakehillion.service" ];
+            requires = [ "nebula-online@ogygia.service" ];
+            after = [ "nebula-online@ogygia.service" ];
           };
         }
         // lib.mapAttrs' (name: value: lib.attrsets.nameValuePair ("restic-forget-" + name) (mkForgetService name value)) cfg.repos

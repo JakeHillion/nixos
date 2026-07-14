@@ -69,6 +69,17 @@ in
         users.users.etcd.uid = config.ids.uids.etcd;
         users.groups.etcd.gid = config.ids.gids.etcd;
 
+        # Cluster members peer with each other on 2380 over Nebula. Carry the
+        # etcd-peer group and admit it, so the peer mesh does not depend on the
+        # broad legacy-full-access group. (Client access on 2379 is fleet-wide
+        # and handled separately.)
+        ogygia.nebula = {
+          groups = [ "etcd-peer" ];
+          firewall.inbound = [
+            { groups = [ "etcd-peer" ]; port = 2380; proto = "tcp"; }
+          ];
+        };
+
         services.etcd = {
           enable = true;
 

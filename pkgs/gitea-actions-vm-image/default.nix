@@ -89,9 +89,6 @@ vmTools.runInLinuxVM (runCommand "gitea-actions-vm-image"
   install -d -m 0755 -o 1001 -g 1001 /mnt/home/runner
   install -d -m 0755 -o 1001 -g 1001 /mnt/var/lib/gitea-runner
   install -d -m 0755 -o 1001 -g 1001 /mnt/var/lib/gitea-runner-jobs
-  # cidata mountpoint stays root-owned; the unit's ExecStartPre mounts here
-  # as root and copies credentials out into runner-owned /var/lib paths.
-  install -d -m 0755 /mnt/etc/gitea-runner
 
   install -Dm440 /dev/stdin /mnt/etc/sudoers.d/runner <<'EOF'
   runner ALL=(ALL:ALL) NOPASSWD:ALL
@@ -118,16 +115,27 @@ vmTools.runInLinuxVM (runCommand "gitea-actions-vm-image"
     done
   done
 
-  # systemd unit for the runner. The unit runs act_runner directly via
-  # WorkingDirectory= and ExecStartPre=+ does the mount + credential copy
-  # as root, so no separate startup shell script is needed.
+  # systemd unit for the runner. The per-VM credentials (.runner +
+  # config.yaml) are placed in /var/lib/gitea-runner by cloud-init's
+  # write_files from the instance user-data before the unit starts.
   install -Dm644 ${./runner.service} /mnt/etc/systemd/system/gitea-runner.service
+
+  # Periodic cycle timer — see runner-cycle.{service,timer} for rationale.
+  # Recovers act_runner from the "unregistered runner" wedge by SIGTERMing
+  # the main process; in-flight jobs drain via runner.shutdown_timeout.
+  install -Dm644 ${./runner-cycle.service} /mnt/etc/systemd/system/gitea-runner-cycle.service
+  install -Dm644 ${./runner-cycle.timer}   /mnt/etc/systemd/system/gitea-runner-cycle.timer
 
   # Wire enable for our service. cloud-init.target.wants (rather than
   # multi-user.target.wants) so we order strictly after cloud-final.service.
   mkdir -p /mnt/etc/systemd/system/cloud-init.target.wants
   ln -sf /etc/systemd/system/gitea-runner.service \
     /mnt/etc/systemd/system/cloud-init.target.wants/gitea-runner.service
+
+  # Enable the cycle timer via timers.target.wants.
+  mkdir -p /mnt/etc/systemd/system/timers.target.wants
+  ln -sf /etc/systemd/system/gitea-runner-cycle.timer \
+    /mnt/etc/systemd/system/timers.target.wants/gitea-runner-cycle.timer
 
   # Install qemu-guest-agent (and its only missing dependency, liburing2) so
   # the host can probe in-guest state via QGA — used both for the graceful-
@@ -143,12 +151,13 @@ vmTools.runInLinuxVM (runCommand "gitea-actions-vm-image"
   ln -sf /lib/systemd/system/qemu-guest-agent.service \
     /mnt/etc/systemd/system/multi-user.target.wants/qemu-guest-agent.service
 
-  # Restrict cloud-init to the NoCloud datasource so it doesn't waste boot
-  # time scanning EC2/Azure/etc. metadata endpoints. The cidata ISO mounted
-  # at runtime carries network-config (static IP per instance) plus our
-  # runner credentials.
+  # Restrict cloud-init to the datasources we actually boot on so it doesn't
+  # waste boot time scanning other providers' metadata endpoints: NoCloud for
+  # local QEMU (cidata ISO with static network-config), GCE and Hetzner for
+  # burst VMs (metadata servers). On every substrate the per-VM runner
+  # credentials arrive as user-data (#cloud-config write_files).
   install -Dm644 /dev/stdin /mnt/etc/cloud/cloud.cfg.d/99-runner.cfg <<'EOF'
-  datasource_list: [ NoCloud, None ]
+  datasource_list: [ NoCloud, GCE, Hetzner, None ]
   EOF
 
   # Fresh machine-id per VM boot (systemd will regenerate on first boot).

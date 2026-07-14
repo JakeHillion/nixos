@@ -15,16 +15,11 @@
     boot.kernelParams = [
       "ip=dhcp"
     ];
-    boot.initrd = {
-      availableKernelModules = [ "igc" ];
-      network.enable = true;
-      clevis = {
-        enable = true;
-        useTang = true;
-        devices = {
-          "disk0-crypt".secretFile = "/data/disk_encryption.jwe";
-        };
-      };
+    custom.tang = {
+      enable = true;
+      networkingModule = "igc";
+      secretFile = "/data/disk_encryption.jwe";
+      devices = [ "disk0-crypt" ];
     };
 
     # BeeLink GTi14 has stability issues on 6.12 (and probably a bit before).
@@ -32,12 +27,24 @@
     boot.kernelPackages = pkgs.linuxPackages_latest;
 
     custom.defaults = true;
+
+    ogygia.nebula = {
+      groups = [ "legacy-full-access" ];
+      pubKey = ''
+        -----BEGIN NEBULA X25519 PUBLIC KEY-----
+        3VyaqyfXwXwYu7hMrfm75uFUcmpXcI73aK43G22OhwU=
+        -----END NEBULA X25519 PUBLIC KEY-----
+      '';
+    };
     custom.locations.autoServe = true;
     custom.profiles.devbox = true;
 
     custom.users.jake.password = true;
     security.sudo.wheelNeedsPassword = lib.mkForce true;
     custom.desktop.sway.enable = true;
+
+    ## Gaming
+    custom.games.steam.enable = true;
 
     ## Impermanence
     custom.impermanence = {

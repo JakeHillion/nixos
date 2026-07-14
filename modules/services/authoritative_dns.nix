@@ -52,6 +52,7 @@ let
     firefly                           21600 CNAME ${locations.services.firefly-iii}.
     firefly-importer                  21600 CNAME ${locations.services.firefly-iii-data-importer}.
     frigate                           21600 CNAME ${locations.services.frigate}.
+    hearthd                           21600 CNAME ${locations.services.hearthd}.
     homebox                           21600 CNAME ${locations.services.homebox}.
     immich                            21600 CNAME ${locations.services.immich}.
     openwebui                         21600 CNAME ${locations.services.openwebui}.
@@ -131,8 +132,8 @@ in
       };
 
       systemd.services.knot = {
-        after = [ "nebula-online@jakehillion.service" ];
-        requires = [ "nebula-online@jakehillion.service" ];
+        after = [ "nebula-online@ogygia.service" ];
+        requires = [ "nebula-online@ogygia.service" ];
       };
     }
 
