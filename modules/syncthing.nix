@@ -128,6 +128,13 @@ in
                 };
           };
       };
+
+      ogygia.nebula = {
+        groups = [ "syncthing" ];
+        firewall.inbound = [
+          { groups = [ "syncthing" ]; port = 22000; proto = "tcp"; }
+        ];
+      };
     }
 
     (lib.mkIf cfg.backups.enable {
