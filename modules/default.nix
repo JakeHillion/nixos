@@ -11,7 +11,6 @@
     ./dns.nix
     ./games
     ./home
-    ./hostinfo.nix
     ./ids.nix
     ./impermanence.nix
     ./locations.nix

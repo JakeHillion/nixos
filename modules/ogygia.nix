@@ -66,11 +66,11 @@ in
         # `ogygia nebula` CLI reads and writes them.
         certDir = ../nebula;
 
-        # Every fleet host runs irisd and pulls from its peers on 35742, so
-        # carry the irisd-client group fleet-wide and admit it below. This
-        # scopes the p2p binary-cache mesh off the broad legacy-full-access
-        # group.
-        groups = [ "irisd-client" ];
+        # irisd-client is fleet-wide (every host pulls from the peer cache).
+        # etcd-client follows hostinfod, the etcd publisher, so a host that
+        # disables it (fanboy) gets no etcd access.
+        groups = [ "irisd-client" ]
+          ++ lib.optional config.ogygia.hostinfod.enable "etcd-client";
 
         firewall.inbound = [
           # SSH is allowed from every mesh peer, no group required. This keeps

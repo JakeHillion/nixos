@@ -56,8 +56,8 @@ in
   # Storj Secrets
   "secrets/storj/auth.age".publicKeys = jake_users ++ [ ];
 
-  # Version tracker secrets
-  "secrets/version_tracker/ssh.key.age".publicKeys = jake_users ++ [ neb.cx.boron ];
+  # Dashboard secrets
+  "secrets/dashboard/ssh.key.age".publicKeys = jake_users ++ [ neb.cx.boron ];
 
   # Home Automation secrets
   "secrets/mqtt/zigbee2mqtt.age".publicKeys = jake_users ++ [ neb.pop.stinger ];

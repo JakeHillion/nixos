@@ -44,7 +44,6 @@
     ./status.nix
     ./tang.nix
     ./unifi.nix
-    ./version_tracker.nix
     ./zigbee2mqtt.nix
   ];
 }
