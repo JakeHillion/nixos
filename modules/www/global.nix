@@ -84,14 +84,23 @@ in
         "gitea.hillion.co.uk".extraConfig = ''
           tls ${./certs/gitea.hillion.co.uk.pem} ${config.age.secrets."caddy/gitea.hillion.co.uk.pem".path}
 
+          # Anubis binds its proof-of-work clearance to the client IP (read from
+          # X-Real-IP). Cloudflare rotates its edge IPs per request, so without
+          # this every request looks like a new client and gets re-challenged.
+          # Forward the true visitor IP from Cf-Connecting-Ip on both Anubis hops
+          # so challenge issuance and the pass-challenge endpoint agree.
           @anubis_assets path /.within.website/*
-          reverse_proxy @anubis_assets http://${locations.services.gitea}:8923
+          reverse_proxy @anubis_assets http://${locations.services.gitea}:8923 {
+            header_up X-Real-IP {http.request.header.Cf-Connecting-Ip}
+          }
 
           @expensive {
             not method POST
             path_regexp ^/[^/]+/[^/]+/(blame|commits|commit|compare|graph|activity|search|src/commit|raw/commit)(/.*)?$
           }
-          reverse_proxy @expensive http://${locations.services.gitea}:8923
+          reverse_proxy @expensive http://${locations.services.gitea}:8923 {
+            header_up X-Real-IP {http.request.header.Cf-Connecting-Ip}
+          }
 
           reverse_proxy http://${locations.services.gitea}:3000
         '';
