@@ -45,7 +45,7 @@ in
         };
 
         llm = {
-          default_model = "DeepSeek V4 Pro (immediate)";
+          default_model = "Kimi K2.6 (immediate)";
           batch_model = "DeepSeek V4 Flash (batch60k)";
 
           providers = [
@@ -53,7 +53,7 @@ in
               name = "llm-proxy-immediate";
               base_url = "http://127.0.0.1:9100/v1/immediate";
               token_file = pkgs.writeText "personal-agent-dummy-token" "unused";
-              models = [{ id = "deepseek/deepseek-v4-pro"; name = "DeepSeek V4 Pro (immediate)"; }];
+              models = [{ id = "moonshotai/kimi-k2.6"; name = "Kimi K2.6 (immediate)"; }];
             }
             {
               name = "llm-proxy-batch60k";
