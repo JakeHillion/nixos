@@ -52,6 +52,10 @@
       userExtraFiles.jake = [ ".ssh/id_ecdsa" ];
     };
 
+    ## Bluetoooth
+    hardware.bluetooth.enable = true;
+    services.blueman.enable = true;
+
     ## Video drivers when docked
     boot.initrd.kernelModules = [ "amdgpu" ];
     services.xserver.videoDrivers = [ "amdgpu" ];
