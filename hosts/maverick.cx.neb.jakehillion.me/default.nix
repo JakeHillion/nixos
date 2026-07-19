@@ -21,14 +21,18 @@
     };
 
     ## Automatic updates
-    # Trial ogygia-updated here in place of the legacy custom.auto_updater
-    # (the pull-based daemon, control socket, and canaries replace the
-    # timer-driven jj-on-/etc/nixos updater enabled fleet-wide by defaults).
-    custom.auto_updater.enable = lib.mkForce false;
-    # The interactive `update` script is superseded by `ogygia update` and
-    # `ogygia update canary`; drop it here (it's on fleet-wide via custom.shell).
-    custom.shell.update_scripts.enable = lib.mkForce false;
+    # ogygia-updated is the sole updater on this host; turn off the others so
+    # nothing else races it to drive the system profile.
     ogygia.updated.enable = true;
+    custom.auto_updater.enable = lib.mkForce false;
+    custom.shell.update_scripts.enable = lib.mkForce false;
+    # Substitute the store-warm closure before building: the nixos-<fqdn> check
+    # is this host's toplevel with the configurationRevision zeroed, so it is
+    # identical to the real build bar the revision stamp and substitutes
+    # wholesale. If the cache lacks it the daemon skips the cycle rather than
+    # building the full closure locally.
+    ogygia.updated.settings.build.prefetch_attr =
+      "checks.${pkgs.stdenv.hostPlatform.system}.\"nixos-${config.networking.fqdn}\"";
 
     custom.tang.enable = true;
     custom.sched_ext = {
