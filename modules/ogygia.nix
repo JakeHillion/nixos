@@ -115,14 +115,30 @@ in
     ogygia.updated.settings = lib.mkIf config.ogygia.updated.enable {
       build.prefetch_attr = lib.mkDefault
         "checks.${pkgs.stdenv.hostPlatform.system}.\"nixos-${config.networking.fqdn}\"";
+
+      # Point the daemon's clone and canary record straight at persistent
+      # storage. Persisting the default /var/lib location with a bind mount
+      # instead makes that mount a RequiresMountsFor dependency of the service;
+      # switch-to-configuration restarts the mount during activation and the
+      # hard dependency tears the daemon down mid-update — the very update it is
+      # running. A plain directory has no mount unit and no such dependency.
+      state_dir = lib.mkIf config.custom.impermanence.enable
+        "${config.custom.impermanence.base}/system/var/lib/ogygia-updated";
     };
 
-    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable
-      ([ "/var/cache/private/ogygia-irisd" ]
-        # ogygia-updated keeps its private repo clone and canary record under
-        # its StateDirectory; persist it so the daemon survives a reboot
-        # without re-cloning the configuration repo.
-        ++ lib.optional config.ogygia.updated.enable "/var/lib/ogygia-updated");
+    # The persistent state_dir supersedes the unit's /var/lib StateDirectory;
+    # drop it so systemd neither creates an unused tmpfs directory nor adds the
+    # RequiresMountsFor that reintroduces the dependency we are removing.
+    systemd.services.ogygia-updated.serviceConfig.StateDirectory =
+      lib.mkIf (config.ogygia.updated.enable && config.custom.impermanence.enable) (lib.mkForce "");
+
+    # StateDirectory used to guarantee the state directory existed with a known
+    # owner and mode; recreate that guarantee for the persistent path so it is
+    # in place before the daemon starts rather than left to its first clone.
+    systemd.tmpfiles.rules = lib.mkIf (config.ogygia.updated.enable && config.custom.impermanence.enable)
+      [ "d ${config.custom.impermanence.base}/system/var/lib/ogygia-updated 0700 root root - -" ];
+
+    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/cache/private/ogygia-irisd" ];
 
     # Reuse the legacy Nebula keypair. The private key stays at its existing
     # /data/nebula/host.key (persistent, already owned by the nebula service
