@@ -19,6 +19,21 @@
         -----END NEBULA X25519 PUBLIC KEY-----
       '';
     };
+
+    ## Automatic updates
+    # ogygia-updated is the sole updater on this host; turn off the others so
+    # nothing else races it to drive the system profile.
+    ogygia.updated.enable = true;
+    custom.auto_updater.enable = lib.mkForce false;
+    custom.shell.update_scripts.enable = lib.mkForce false;
+    # Substitute the store-warm closure before building: the nixos-<fqdn> check
+    # is this host's toplevel with the configurationRevision zeroed, so it is
+    # identical to the real build bar the revision stamp and substitutes
+    # wholesale. If the cache lacks it the daemon skips the cycle rather than
+    # building the full closure locally.
+    ogygia.updated.settings.build.prefetch_attr =
+      "checks.${pkgs.stdenv.hostPlatform.system}.\"nixos-${config.networking.fqdn}\"";
+
     custom.tang.enable = true;
     custom.sched_ext = {
       enable = true;

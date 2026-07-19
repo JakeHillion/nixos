@@ -106,7 +106,12 @@ in
 
     environment.systemPackages = [ pkgs.ogygia ];
 
-    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/cache/private/ogygia-irisd" ];
+    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable
+      ([ "/var/cache/private/ogygia-irisd" ]
+        # ogygia-updated keeps its private repo clone and canary record under
+        # its StateDirectory; persist it so the daemon survives a reboot
+        # without re-cloning the configuration repo.
+        ++ lib.optional config.ogygia.updated.enable "/var/lib/ogygia-updated");
 
     # Reuse the legacy Nebula keypair. The private key stays at its existing
     # /data/nebula/host.key (persistent, already owned by the nebula service
