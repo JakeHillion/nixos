@@ -19,6 +19,14 @@
         -----END NEBULA X25519 PUBLIC KEY-----
       '';
     };
+
+    ## Automatic updates
+    # ogygia-updated is the sole updater on this host; turn off the others so
+    # nothing else races it to drive the system profile.
+    ogygia.updated.enable = true;
+    custom.auto_updater.enable = lib.mkForce false;
+    custom.shell.update_scripts.enable = lib.mkForce false;
+
     custom.tang.enable = true;
     custom.sched_ext = {
       enable = true;

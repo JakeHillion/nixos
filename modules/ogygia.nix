@@ -106,7 +106,23 @@ in
 
     environment.systemPackages = [ pkgs.ogygia ];
 
-    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/cache/private/ogygia-irisd" ];
+    # Warm the store from the binary cache before building: the nixos-<fqdn>
+    # check is this host's toplevel with the configurationRevision zeroed, so
+    # it is identical to the real build bar the revision stamp and substitutes
+    # wholesale. Pointing every updated host at it keeps CI and the
+    # ogygia-irisd peer cache exercised; a host that cannot substitute it skips
+    # the cycle rather than building the whole closure locally.
+    ogygia.updated.settings = lib.mkIf config.ogygia.updated.enable {
+      build.prefetch_attr = lib.mkDefault
+        "checks.${pkgs.stdenv.hostPlatform.system}.\"nixos-${config.networking.fqdn}\"";
+    };
+
+    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable
+      ([ "/var/cache/private/ogygia-irisd" ]
+        # ogygia-updated keeps its private repo clone and canary record under
+        # its StateDirectory; persist it so the daemon survives a reboot
+        # without re-cloning the configuration repo.
+        ++ lib.optional config.ogygia.updated.enable "/var/lib/ogygia-updated");
 
     # Reuse the legacy Nebula keypair. The private key stays at its existing
     # /data/nebula/host.key (persistent, already owned by the nebula service
