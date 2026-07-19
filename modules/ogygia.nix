@@ -106,7 +106,22 @@ in
 
     environment.systemPackages = [ pkgs.ogygia ];
 
-    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/cache/private/ogygia-irisd" ];
+    # Feed ogygia-updated the same cache-warm closure the legacy auto_updater
+    # prefetched: this host's `nixos-<fqdn>` check, which is the toplevel with
+    # the configurationRevision zeroed. It substitutes wholesale from the
+    # binary cache under `--max-jobs 0`, so only the commit-specific remainder
+    # (the trivial build-revision text file) builds locally. A host that can't
+    # substitute it skips the cycle rather than doing a full local build.
+    ogygia.updated.settings = lib.mkIf config.ogygia.updated.enable {
+      build.prefetch_attr = lib.mkDefault
+        "checks.${pkgs.stdenv.hostPlatform.system}.\"nixos-${config.networking.fqdn}\"";
+    };
+
+    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable
+      ([ "/var/cache/private/ogygia-irisd" ]
+        # The daemon's private repo clone and canary state live here; persist
+        # them so it doesn't re-clone the configuration repo on every boot.
+        ++ lib.optional config.ogygia.updated.enable "/var/lib/ogygia-updated");
 
     # Reuse the legacy Nebula keypair. The private key stays at its existing
     # /data/nebula/host.key (persistent, already owned by the nebula service
