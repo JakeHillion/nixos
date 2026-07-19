@@ -19,6 +19,17 @@
         -----END NEBULA X25519 PUBLIC KEY-----
       '';
     };
+
+    ## Automatic updates
+    # Trial ogygia-updated here in place of the legacy custom.auto_updater
+    # (the pull-based daemon, control socket, and canaries replace the
+    # timer-driven jj-on-/etc/nixos updater enabled fleet-wide by defaults).
+    custom.auto_updater.enable = lib.mkForce false;
+    # The interactive `update` script is superseded by `ogygia update` and
+    # `ogygia update canary`; drop it here (it's on fleet-wide via custom.shell).
+    custom.shell.update_scripts.enable = lib.mkForce false;
+    ogygia.updated.enable = true;
+
     custom.tang.enable = true;
     custom.sched_ext = {
       enable = true;
