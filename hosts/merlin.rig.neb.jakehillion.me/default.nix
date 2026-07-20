@@ -36,6 +36,12 @@
         -----END NEBULA X25519 PUBLIC KEY-----
       '';
     };
+
+    ## Automatic updates
+    ogygia.updated.enable = true;
+    custom.auto_updater.enable = lib.mkForce false;
+    custom.shell.update_scripts.enable = lib.mkForce false;
+
     custom.locations.autoServe = true;
     custom.profiles.devbox = true;
 
@@ -130,9 +136,8 @@
     systemd.services.boot-control = {
       description = "Boot Control Service - Check Home Assistant for Windows boot preference";
       wantedBy = [ "multi-user.target" ];
-      after = [ "network-online.target" "auto_updater.service" ];
+      after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
-      requires = [ "auto_updater.service" ];
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = false;
