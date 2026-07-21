@@ -46,7 +46,7 @@ in
         DO_NOT_TRACK = "True";
         ANONYMIZED_TELEMETRY = "False";
         OPENAI_API_BASE_URLS = "http://127.0.0.1:9100/v1/immediate";
-        OPENAI_API_MODELS = "moonshotai/kimi-k2.6,minimax/minimax-m2.5";
+        OPENAI_API_MODELS = "moonshotai/kimi-k2.6,minimax/minimax-m2.7";
         OPENAI_API_KEYS = "unused";
         ENABLE_WEB_SEARCH = "True";
         WEB_SEARCH_ENGINE = "searxng";

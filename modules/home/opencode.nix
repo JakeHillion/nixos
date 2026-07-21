@@ -5,7 +5,7 @@ let
   user = config.custom.user;
 
   kimi = "llm-proxy/moonshotai/kimi-k2.6";
-  minimax = "llm-proxy/minimax/minimax-m2.5";
+  minimax = "llm-proxy/minimax/minimax-m2.7";
   glm = "llm-proxy/zai/glm-5.1";
   deepseek = "llm-proxy/deepseek/deepseek-v4-pro";
 
@@ -25,8 +25,8 @@ let
           name = "Kimi K2.6";
           limit = { context = 256000; output = 65536; };
         };
-        "minimax/minimax-m2.5" = {
-          name = "MiniMax M2.5";
+        "minimax/minimax-m2.7" = {
+          name = "MiniMax M2.7";
           limit = { context = 204800; output = 131072; };
         };
         "zai/glm-5.1" = {
