@@ -106,7 +106,7 @@ in
         models = {
           "moonshotai/kimi-k2.6" = "kimi-k2.6";
           "moonshotai/kimi-k2.7-code" = "kimi-k2.7-code";
-          "minimax/minimax-m2.5" = "minimax-m2.5";
+          "minimax/minimax-m2.7" = "minimax-m2.7";
           "zai/glm-5.1" = "glm-5.1";
         };
       };
