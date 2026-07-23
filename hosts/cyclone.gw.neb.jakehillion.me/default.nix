@@ -159,6 +159,9 @@
       virtualHosts."jellyfin.jakehillion.me".extraConfig = ''
         reverse_proxy http://${config.custom.locations.locations.services.jellyfin}:8096
       '';
+      virtualHosts."homeassistant.hillion.co.uk".extraConfig = ''
+        reverse_proxy http://${config.custom.locations.locations.services.homeassistant}:8123
+      '';
     };
 
     custom.www.nebula = {

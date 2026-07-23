@@ -236,7 +236,7 @@ in
               use_x_forwarded_for = true;
               trusted_proxies = with config.custom.dns.authoritative; [
                 "::1"
-                ipv4.me.jakehillion.neb.cx.boron
+                ipv4.me.jakehillion.neb.gw.cyclone
               ];
             };
 
