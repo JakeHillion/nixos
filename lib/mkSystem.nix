@@ -16,6 +16,7 @@
     inputs.personal-agent.nixosModules.default
     inputs.hearthd.nixosModules.default
     inputs.impermanence.nixosModules.impermanence
+    inputs.magicbluetoothd.nixosModules.default
     inputs.nixos-generators.nixosModules.all-formats
     inputs.ogygia.nixosModules.default
 
