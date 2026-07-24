@@ -2,6 +2,12 @@
 
 let
   cfg = config.custom.home.git;
+
+  jj-update-prs = pkgs.writers.writePython3Bin "jj-update-prs"
+    {
+      libraries = [ pkgs.python3Packages.pyyaml ];
+    }
+    (builtins.readFile ./jj-update-prs.py);
 in
 {
   options.custom.home.git = {
@@ -41,6 +47,7 @@ in
             };
             aliases = {
               submit-stack = [ "git" "push" "--change" "trunk()..@-" ];
+              update-prs = [ "util" "exec" "--" "${jj-update-prs}/bin/jj-update-prs" ];
               newt = [ "util" "exec" "--" "bash" "-c" "jj git fetch && jj new 'trunk()'" "" ];
               rpull = [ "util" "exec" "--" "bash" "-c" "jj git fetch && jj rebase -d 'trunk()'" ];
             };
