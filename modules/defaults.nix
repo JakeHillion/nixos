@@ -76,6 +76,11 @@
     # Caddy package with DNS plugins (cloudflare + jakehillion)
     services.caddy.package = pkgs.caddy-with-dns;
 
+    # Pair Apple Magic devices over USB wherever there is a Bluetooth stack to
+    # pair them into. The module asserts on hardware.bluetooth.enable, so this
+    # tracks it rather than being unconditional.
+    services.magicbluetoothd.enable = lib.mkDefault config.hardware.bluetooth.enable;
+
     # Delegation
     # Journal upload to central log server
     services.journald.upload = {
