@@ -43,7 +43,7 @@
     hearthd.url = "github:JakeHillion/hearthd";
     hearthd.inputs.nixpkgs.follows = "nixpkgs";
 
-    magicbluetoothd.url = "git+https://gitea.hillion.co.uk/JakeHillion/magicbluetoothd.git?ref=jj/vvmmxmnopkto";
+    magicbluetoothd.url = "git+https://gitea.hillion.co.uk/JakeHillion/magicbluetoothd.git";
     magicbluetoothd.inputs.nixpkgs.follows = "nixpkgs";
 
     personal-agent.url = "git+https://gitea.hillion.co.uk/JakeHillion/personal-agent.git";

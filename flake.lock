@@ -753,16 +753,15 @@
         "treefmt-nix": "treefmt-nix_7"
       },
       "locked": {
-        "lastModified": 1784927579,
-        "narHash": "sha256-y/h1hruEsE4OCaduVBFtQPaMB1lYW7pOEKz5o7BVOnk=",
-        "ref": "jj/vvmmxmnopkto",
-        "rev": "bafce4a36e1a50f01a0acb66c33039541b0a296b",
-        "revCount": 16,
+        "lastModified": 1784929174,
+        "narHash": "sha256-KNJcYxkuIjqEA8zKxMUXmvqjuOANUiZIov1Lud+gUa4=",
+        "ref": "refs/heads/main",
+        "rev": "2ecb621b02aca0a443abbe4025b5cbac8e2baa5c",
+        "revCount": 17,
         "type": "git",
         "url": "https://gitea.hillion.co.uk/JakeHillion/magicbluetoothd.git"
       },
       "original": {
-        "ref": "jj/vvmmxmnopkto",
         "type": "git",
         "url": "https://gitea.hillion.co.uk/JakeHillion/magicbluetoothd.git"
       }
