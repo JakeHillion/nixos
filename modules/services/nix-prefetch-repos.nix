@@ -49,7 +49,10 @@ in
           local flake_ref="$1"
           local root_path="$2"
 
-          if output=$(${pkgs.nix}/bin/nix flake archive --json "$flake_ref" 2>/dev/null); then
+          # --no-write-lock-file: for a git+file:// ref, nix resolves the flake's
+          # source path to the repository working directory, so re-locking a
+          # branch writes that branch's flake.lock over the checked-out one.
+          if output=$(${pkgs.nix}/bin/nix flake archive --no-write-lock-file --json "$flake_ref" 2>/dev/null); then
             store_path=$(echo "$output" | ${pkgs.jq}/bin/jq -r '.path')
             if [[ -n "$store_path" && "$store_path" != "null" ]]; then
               ln -sfn "$store_path" "$root_path"
