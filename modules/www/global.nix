@@ -28,7 +28,6 @@ in
         "hillion.co.uk"
         "blog.hillion.co.uk"
         "gitea.hillion.co.uk"
-        "homeassistant.hillion.co.uk"
         "links.hillion.co.uk"
         "pastes.hillion.co.uk"
         "status.jakehillion.me"
@@ -76,10 +75,6 @@ in
           tls ${./certs/blog.hillion.co.uk.pem} ${config.age.secrets."caddy/blog.hillion.co.uk.pem".path}
           root * /var/www/blog.hillion.co.uk
           file_server
-        '';
-        "homeassistant.hillion.co.uk".extraConfig = ''
-          tls ${./certs/homeassistant.hillion.co.uk.pem} ${config.age.secrets."caddy/homeassistant.hillion.co.uk.pem".path}
-          reverse_proxy http://${locations.services.homeassistant}:8123
         '';
         "gitea.hillion.co.uk".extraConfig = ''
           tls ${./certs/gitea.hillion.co.uk.pem} ${config.age.secrets."caddy/gitea.hillion.co.uk.pem".path}
