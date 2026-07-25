@@ -32,6 +32,12 @@
         "after 11pm on Monday",
         "after 11pm on Thursday"
       ]
+    },
+    {
+      "matchManagers": [
+        "cargo"
+      ],
+      "rangeStrategy": "replace"
     }
   ],
   "extends": [
