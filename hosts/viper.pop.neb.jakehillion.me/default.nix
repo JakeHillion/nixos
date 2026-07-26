@@ -43,7 +43,7 @@
       devices = [ "disk0-crypt" "disk1-crypt" ];
     };
 
-    custom.auto_updater.allowReboot = true;
+    ogygia.updated.settings.activate.allow_reboot = true;
 
     custom.sched_ext = {
       enable = true;

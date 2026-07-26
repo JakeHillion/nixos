@@ -21,7 +21,7 @@
     };
 
     ## Custom Services
-    custom.auto_updater.allowReboot = true;
+    ogygia.updated.settings.activate.allow_reboot = true;
     custom.locations.autoServe = true;
 
     ## Run a persistent iperf3 server
