@@ -20,6 +20,6 @@
 
     ## Custom Services
     custom.tang.enable = true;
-    custom.auto_updater.allowReboot = true;
+    ogygia.updated.settings.activate.allow_reboot = true;
   };
 }

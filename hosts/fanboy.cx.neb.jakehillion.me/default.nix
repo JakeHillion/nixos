@@ -35,7 +35,7 @@
     custom.impermanence.enable = true;
 
     ## Auto-updater with reboot
-    custom.auto_updater.allowReboot = true;
+    ogygia.updated.settings.activate.allow_reboot = true;
 
     ogygia.hostinfod.enable = lib.mkForce false;
   };

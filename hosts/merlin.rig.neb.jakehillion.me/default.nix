@@ -37,11 +37,6 @@
       '';
     };
 
-    ## Automatic updates
-    ogygia.updated.enable = true;
-    custom.auto_updater.enable = lib.mkForce false;
-    custom.shell.update_scripts.enable = lib.mkForce false;
-
     custom.locations.autoServe = true;
     custom.profiles.devbox = true;
 

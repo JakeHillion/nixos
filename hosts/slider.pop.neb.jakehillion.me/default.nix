@@ -9,7 +9,7 @@
     system.stateVersion = "25.05";
 
     custom.defaults = true;
-    custom.auto_updater.allowReboot = true;
+    ogygia.updated.settings.activate.allow_reboot = true;
     custom.locations.autoServe = true;
 
     ogygia.nebula = {

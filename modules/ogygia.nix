@@ -106,24 +106,28 @@ in
 
     environment.systemPackages = [ pkgs.ogygia ];
 
-    # Warm the store from the binary cache before building: the nixos-<fqdn>
-    # check is this host's toplevel with the configurationRevision zeroed, so
-    # it is identical to the real build bar the revision stamp and substitutes
-    # wholesale. Pointing every updated host at it keeps CI and the
-    # ogygia-irisd peer cache exercised; a host that cannot substitute it skips
-    # the cycle rather than building the whole closure locally.
-    ogygia.updated.settings = lib.mkIf config.ogygia.updated.enable {
-      build.prefetch_attr = lib.mkDefault
-        "checks.${pkgs.stdenv.hostPlatform.system}.\"nixos-${config.networking.fqdn}\"";
+    ogygia.updated = {
+      enable = true;
 
-      # Point the daemon's clone and canary record straight at persistent
-      # storage. Persisting the default /var/lib location with a bind mount
-      # instead makes that mount a RequiresMountsFor dependency of the service;
-      # switch-to-configuration restarts the mount during activation and the
-      # hard dependency tears the daemon down mid-update — the very update it is
-      # running. A plain directory has no mount unit and no such dependency.
-      state_dir = lib.mkIf config.custom.impermanence.enable
-        "${config.custom.impermanence.base}/system/var/lib/ogygia-updated";
+      settings = {
+        # Warm the store from the binary cache before building: the nixos-<fqdn>
+        # check is this host's toplevel with the configurationRevision zeroed, so
+        # it is identical to the real build bar the revision stamp and substitutes
+        # wholesale. Pointing every updated host at it keeps CI and the
+        # ogygia-irisd peer cache exercised; a host that cannot substitute it
+        # skips the cycle rather than building the whole closure locally.
+        build.prefetch_attr = lib.mkDefault
+          "checks.${pkgs.stdenv.hostPlatform.system}.\"nixos-${config.networking.fqdn}\"";
+
+        # Point the daemon's clone and canary record straight at persistent
+        # storage. Persisting the default /var/lib location with a bind mount
+        # instead makes that mount a RequiresMountsFor dependency of the service;
+        # switch-to-configuration restarts the mount during activation and the
+        # hard dependency tears the daemon down mid-update — the very update it is
+        # running. A plain directory has no mount unit and no such dependency.
+        state_dir = lib.mkIf config.custom.impermanence.enable
+          "${config.custom.impermanence.base}/system/var/lib/ogygia-updated";
+      };
     };
 
     # The persistent state_dir supersedes the unit's /var/lib StateDirectory;
