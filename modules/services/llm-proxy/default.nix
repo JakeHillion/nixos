@@ -119,6 +119,14 @@ in
           "deepseek/deepseek-v4-flash" = "deepseek-v4-flash";
         };
       };
+      fireworks = lib.mkDefault {
+        url = "https://api.fireworks.ai/inference/v1";
+        apiKeyCredential = "fireworks-api-key";
+        apiKeyFile = config.age.secrets."llm-proxy/fireworks-api-key".path;
+        models = {
+          "moonshotai/kimi-k3" = "accounts/fireworks/models/kimi-k3";
+        };
+      };
     };
 
     age.secrets."llm-proxy/ollama-cloud-api-key" = {
@@ -126,6 +134,9 @@ in
     };
     age.secrets."llm-proxy/opencode-go-api-key" = {
       rekeyFile = ./opencode-go.age;
+    };
+    age.secrets."llm-proxy/fireworks-api-key" = {
+      rekeyFile = ./fireworks.age;
     };
 
     systemd.services.llm-proxy = {
