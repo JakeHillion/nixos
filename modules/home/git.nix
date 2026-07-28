@@ -3,11 +3,22 @@
 let
   cfg = config.custom.home.git;
 
-  jj-update-prs = pkgs.writers.writePython3Bin "jj-update-prs"
+  jj-update-prs-unwrapped = pkgs.writers.writePython3Bin "jj-update-prs"
     {
       libraries = [ pkgs.python3Packages.pyyaml ];
     }
     (builtins.readFile ./jj-update-prs.py);
+
+  # gh supplies the GitHub token; jj comes from the alias that invokes this.
+  jj-update-prs = pkgs.symlinkJoin {
+    name = "jj-update-prs";
+    paths = [ jj-update-prs-unwrapped ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram $out/bin/jj-update-prs \
+        --prefix PATH : ${lib.makeBinPath [ pkgs.gh ]}
+    '';
+  };
 in
 {
   options.custom.home.git = {
