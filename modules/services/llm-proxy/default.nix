@@ -117,6 +117,7 @@ in
         models = {
           "deepseek/deepseek-v4-pro" = "deepseek-v4-pro";
           "deepseek/deepseek-v4-flash" = "deepseek-v4-flash";
+          "moonshotai/kimi-k3" = "kimi-k3";
         };
       };
     };
