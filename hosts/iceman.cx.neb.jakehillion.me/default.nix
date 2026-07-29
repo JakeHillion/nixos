@@ -21,6 +21,12 @@
 
     custom.tang.enable = true;
 
+    ## Gitea Actions
+    custom.services.gitea.actions-vm = {
+      enable = true;
+      instances = 8;
+    };
+
     ## Syncthing
     custom.syncthing = {
       enable = true;
