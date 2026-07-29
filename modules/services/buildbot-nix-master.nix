@@ -11,7 +11,7 @@ let
 
   # Core counts per worker host. Add an entry when a new worker is added.
   workerCores = {
-    "boron.cx.${config.ogygia.domain}" = 16;
+    "iceman.cx.${config.ogygia.domain}" = 32;
   };
 
   workersList = map
@@ -170,12 +170,17 @@ in
       };
     };
 
-    # Ensure /var/lib/buildbot is owned by buildbot; impermanence creates
-    # the bind-mount target as root.
-    systemd.tmpfiles.rules = [ "d /var/lib/buildbot 0750 buildbot buildbot - -" ];
+    # buildbot-master runs as the buildbot user with /var/lib/buildbot as its
+    # home. StateDirectory makes systemd create and chown the directory during
+    # this service's own startup. systemd adds the path to RequiresMountsFor,
+    # so this is ordered after the impermanence bind-mount and the ownership
+    # fix cannot race it.
+    systemd.services.buildbot-master.serviceConfig = {
+      StateDirectory = "buildbot";
+      StateDirectoryMode = "0750";
+    };
 
-    # buildbot-master uses /var/lib/buildbot as its home; persist it across
-    # impermanence reboots.
+    # Persist the home across impermanence reboots.
     custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [
       "/var/lib/buildbot"
     ];

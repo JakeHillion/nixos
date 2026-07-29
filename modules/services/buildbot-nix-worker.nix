@@ -40,6 +40,15 @@ in
       masterUrl = cfg.masterUrl;
     };
 
+    # The worker runs as buildbot-worker with /var/lib/buildbot-worker as its
+    # home. StateDirectory has systemd create and chown it during startup,
+    # ordered after the impermanence bind-mount via RequiresMountsFor, so the
+    # ownership fix cannot race the mount.
+    systemd.services.buildbot-worker.serviceConfig = {
+      StateDirectory = "buildbot-worker";
+      StateDirectoryMode = "0750";
+    };
+
     # Impermanence support for worker
     custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [
       "/var/lib/buildbot-worker"
