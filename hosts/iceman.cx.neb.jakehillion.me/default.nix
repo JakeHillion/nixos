@@ -21,6 +21,12 @@
 
     custom.tang.enable = true;
 
+    ## Syncthing
+    custom.syncthing = {
+      enable = true;
+      baseDir = "/data/users/jake/sync";
+    };
+
     ## Networking (Hetzner dedicated server: static addressing, no DHCP)
     boot.kernel.sysctl = {
       "net.ipv4.ip_forward" = true;
