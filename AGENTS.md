@@ -313,7 +313,7 @@ This repository uses **Jujutsu (jj)** and follows a **single-commit-per-change**
 
 - Every pull request must have exactly 1 commit with a `change-id` header (added automatically by jj)
 - Use `jj amend` instead of creating fix commits
-- CI validates single-commit requirement and change-id presence
+- The Gitea Actions `commit-validation` workflow validates the single-commit requirement and change-id presence (see [Continuous Integration](#continuous-integration) for the separate build/test CI)
 
 ```bash
 # Make changes and commit with jj
@@ -322,6 +322,30 @@ jj commit -m "feat: add new service"
 # Need to fix something? Amend instead of new commit
 jj amend
 ```
+
+## Continuous Integration
+
+CI is **not** a standalone workflow file — it is driven by **buildbot-nix**, the same service whose master+worker run on the fleet (currently `iceman.cx`, configured in `modules/services/buildbot-nix-master.nix` and `buildbot-nix-worker.nix`). The Gitea Actions `commit-validation` workflow (`.gitea/workflows/commit-validation.yaml`) only enforces the single-commit + `change-id` policy; it does **not** build or test anything.
+
+### How buildbot-nix picks up this repo
+
+- buildbot-nix watches the Gitea instance for repositories carrying the `buildbot-nix` topic (`cfg.topic` in the master module, default `"buildbot-nix"`).
+- On push or PR, the master checks out the ref and runs `nix-eval-jobs --flake .#checks` to enumerate build jobs. The evaluated attribute is `checks` by default (`nix_attr_prefix` in buildbot-nix's `BuildTrigger`).
+- For each system in `services.buildbot-nix.master.buildSystems` (`[ "x86_64-linux" "aarch64-linux" ]`), every derivation under `.#checks.<system>` becomes a build pipeline that the worker builds with `nix build`.
+
+### What that means for this flake
+
+`flake.nix` defines `checks` across three `eachSystem` blocks, so a CI run builds all of:
+
+- **`formatting`** — a treefmt check (`(treefmtEval pkgs).config.build.check self`). This is the CI equivalent of `nix fmt`: treefmt runs `nixpkgs-fmt` (Nix), `gofumpt`, `black`, and `rustfmt` per `flake.nix`'s `treefmtEval`. An unformatted tree fails CI.
+- **`nixos-<fqdn>`** — the toplevel of every host whose `system` matches the build system, with `configurationRevision` zeroed. This is effectively `nix build '.#nixosConfigurations."<fqdn>".config.system.build.toplevel'` for the whole fleet, so any host that stops evaluating fails CI.
+- **`opencode-plugin`** and the **`./tests`** module tests (x86_64-linux only) — snapshot-verified NixOS module tests, regenerable via `nix run .#generate-snapshots`.
+
+Because every host's toplevel is a check, a config change that breaks *any* host — not just the one you touched — fails CI. Targeted local `nix build` for the affected host(s) is the fast feedback loop; full CI is the comprehensive one.
+
+### Relationship to ogygia.updated
+
+`ogygia.updated` (see `modules/ogygia.nix`) prefetches `checks.<system>.nixos-<fqdn>` on each host before building — the same derivations buildbot-nix builds. So the CI check attrs and the per-host warm-cache attrs are the same store paths: a passing CI build means every host's toplevel substitutes wholesale from the cache on deploy.
 
 ## Important: Nix and Git Integration
 
