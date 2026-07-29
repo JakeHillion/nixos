@@ -45,6 +45,9 @@ in
               default-command = "log";
               pager = "${lib.getExe pkgs.less} -FRX";
             };
+            revset-aliases = {
+              "immutable_heads()" = ''builtin_immutable_heads() ~ remote_bookmarks(exact:"ogygia/deployed-commits-archive")'';
+            };
             aliases = {
               submit-stack = [ "git" "push" "--change" "trunk()..@-" ];
               update-prs = [ "util" "exec" "--" "${jj-update-prs}/bin/jj-update-prs" ];
