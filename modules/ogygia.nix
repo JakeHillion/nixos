@@ -26,6 +26,7 @@ let
     "boron.cx.${domain}" = "boron.cx.jakehillion.me:4242";
     "cyclone.gw.${domain}" = "home.jakehillion.me:4242";
     "li.pop.${domain}" = "home.scott.hillion.co.uk:4242";
+    "iceman.cx.${domain}" = "iceman.cx.jakehillion.me:4242";
   };
 
   # Operator CA private key location for `ogygia nebula rekey`. Lives in the
