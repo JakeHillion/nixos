@@ -109,10 +109,6 @@
           capacity = 1;
           dockerMemoryHigh = 12 * 1024 * 1024 * 1024; # 8 GiB
         };
-        gitea.actions-vm = {
-          enable = true;
-          instances = 3;
-        };
         # Burst-to-cloud Gitea Actions runners.
         # See modules/services/gitea/actions-vm-burst/README.md.
         gitea.actions-vm-burst = {
