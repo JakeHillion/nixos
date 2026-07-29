@@ -27,6 +27,11 @@
       baseDir = "/data/users/jake/sync";
     };
 
+    # Nebula lighthouse: reachable on a fixed public UDP port.
+    networking.firewall.interfaces.eth0.allowedUDPPorts = [
+      4242 # Nebula Lighthouse
+    ];
+
     ## Networking (Hetzner dedicated server: static addressing, no DHCP)
     boot.kernel.sysctl = {
       "net.ipv4.ip_forward" = true;
