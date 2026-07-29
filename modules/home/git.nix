@@ -45,6 +45,7 @@ in
               default-command = "log";
               pager = "${lib.getExe pkgs.less} -FRX";
             };
+            remotes.origin.fetch-bookmarks = "~ogygia/deployed-commits-archive";
             aliases = {
               submit-stack = [ "git" "push" "--change" "trunk()..@-" ];
               update-prs = [ "util" "exec" "--" "${jj-update-prs}/bin/jj-update-prs" ];
