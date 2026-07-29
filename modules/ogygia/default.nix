@@ -3,7 +3,7 @@
 let
   cfg = config.custom.ogygia;
 
-  allHosts = builtins.attrNames (builtins.readDir ../hosts);
+  allHosts = builtins.attrNames (builtins.readDir ../../hosts);
   hosts = builtins.filter (h: h != "fanboy.cx.neb.jakehillion.me" && h != config.networking.fqdn) allHosts;
 
   domain = config.ogygia.domain;
@@ -65,7 +65,7 @@ in
         # Certificates + the (reused) legacy CA cert are content-addressed
         # under the flake-root `nebula/` directory, matching where the
         # `ogygia nebula` CLI reads and writes them.
-        certDir = ../nebula;
+        certDir = ../../nebula;
 
         # irisd-client is fleet-wide (every host pulls from the peer cache).
         # etcd-client follows hostinfod, the etcd publisher, so a host that

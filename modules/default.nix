@@ -15,7 +15,7 @@
     ./locations.nix
     ./networking
     ./oci-containers
-    ./ogygia.nix
+    ./ogygia
     ./profiles
     ./prometheus
     ./qnap-display.nix
