@@ -55,7 +55,6 @@ in
           nix-iris-push = [
             "slider.pop.${config.ogygia.domain}"
             "boron.cx.${config.ogygia.domain}"
-            "iceman.cx.${config.ogygia.domain}"
           ];
           ntfy = "boron.cx.${config.ogygia.domain}";
           offline-youtube = "phoenix.st.${config.ogygia.domain}";

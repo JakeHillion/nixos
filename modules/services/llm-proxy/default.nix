@@ -125,6 +125,7 @@ in
         apiKeyFile = config.age.secrets."llm-proxy/fireworks-api-key".path;
         models = {
           "moonshotai/kimi-k3" = "accounts/fireworks/models/kimi-k3";
+          "zai/glm-5.2" = "accounts/fireworks/models/glm-5p2";
         };
       };
     };
