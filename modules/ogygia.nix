@@ -177,6 +177,7 @@ in
 
         "boron-260426:Y5ndbb3OWR2hOQqC/BQKe1z2kFz9u8oLHnx22GPmKEM="
         "slider-260426:X+O6qmXb806017xciFOECVRxwNCKsMSp1nZlH4KcFpE="
+        "iceman-260729:cyLIDCaq8nrDa+IjVbWthe5CC73mzklvinulnvUyMMs="
       ];
       fallback = true;
       connect-timeout = 15;
