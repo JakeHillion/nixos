@@ -6,16 +6,18 @@
   ];
 
   config = {
-    system.stateVersion = "25.11";
+    system.stateVersion = "26.05";
 
     custom.defaults = true;
 
-    # iceman's Nebula keypair hasn't been grabbed yet, so it can't join the
-    # ogygia-managed overlay on the first deploy. Ship with Nebula disabled,
-    # then gather its pubkey, add ogygia.nebula.groups + pubKey, sign with
-    # `ogygia nebula rekey`, and drop this override. Nebula IP 172.20.0.27 is
-    # reserved in modules/dns.nix.
-    ogygia.nebula.enable = lib.mkForce false;
+    ogygia.nebula = {
+      groups = [ "legacy-full-access" ];
+      pubKey = ''
+        -----BEGIN NEBULA X25519 PUBLIC KEY-----
+        UqRL8CsYJytwXQf01N/UPGUXqgCkxdrxrjDedPmEhWQ=
+        -----END NEBULA X25519 PUBLIC KEY-----
+      '';
+    };
 
     custom.tang.enable = true;
 
