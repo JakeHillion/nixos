@@ -1,5 +1,15 @@
 # nixos
 
+### Secret management
+
+Two secret mechanisms coexist in this repo. They store, register, and rekey differently, so before working with any `.age` file identify which one it uses.
+
+**Classic agenix** — one encrypted file per recipient set, registered explicitly. The secret is referenced by a literal path (e.g. `tokenSecret = ../../modules/services/gitea/actions/boron.age`) and must be listed in `secrets.nix` with its `.publicKeys` (typically `jake_users ++ [ neb.<loc>.<host> ]`). Adding a host that needs the secret means extending that `publicKeys` list and re-encrypting.
+
+**agenix-rekey** ([oddlama/agenix-rekey](https://github.com/oddlama/agenix-rekey), configured in `modules/rekey.nix`) — a single master-encrypted source that is automatically rekeyed to each host. The secret is referenced by `rekeyFile = ./token.age` inside its module and is **not** listed in `secrets.nix`; recipients are derived from the host public keys in `modules/ssh/host-keys.nix`. Rekeyed outputs live under `secrets/rekeyed/<hostname>/`, keyed by the short hostname rather than the FQDN. Adding a host that needs the secret is just enabling the consuming module on it, then running the rekey command (which needs the master key) and committing the generated `secrets/rekeyed/<hostname>/` files.
+
+New secrets should prefer agenix-rekey where possible.
+
 ### Building Raspberry Pi images
 
 Raspberry Pi images that support headless SSH can be built as follows:
