@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+Read [README.md](README.md) for architectural context. It documents cross-cutting strategies — such as the two secret-management mechanisms — that this guide assumes.
+
 ## Build and Development Commands
 
 ```bash
@@ -107,6 +109,8 @@ When adding a new host, update `modules/dns.nix` with its Nebula IP so it is res
 ### Secret Management
 
 Secrets are managed with agenix. Place module-specific secrets (API keys, SSH keys) next to the module that uses them. Generic secrets (like Restic shared passwords) go in `/secrets/`.
+
+Two secret mechanisms coexist — classic agenix and agenix-rekey — and they are registered and rekeyed differently. See the "Secret management" section of [README.md](README.md) before adding or moving a secret.
 
 ## Coding Conventions
 
