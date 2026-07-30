@@ -3,9 +3,6 @@
 let
   cfg = config.custom.ogygia;
 
-  allHosts = builtins.attrNames (builtins.readDir ../../hosts);
-  hosts = builtins.filter (h: h != "fanboy.cx.neb.jakehillion.me" && h != config.networking.fqdn) allHosts;
-
   domain = config.ogygia.domain;
   user = config.custom.user;
 
@@ -34,6 +31,10 @@ let
   caKeyTarget = "${config.users.users.${user}.home}/local/sync/sync/keys/nebula-ca-2527.key";
 in
 {
+  imports = [
+    ./irisd.nix
+  ];
+
   options.custom.ogygia = {
     enable = lib.mkEnableOption "ogygia";
   };
@@ -44,13 +45,6 @@ in
       domain = "neb.jakehillion.me";
 
       gitRemoteUrl = "https://gitea.hillion.co.uk/JakeHillion/nixos.git";
-
-      irisd = {
-        enable = true;
-        configureNixDaemon = true;
-
-        settings.peers.urls = builtins.map (fqdn: "http://${fqdn}:35742") hosts;
-      };
 
       etcd = {
         endpoints = config.custom.services.etcd.endpoints;
@@ -67,11 +61,9 @@ in
         # `ogygia nebula` CLI reads and writes them.
         certDir = ../../nebula;
 
-        # irisd-client is fleet-wide (every host pulls from the peer cache).
         # etcd-client follows hostinfod, the etcd publisher, so a host that
         # disables it (fanboy) gets no etcd access.
-        groups = [ "irisd-client" ]
-          ++ lib.optional config.ogygia.hostinfod.enable "etcd-client";
+        groups = lib.optional config.ogygia.hostinfod.enable "etcd-client";
 
         firewall.inbound = [
           # SSH is allowed from every mesh peer, no group required. This keeps
@@ -79,10 +71,6 @@ in
           # and (unlike the group rule below) also lets groupless hosts such as
           # fanboy reach the rest of the fleet over Nebula.
           { host = "any"; port = 22; proto = "tcp"; }
-
-          # Reproduce the legacy allow-all inbound posture. Per-host cert groups
-          # live in each host's own config (see ogygia.nebula.groups there).
-          { groups = [ "irisd-client" ]; port = 35742; proto = "tcp"; }
 
           # Reproduce the legacy allow-all inbound posture. Per-host cert groups
           # live in each host's own config (see ogygia.nebula.groups there).
@@ -142,8 +130,6 @@ in
     # in place before the daemon starts rather than left to its first clone.
     systemd.tmpfiles.rules = lib.mkIf (config.ogygia.updated.enable && config.custom.impermanence.enable)
       [ "d ${config.custom.impermanence.base}/system/var/lib/ogygia-updated 0700 root root - -" ];
-
-    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/cache/private/ogygia-irisd" ];
 
     # Reuse the legacy Nebula keypair. The private key stays at its existing
     # /data/nebula/host.key (persistent, already owned by the nebula service
