@@ -214,7 +214,7 @@
               start = "10.64.50.64";
               end = "10.64.50.254";
             };
-            dnsServers = [ "1.1.1.1" "8.8.8.8" ];
+            dnsServers = [ "10.64.50.1" ];
             ntpServers = [ "10.64.50.1" ];
             internetAccess = true;
             trustedNetwork = true;
