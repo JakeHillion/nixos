@@ -68,7 +68,7 @@ in
           renovate = "iceman.cx.${config.ogygia.domain}";
           restic = "phoenix.st.${config.ogygia.domain}";
           searxng = "warlock.cx.${config.ogygia.domain}";
-          status = "boron.cx.${config.ogygia.domain}";
+          status = "iceman.cx.${config.ogygia.domain}";
           tang = [
             "boron.cx.${config.ogygia.domain}"
             "cyclone.gw.${config.ogygia.domain}"
