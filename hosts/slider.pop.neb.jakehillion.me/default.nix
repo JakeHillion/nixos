@@ -27,7 +27,6 @@
     custom.services.nix-remote-builder = {
       enable = true;
       authorizedHosts = [
-        "boron.cx.neb.jakehillion.me"
         "iceman.cx.neb.jakehillion.me"
         "maverick.cx.neb.jakehillion.me"
         "rooster.cx.neb.jakehillion.me"
