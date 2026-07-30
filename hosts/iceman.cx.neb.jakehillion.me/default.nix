@@ -21,11 +21,6 @@
 
     custom.tang.enable = true;
 
-    # One-time override so etcd joins the existing cluster instead of
-    # bootstrapping a fresh one on first boot. Remove once iceman has joined
-    # and written its data dir (etcd ignores this flag thereafter).
-    services.etcd.initialClusterState = lib.mkForce "existing";
-
     ## Gitea Actions
     custom.services.gitea.actions-vm = {
       enable = true;
