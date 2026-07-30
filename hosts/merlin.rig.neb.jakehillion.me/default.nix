@@ -131,7 +131,7 @@
     systemd.services.boot-control = {
       description = "Boot Control Service - Check Home Assistant for Windows boot preference";
       wantedBy = [ "multi-user.target" ];
-      after = [ "network-online.target" ];
+      after = [ "network-online.target" "ogygia-updated.service" ];
       wants = [ "network-online.target" ];
       serviceConfig = {
         Type = "oneshot";
@@ -168,11 +168,32 @@
         
         if [ "$STATE" = "on" ]; then
           echo "Home Assistant indicates Windows boot requested"
-          
+
+          # Force ogygia-updated to run and confirm a cycle before we hand the
+          # machine to Windows, so this host is current before it drops off the
+          # fleet. Polling covers the daemon still coming up (`tick` also exits
+          # non-zero when the socket is unreachable) and a transiently failing
+          # cycle. The attempt count bounds how long after boot this can fire:
+          # an unbounded wait would let the reboot land minutes into a NixOS
+          # session, which reads as a random reboot. If it never succeeds we
+          # reboot anyway — the Windows request takes priority over staying current.
+          echo "Forcing an ogygia update tick before rebooting to Windows..."
+          attempt=1
+          max_attempts=30
+          until ${pkgs.ogygia}/bin/ogygia update tick; do
+            if [ "$attempt" -ge "$max_attempts" ]; then
+              echo "ogygia update tick did not succeed after $max_attempts attempts, rebooting to Windows anyway"
+              break
+            fi
+            echo "ogygia update tick attempt $attempt failed, retrying in 10 seconds..."
+            attempt=$((attempt + 1))
+            sleep 10
+          done
+
           # Set Windows as next boot option
           echo "Setting Windows as next boot target..."
           ${pkgs.systemd}/bin/bootctl set-oneshot "auto-windows"
-          
+
           echo "Rebooting to Windows..."
           ${pkgs.systemd}/bin/systemctl reboot
         else
