@@ -9,7 +9,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    age.secrets."dashboard/ssh.key".file = ../../secrets/dashboard/ssh.key.age;
+    age.secrets."dashboard/ssh.key".rekeyFile = ./ssh.key.age;
 
     ogygia.dashboard = {
       enable = true;

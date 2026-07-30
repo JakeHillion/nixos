@@ -41,7 +41,7 @@
     ./renovate
     ./restic
     ./searxng
-    ./status.nix
+    ./status
     ./tang.nix
     ./unifi.nix
     ./zigbee2mqtt.nix
