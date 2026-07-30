@@ -153,6 +153,52 @@
       "185.240.111.53@53"
     ];
 
+    ## Unbound: forwarding resolver for LAN clients. Forwards everything to
+    ## Cloudflare/Google over DoT, and serves a local `unifi` record so UniFi
+    ## devices adopt to the controller on boron.
+    services.unbound = {
+      enable = true;
+      # Serve LAN clients only; leave the host's own resolver untouched.
+      resolveLocalQueries = false;
+      settings = {
+        server = {
+          interface = [ "127.0.0.1" "::1" "10.64.50.1" ];
+          access-control = [
+            "127.0.0.0/8 allow"
+            "::1 allow"
+            "10.64.50.0/24 allow"
+          ];
+          # Bind the LAN address even if it isn't up yet at start.
+          ip-freebind = true;
+          tls-cert-bundle = "/etc/ssl/certs/ca-certificates.crt";
+          hide-identity = true;
+          hide-version = true;
+
+          # Refresh popular records (and their DNSSEC keys) in the background
+          # before they expire, so hot lookups stay cache hits.
+          prefetch = true;
+          prefetch-key = true;
+
+          # UniFi devices look up the bare hostname `unifi`; point it at the
+          # controller's public name so there's no hardcoded IP here. `redirect`
+          # (not `transparent`) makes unbound resolve the CNAME target to an
+          # address rather than returning a dangling CNAME.
+          local-zone = [ ''"unifi." redirect'' ];
+          local-data = [ ''"unifi. 3600 IN CNAME unifi.hillion.co.uk."'' ];
+        };
+        forward-zone = [{
+          name = ".";
+          forward-tls-upstream = true;
+          forward-addr = [
+            "1.1.1.1@853#cloudflare-dns.com"
+            "1.0.0.1@853#cloudflare-dns.com"
+            "8.8.8.8@853#dns.google"
+            "8.8.4.4@853#dns.google"
+          ];
+        }];
+      };
+    };
+
     ## Web services and KVM reverse proxies
     services.caddy = {
       enable = true;
