@@ -75,6 +75,10 @@ in
                     id = "unaggressive-aggravating-reagent";
                     devices = allDevices;
                   };
+                  "notes" = {
+                    id = "ephemeral-exocentric-houseplant";
+                    devices = allDevices;
+                  };
                   "projects" = {
                     id = "tired-reflected-waterfall";
                     devices = allComputers;
