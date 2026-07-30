@@ -65,7 +65,7 @@ in
           privatebin = "boron.cx.${config.ogygia.domain}";
           prometheus = "boron.cx.${config.ogygia.domain}";
           radicale = "boron.cx.${config.ogygia.domain}";
-          renovate = "boron.cx.${config.ogygia.domain}";
+          renovate = "iceman.cx.${config.ogygia.domain}";
           restic = "phoenix.st.${config.ogygia.domain}";
           searxng = "warlock.cx.${config.ogygia.domain}";
           status = "boron.cx.${config.ogygia.domain}";
