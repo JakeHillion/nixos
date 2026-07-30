@@ -62,7 +62,7 @@ in
           openthread-border-router = "stinger.pop.${config.ogygia.domain}";
           openwebui = "warlock.cx.${config.ogygia.domain}";
           personal_agent = "fanboy.cx.${config.ogygia.domain}";
-          privatebin = "boron.cx.${config.ogygia.domain}";
+          privatebin = "iceman.cx.${config.ogygia.domain}";
           prometheus = "boron.cx.${config.ogygia.domain}";
           radicale = "boron.cx.${config.ogygia.domain}";
           renovate = "iceman.cx.${config.ogygia.domain}";
