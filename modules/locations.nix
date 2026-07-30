@@ -23,7 +23,6 @@ in
           async_coder = "maverick.cx.${config.ogygia.domain}";
           authoritative_dns = [
             "iceman.cx.${config.ogygia.domain}"
-            "boron.cx.${config.ogygia.domain}"
             "cyclone.gw.${config.ogygia.domain}"
             "slider.pop.${config.ogygia.domain}"
           ];
