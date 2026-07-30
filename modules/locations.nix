@@ -34,7 +34,6 @@ in
           couchdb = "warlock.cx.${config.ogygia.domain}";
           downloads = "phoenix.st.${config.ogygia.domain}";
           etcd = [
-            "boron.cx.${config.ogygia.domain}"
             "iceman.cx.${config.ogygia.domain}"
             "li.pop.${config.ogygia.domain}"
             "warlock.cx.${config.ogygia.domain}"
