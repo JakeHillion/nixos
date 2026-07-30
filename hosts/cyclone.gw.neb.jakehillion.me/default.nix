@@ -174,6 +174,11 @@
           hide-identity = true;
           hide-version = true;
 
+          # Refresh popular records (and their DNSSEC keys) in the background
+          # before they expire, so hot lookups stay cache hits.
+          prefetch = true;
+          prefetch-key = true;
+
           # UniFi devices look up the bare hostname `unifi`; point it at the
           # controller's public name so there's no hardcoded IP here. `redirect`
           # (not `transparent`) makes unbound resolve the CNAME target to an
