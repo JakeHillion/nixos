@@ -71,9 +71,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    age.secrets."renovate/environment" = {
-      file = ./environment.age;
-    };
+    age.secrets."renovate/environment".rekeyFile = ./environment.age;
 
     custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/cache/private/renovate" ];
 
