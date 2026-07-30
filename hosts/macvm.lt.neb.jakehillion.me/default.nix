@@ -31,7 +31,7 @@
 
     # Override Nebula lighthouse addresses due to DNS resolution issues
     networking.hosts = {
-      "138.201.252.214" = [ "boron.cx.jakehillion.me" ];
+      "37.27.136.99" = [ "iceman.cx.jakehillion.me" ];
       "185.240.111.53" = [ "home.jakehillion.me" ];
       "80.229.251.26" = [ "home.scott.hillion.co.uk" ];
     };
