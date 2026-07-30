@@ -80,23 +80,7 @@
         umount /reset-cache
       '';
     };
-    nix = {
-      distributedBuilds = true;
-      settings = {
-        builders-use-substitutes = true;
-        build-dir = "/cache/nix-builds/";
-      };
-      buildMachines = [{
-        hostName = "slider.pop.${config.ogygia.domain}";
-        system = "aarch64-linux";
-        protocol = "ssh-ng";
-        maxJobs = 4;
-        speedFactor = 1;
-        supportedFeatures = [ "nixos-test" "big-parallel" "kvm" ];
-        sshUser = "nix-builder";
-        sshKey = "${config.custom.impermanence.base}/system/etc/ssh/ssh_host_ed25519_key";
-      }];
-    };
+    nix.settings.build-dir = "/cache/nix-builds/";
 
     ## Custom Services
     custom = {

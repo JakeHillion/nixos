@@ -11,7 +11,7 @@ let
 
   # Core counts per worker host. Add an entry when a new worker is added.
   workerCores = {
-    "boron.cx.${config.ogygia.domain}" = 16;
+    "iceman.cx.${config.ogygia.domain}" = 32;
   };
 
   workersList = map
