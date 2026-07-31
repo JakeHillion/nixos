@@ -105,11 +105,6 @@
       };
     };
 
-    services.knot.settings.server.listen = [
-      "138.201.252.214@53"
-      "2a01:4f8:173:23d2::2@53"
-    ];
-
     ## Filesystems
     services.btrfs.autoScrub = {
       enable = true;
@@ -175,14 +170,12 @@
           allowedTCPPorts = lib.mkForce [
             22 # SSH
             3022 # SSH (Gitea) - redirected to 22
-            53 # DNS
             80 # HTTP 1-2
             443 # HTTPS 1-2
             7654 # Tang
             8080 # Unifi (inform)
           ];
           allowedUDPPorts = lib.mkForce [
-            53 # DNS
             443 # HTTP 3
             3478 # Unifi STUN
             4242 # Nebula Lighthouse

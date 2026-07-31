@@ -160,10 +160,6 @@ in
           algorithm = "ecdsap256sha256";
           ksk-lifetime = 0;
           zsk-lifetime = 0;
-          # Short DNSKEY TTL so that when the signing key changes, resolvers
-          # holding the old DNSKEY re-fetch it quickly and can validate the new
-          # signatures, keeping the validation gap short.
-          dnskey-ttl = 300;
         }];
 
         zone = [
