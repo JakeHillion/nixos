@@ -34,6 +34,14 @@ in
       message = "acme_dns_api requires authoritative_dns to be enabled";
     }];
 
+    # Let internal-TLS hosts reach the DNS-01 challenge API over Nebula. They
+    # pick up the acme-dns-client group automatically via the Caddy modules
+    # (see modules/www/nebula.nix), so this grants access without requiring the
+    # broad legacy-full-access group.
+    ogygia.nebula.firewall.inbound = [
+      { groups = [ "acme-dns-client" ]; port = "8553"; proto = "tcp"; }
+    ];
+
     systemd.services.acme-dns-api = {
       description = "ACME DNS-01 Challenge API";
       wantedBy = [ "multi-user.target" ];
