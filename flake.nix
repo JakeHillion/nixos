@@ -103,6 +103,7 @@
             gitea-actions-runner = final.unstable.gitea-actions-runner;
           };
           "llm-proxy" = final.callPackage ./pkgs/llm-proxy.nix { };
+          "unifi-os-server-image" = final.callPackage ./pkgs/unifi-os-server-image { };
         })
       ];
       mkSystem = import ./lib/mkSystem.nix { inherit inputs; };

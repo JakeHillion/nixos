@@ -8,6 +8,15 @@
       "* 2-5 * * *"
     ]
   },
+  "customDatasources": {
+    "unifi-os-server": {
+      "defaultRegistryUrlTemplate": "https://fw-update.ubnt.com/api/firmware-latest?filter=eq~~product~~unifi-os-server&filter=eq~~platform~~linux-x64&filter=eq~~channel~~release",
+      "format": "json",
+      "transformTemplates": [
+        "{ \"releases\": [ { \"version\": $substringAfter(_embedded.firmware[0].version, \"v\") } ] }"
+      ]
+    }
+  },
   "customManagers": [
     {
       "customType": "regex",
@@ -19,8 +28,29 @@
       ],
       "datasourceTemplate": "docker",
       "versioningTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/pkgs/unifi-os-server-image/source.json/"
+      ],
+      "matchStrings": [
+        "\"version\":\\s*\"(?<currentValue>[^\"]+)\""
+      ],
+      "depNameTemplate": "unifi-os-server",
+      "datasourceTemplate": "custom.unifi-os-server",
+      "versioningTemplate": "semver"
     }
   ],
+  "postUpgradeTasks": {
+    "commands": [
+      "bash scripts/update-uos-source.sh"
+    ],
+    "fileFilters": [
+      "pkgs/unifi-os-server-image/source.json"
+    ],
+    "executionMode": "update"
+  },
   "rebaseWhen": "behind-base-branch",
   "packageRules": [
     {

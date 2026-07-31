@@ -58,6 +58,7 @@ let
         "onboardingConfigFileName": "renovate.json",
         "autodiscover": true,
         "optimizeForDisabled": true,
+        "allowedCommands": ["^bash scripts/update-uos-source\\.sh$"],
         "extends": [
           "config:recommended",
           "helpers:pinGitHubActionDigests"
@@ -85,6 +86,11 @@ in
         cargo
         go
         nodejs
+
+        # Used by scripts/update-uos-source.sh (postUpgradeTask).
+        bash
+        curl
+        jq
       ];
 
       serviceConfig = {
