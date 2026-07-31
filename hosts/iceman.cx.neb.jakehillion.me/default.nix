@@ -50,9 +50,20 @@
       baseDir = "/data/users/jake/sync";
     };
 
-    # Nebula lighthouse: reachable on a fixed public UDP port.
-    networking.firewall.interfaces.eth0.allowedUDPPorts = [
-      4242 # Nebula Lighthouse
+    networking.firewall.interfaces.eth0 = {
+      allowedTCPPorts = [
+        53 # DNS
+      ];
+      allowedUDPPorts = [
+        53 # DNS
+        4242 # Nebula Lighthouse
+      ];
+    };
+
+    ## Authoritative DNS: serve the public zones from this host's public IPs.
+    services.knot.settings.server.listen = [
+      "37.27.136.99@53"
+      "2a01:4f9:3100:1048::2@53"
     ];
 
     ## Networking (Hetzner dedicated server: static addressing, no DHCP)
