@@ -110,15 +110,6 @@ in
           "zai/glm-5.1" = "glm-5.1";
         };
       };
-      opencode-go = lib.mkDefault {
-        url = "https://opencode.ai/zen/go/v1";
-        apiKeyCredential = "opencode-go-api-key";
-        apiKeyFile = config.age.secrets."llm-proxy/opencode-go-api-key".path;
-        models = {
-          "deepseek/deepseek-v4-pro" = "deepseek-v4-pro";
-          "deepseek/deepseek-v4-flash" = "deepseek-v4-flash";
-        };
-      };
       fireworks = lib.mkDefault {
         url = "https://api.fireworks.ai/inference/v1";
         apiKeyCredential = "fireworks-api-key";
@@ -126,15 +117,14 @@ in
         models = {
           "moonshotai/kimi-k3" = "accounts/fireworks/models/kimi-k3";
           "zai/glm-5.2" = "accounts/fireworks/models/glm-5p2";
+          "deepseek/deepseek-v4-pro" = "accounts/fireworks/models/deepseek-v4-pro";
+          "deepseek/deepseek-v4-flash-0731" = "accounts/fireworks/models/deepseek-v4-flash-0731";
         };
       };
     };
 
     age.secrets."llm-proxy/ollama-cloud-api-key" = {
       rekeyFile = ./ollama-cloud.age;
-    };
-    age.secrets."llm-proxy/opencode-go-api-key" = {
-      rekeyFile = ./opencode-go.age;
     };
     age.secrets."llm-proxy/fireworks-api-key" = {
       rekeyFile = ./fireworks.age;

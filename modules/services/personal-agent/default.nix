@@ -59,7 +59,7 @@ in
               name = "llm-proxy-batch60k";
               base_url = "http://127.0.0.1:9100/v1/batch/60000";
               token_file = pkgs.writeText "personal-agent-dummy-token" "unused";
-              models = [{ id = "deepseek/deepseek-v4-flash"; name = "DeepSeek V4 Flash (batch60k)"; }];
+              models = [{ id = "deepseek/deepseek-v4-flash-0731"; name = "DeepSeek V4 Flash (batch60k)"; }];
             }
           ];
         };
