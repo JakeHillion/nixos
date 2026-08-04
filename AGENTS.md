@@ -106,6 +106,12 @@ When adding a new host, update `modules/dns.nix` with its Nebula IP so it is res
 3. Create a `system` file with the architecture (e.g., `x86_64-linux`)
 4. If needed, add a `hardware-configuration.nix` file
 
+**When scaffolding from an existing host, do NOT blindly copy its values.** Some settings are point-in-time or host-specific and must be set for the new host, not inherited. In particular:
+
+- **`system.stateVersion`** must match the NixOS release the host is *first installed with* — i.e. the release the flake currently tracks (check the build output, e.g. `nixos-system-<host>-26.05...`), NOT whatever an older host happens to have pinned. Copying an old host's `stateVersion` onto a brand-new host is always wrong.
+
+Treat any copied host as a starting point, and sanity-check each value against what this specific host actually needs.
+
 ### Secret Management
 
 Secrets are managed with agenix. Place module-specific secrets (API keys, SSH keys) next to the module that uses them. Generic secrets (like Restic shared passwords) go in `/secrets/`.
