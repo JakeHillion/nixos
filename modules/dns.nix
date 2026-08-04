@@ -65,6 +65,9 @@ in
                   microserver = "172.20.0.2"; # removed 23/12/2024
                   router = "172.20.0.3";
                 };
+                io = {
+                  wolfman = "172.20.0.28";
+                };
                 jakehillion-terminals = {
                   gendry = "172.20.0.4"; # removed 18/04/2025
                 };
