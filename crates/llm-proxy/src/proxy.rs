@@ -12,7 +12,7 @@ use bytes::Bytes;
 use futures_util::StreamExt;
 use tracing::{info, warn};
 
-use crate::config::{self, Config, ResolvedProvider};
+use crate::config::{self, Config, ForwardHeaders, ResolvedProvider};
 use crate::scheduler::{Scheduler, Tier, TimedResponse};
 
 pub struct AppState {
@@ -55,14 +55,16 @@ impl AppState {
 
 pub async fn immediate_chat_completions(
     State(state): State<Arc<AppState>>,
+    headers: HeaderMap,
     body: Bytes,
 ) -> Response {
-    handle(state, Tier::Immediate, body).await
+    handle(state, Tier::Immediate, headers, body).await
 }
 
 pub async fn batch_chat_completions(
     State(state): State<Arc<AppState>>,
     Path(slack_ms): Path<String>,
+    headers: HeaderMap,
     body: Bytes,
 ) -> Response {
     let slack_ms: i64 = match slack_ms.parse() {
@@ -71,7 +73,7 @@ pub async fn batch_chat_completions(
             return error_response(StatusCode::BAD_REQUEST, "slack_ms must be a signed integer");
         }
     };
-    handle(state, Tier::Batch { slack_ms }, body).await
+    handle(state, Tier::Batch { slack_ms }, headers, body).await
 }
 
 pub async fn list_models(State(state): State<Arc<AppState>>) -> Response {
@@ -108,9 +110,9 @@ pub async fn list_models(State(state): State<Arc<AppState>>) -> Response {
     resp
 }
 
-async fn handle(state: Arc<AppState>, tier: Tier, body: Bytes) -> Response {
+async fn handle(state: Arc<AppState>, tier: Tier, headers: HeaderMap, body: Bytes) -> Response {
     let started = Instant::now();
-    let (response, ctx) = handle_inner(state, tier, body).await;
+    let (response, ctx) = handle_inner(state, tier, headers, body).await;
     log_request(tier, &ctx, &response, started.elapsed());
     response
 }
@@ -122,9 +124,15 @@ struct LogCtx {
     upstream_model: Option<String>,
     wait_ms: u64,
     hold_ms: u64,
+    forwarded_headers: usize,
 }
 
-async fn handle_inner(state: Arc<AppState>, tier: Tier, body: Bytes) -> (Response, LogCtx) {
+async fn handle_inner(
+    state: Arc<AppState>,
+    tier: Tier,
+    headers: HeaderMap,
+    body: Bytes,
+) -> (Response, LogCtx) {
     let mut ctx = LogCtx::default();
 
     let logical_model = match parse_model(&body) {
@@ -162,19 +170,24 @@ async fn handle_inner(state: Arc<AppState>, tier: Tier, body: Bytes) -> (Respons
     let client = state.http.clone();
     let api_key = provider.api_key.clone();
 
+    let forwarded = forwarded_headers(&headers, &provider.forward_headers);
+    ctx.forwarded_headers = forwarded.len();
+
     let send = || {
         let url = url.clone();
         let client = client.clone();
         let api_key = api_key.clone();
         let body_bytes = rewritten.clone();
+        let forwarded = forwarded.clone();
         async move {
-            client
+            let mut req = client
                 .post(&url)
                 .bearer_auth(&api_key)
-                .header("content-type", "application/json")
-                .body(body_bytes)
-                .send()
-                .await
+                .header("content-type", "application/json");
+            for (name, value) in &forwarded {
+                req = req.header(name, value);
+            }
+            req.body(body_bytes).send().await
         }
     };
 
@@ -213,6 +226,7 @@ fn log_request(tier: Tier, ctx: &LogCtx, response: &Response, elapsed: Duration)
         elapsed_ms = elapsed.as_millis() as u64,
         wait_ms = ctx.wait_ms,
         hold_ms = ctx.hold_ms,
+        forwarded_headers = ctx.forwarded_headers,
         "request",
     );
 }
@@ -250,6 +264,33 @@ fn forward_response(resp: reqwest::Response) -> Response {
     *response.status_mut() = status;
     *response.headers_mut() = headers;
     response
+}
+
+/// Select the client request headers to forward upstream, honouring the
+/// provider's `forward_headers` policy. Proxy-owned headers (authorization,
+/// host, content-type, content-length, hop-by-hop) are never forwarded
+/// regardless of policy — the proxy sets those itself.
+fn forwarded_headers(
+    headers: &HeaderMap,
+    policy: &ForwardHeaders,
+) -> Vec<(HeaderName, HeaderValue)> {
+    headers
+        .iter()
+        .filter(|(name, _)| {
+            let name = name.as_str().to_ascii_lowercase();
+            !is_proxy_owned_header(&name) && policy.allows(&name)
+        })
+        .map(|(name, value)| (name.clone(), value.clone()))
+        .collect()
+}
+
+/// Headers the proxy owns end-to-end and must never accept from the client.
+fn is_proxy_owned_header(name: &str) -> bool {
+    is_hop_header(name)
+        || matches!(
+            name,
+            "authorization" | "host" | "content-type" | "content-length"
+        )
 }
 
 fn is_hop_header(name: &str) -> bool {

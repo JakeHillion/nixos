@@ -18,6 +18,7 @@ let
         url = p.url;
         api_key_credential = p.apiKeyCredential;
         models = p.models;
+        forward_headers = p.forwardHeaders;
       })
       cfg.providers;
   };
@@ -92,6 +93,17 @@ in
             description = "Mapping of logical model name -> upstream model name.";
             default = { };
           };
+          forwardHeaders = lib.mkOption {
+            type = lib.types.either lib.types.bool (lib.types.listOf lib.types.str);
+            default = false;
+            description = ''
+              Client request headers to forward upstream. false forwards none,
+              true forwards all, or a list allowlists specific header names
+              (compared case-insensitively). Proxy-owned headers (Authorization,
+              Host, Content-Type, Content-Length, hop-by-hop) are never
+              forwarded regardless of this setting.
+            '';
+          };
         };
       });
     };
@@ -114,6 +126,10 @@ in
         url = "https://api.fireworks.ai/inference/v1";
         apiKeyCredential = "fireworks-api-key";
         apiKeyFile = config.age.secrets."llm-proxy/fireworks-api-key".path;
+        forwardHeaders = [
+          "x-multi-turn-session-id"
+          "x-session-affinity"
+        ];
         models = {
           "moonshotai/kimi-k3" = "accounts/fireworks/models/kimi-k3";
           "zai/glm-5.2" = "accounts/fireworks/models/glm-5p2";
