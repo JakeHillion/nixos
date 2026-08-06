@@ -61,6 +61,38 @@ pub struct ProviderConfig {
     pub url: String,
     pub api_key_credential: String,
     pub models: HashMap<String, String>,
+    #[serde(default)]
+    pub forward_headers: ForwardHeaders,
+}
+
+/// Which client request headers to forward upstream. Proxy-owned headers
+/// (authorization, host, content-type, content-length, hop-by-hop) are
+/// stripped separately and never forwarded regardless of this setting.
+#[derive(Debug, Clone, Deserialize)]
+#[serde(untagged)]
+pub enum ForwardHeaders {
+    /// `true` forwards all client headers; `false` forwards none.
+    All(bool),
+    /// Forward only these header names (compared case-insensitively).
+    List(Vec<String>),
+}
+
+impl Default for ForwardHeaders {
+    fn default() -> Self {
+        ForwardHeaders::All(false)
+    }
+}
+
+impl ForwardHeaders {
+    /// Whether the client header `name` is a forwarding candidate. `name` is
+    /// compared case-insensitively. The proxy-owned deny-list is applied by
+    /// the caller.
+    pub fn allows(&self, name: &str) -> bool {
+        match self {
+            ForwardHeaders::All(b) => *b,
+            ForwardHeaders::List(names) => names.iter().any(|n| n.eq_ignore_ascii_case(name)),
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -68,6 +100,7 @@ pub struct ResolvedProvider {
     pub url: String,
     pub api_key: String,
     pub models: HashMap<String, String>,
+    pub forward_headers: ForwardHeaders,
 }
 
 pub fn load(path: &str) -> Result<Config> {
@@ -93,6 +126,7 @@ pub fn resolve_provider(cfg: &ProviderConfig) -> Result<ResolvedProvider> {
         url: cfg.url.trim_end_matches('/').to_string(),
         api_key,
         models: cfg.models.clone(),
+        forward_headers: cfg.forward_headers.clone(),
     })
 }
 

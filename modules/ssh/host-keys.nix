@@ -23,6 +23,9 @@ rec {
           home = {
             router = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAlCj/i2xprN6h0Ik2tthOJQy6Qwq3Ony73+yfbHYTFu root@router";
           };
+          io = {
+            wolfman = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPcpqasJQvksJ0QNKBUq+nK4yJYwrFuwYJOmTNwmZQRb root@wolfman";
+          };
           lt = {
             be = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILV3OSUT+cqFqrFHZGfn7/xi5FW3n1qjUFy8zBbYs2Sm root@be";
             bob = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBZHzsley+mbIio2UHmmraS0lHnYTwAKb3aOCfi/veoZ root@bob";
