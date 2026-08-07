@@ -45,7 +45,7 @@ in
         };
 
         llm = {
-          default_model = "GPT 5.6 Terra (immediate)";
+          default_model = "DeepSeek V4 Pro (immediate)";
           batch_model = "DeepSeek V4 Flash (batch60k)";
 
           providers = [
@@ -53,7 +53,7 @@ in
               name = "llm-proxy-immediate";
               base_url = "http://127.0.0.1:9100/v1/immediate";
               token_file = pkgs.writeText "personal-agent-dummy-token" "unused";
-              models = [{ id = "openai/gpt-5.6-terra"; name = "GPT 5.6 Terra (immediate)"; }];
+              models = [{ id = "deepseek/deepseek-v4-pro"; name = "DeepSeek V4 Pro (immediate)"; }];
             }
             {
               name = "llm-proxy-batch60k";
@@ -65,12 +65,6 @@ in
         };
 
         memory.nightly.enabled = true;
-
-        tick = {
-          enabled = true;
-          interval_minutes = 25;
-          jitter_seconds = 180;
-        };
 
         calendar = {
           private = {
