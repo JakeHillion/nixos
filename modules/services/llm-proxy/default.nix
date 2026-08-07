@@ -111,6 +111,14 @@ in
 
   config = lib.mkIf cfg.enable {
     custom.services.llm_proxy.providers = {
+      digitalocean = lib.mkDefault {
+        url = "https://inference.do-ai.run";
+        apiKeyCredential = "digitalocean-api-key";
+        apiKeyFile = config.age.secrets."llm-proxy/digitalocean-api-key".path;
+        models = {
+          "openai/gpt-5.6-terra" = "openai-gpt-5.6-terra";
+        };
+      };
       ollama-cloud = lib.mkDefault {
         url = "https://ollama.com/v1";
         apiKeyCredential = "ollama-cloud-api-key";
@@ -139,6 +147,9 @@ in
       };
     };
 
+    age.secrets."llm-proxy/digitalocean-api-key" = {
+      rekeyFile = ./digitalocean.age;
+    };
     age.secrets."llm-proxy/ollama-cloud-api-key" = {
       rekeyFile = ./ollama-cloud.age;
     };
