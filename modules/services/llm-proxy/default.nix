@@ -147,6 +147,15 @@ in
           "deepseek/deepseek-v4-flash-0731" = "accounts/fireworks/models/deepseek-v4-flash-0731";
         };
       };
+      openai = lib.mkDefault {
+        url = "https://api.openai.com/v1";
+        apiKeyCredential = "openai";
+        apiKeyFile = config.age.secrets."llm-proxy/openai-api-key".path;
+        responses = true;
+        models = {
+          "openai/gpt-5.6-terra" = "gpt-5.6-terra";
+        };
+      };
     };
 
     age.secrets."llm-proxy/ollama-cloud-api-key" = {
@@ -154,6 +163,9 @@ in
     };
     age.secrets."llm-proxy/fireworks-api-key" = {
       rekeyFile = ./fireworks.age;
+    };
+    age.secrets."llm-proxy/openai-api-key" = {
+      rekeyFile = ./openai.age;
     };
 
     systemd.services.llm-proxy = {
