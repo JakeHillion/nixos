@@ -63,6 +63,10 @@ pub struct ProviderConfig {
     pub models: HashMap<String, String>,
     #[serde(default)]
     pub forward_headers: ForwardHeaders,
+    /// Whether this provider exposes the `/responses` endpoint. Requests to the
+    /// responses routes are rejected for providers without it.
+    #[serde(default)]
+    pub responses: bool,
 }
 
 /// Which client request headers to forward upstream. Proxy-owned headers
@@ -101,6 +105,7 @@ pub struct ResolvedProvider {
     pub api_key: String,
     pub models: HashMap<String, String>,
     pub forward_headers: ForwardHeaders,
+    pub responses: bool,
 }
 
 pub fn load(path: &str) -> Result<Config> {
@@ -127,6 +132,7 @@ pub fn resolve_provider(cfg: &ProviderConfig) -> Result<ResolvedProvider> {
         api_key,
         models: cfg.models.clone(),
         forward_headers: cfg.forward_headers.clone(),
+        responses: cfg.responses,
     })
 }
 

@@ -15,6 +15,23 @@ use tracing::{info, warn};
 use crate::config::{self, Config, ForwardHeaders, ResolvedProvider};
 use crate::scheduler::{Scheduler, Tier, TimedResponse};
 
+/// Upstream API surface a request targets. Both carry a top-level `model`
+/// field, so the proxy handles them identically apart from the upstream path.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Endpoint {
+    ChatCompletions,
+    Responses,
+}
+
+impl Endpoint {
+    fn path(self) -> &'static str {
+        match self {
+            Endpoint::ChatCompletions => "chat/completions",
+            Endpoint::Responses => "responses",
+        }
+    }
+}
+
 pub struct AppState {
     pub bind: SocketAddr,
     pub scheduler: Scheduler,
@@ -58,7 +75,14 @@ pub async fn immediate_chat_completions(
     headers: HeaderMap,
     body: Bytes,
 ) -> Response {
-    handle(state, Tier::Immediate, headers, body).await
+    handle(
+        state,
+        Endpoint::ChatCompletions,
+        Tier::Immediate,
+        headers,
+        body,
+    )
+    .await
 }
 
 pub async fn batch_chat_completions(
@@ -73,7 +97,44 @@ pub async fn batch_chat_completions(
             return error_response(StatusCode::BAD_REQUEST, "slack_ms must be a signed integer");
         }
     };
-    handle(state, Tier::Batch { slack_ms }, headers, body).await
+    handle(
+        state,
+        Endpoint::ChatCompletions,
+        Tier::Batch { slack_ms },
+        headers,
+        body,
+    )
+    .await
+}
+
+pub async fn immediate_responses(
+    State(state): State<Arc<AppState>>,
+    headers: HeaderMap,
+    body: Bytes,
+) -> Response {
+    handle(state, Endpoint::Responses, Tier::Immediate, headers, body).await
+}
+
+pub async fn batch_responses(
+    State(state): State<Arc<AppState>>,
+    Path(slack_ms): Path<String>,
+    headers: HeaderMap,
+    body: Bytes,
+) -> Response {
+    let slack_ms: i64 = match slack_ms.parse() {
+        Ok(n) => n,
+        Err(_) => {
+            return error_response(StatusCode::BAD_REQUEST, "slack_ms must be a signed integer");
+        }
+    };
+    handle(
+        state,
+        Endpoint::Responses,
+        Tier::Batch { slack_ms },
+        headers,
+        body,
+    )
+    .await
 }
 
 pub async fn list_models(State(state): State<Arc<AppState>>) -> Response {
@@ -110,10 +171,16 @@ pub async fn list_models(State(state): State<Arc<AppState>>) -> Response {
     resp
 }
 
-async fn handle(state: Arc<AppState>, tier: Tier, headers: HeaderMap, body: Bytes) -> Response {
+async fn handle(
+    state: Arc<AppState>,
+    endpoint: Endpoint,
+    tier: Tier,
+    headers: HeaderMap,
+    body: Bytes,
+) -> Response {
     let started = Instant::now();
-    let (response, ctx) = handle_inner(state, tier, headers, body).await;
-    log_request(tier, &ctx, &response, started.elapsed());
+    let (response, ctx) = handle_inner(state, endpoint, tier, headers, body).await;
+    log_request(endpoint, tier, &ctx, &response, started.elapsed());
     response
 }
 
@@ -129,6 +196,7 @@ struct LogCtx {
 
 async fn handle_inner(
     state: Arc<AppState>,
+    endpoint: Endpoint,
     tier: Tier,
     headers: HeaderMap,
     body: Bytes,
@@ -161,12 +229,22 @@ async fn handle_inner(
         .get(&provider_name)
         .expect("model_index points at a known provider");
 
+    if endpoint == Endpoint::Responses && !provider.responses {
+        return (
+            error_response(
+                StatusCode::BAD_REQUEST,
+                &format!("model {logical_model:?} does not support the responses endpoint"),
+            ),
+            ctx,
+        );
+    }
+
     let rewritten = match rewrite_model(&body, &upstream_model) {
         Ok(v) => v,
         Err(e) => return (error_response(StatusCode::BAD_REQUEST, &e.to_string()), ctx),
     };
 
-    let url = format!("{}/chat/completions", provider.url);
+    let url = format!("{}/{}", provider.url, endpoint.path());
     let client = state.http.clone();
     let api_key = provider.api_key.clone();
 
@@ -212,12 +290,19 @@ async fn handle_inner(
     (forward_response(timed.response), ctx)
 }
 
-fn log_request(tier: Tier, ctx: &LogCtx, response: &Response, elapsed: Duration) {
+fn log_request(
+    endpoint: Endpoint,
+    tier: Tier,
+    ctx: &LogCtx,
+    response: &Response,
+    elapsed: Duration,
+) {
     let tier_str = match tier {
         Tier::Immediate => "immediate".to_string(),
         Tier::Batch { slack_ms } => format!("batch:{slack_ms}"),
     };
     info!(
+        endpoint = endpoint.path(),
         tier = %tier_str,
         logical_model = ctx.logical_model.as_deref().unwrap_or("-"),
         provider = ctx.provider.as_deref().unwrap_or("-"),

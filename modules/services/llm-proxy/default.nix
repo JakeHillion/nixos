@@ -19,6 +19,7 @@ let
         api_key_credential = p.apiKeyCredential;
         models = p.models;
         forward_headers = p.forwardHeaders;
+        responses = p.responses;
       })
       cfg.providers;
   };
@@ -104,6 +105,15 @@ in
               forwarded regardless of this setting.
             '';
           };
+          responses = lib.mkOption {
+            type = lib.types.bool;
+            default = false;
+            description = ''
+              Whether this provider exposes the /responses endpoint. When false,
+              requests to the /v1/immediate/responses and /v1/batch/*/responses
+              routes for this provider's models are rejected.
+            '';
+          };
         };
       });
     };
@@ -141,6 +151,7 @@ in
         url = "https://api.openai.com/v1";
         apiKeyCredential = "openai";
         apiKeyFile = config.age.secrets."llm-proxy/openai-api-key".path;
+        responses = true;
         models = {
           "openai/gpt-5.6-terra" = "gpt-5.6-terra";
         };
