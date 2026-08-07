@@ -36,6 +36,14 @@ async fn main() -> Result<()> {
             axum::routing::post(proxy::batch_chat_completions),
         )
         .route(
+            "/v1/immediate/responses",
+            axum::routing::post(proxy::immediate_responses),
+        )
+        .route(
+            "/v1/batch/{slack_ms}/responses",
+            axum::routing::post(proxy::batch_responses),
+        )
+        .route(
             "/v1/immediate/models",
             axum::routing::get(proxy::list_models),
         )
