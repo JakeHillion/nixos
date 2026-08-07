@@ -112,7 +112,7 @@ in
   config = lib.mkIf cfg.enable {
     custom.services.llm_proxy.providers = {
       digitalocean = lib.mkDefault {
-        url = "https://inference.do-ai.run";
+        url = "https://inference.do-ai.run/v1";
         apiKeyCredential = "digitalocean-api-key";
         apiKeyFile = config.age.secrets."llm-proxy/digitalocean-api-key".path;
         models = {
