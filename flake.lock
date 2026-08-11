@@ -972,15 +972,16 @@
         "treefmt-nix": "treefmt-nix_10"
       },
       "locked": {
-        "lastModified": 1786266284,
-        "narHash": "sha256-AyP9Anv7c3+RMTwheQwCWMHQTdX5uk12ZVeo+cl0ios=",
-        "ref": "refs/heads/main",
-        "rev": "cb013791f35394dea650e01004c2bf58e1528e00",
-        "revCount": 106,
+        "lastModified": 1786410313,
+        "narHash": "sha256-GJLeg4AUS1PIMTsGS3ccfVIjjz1IbYYXwY6xEWqP/sc=",
+        "ref": "feature/lwvllkqwlwps",
+        "rev": "70c996be4f0026edc1cdbb88b2ed2d6132d2a62e",
+        "revCount": 107,
         "type": "git",
         "url": "https://gitea.hillion.co.uk/JakeHillion/personal-agent.git"
       },
       "original": {
+        "ref": "feature/lwvllkqwlwps",
         "type": "git",
         "url": "https://gitea.hillion.co.uk/JakeHillion/personal-agent.git"
       }

@@ -46,7 +46,7 @@
     magicbluetoothd.url = "git+https://gitea.hillion.co.uk/JakeHillion/magicbluetoothd.git";
     magicbluetoothd.inputs.nixpkgs.follows = "nixpkgs";
 
-    personal-agent.url = "git+https://gitea.hillion.co.uk/JakeHillion/personal-agent.git";
+    personal-agent.url = "git+https://gitea.hillion.co.uk/JakeHillion/personal-agent.git?ref=feature/lwvllkqwlwps";
     personal-agent.inputs.nixpkgs.follows = "nixpkgs";
 
     qnaplcd-menu.url = "github:stephenhouser/QnapLCD-Menu";
