@@ -101,6 +101,7 @@ let
     @                                 86400 A 185.240.111.53
 
     homeassistant.iot                  21600 CNAME stinger.iot.${homeDomain}.
+    hearthd.iot                        21600 CNAME stinger.iot.${homeDomain}.
 
   '' + (makeRecords "A" config.custom.dns.authoritative.ipv4.me.jakehillion.home);
 
