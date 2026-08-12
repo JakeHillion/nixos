@@ -9,13 +9,6 @@ let
     in
     if builtins.isList authDns then builtins.head authDns else authDns;
 
-  # IoT clients permitted to reach the Home Assistant vhost.
-  hassAllowedClients = [
-    "10.239.19.4" # hallway-wall-tablet
-    "10.239.19.14" # fph-sat1-lr
-    "10.239.19.16" # bedroom-portal
-  ];
-
   # Override the nixpkgs ecoflow_cloud (pinned to v1.4.1) with the latest
   # tagged release, which adds Wave 3 support. Drop this once nixpkgs ships a
   # release >= 1.5.0.
@@ -122,7 +115,7 @@ in
                 }
               }
 
-              @blocked not remote_ip ${lib.concatStringsSep " " hassAllowedClients}
+              @blocked not remote_ip 10.239.19.4 10.239.19.14
               respond @blocked "<h1>Access Denied</h1>" 403
 
               reverse_proxy http://localhost:8123
@@ -226,13 +219,9 @@ in
                 { type = "homeassistant"; }
                 {
                   type = "trusted_networks";
-                  trusted_networks = [
-                    "10.239.19.4/32"
-                    "10.239.19.16/32"
-                  ];
+                  trusted_networks = [ "10.239.19.4/32" ];
                   trusted_users = {
                     "10.239.19.4" = "fb4979873ecb480d9e3bb336250fa344";
-                    "10.239.19.16" = "fb4979873ecb480d9e3bb336250fa344";
                   };
                   allow_bypass_login = true;
                 }
