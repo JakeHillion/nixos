@@ -47,6 +47,11 @@ in
 
     services.home-assistant.configDir = lib.mkIf config.custom.impermanence.enable (lib.mkOverride 999 "/data/home-assistant");
 
+    # Static files served at /local/ by Home Assistant's built-in http server.
+    systemd.tmpfiles.rules = [
+      "L+ ${config.services.home-assistant.configDir}/www - - - - ${./www}"
+    ];
+
     custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/lib/private/matter-server" ];
 
     age.secrets = {
