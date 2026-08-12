@@ -1,8 +1,0 @@
-{
-  "template": "488fd35fe0afcea430352aba12766ce6bca023bbf76e3ef5b027ae17a32281bf",
-  "refresh_interval": 10,
-  "state": {
-    "tz": "Europe/London",
-    "weather": { "here": { "temp_c": 12.4, "condition": "partly_cloudy" } }
-  }
-}

@@ -47,13 +47,6 @@ in
 
     services.home-assistant.configDir = lib.mkIf config.custom.impermanence.enable (lib.mkOverride 999 "/data/home-assistant");
 
-    # Static files served at /local/static/ by Home Assistant's built-in http
-    # server. Symlinked into a subdirectory rather than replacing www/ itself,
-    # which HA manages (e.g. www/nixos-lovelace-modules).
-    systemd.tmpfiles.rules = [
-      "L+ ${config.services.home-assistant.configDir}/www/static - - - - ${./www}"
-    ];
-
     custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/lib/private/matter-server" ];
 
     age.secrets = {

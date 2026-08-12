@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   cfg = config.custom.services.hearthd;
@@ -13,6 +13,11 @@ let
   hearthdAllowedClients = [
     "10.239.19.16" # bedroom-portal
   ];
+
+  # Portal dashboard server: serves /state and /template/<hash> for Portals,
+  # pulling live light state from the colocated hearthd. Exposed on the IoT
+  # vhost under /extra/portals/ (see caddy below).
+  portalsPort = 8566;
 in
 {
   options.custom.services.hearthd = {
@@ -50,8 +55,34 @@ in
           @blocked not remote_ip ${lib.concatStringsSep " " hearthdAllowedClients}
           respond @blocked "<h1>Access Denied</h1>" 403
 
-          reverse_proxy http://127.0.0.1:8565
+          handle_path /extra/portals/* {
+            reverse_proxy http://127.0.0.1:${toString portalsPort}
+          }
+
+          handle {
+            reverse_proxy http://127.0.0.1:8565
+          }
         '';
+      };
+    };
+
+    systemd.services.hearthd-portals = {
+      description = "hearthd portal dashboard server";
+      wantedBy = [ "multi-user.target" ];
+      after = [ "network.target" "hearthd.service" ];
+      serviceConfig = {
+        ExecStart = "${pkgs.python3}/bin/python3 ${./portals/serve.py} ${./portals/template.json} --host 127.0.0.1 --port ${toString portalsPort} --hearthd http://127.0.0.1:8565";
+        DynamicUser = true;
+        Restart = "on-failure";
+        RestartSec = 5;
+
+        # Hardening: the server reads only its Nix-store template and talks to
+        # the local hearthd over loopback, so lock everything else down.
+        ProtectSystem = "strict";
+        ProtectHome = true;
+        PrivateTmp = true;
+        NoNewPrivileges = true;
+        RestrictAddressFamilies = [ "AF_INET" "AF_INET6" ];
       };
     };
 
