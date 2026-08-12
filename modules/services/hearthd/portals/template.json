@@ -4,50 +4,52 @@
     "type": "carousel",
     "pages": [
       {
-        "title": "Clock",
+        "title": "Welcome",
         "child": {
-          "type": "clock",
-          "show_seconds": false,
-          "timezone": "Europe/London"
-        }
-      },
-      {
-        "title": "Lights",
-        "child": {
-          "type": "light_group",
-          "title": "Lights",
-          "source": { "$": "lights" },
-          "on_targets": [
-            "light.0xf0d1b8000018e736"
-          ],
-          "lights": [
+          "type": "grid",
+          "children": [
             {
-              "entity_id": "light.0xf0d1b80000190215",
-              "name": "Light",
-              "endpoint": 1,
-              "dimmable": true,
-              "color": false
+              "type": "light_group",
+              "title": "Lights",
+              "source": { "$": "lights" },
+              "on_targets": [
+                "light.0xf0d1b8000018e736"
+              ],
+              "lights": [
+                {
+                  "entity_id": "light.0xf0d1b80000190215",
+                  "name": "Light",
+                  "endpoint": 1,
+                  "dimmable": true,
+                  "color": false
+                },
+                {
+                  "entity_id": "light.0xf0d1b80000190278",
+                  "name": "Cubby",
+                  "endpoint": 1,
+                  "dimmable": true,
+                  "color": false
+                },
+                {
+                  "entity_id": "light.0xf0d1b8000018e736",
+                  "name": "Lamp",
+                  "endpoint": 1,
+                  "dimmable": true,
+                  "color": false
+                },
+                {
+                  "entity_id": "light.0x001788010d1a6cae",
+                  "name": "Hue",
+                  "endpoint": 1,
+                  "dimmable": true,
+                  "color": false
+                }
+              ]
             },
             {
-              "entity_id": "light.0xf0d1b80000190278",
-              "name": "Cubby",
-              "endpoint": 1,
-              "dimmable": true,
-              "color": false
-            },
-            {
-              "entity_id": "light.0xf0d1b8000018e736",
-              "name": "Lamp",
-              "endpoint": 1,
-              "dimmable": true,
-              "color": false
-            },
-            {
-              "entity_id": "light.0x001788010d1a6cae",
-              "name": "Hue",
-              "endpoint": 1,
-              "dimmable": true,
-              "color": false
+              "type": "clock",
+              "show_seconds": false,
+              "timezone": "Europe/London"
             }
           ]
         }
