@@ -432,11 +432,6 @@
                 hwAddress = "52:78:7d:d7:1a:5c";
                 dhcpReservation = true;
               };
-              "16" = {
-                hostname = "bedroom-portal";
-                hwAddress = "a4:0e:2b:52:ec:e0";
-                dhcpReservation = true;
-              };
             };
           };
 

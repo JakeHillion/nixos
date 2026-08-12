@@ -66,6 +66,86 @@ in
         OG_PASSTHROUGH = true;
         WEBMASTER_EMAIL = "jake@hillion.co.uk";
       };
+      # A custom botPolicy replaces Anubis' baked-in policy wholesale (the module
+      # does not merge the two), so re-import the upstream default set and layer
+      # one rule on top. Anubis' own headless-browser rule anchors on the string
+      # "LightPanda", but the scraper hammering us identifies as "Lightpanda/1.0",
+      # so that rule never matches and the bot is served in full. Match the
+      # user-agent case-insensitively and weigh it into the proof-of-work
+      # challenge tier: it arrives from thousands of cookie-less IPs, so a
+      # challenge it never carries forward is enough to keep it off the backend.
+      botPolicy = {
+        bots = [
+          {
+            name = "lightpanda";
+            user_agent_regex = "(?i)^lightpanda/";
+            action = "WEIGH";
+            weight.adjust = 20;
+          }
+          { import = "(data)/meta/default-config.yaml"; }
+        ];
+        dnsbl = false;
+        status_codes = {
+          CHALLENGE = 200;
+          DENY = 200;
+        };
+        store = {
+          backend = "memory";
+          parameters = { };
+        };
+        thresholds = [
+          {
+            name = "minimal-suspicion";
+            expression = "weight <= 0";
+            action = "ALLOW";
+          }
+          {
+            name = "mild-suspicion";
+            expression.all = [
+              "weight > 0"
+              "weight < 10"
+            ];
+            action = "CHALLENGE";
+            challenge = {
+              algorithm = "metarefresh";
+              difficulty = 1;
+            };
+          }
+          {
+            name = "moderate-suspicion";
+            expression.all = [
+              "weight >= 10"
+              "weight < 20"
+            ];
+            action = "CHALLENGE";
+            challenge = {
+              algorithm = "fast";
+              difficulty = 2;
+            };
+          }
+          {
+            name = "mild-proof-of-work";
+            expression.all = [
+              "weight >= 20"
+              "weight < 30"
+            ];
+            action = "CHALLENGE";
+            challenge = {
+              algorithm = "fast";
+              difficulty = 4;
+            };
+          }
+          {
+            name = "extreme-suspicion";
+            expression = "weight >= 30";
+            action = "CHALLENGE";
+            challenge = {
+              algorithm = "fast";
+              difficulty = 6;
+            };
+          }
+        ];
+      };
     };
 
     services.gitea = {

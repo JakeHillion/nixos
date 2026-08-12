@@ -4,10 +4,6 @@ Bookmarks are re-derived from the same revset and bookmark template that
 `jj submit-stack` pushes with, so the two can never disagree about which
 branches are in play. A branch with no open pull request is reported and
 skipped rather than treated as an error.
-
-Gitea and GitHub are both supported; the forge is picked from the host in
-the remote URL. Gitea reads its token from the tea config, GitHub from the
-gh CLI.
 """
 
 import argparse
@@ -23,8 +19,6 @@ import urllib.request
 import yaml
 
 TEA_CONFIG = "~/.config/tea/config.yml"
-GITHUB_HOST = "github.com"
-GITHUB_API = "https://api.github.com"
 USER_AGENT = "jj-update-prs"
 STACK_REVSET = "trunk()..@-"
 DEFAULT_BOOKMARK_TEMPLATE = '"push-" ++ change_id.short()'
@@ -41,10 +35,7 @@ class Error(Exception):
 
 
 def capture(*args):
-    try:
-        proc = subprocess.run(args, capture_output=True, text=True)
-    except FileNotFoundError:
-        raise Error(f"`{args[0]}` is not installed")
+    proc = subprocess.run(args, capture_output=True, text=True)
     if proc.returncode != 0:
         detail = proc.stderr.strip() or proc.stdout.strip()
         raise Error(f"`{' '.join(args)}` failed:\n{detail}")
@@ -140,24 +131,19 @@ def find_login(host):
     )
 
 
-class Forge:
-    """The slice of the pull request API that Gitea and GitHub share."""
-
-    accept = "application/json"
-    page_size_param = "limit"
-
-    def __init__(self, base, token, owner, repo):
-        self.base = base
-        self.token = token
+class Gitea:
+    def __init__(self, login, owner, repo):
+        self.base = login["url"].rstrip("/")
+        self.token = login["token"]
         self.owner = owner
         self.repo = repo
 
     def _request(self, method, path, payload=None):
-        url = f"{self.base}/repos/{self.owner}/{self.repo}{path}"
+        url = f"{self.base}/api/v1/repos/{self.owner}/{self.repo}{path}"
         data = None if payload is None else json.dumps(payload).encode()
         request = urllib.request.Request(url, data=data, method=method)
         request.add_header("Authorization", f"token {self.token}")
-        request.add_header("Accept", self.accept)
+        request.add_header("Accept", "application/json")
         # Cloudflare's bot rules 403 urllib's default User-Agent.
         request.add_header("User-Agent", USER_AGENT)
         if data is not None:
@@ -172,17 +158,14 @@ class Forge:
             raise Error(f"{method} {url} failed: {exc.reason}")
 
     def pulls_by_head(self):
-        """Map branch name to pull request, ignoring pulls from forks."""
-        origin = f"{self.owner}/{self.repo}".lower()
         found = {}
         for page in range(1, MAX_PAGES + 1):
-            query = f"?state=open&{self.page_size_param}={PAGE_SIZE}"
-            batch = self._request("GET", f"/pulls{query}&page={page}")
+            query = f"?state=open&limit={PAGE_SIZE}&page={page}"
+            batch = self._request("GET", f"/pulls{query}")
             for pull in batch:
-                head = pull.get("head") or {}
-                source = (head.get("repo") or {}).get("full_name") or ""
-                if head.get("ref") and source.lower() == origin:
-                    found.setdefault(head["ref"], pull)
+                head = (pull.get("head") or {}).get("ref")
+                if head:
+                    found.setdefault(head, pull)
             if len(batch) < PAGE_SIZE:
                 break
         return found
@@ -196,28 +179,6 @@ class Forge:
                 "body": body,
             },
         )
-
-
-class Gitea(Forge):
-    def __init__(self, host, owner, repo):
-        login = find_login(host)
-        base = f"{login['url'].rstrip('/')}/api/v1"
-        super().__init__(base, login["token"], owner, repo)
-
-
-class GitHub(Forge):
-    accept = "application/vnd.github+json"
-    page_size_param = "per_page"
-
-    def __init__(self, host, owner, repo):
-        token = capture("gh", "auth", "token", "--hostname", host).strip()
-        super().__init__(GITHUB_API, token, owner, repo)
-
-
-def forge_for(host, owner, repo):
-    if host_key(host) == GITHUB_HOST:
-        return GitHub(GITHUB_HOST, owner, repo)
-    return Gitea(host, owner, repo)
 
 
 def main():
@@ -252,7 +213,7 @@ def main():
         return 0
 
     host, owner, repo = parse_remote(remote_url(args.remote))
-    forge = forge_for(host, owner, repo)
+    forge = Gitea(find_login(host), owner, repo)
     pulls = forge.pulls_by_head()
 
     for bookmark, description in commits:
