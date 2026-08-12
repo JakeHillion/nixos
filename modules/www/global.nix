@@ -91,7 +91,7 @@ in
 
           @expensive {
             not method POST
-            path_regexp ^/[^/]+/[^/]+/(blame|commits|commit|compare|graph|activity|search|src/commit|raw/commit|tree-view)(/.*)?$
+            path_regexp ^/[^/]+/[^/]+/(blame|commits|commit|compare|graph|activity|search|src/commit|raw/commit)(/.*)?$
           }
           reverse_proxy @expensive http://${locations.services.gitea}:8923 {
             header_up X-Real-IP {http.request.header.Cf-Connecting-Ip}
