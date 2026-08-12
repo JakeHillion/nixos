@@ -7,7 +7,7 @@
         "title": "Clock",
         "child": {
           "type": "clock",
-          "show_seconds": true,
+          "show_seconds": false,
           "timezone": { "$": "tz" }
         }
       },
