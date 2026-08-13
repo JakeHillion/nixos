@@ -1,66 +1,85 @@
 {
   "version": 1,
   "root": {
-    "type": "carousel",
-    "pages": [
-      {
-        "title": "Welcome",
-        "child": {
-          "type": "grid",
-          "children": [
-            {
-              "type": "light_group",
-              "title": "Lights",
-              "source": { "$": "lights" },
-              "on_targets": [
-                "light.0xf0d1b8000018e736"
-              ],
-              "lights": [
+    "type": "ambient_screensaver",
+    "threshold_lux": 10,
+    "dwell_seconds": 8,
+    "timezone": "Europe/London",
+    "child": {
+      "type": "photo_screensaver",
+      "timezone": "Europe/London",
+      "weather": { "temp_c": 12.4, "condition": "partly_cloudy" },
+      "dwell_seconds": 15,
+      "rotate_seconds": 30,
+      "photos": [
+        "https://picsum.photos/id/1018/1600/900",
+        "https://picsum.photos/id/1015/1600/900",
+        "https://picsum.photos/id/1019/1600/900",
+        "https://picsum.photos/id/1039/1600/900"
+      ],
+      "child": {
+        "type": "carousel",
+        "pages": [
+          {
+            "title": "Welcome",
+            "child": {
+              "type": "grid",
+              "children": [
                 {
-                  "entity_id": "light.0xf0d1b80000190215",
-                  "name": "Light",
-                  "endpoint": 1,
-                  "dimmable": true,
-                  "color": false
+                  "type": "light_group",
+                  "title": "Lights",
+                  "source": { "$": "lights" },
+                  "on_targets": [
+                    "light.0xf0d1b8000018e736"
+                  ],
+                  "lights": [
+                    {
+                      "entity_id": "light.0xf0d1b80000190215",
+                      "name": "Light",
+                      "endpoint": 1,
+                      "dimmable": true,
+                      "color": false
+                    },
+                    {
+                      "entity_id": "light.0xf0d1b80000190278",
+                      "name": "Cubby",
+                      "endpoint": 1,
+                      "dimmable": true,
+                      "color": false
+                    },
+                    {
+                      "entity_id": "light.0xf0d1b8000018e736",
+                      "name": "Lamp",
+                      "endpoint": 1,
+                      "dimmable": true,
+                      "color": false
+                    },
+                    {
+                      "entity_id": "light.0x001788010d1a6cae",
+                      "name": "Hue",
+                      "endpoint": 1,
+                      "dimmable": true,
+                      "color": false
+                    }
+                  ]
                 },
                 {
-                  "entity_id": "light.0xf0d1b80000190278",
-                  "name": "Cubby",
-                  "endpoint": 1,
-                  "dimmable": true,
-                  "color": false
-                },
-                {
-                  "entity_id": "light.0xf0d1b8000018e736",
-                  "name": "Lamp",
-                  "endpoint": 1,
-                  "dimmable": true,
-                  "color": false
-                },
-                {
-                  "entity_id": "light.0x001788010d1a6cae",
-                  "name": "Hue",
-                  "endpoint": 1,
-                  "dimmable": true,
-                  "color": false
+                  "type": "clock",
+                  "show_seconds": false,
+                  "timezone": "Europe/London"
                 }
               ]
-            },
-            {
-              "type": "clock",
-              "show_seconds": false,
-              "timezone": "Europe/London"
             }
-          ]
-        }
-      },
-      {
-        "title": "Weather",
-        "child": {
-          "type": "weather",
-          "source": { "temp_c": 12.4, "condition": "partly_cloudy" }
-        }
+          },
+          {
+            "title": "Weather",
+            "child": {
+              "type": "weather",
+              "source": { "temp_c": 12.4, "condition": "partly_cloudy" }
+            }
+          }
+        ]
       }
-    ]
+    }
   }
 }
