@@ -10,7 +10,7 @@
       "timezone": "Europe/London",
       "weather": { "temp_c": 12.4, "condition": "partly_cloudy" },
       "dwell_seconds": 15,
-      "rotate_seconds": 10,
+      "rotate_seconds": 30,
       "photos": [
         "https://picsum.photos/id/1018/1600/900",
         "https://picsum.photos/id/1015/1600/900",
