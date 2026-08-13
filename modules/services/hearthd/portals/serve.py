@@ -22,8 +22,10 @@ Usage:
 """
 
 import argparse
+import datetime
 import hashlib
 import json
+import math
 import sys
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -33,6 +35,11 @@ DEFAULT_HEARTHD = "https://hearthd.neb.jakehillion.me"
 REFRESH_INTERVAL = 10
 # hearthd endpoint 1 is where these lights expose their clusters.
 LIGHT_ENDPOINT = "1"
+# The home's location, used to place the sun for the solar wallpaper. This is
+# the same hardcoded London fix we use elsewhere; the Portal itself never needs
+# coordinates, only the resulting sun position, so it lives here.
+PORTAL_LAT = 51.47789474404557
+PORTAL_LON = -0.0014709754224478695
 
 
 def template_bytes(path):
@@ -44,6 +51,96 @@ def template_bytes(path):
 def template_hash(path):
     """sha256 of the template file, hex — the id the Portal fetches it by."""
     return hashlib.sha256(template_bytes(path)).hexdigest()
+
+
+def solar_position(lat, lon, when_utc):
+    """Where the sun is, as (elevation, azimuth) in degrees, for a UTC instant.
+
+    Elevation is height above the horizon (negative at night); azimuth is
+    measured clockwise from true north. This is the NOAA solar-position
+    algorithm — accurate to a small fraction of a degree, far finer than the
+    16-frame wallpapers it drives — and the geometric (unrefracted) position,
+    which is what the frame metadata's elevation/azimuth are keyed to.
+
+    The Portal picks a wallpaper collection for the day and then, frame by
+    frame, renders the image whose stored sun position is nearest this one.
+    """
+    y, mo = when_utc.year, when_utc.month
+    day = (
+        when_utc.day
+        + (when_utc.hour + (when_utc.minute + when_utc.second / 60) / 60) / 24
+    )
+    if mo <= 2:
+        y -= 1
+        mo += 12
+    a = y // 100
+    b = 2 - a + a // 4
+    jd = int(365.25 * (y + 4716)) + int(30.6001 * (mo + 1)) + day + b - 1524.5
+    t = (jd - 2451545.0) / 36525.0
+
+    rad, deg = math.radians, math.degrees
+    mean_long = (280.46646 + t * (36000.76983 + t * 0.0003032)) % 360
+    mean_anom = 357.52911 + t * (35999.05029 - 0.0001537 * t)
+    eccentricity = 0.016708634 - t * (0.000042037 + 0.0000001267 * t)
+    center = (
+        math.sin(rad(mean_anom)) * (1.914602 - t * (0.004817 + 0.000014 * t))
+        + math.sin(rad(2 * mean_anom)) * (0.019993 - 0.000101 * t)
+        + math.sin(rad(3 * mean_anom)) * 0.000289
+    )
+    omega = 125.04 - 1934.136 * t
+    app_long = mean_long + center - 0.00569 - 0.00478 * math.sin(rad(omega))
+    obliquity = (
+        23
+        + (26 + (21.448 - t * (46.815 + t * (0.00059 - t * 0.001813))) / 60)
+        / 60
+        + 0.00256 * math.cos(rad(omega))
+    )
+    decl = deg(math.asin(math.sin(rad(obliquity)) * math.sin(rad(app_long))))
+
+    # Equation of time (minutes): the gap between clock noon and true solar noon.
+    var_y = math.tan(rad(obliquity / 2)) ** 2
+    eot = 4 * deg(
+        var_y * math.sin(2 * rad(mean_long))
+        - 2 * eccentricity * math.sin(rad(mean_anom))
+        + 4
+        * eccentricity
+        * var_y
+        * math.sin(rad(mean_anom))
+        * math.cos(2 * rad(mean_long))
+        - 0.5 * var_y * var_y * math.sin(4 * rad(mean_long))
+        - 1.25 * eccentricity * eccentricity * math.sin(2 * rad(mean_anom))
+    )
+
+    minutes = when_utc.hour * 60 + when_utc.minute + when_utc.second / 60
+    true_solar_minutes = (minutes + eot + 4 * lon) % 1440
+    hour_angle = true_solar_minutes / 4 - 180
+
+    lat_r, decl_r = rad(lat), rad(decl)
+    cos_zenith = math.sin(lat_r) * math.sin(decl_r) + math.cos(
+        lat_r
+    ) * math.cos(decl_r) * math.cos(rad(hour_angle))
+    zenith = deg(math.acos(clamp(cos_zenith, -1.0, 1.0)))
+    elevation = 90 - zenith
+
+    cos_azimuth = clamp(
+        (math.sin(lat_r) * math.cos(rad(zenith)) - math.sin(decl_r))
+        / (math.cos(lat_r) * math.sin(rad(zenith))),
+        -1.0,
+        1.0,
+    )
+    # acos only spans 0..180; the afternoon (hour angle > 0) is the mirror half.
+    azimuth = (
+        (deg(math.acos(cos_azimuth)) + 180) % 360
+        if hour_angle > 0
+        else (540 - deg(math.acos(cos_azimuth))) % 360
+    )
+
+    return {"elevation": round(elevation, 4), "azimuth": round(azimuth, 4)}
+
+
+def clamp(value, low, high):
+    """Pin a float into [low, high] — guards acos against tiny FP overshoot."""
+    return max(low, min(high, value))
 
 
 def fetch_hearthd_state(hearthd_url):
@@ -94,11 +191,13 @@ def normalise_lights(hearthd):
 
 def build_state(template_path, hearthd_url):
     """The /state document: template hash, refresh cadence, live state blob."""
+    now_utc = datetime.datetime.now(datetime.timezone.utc)
     return {
         "template": template_hash(template_path),
         "refresh_interval": REFRESH_INTERVAL,
         "state": {
             "lights": normalise_lights(fetch_hearthd_state(hearthd_url)),
+            "sun": solar_position(PORTAL_LAT, PORTAL_LON, now_utc),
         },
     }
 
