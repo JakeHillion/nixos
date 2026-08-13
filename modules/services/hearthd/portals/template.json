@@ -1,66 +1,83 @@
 {
   "version": 1,
   "root": {
-    "type": "carousel",
-    "pages": [
-      {
-        "title": "Welcome",
-        "child": {
-          "type": "grid",
-          "children": [
-            {
-              "type": "light_group",
-              "title": "Lights",
-              "source": { "$": "lights" },
-              "on_targets": [
-                "light.0xf0d1b8000018e736"
-              ],
-              "lights": [
-                {
-                  "entity_id": "light.0xf0d1b80000190215",
-                  "name": "Light",
-                  "endpoint": 1,
-                  "dimmable": true,
-                  "color": false
-                },
-                {
-                  "entity_id": "light.0xf0d1b80000190278",
-                  "name": "Cubby",
-                  "endpoint": 1,
-                  "dimmable": true,
-                  "color": false
-                },
-                {
-                  "entity_id": "light.0xf0d1b8000018e736",
-                  "name": "Lamp",
-                  "endpoint": 1,
-                  "dimmable": true,
-                  "color": false
-                },
-                {
-                  "entity_id": "light.0x001788010d1a6cae",
-                  "name": "Hue",
-                  "endpoint": 1,
-                  "dimmable": true,
-                  "color": false
-                }
-              ]
-            },
-            {
-              "type": "clock",
-              "show_seconds": false,
-              "timezone": "Europe/London"
-            }
-          ]
+    "type": "photo_screensaver",
+    "mode": "solar",
+    "timezone": "Europe/London",
+    "weather": { "temp_c": 12.4, "condition": "partly_cloudy" },
+    "sun": { "$": "sun" },
+    "dwell_seconds": 15,
+    "rollover_hour": 4,
+    "photos": [
+      "https://hearthd.iot.home.jakehillion.me/static/screensavers/canyonlands/metadata.json",
+      "https://hearthd.iot.home.jakehillion.me/static/screensavers/catalina-little-harbor/metadata.json",
+      "https://hearthd.iot.home.jakehillion.me/static/screensavers/glacier/metadata.json",
+      "https://hearthd.iot.home.jakehillion.me/static/screensavers/joshua-tree/metadata.json",
+      "https://hearthd.iot.home.jakehillion.me/static/screensavers/oxenhope/metadata.json",
+      "https://hearthd.iot.home.jakehillion.me/static/screensavers/yosemite-lukens/metadata.json"
+    ],
+    "child": {
+      "type": "carousel",
+      "pages": [
+        {
+          "title": "Welcome",
+          "child": {
+            "type": "grid",
+            "children": [
+              {
+                "type": "light_group",
+                "title": "Lights",
+                "source": { "$": "lights" },
+                "on_targets": [
+                  "light.0xf0d1b8000018e736"
+                ],
+                "lights": [
+                  {
+                    "entity_id": "light.0xf0d1b80000190215",
+                    "name": "Light",
+                    "endpoint": 1,
+                    "dimmable": true,
+                    "color": false
+                  },
+                  {
+                    "entity_id": "light.0xf0d1b80000190278",
+                    "name": "Cubby",
+                    "endpoint": 1,
+                    "dimmable": true,
+                    "color": false
+                  },
+                  {
+                    "entity_id": "light.0xf0d1b8000018e736",
+                    "name": "Lamp",
+                    "endpoint": 1,
+                    "dimmable": true,
+                    "color": false
+                  },
+                  {
+                    "entity_id": "light.0x001788010d1a6cae",
+                    "name": "Hue",
+                    "endpoint": 1,
+                    "dimmable": true,
+                    "color": false
+                  }
+                ]
+              },
+              {
+                "type": "clock",
+                "show_seconds": false,
+                "timezone": "Europe/London"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Weather",
+          "child": {
+            "type": "weather",
+            "source": { "temp_c": 12.4, "condition": "partly_cloudy" }
+          }
         }
-      },
-      {
-        "title": "Weather",
-        "child": {
-          "type": "weather",
-          "source": { "temp_c": 12.4, "condition": "partly_cloudy" }
-        }
-      }
-    ]
+      ]
+    }
   }
 }
