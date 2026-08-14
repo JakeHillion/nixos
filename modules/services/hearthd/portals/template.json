@@ -63,6 +63,16 @@
                 ]
               },
               {
+                "type": "grid",
+                "columns": 2,
+                "children": [
+                  { "type": "environment", "temperature": 21.5, "humidity": 45 },
+                  { "type": "environment", "temperature": 18.5, "humidity": 50 },
+                  { "type": "environment", "temperature": 22.5, "humidity": 62 },
+                  { "type": "environment", "temperature": 16.0, "humidity": 42 }
+                ]
+              },
+              {
                 "type": "clock",
                 "show_seconds": false,
                 "timezone": "Europe/London"
@@ -75,19 +85,6 @@
           "child": {
             "type": "weather",
             "source": { "temp_c": 12.4, "condition": "partly_cloudy" }
-          }
-        },
-        {
-          "title": "Rooms",
-          "child": {
-            "type": "grid",
-            "columns": 2,
-            "children": [
-              { "type": "environment", "temperature": 21.5, "humidity": 45 },
-              { "type": "environment", "temperature": 18.5, "humidity": 50 },
-              { "type": "environment", "temperature": 22.5, "humidity": 62 },
-              { "type": "environment", "temperature": 16.0, "humidity": 42 }
-            ]
           }
         }
       ]
