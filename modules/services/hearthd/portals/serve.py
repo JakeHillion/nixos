@@ -33,8 +33,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 DEFAULT_HEARTHD = "https://hearthd.neb.jakehillion.me"
 # How often we ask the Portal to poll /state, in seconds.
 REFRESH_INTERVAL = 10
-# hearthd endpoint 1 is where these lights expose their clusters.
-LIGHT_ENDPOINT = "1"
+# hearthd exposes each node's clusters under endpoint 1.
+PRIMARY_ENDPOINT = "1"
 # The home's location, used to place the sun for the solar wallpaper. This is
 # the same hardcoded London fix we use elsewhere; the Portal itself never needs
 # coordinates, only the resulting sun position, so it lives here.
@@ -149,6 +149,20 @@ def fetch_hearthd_state(hearthd_url):
         return json.load(resp)
 
 
+def primary_clusters(node):
+    """The clusters on a node's primary endpoint (endpoint 1, else the first)."""
+    endpoints = node.get("endpoints", {})
+    endpoint = endpoints.get(PRIMARY_ENDPOINT) or next(
+        iter(endpoints.values()), {}
+    )
+    return endpoint.get("clusters", {})
+
+
+def centi(value):
+    """Rescale a hearthd hundredths reading (3020 -> 30.2); keep null as null."""
+    return None if value is None else value / 100
+
+
 def normalise_lights(hearthd):
     """Reduce hearthd's node/cluster tree to the flat light map the Portal reads.
 
@@ -162,11 +176,7 @@ def normalise_lights(hearthd):
         if not entity_id.startswith("light."):
             continue
 
-        endpoints = node.get("endpoints", {})
-        endpoint = endpoints.get(LIGHT_ENDPOINT) or next(
-            iter(endpoints.values()), {}
-        )
-        clusters = endpoint.get("clusters", {})
+        clusters = primary_clusters(node)
 
         on_off = clusters.get("OnOff")
         # Only nodes with an OnOff cluster are switchable lights.
@@ -189,14 +199,51 @@ def normalise_lights(hearthd):
     return lights
 
 
+def normalise_environment(hearthd):
+    """Reduce hearthd's node tree to the flat sensor map the Portal reads.
+
+    Keyed by the bare device id (entity_id without the "sensor." prefix) so the
+    key carries no dots and the template can path straight to a value, e.g.
+    {"$": "environment.0x00158d00093e8e6d.temperature"}. Every node exposing a
+    temperature or humidity measurement is published; the template picks
+    whichever it references. hearthd reports these in hundredths (3020 -> 30.2
+    degC, 4150 -> 41.5 %); a null measurement passes through as null.
+    """
+    sensors = {}
+    for node in hearthd.get("nodes", {}).values():
+        entity_id = node.get("entity_id", "")
+        if not entity_id.startswith("sensor."):
+            continue
+
+        clusters = primary_clusters(node)
+
+        temperature = clusters.get("TemperatureMeasurement")
+        humidity = clusters.get("RelativeHumidityMeasurement")
+        # Only nodes exposing at least one environment measurement.
+        if temperature is None and humidity is None:
+            continue
+
+        sensors[entity_id[len("sensor.") :]] = {
+            "temperature": centi(
+                temperature.get("measured_value") if temperature else None
+            ),
+            "humidity": centi(
+                humidity.get("measured_value") if humidity else None
+            ),
+        }
+    return sensors
+
+
 def build_state(template_path, hearthd_url):
     """The /state document: template hash, refresh cadence, live state blob."""
     now_utc = datetime.datetime.now(datetime.timezone.utc)
+    hearthd = fetch_hearthd_state(hearthd_url)
     return {
         "template": template_hash(template_path),
         "refresh_interval": REFRESH_INTERVAL,
         "state": {
-            "lights": normalise_lights(fetch_hearthd_state(hearthd_url)),
+            "lights": normalise_lights(hearthd),
+            "environment": normalise_environment(hearthd),
             "sun": solar_position(PORTAL_LAT, PORTAL_LON, now_utc),
         },
     }
