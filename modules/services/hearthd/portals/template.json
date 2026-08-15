@@ -63,16 +63,6 @@
                 ]
               },
               {
-                "type": "grid",
-                "columns": 2,
-                "children": [
-                  { "type": "environment", "name": "Bedroom", "temperature": { "$": "environment.bedroom.temperature" }, "humidity": { "$": "environment.bedroom.humidity" } },
-                  { "type": "environment", "name": "Bathroom", "temperature": { "$": "environment.bathroom.temperature" }, "humidity": { "$": "environment.bathroom.humidity" } },
-                  { "type": "environment", "name": "Living Room", "temperature": { "$": "environment.living_room.temperature" }, "humidity": { "$": "environment.living_room.humidity" } },
-                  { "type": "environment", "name": "Loft", "temperature": { "$": "environment.loft.temperature" }, "humidity": { "$": "environment.loft.humidity" } }
-                ]
-              },
-              {
                 "type": "clock",
                 "show_seconds": false,
                 "timezone": "Europe/London"
