@@ -40,6 +40,15 @@ PRIMARY_ENDPOINT = "1"
 # coordinates, only the resulting sun position, so it lives here.
 PORTAL_LAT = 51.47789474404557
 PORTAL_LON = -0.0014709754224478695
+# The environment sensors the Portal shows, in display order, mapped from the
+# clean slug the template references to hearthd's opaque device id. This mapping
+# is the whole point of doing it here: the template only ever sees the slug.
+ENVIRONMENT_SENSORS = {
+    "bedroom": "sensor.0x00158d00093e8e6d",
+    "bathroom": "sensor.0x00158d0009cbf790",
+    "living_room": "sensor.0x54ef441000d20037",
+    "loft": "sensor.0x54ef441000d20a5a",
+}
 
 
 def template_bytes(path):
@@ -200,38 +209,27 @@ def normalise_lights(hearthd):
 
 
 def normalise_environment(hearthd):
-    """Reduce hearthd's node tree to the flat sensor map the Portal reads.
+    """Map the Portal's named environment sensors to their live readings.
 
-    Keyed by the bare device id (entity_id without the "sensor." prefix) so the
-    key carries no dots and the template can path straight to a value, e.g.
-    {"$": "environment.0x00158d00093e8e6d.temperature"}. Every node exposing a
-    temperature or humidity measurement is published; the template picks
-    whichever it references. hearthd reports these in hundredths (3020 -> 30.2
-    degC, 4150 -> 41.5 %); a null measurement passes through as null.
+    Keyed by the clean slug from ENVIRONMENT_SENSORS, so the template references
+    "environment.bedroom.temperature" and never a device id. hearthd reports
+    temperature/humidity in hundredths (3020 -> 30.2 degC, 4150 -> 41.5 %); a
+    sensor that's absent or not yet reporting comes through as null.
     """
-    sensors = {}
-    for node in hearthd.get("nodes", {}).values():
-        entity_id = node.get("entity_id", "")
-        if not entity_id.startswith("sensor."):
-            continue
-
-        clusters = primary_clusters(node)
-
-        temperature = clusters.get("TemperatureMeasurement")
-        humidity = clusters.get("RelativeHumidityMeasurement")
-        # Only nodes exposing at least one environment measurement.
-        if temperature is None and humidity is None:
-            continue
-
-        sensors[entity_id[len("sensor.") :]] = {
-            "temperature": centi(
-                temperature.get("measured_value") if temperature else None
-            ),
-            "humidity": centi(
-                humidity.get("measured_value") if humidity else None
-            ),
+    by_entity_id = {
+        node.get("entity_id", ""): node
+        for node in hearthd.get("nodes", {}).values()
+    }
+    environment = {}
+    for slug, entity_id in ENVIRONMENT_SENSORS.items():
+        clusters = primary_clusters(by_entity_id.get(entity_id, {}))
+        temperature = clusters.get("TemperatureMeasurement") or {}
+        humidity = clusters.get("RelativeHumidityMeasurement") or {}
+        environment[slug] = {
+            "temperature": centi(temperature.get("measured_value")),
+            "humidity": centi(humidity.get("measured_value")),
         }
-    return sensors
+    return environment
 
 
 def build_state(template_path, hearthd_url):

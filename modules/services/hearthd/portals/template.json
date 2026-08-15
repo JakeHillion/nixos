@@ -66,10 +66,10 @@
                 "type": "grid",
                 "columns": 2,
                 "children": [
-                  { "type": "environment", "name": "Bedroom", "temperature": { "$": "environment.0x00158d00093e8e6d.temperature" }, "humidity": { "$": "environment.0x00158d00093e8e6d.humidity" } },
-                  { "type": "environment", "name": "Bathroom", "temperature": { "$": "environment.0x00158d0009cbf790.temperature" }, "humidity": { "$": "environment.0x00158d0009cbf790.humidity" } },
-                  { "type": "environment", "name": "Living Room", "temperature": { "$": "environment.0x54ef441000d20037.temperature" }, "humidity": { "$": "environment.0x54ef441000d20037.humidity" } },
-                  { "type": "environment", "name": "Loft", "temperature": { "$": "environment.0x54ef441000d20a5a.temperature" }, "humidity": { "$": "environment.0x54ef441000d20a5a.humidity" } }
+                  { "type": "environment", "name": "Bedroom", "temperature": { "$": "environment.bedroom.temperature" }, "humidity": { "$": "environment.bedroom.humidity" } },
+                  { "type": "environment", "name": "Bathroom", "temperature": { "$": "environment.bathroom.temperature" }, "humidity": { "$": "environment.bathroom.humidity" } },
+                  { "type": "environment", "name": "Living Room", "temperature": { "$": "environment.living_room.temperature" }, "humidity": { "$": "environment.living_room.humidity" } },
+                  { "type": "environment", "name": "Loft", "temperature": { "$": "environment.loft.temperature" }, "humidity": { "$": "environment.loft.humidity" } }
                 ]
               },
               {
