@@ -7,7 +7,7 @@ let
   kimi = "llm-proxy/moonshotai/kimi-k2.6";
   minimax = "llm-proxy/minimax/minimax-m2.7";
   glm = "llm-proxy/zai/glm-5.1";
-  deepseek = "llm-proxy/deepseek/deepseek-v4-pro";
+  deepseek = "llm-proxy/deepseek/deepseek-v4-pro-0813";
 
   opencodeConfig = {
     "$schema" = "https://opencode.ai/config.json";

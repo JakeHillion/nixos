@@ -143,7 +143,7 @@ in
         models = {
           "moonshotai/kimi-k3" = "accounts/fireworks/models/kimi-k3";
           "zai/glm-5.2" = "accounts/fireworks/models/glm-5p2";
-          "deepseek/deepseek-v4-pro" = "accounts/fireworks/models/deepseek-v4-pro";
+          "deepseek/deepseek-v4-pro-0813" = "accounts/fireworks/models/deepseek-v4-pro-0813";
           "deepseek/deepseek-v4-flash-0731" = "accounts/fireworks/models/deepseek-v4-flash-0731";
         };
       };
