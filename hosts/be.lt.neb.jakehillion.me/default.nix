@@ -33,7 +33,11 @@
     };
 
     ## WiFi
-    age.secrets."wifi/be.lt.${config.ogygia.domain}".file = ../../secrets/wifi/be.lt.${config.ogygia.domain}.age;
+    age.secrets."wifi/be.lt.${config.ogygia.domain}" = {
+      file = ../../secrets/wifi/be.lt.${config.ogygia.domain}.age;
+      owner = "wpa_supplicant";
+      group = "wpa_supplicant";
+    };
     networking.wireless = {
       enable = true;
       secretsFile = config.age.secrets."wifi/be.lt.${config.ogygia.domain}".path;
