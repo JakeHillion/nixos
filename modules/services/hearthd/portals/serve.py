@@ -33,13 +33,22 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 DEFAULT_HEARTHD = "https://hearthd.neb.jakehillion.me"
 # How often we ask the Portal to poll /state, in seconds.
 REFRESH_INTERVAL = 10
-# hearthd endpoint 1 is where these lights expose their clusters.
-LIGHT_ENDPOINT = "1"
+# hearthd exposes each node's clusters under endpoint 1.
+PRIMARY_ENDPOINT = "1"
 # The home's location, used to place the sun for the solar wallpaper. This is
 # the same hardcoded London fix we use elsewhere; the Portal itself never needs
 # coordinates, only the resulting sun position, so it lives here.
 PORTAL_LAT = 51.47789474404557
 PORTAL_LON = -0.0014709754224478695
+# The environment sensors the Portal shows, in display order, mapped from the
+# clean slug the template references to hearthd's opaque device id. This mapping
+# is the whole point of doing it here: the template only ever sees the slug.
+ENVIRONMENT_SENSORS = {
+    "bedroom": "sensor.0x00158d00093e8e6d",
+    "bathroom": "sensor.0x00158d0009cbf790",
+    "living_room": "sensor.0x54ef441000d20037",
+    "loft": "sensor.0x54ef441000d20a5a",
+}
 
 
 def template_bytes(path):
@@ -149,6 +158,20 @@ def fetch_hearthd_state(hearthd_url):
         return json.load(resp)
 
 
+def primary_clusters(node):
+    """The clusters on a node's primary endpoint (endpoint 1, else the first)."""
+    endpoints = node.get("endpoints", {})
+    endpoint = endpoints.get(PRIMARY_ENDPOINT) or next(
+        iter(endpoints.values()), {}
+    )
+    return endpoint.get("clusters", {})
+
+
+def centi(value):
+    """Rescale a hearthd hundredths reading (3020 -> 30.2); keep null as null."""
+    return None if value is None else round(value / 100, 1)
+
+
 def normalise_lights(hearthd):
     """Reduce hearthd's node/cluster tree to the flat light map the Portal reads.
 
@@ -162,11 +185,7 @@ def normalise_lights(hearthd):
         if not entity_id.startswith("light."):
             continue
 
-        endpoints = node.get("endpoints", {})
-        endpoint = endpoints.get(LIGHT_ENDPOINT) or next(
-            iter(endpoints.values()), {}
-        )
-        clusters = endpoint.get("clusters", {})
+        clusters = primary_clusters(node)
 
         on_off = clusters.get("OnOff")
         # Only nodes with an OnOff cluster are switchable lights.
@@ -189,14 +208,40 @@ def normalise_lights(hearthd):
     return lights
 
 
+def normalise_environment(hearthd):
+    """Map the Portal's named environment sensors to their live readings.
+
+    Keyed by the clean slug from ENVIRONMENT_SENSORS, so the template references
+    "environment.bedroom.temperature" and never a device id. hearthd reports
+    temperature/humidity in hundredths (3020 -> 30.2 degC, 4150 -> 41.5 %); a
+    sensor that's absent or not yet reporting comes through as null.
+    """
+    by_entity_id = {
+        node.get("entity_id", ""): node
+        for node in hearthd.get("nodes", {}).values()
+    }
+    environment = {}
+    for slug, entity_id in ENVIRONMENT_SENSORS.items():
+        clusters = primary_clusters(by_entity_id.get(entity_id, {}))
+        temperature = clusters.get("TemperatureMeasurement") or {}
+        humidity = clusters.get("RelativeHumidityMeasurement") or {}
+        environment[slug] = {
+            "temperature": centi(temperature.get("measured_value")),
+            "humidity": centi(humidity.get("measured_value")),
+        }
+    return environment
+
+
 def build_state(template_path, hearthd_url):
     """The /state document: template hash, refresh cadence, live state blob."""
     now_utc = datetime.datetime.now(datetime.timezone.utc)
+    hearthd = fetch_hearthd_state(hearthd_url)
     return {
         "template": template_hash(template_path),
         "refresh_interval": REFRESH_INTERVAL,
         "state": {
-            "lights": normalise_lights(fetch_hearthd_state(hearthd_url)),
+            "lights": normalise_lights(hearthd),
+            "environment": normalise_environment(hearthd),
             "sun": solar_position(PORTAL_LAT, PORTAL_LON, now_utc),
         },
     }
