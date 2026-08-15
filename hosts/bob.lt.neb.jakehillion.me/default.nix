@@ -49,7 +49,11 @@
     services.blueman.enable = true;
 
     ## WiFi
-    age.secrets."wifi".file = ./wifi.env.age;
+    age.secrets."wifi" = {
+      file = ./wifi.env.age;
+      owner = "wpa_supplicant";
+      group = "wpa_supplicant";
+    };
     networking.wireless = {
       enable = true;
       secretsFile = config.age.secrets."wifi".path;
