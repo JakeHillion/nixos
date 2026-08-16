@@ -105,19 +105,27 @@
             80 # HTTP 1-2
             443 # HTTPS 1-2
             1400 # HA Sonos
+            5000 # snapcast AirPlay (shairport-sync)
+            5354 # snapcast Spotify Connect (librespot zeroconf)
             7654 # Tang
             21063 # HomeKit
           ];
           allowedUDPPorts = lib.mkForce [
+            319 # snapcast AirPlay 2 PTP (nqptp)
+            320 # snapcast AirPlay 2 PTP (nqptp)
             443 # HTTP 3
             5353 # HomeKit / mDNS
             49191 # OTBR MeshCoP BorderAgent
+          ];
+          allowedUDPPortRanges = [
+            { from = 6001; to = 6011; } # snapcast AirPlay 2 audio/control/timing
           ];
         };
         iot = {
           allowedTCPPorts = lib.mkForce [
             80 # HTTP 1-2
             443 # HTTPS 1-2
+            1704 # snapcast client stream
           ];
           allowedUDPPorts = lib.mkForce [
             443 # HTTP 3
