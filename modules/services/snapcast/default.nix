@@ -2,6 +2,8 @@
 let
   cfg = config.custom.services.snapcast;
 
+  shairport = pkgs.shairport-sync.override { enableAirplay2 = true; };
+
   # librespot ships its own mDNS responder that binds 5353 and would collide
   # with the system avahi. Build it with avahi support so it registers through
   # the system daemon instead (the default build only supports libmdns).
@@ -23,13 +25,19 @@ in
     deviceName = lib.mkOption {
       type = lib.types.str;
       default = config.networking.hostName;
-      description = "Name advertised to Spotify Connect.";
+      description = "Name advertised to Spotify Connect and AirPlay.";
     };
 
     librespotZeroconfPort = lib.mkOption {
       type = lib.types.port;
       default = 5354;
       description = "Port librespot advertises the Spotify Connect handshake on.";
+    };
+
+    airplayPort = lib.mkOption {
+      type = lib.types.port;
+      default = 5000;
+      description = "Base port shairport-sync listens on for AirPlay.";
     };
   };
 
@@ -39,6 +47,10 @@ in
       settings = {
         stream.source = [
           "librespot:///${lib.getExe librespot}?name=Spotify&devicename=${cfg.deviceName}&bitrate=320&params=${librespotParams}"
+          "airplay:///${lib.getExe shairport}?name=AirPlay&devicename=${cfg.deviceName}&port=${toString cfg.airplayPort}"
+          # Follows whichever of the above is currently playing, so a client can
+          # sit on one stream and always hear the active source.
+          "meta:///Spotify/AirPlay?name=Meta"
         ];
 
         # Snapclients connect here; opened per-interface by the host firewall.
@@ -55,6 +67,25 @@ in
           url_prefix = "https://snapcast.${config.ogygia.domain}";
         };
       };
+    };
+
+    # AirPlay 2 keeps time against a PTP clock provided by nqptp, which shares it
+    # through /dev/shm for shairport-sync to read. It binds privileged UDP ports
+    # 319/320, so it runs as root.
+    systemd.services.nqptp = {
+      description = "nqptp PTP clock for AirPlay 2";
+      wantedBy = [ "multi-user.target" ];
+      after = [ "network.target" ];
+      serviceConfig = {
+        ExecStart = lib.getExe' pkgs.nqptp "nqptp";
+        Restart = "on-failure";
+      };
+    };
+
+    # snapserver spawns shairport-sync, which needs nqptp's clock available.
+    systemd.services.snapserver = {
+      after = [ "nqptp.service" ];
+      wants = [ "nqptp.service" ];
     };
 
     # snapserver runs DynamicUser with a StateDirectory, so its state lands in
