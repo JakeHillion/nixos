@@ -5,8 +5,12 @@ let
   shairport = pkgs.shairport-sync.override { enableAirplay2 = true; };
 
   # librespot ships its own mDNS responder that binds 5353 and would collide
-  # with the system avahi. Register through avahi instead, and pin the port the
-  # Spotify Connect handshake listens on so it can be opened on the LAN.
+  # with the system avahi. Build it with avahi support so it registers through
+  # the system daemon instead (the default build only supports libmdns).
+  librespot = pkgs.librespot.override { withAvahi = true; };
+
+  # Register through avahi rather than the bundled responder, and pin the port
+  # the Spotify Connect handshake listens on so it can be opened on the LAN.
   librespotParams = lib.concatStringsSep "%20" [
     "--zeroconf-backend"
     "avahi"
@@ -42,8 +46,10 @@ in
       enable = true;
       settings = {
         stream.source = [
-          "librespot:///${lib.getExe pkgs.librespot}?name=Spotify&devicename=${cfg.deviceName}&bitrate=320&params=${librespotParams}"
-          "airplay:///${lib.getExe shairport}?name=AirPlay&devicename=${cfg.deviceName}&port=${toString cfg.airplayPort}"
+          "librespot:///${lib.getExe librespot}?name=Spotify&devicename=${cfg.deviceName}&bitrate=320&params=${librespotParams}"
+          # TODO(debug): -vvv is temporary to capture the AirPlay 2 pairing
+          # failure in the journal; drop the params once diagnosed.
+          "airplay:///${lib.getExe shairport}?name=AirPlay&devicename=${cfg.deviceName}&port=${toString cfg.airplayPort}&params=-vvv"
           # Follows whichever of the above is currently playing, so a client can
           # sit on one stream and always hear the active source.
           "meta:///Spotify/AirPlay?name=Meta"
