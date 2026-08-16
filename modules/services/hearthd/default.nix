@@ -59,6 +59,7 @@ in
   config = lib.mkIf cfg.enable {
     age.secrets."hearthd/locations.toml".file = ./locations.toml.age;
     age.secrets."hearthd/mqtt.toml".file = ./mqtt.toml.age;
+    age.secrets."hearthd/ecoflow.toml".rekeyFile = ./ecoflow.toml.age;
 
     # The caddy vhost below solves DNS-01 challenges against the acme-dns-api on
     # ${acmeApiHost}:8553 over Nebula. Grant that path at the point of use so it
@@ -127,6 +128,7 @@ in
       enable = true;
 
       secretConfigs = with config.age; [
+        secrets."hearthd/ecoflow.toml".path
         secrets."hearthd/locations.toml".path
         secrets."hearthd/mqtt.toml".path
       ];
