@@ -41,6 +41,7 @@
     ./renovate
     ./restic
     ./searxng
+    ./snapcast
     ./status
     ./tang.nix
     ./unifi.nix
