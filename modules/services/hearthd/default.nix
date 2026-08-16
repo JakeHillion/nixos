@@ -3,11 +3,6 @@
 let
   cfg = config.custom.services.hearthd;
 
-  # Secrets managed via agenix-rekey. Each entry registers an
-  # age.secrets."hearthd/<name>".rekeyFile pointing at <name>.age, and its
-  # decrypted path is appended to services.hearthd.secretConfigs below.
-  rekeySecrets = [ "ecoflow.toml" ];
-
   acmeApiHost =
     let
       authDns = config.custom.locations.locations.services.authoritative_dns;
@@ -62,18 +57,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    age.secrets = lib.mkMerge [
-      (builtins.listToAttrs (map
-        (name: {
-          name = "hearthd/${name}";
-          value.rekeyFile = ./. + "/${name}.age";
-        })
-        rekeySecrets))
-      {
-        "hearthd/locations.toml".file = ./locations.toml.age;
-        "hearthd/mqtt.toml".file = ./mqtt.toml.age;
-      }
-    ];
+    age.secrets."hearthd/locations.toml".file = ./locations.toml.age;
+    age.secrets."hearthd/mqtt.toml".file = ./mqtt.toml.age;
 
     # The caddy vhost below solves DNS-01 challenges against the acme-dns-api on
     # ${acmeApiHost}:8553 over Nebula. Grant that path at the point of use so it
@@ -141,12 +126,10 @@ in
     services.hearthd = {
       enable = true;
 
-      secretConfigs =
-        (map (name: config.age.secrets."hearthd/${name}".path) rekeySecrets)
-        ++ (with config.age; [
-          secrets."hearthd/locations.toml".path
-          secrets."hearthd/mqtt.toml".path
-        ]);
+      secretConfigs = with config.age; [
+        secrets."hearthd/locations.toml".path
+        secrets."hearthd/mqtt.toml".path
+      ];
       config = {
         logging = {
           level = "info";
