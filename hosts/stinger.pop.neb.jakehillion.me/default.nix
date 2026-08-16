@@ -105,19 +105,35 @@
             80 # HTTP 1-2
             443 # HTTPS 1-2
             1400 # HA Sonos
+            5000 # snapcast AirPlay 2 RTSP/control (shairport-sync)
+            5354 # snapcast Spotify Connect (librespot zeroconf)
             7654 # Tang
             21063 # HomeKit
           ];
           allowedUDPPorts = lib.mkForce [
+            319 # snapcast AirPlay 2 PTP (nqptp)
+            320 # snapcast AirPlay 2 PTP (nqptp)
             443 # HTTP 3
             5353 # HomeKit / mDNS
             49191 # OTBR MeshCoP BorderAgent
+          ];
+          # AirPlay 2 binds dynamically-assigned ephemeral ports for its event,
+          # audio, control and timing channels. udp_port_base/range only pin
+          # AirPlay 1, so AP2's ports can't be constrained; open the kernel
+          # ephemeral range on the trusted LAN so the sender can reach whatever
+          # shairport-sync picks per session.
+          allowedTCPPortRanges = [
+            { from = 32768; to = 60999; } # snapcast AirPlay 2 dynamic ports
+          ];
+          allowedUDPPortRanges = [
+            { from = 32768; to = 60999; } # snapcast AirPlay 2 dynamic ports
           ];
         };
         iot = {
           allowedTCPPorts = lib.mkForce [
             80 # HTTP 1-2
             443 # HTTPS 1-2
+            1704 # snapcast client stream
           ];
           allowedUDPPorts = lib.mkForce [
             443 # HTTP 3
