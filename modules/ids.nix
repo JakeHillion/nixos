@@ -29,6 +29,7 @@
       mautrix-discord = 413;
       gitea-actions-vm = 415;
       backup-git = 416;
+      shairport = 417;
 
       ## Consistent People
       jake = 1000;
@@ -59,6 +60,7 @@
       mautrix-discord-registration = 414;
       gitea-actions-vm = 415;
       backup-git = 416;
+      shairport = 417;
 
       ## Consistent Groups
       mediaaccess = 1200;
