@@ -47,9 +47,7 @@ in
       settings = {
         stream.source = [
           "librespot:///${lib.getExe librespot}?name=Spotify&devicename=${cfg.deviceName}&bitrate=320&params=${librespotParams}"
-          # TODO(debug): -vvv is temporary to capture the AirPlay 2 pairing
-          # failure in the journal; drop the params once diagnosed.
-          "airplay:///${lib.getExe shairport}?name=AirPlay&devicename=${cfg.deviceName}&port=${toString cfg.airplayPort}&params=-vvv"
+          "airplay:///${lib.getExe shairport}?name=AirPlay&devicename=${cfg.deviceName}&port=${toString cfg.airplayPort}"
           # Follows whichever of the above is currently playing, so a client can
           # sit on one stream and always hear the active source.
           "meta:///Spotify/AirPlay?name=Meta"
