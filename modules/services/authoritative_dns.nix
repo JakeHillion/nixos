@@ -61,6 +61,7 @@ let
     radicale                          21600 CNAME ${locations.services.radicale}.
     restic                            21600 CNAME ${locations.services.restic}.
     searxng                           21600 CNAME ${locations.services.searxng}.
+    snapcast                          21600 CNAME ${locations.services.snapcast}.
     status                            21600 CNAME ${locations.services.status}.
     wallpapers                        21600 CNAME phoenix.st.${domain}.
 
