@@ -48,6 +48,11 @@ in
         http = {
           enabled = true;
           bind_to_address = "127.0.0.1";
+
+          # Album art URLs handed to the web UI are absolute. Without a prefix
+          # snapserver builds them from its own hostname and port, which no
+          # client can reach; point them at the reverse proxy instead.
+          url_prefix = "https://snapcast.${config.ogygia.domain}";
         };
       };
     };
