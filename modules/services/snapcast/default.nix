@@ -47,10 +47,13 @@ in
       settings = {
         stream.source = [
           "librespot:///${lib.getExe librespot}?name=Spotify&devicename=${cfg.deviceName}&bitrate=320&params=${librespotParams}"
-          "airplay:///${lib.getExe shairport}?name=AirPlay&devicename=${cfg.deviceName}&port=${toString cfg.airplayPort}"
+          # TODO(debug): -vvv is temporary to capture shairport sync stats while
+          # chasing the AirPlay audio distortion; drop it once diagnosed.
+          "airplay:///${lib.getExe shairport}?name=AirPlay&devicename=${cfg.deviceName}&port=${toString cfg.airplayPort}&params=-vvv"
           # Follows whichever of the above is currently playing, so a client can
-          # sit on one stream and always hear the active source.
-          "meta:///Spotify/AirPlay?name=Meta"
+          # sit on one stream and always hear the active source. Pinned to the
+          # 44.1kHz rate both real sources emit so nothing gets resampled.
+          "meta:///Spotify/AirPlay?name=Meta&sampleformat=44100:16:2"
         ];
 
         # Snapclients connect here; opened per-interface by the host firewall.
