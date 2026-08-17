@@ -17,6 +17,12 @@ let
     "--zeroconf-port"
     (toString cfg.librespotZeroconfPort)
   ];
+
+  # shairport-sync decodes AirPlay audio to this pipe; snapserver reads it as a
+  # pipe source. tmpfiles pre-creates it owned by shairport, and snapserver uses
+  # mode=read, so the fifo isn't created (and owned) by snapserver's dynamic
+  # user, which shairport could then not write to.
+  airplayPipe = "/run/snapcast/airplay";
 in
 {
   options.custom.services.snapcast = {
@@ -37,7 +43,7 @@ in
     airplayPort = lib.mkOption {
       type = lib.types.port;
       default = 5000;
-      description = "Base port shairport-sync listens on for AirPlay.";
+      description = "Port shairport-sync listens on for AirPlay.";
     };
   };
 
@@ -47,9 +53,7 @@ in
       settings = {
         stream.source = [
           "librespot:///${lib.getExe librespot}?name=Spotify&devicename=${cfg.deviceName}&bitrate=320&params=${librespotParams}"
-          # TODO(debug): -vvv is temporary to capture shairport sync stats while
-          # chasing the AirPlay audio distortion; drop it once diagnosed.
-          "airplay:///${lib.getExe shairport}?name=AirPlay&devicename=${cfg.deviceName}&port=${toString cfg.airplayPort}&params=-vvv"
+          "pipe://${airplayPipe}?name=AirPlay&mode=read&sampleformat=44100:16:2"
           # Follows whichever of the above is currently playing, so a client can
           # sit on one stream and always hear the active source. Pinned to the
           # 44.1kHz rate both real sources emit so nothing gets resampled.
@@ -72,6 +76,40 @@ in
       };
     };
 
+    # AirPlay 2 receiver runs as its own service rather than being spawned by
+    # snapserver, so it gets a config file and a persistent home for its pairing
+    # identity. Spawned by snapserver it had neither, so the identity reset on
+    # every restart and iOS refused to reconnect. It decodes to a pipe that
+    # snapserver reads above.
+    services.shairport-sync = {
+      enable = true;
+      package = shairport;
+      settings = {
+        general = {
+          name = cfg.deviceName;
+          output_backend = "pipe";
+          port = cfg.airplayPort;
+        };
+        pipe.name = airplayPipe;
+      };
+    };
+    users.users.shairport.uid = config.ids.uids.shairport;
+    users.groups.shairport.gid = config.ids.gids.shairport;
+
+    # shairport-sync (AirPlay 2) needs nqptp's PTP clock available before it
+    # starts.
+    systemd.services.shairport-sync = {
+      after = [ "nqptp.service" ];
+      wants = [ "nqptp.service" ];
+    };
+
+    # Pre-create the audio pipe owned by shairport and world-readable so the
+    # snapserver dynamic user can read it.
+    systemd.tmpfiles.rules = [
+      "d ${builtins.dirOf airplayPipe} 0755 shairport shairport -"
+      "p ${airplayPipe} 0644 shairport shairport -"
+    ];
+
     # AirPlay 2 keeps time against a PTP clock provided by nqptp, which shares it
     # through /dev/shm for shairport-sync to read. It binds privileged UDP ports
     # 319/320, so it runs as root.
@@ -85,16 +123,11 @@ in
       };
     };
 
-    # snapserver spawns shairport-sync, which needs nqptp's clock available.
-    systemd.services.snapserver = {
-      after = [ "nqptp.service" ];
-      wants = [ "nqptp.service" ];
-    };
-
-    # snapserver runs DynamicUser with a StateDirectory, so its state lands in
-    # /var/lib/private/snapserver (client names, per-client volumes).
+    # snapserver state (DynamicUser, so /var/lib/private) and shairport's AirPlay
+    # pairing identity both need to survive reboots on impermanence hosts.
     custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [
       "/var/lib/private/snapserver"
+      "/var/lib/shairport-sync"
     ];
 
     custom.www.nebula = {
