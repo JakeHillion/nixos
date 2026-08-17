@@ -169,6 +169,10 @@ in
           discovery_prefix = "homeassistant";
           username = "hearthd";
         };
+
+        integrations.metno = {
+          locations = [ "home" ];
+        };
       };
     };
   };

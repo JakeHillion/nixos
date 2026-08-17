@@ -4,7 +4,7 @@
     "type": "photo_screensaver",
     "mode": "solar",
     "timezone": "Europe/London",
-    "weather": { "temp_c": 12.4, "condition": "partly_cloudy" },
+    "weather": { "$": "weather" },
     "sun": { "$": "sun" },
     "dwell_seconds": 15,
     "rollover_hour": 4,
@@ -73,18 +73,15 @@
                 ]
               },
               {
+                "type": "weather",
+                "source": { "$": "weather" }
+              },
+              {
                 "type": "clock",
                 "show_seconds": false,
                 "timezone": "Europe/London"
               }
             ]
-          }
-        },
-        {
-          "title": "Weather",
-          "child": {
-            "type": "weather",
-            "source": { "temp_c": 12.4, "condition": "partly_cloudy" }
           }
         }
       ]
