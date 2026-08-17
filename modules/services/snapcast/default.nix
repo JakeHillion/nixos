@@ -90,7 +90,15 @@ in
           output_backend = "pipe";
           port = cfg.airplayPort;
         };
-        pipe.name = airplayPipe;
+        pipe = {
+          name = airplayPipe;
+          # snapserver reads this pipe as a fixed 44100:16:2 stream. shairport's
+          # default "auto" output matches the *input* and can even switch format
+          # mid-stream with no in-band notification, so snapserver misreads it as
+          # noise. Pin the output to exactly what snapserver expects.
+          output_rate = 44100;
+          output_format = "S16_LE";
+        };
       };
     };
     users.users.shairport.uid = config.ids.uids.shairport;
