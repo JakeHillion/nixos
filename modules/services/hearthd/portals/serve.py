@@ -49,6 +49,23 @@ ENVIRONMENT_SENSORS = {
     "living_room": "sensor.0x54ef441000d20037",
     "loft": "sensor.0x54ef441000d20a5a",
 }
+# The weather node the Portal shows. hearthd publishes one node per configured
+# met.no location; we pick the "home" one.
+WEATHER_ENTITY_ID = "weather.home"
+# Map the PascalCase WeatherCondition enum from hearthd to the snake_case values
+# the Portal's weather widget expects.
+WEATHER_CONDITIONS = {
+    "ClearSky": "clear_sky",
+    "ClearNight": "clear_night",
+    "PartlyCloudy": "partly_cloudy",
+    "Cloudy": "cloudy",
+    "Fog": "fog",
+    "Rainy": "rainy",
+    "Pouring": "pouring",
+    "LightningRainy": "lightning_rainy",
+    "Snowy": "snowy",
+    "SnowyRainy": "snowy_rainy",
+}
 
 
 def template_bytes(path):
@@ -232,6 +249,39 @@ def normalise_environment(hearthd):
     return environment
 
 
+def node_by_entity_id(hearthd):
+    """Index hearthd's nodes by their entity_id."""
+    return {
+        node.get("entity_id", ""): node
+        for node in hearthd.get("nodes", {}).values()
+    }
+
+
+def normalise_weather(hearthd):
+    """Extract the live weather reading for the Portal's weather widget.
+
+    hearthd's met.no integration publishes a `weather.home` node with the
+    temperature in centi-degrees Celsius and a PascalCase WeatherCondition.
+    The Portal expects degrees Celsius and a snake_case condition string, so we
+    rescale and map here. If the node is missing or has no reading yet, both
+    fields come through as null and the widget shows its placeholder state.
+    """
+    node = node_by_entity_id(hearthd).get(WEATHER_ENTITY_ID, {})
+    clusters = primary_clusters(node)
+    temperature = clusters.get("TemperatureMeasurement") or {}
+    condition = clusters.get("WeatherCondition") or {}
+
+    raw_condition = condition.get("condition")
+    return {
+        "temp_c": centi(temperature.get("measured_value")),
+        "condition": (
+            WEATHER_CONDITIONS.get(raw_condition)
+            if raw_condition is not None
+            else None
+        ),
+    }
+
+
 def build_state(template_path, hearthd_url):
     """The /state document: template hash, refresh cadence, live state blob."""
     now_utc = datetime.datetime.now(datetime.timezone.utc)
@@ -242,6 +292,7 @@ def build_state(template_path, hearthd_url):
         "state": {
             "lights": normalise_lights(hearthd),
             "environment": normalise_environment(hearthd),
+            "weather": normalise_weather(hearthd),
             "sun": solar_position(PORTAL_LAT, PORTAL_LON, now_utc),
         },
     }
