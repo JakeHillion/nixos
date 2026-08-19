@@ -48,6 +48,11 @@ in
           default_model = "GPT 5.6 Terra (immediate)";
           batch_model = "DeepSeek V4 Flash (batch60k)";
 
+          debug = {
+            enabled = true;
+            path = "/var/lib/personal-agent/debug/llms";
+          };
+
           providers = [
             {
               name = "llm-proxy-immediate";
