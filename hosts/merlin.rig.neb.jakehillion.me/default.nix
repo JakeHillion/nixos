@@ -9,6 +9,9 @@
   config = {
     system.stateVersion = "24.05";
 
+    # Dual boot with Windows: Windows keeps the RTC in local time.
+    time.hardwareClockInLocalTime = true;
+
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
 
