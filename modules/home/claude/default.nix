@@ -4,6 +4,7 @@ let
   user = config.custom.user;
 
   claudeSettings = {
+    remoteControlAtStartup = false;
     enabledPlugins = {
       "rust-analyzer-lsp@claude-plugins-official" = true;
     };
