@@ -173,6 +173,14 @@ in
         integrations.metno = {
           locations = [ "home" ];
         };
+
+        # snapcast and hearthd are colocated on this host, but snapserver's
+        # control interface is bound to the Nebula IP (so the phone can reach it
+        # too), so connect to that address rather than loopback.
+        integrations.snapcast = {
+          host = config.custom.dns.nebula.ipv4;
+          port = 1705;
+        };
       };
     };
   };
