@@ -670,11 +670,11 @@
         "treefmt-nix": "treefmt-nix_5"
       },
       "locked": {
-        "lastModified": 1787436814,
-        "narHash": "sha256-jpcQ2Oevpw73kuQiHJLxVfGlw6bJHGNO2xUZovGnopc=",
+        "lastModified": 1787438723,
+        "narHash": "sha256-zp2K15L4u7l1umRPxxgk32f4oBXH95hzYmRSe7wCRbY=",
         "owner": "JakeHillion",
         "repo": "hearthd",
-        "rev": "0bed4baac54ad7c9ca68acd1e074776f4de4b610",
+        "rev": "4425de24e45717b9e5a9f5fb4374c8ed9c57b09e",
         "type": "github"
       },
       "original": {
