@@ -81,6 +81,7 @@ in
     services.async-coder = {
       enable = true;
       opencode-package = pkgs.unstable.opencode;
+      pi-package = pkgs.unstable.pi-coding-agent;
       settings = {
         homeserver_url = "https://matrix.hillion.co.uk";
         username = shortHost;
