@@ -97,15 +97,6 @@ in
         # Snapclients connect here; opened per-interface by the host firewall.
         tcp-streaming.enabled = true;
 
-        # JSON-RPC control interface. hearthd drives snapcast through this, and
-        # the Snapcast phone app speaks the same raw TCP protocol, so both reach
-        # it over Nebula. Bind it to the Nebula IP rather than exposing it on the
-        # LAN; the colocated hearthd connects to the same address (see below).
-        tcp-control = {
-          enabled = true;
-          bind_to_address = config.custom.dns.nebula.ipv4;
-        };
-
         # Control/web UI is reached over Nebula via the reverse proxy below.
         http = {
           enabled = true;
@@ -117,14 +108,6 @@ in
           url_prefix = "https://snapcast.${config.ogygia.domain}";
         };
       };
-    };
-
-    # tcp-control binds to the Nebula IP, which only exists once the tunnel is
-    # up; without this snapserver races nebula and fails to bind, taking the
-    # audio streams down with it.
-    systemd.services.snapserver = {
-      after = [ "nebula-online@ogygia.service" ];
-      wants = [ "nebula-online@ogygia.service" ];
     };
 
     # AirPlay 2 receiver runs as its own service rather than being spawned by
