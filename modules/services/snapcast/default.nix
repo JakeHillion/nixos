@@ -23,6 +23,39 @@ let
   # mode=read, so the fifo isn't created (and owned) by snapserver's dynamic
   # user, which shairport could then not write to.
   airplayPipe = "/run/snapcast/airplay";
+
+  # LiveATC feeds are plain MP3 over HTTP, which snapcast has no native source
+  # for, so ffmpeg pulls the stream and decodes it to raw PCM on stdout for a
+  # process source. -reconnect* rides out brief network drops; spaces are %20
+  # so the argument list survives snapserver's source-URI parsing (same trick
+  # as the librespot params above).
+  atcSource =
+    let
+      url = "http://d.liveatc.net/kjfk9_gnd";
+      params = lib.concatStringsSep "%20" [
+        "-nostdin"
+        "-hide_banner"
+        "-nostats"
+        "-loglevel"
+        "error"
+        "-reconnect"
+        "1"
+        "-reconnect_streamed"
+        "1"
+        "-reconnect_delay_max"
+        "5"
+        "-i"
+        url
+        "-ac"
+        "2"
+        "-ar"
+        "44100"
+        "-f"
+        "s16le"
+        "-"
+      ];
+    in
+    "process:///${lib.getExe pkgs.ffmpeg-headless}?name=KJFK-Ground&sampleformat=44100:16:2&params=${params}";
 in
 {
   options.custom.services.snapcast = {
@@ -54,6 +87,7 @@ in
         stream.source = [
           "librespot:///${lib.getExe librespot}?name=Spotify&devicename=${cfg.deviceName}&bitrate=320&params=${librespotParams}"
           "pipe://${airplayPipe}?name=AirPlay&mode=read&sampleformat=44100:16:2"
+          atcSource
           # Follows whichever of the above is currently playing, so a client can
           # sit on one stream and always hear the active source. Pinned to the
           # 44.1kHz rate both real sources emit so nothing gets resampled.
