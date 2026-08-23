@@ -23,6 +23,39 @@ let
   # mode=read, so the fifo isn't created (and owned) by snapserver's dynamic
   # user, which shairport could then not write to.
   airplayPipe = "/run/snapcast/airplay";
+
+  # LiveATC feeds are plain MP3 over HTTP, which snapcast has no native source
+  # for, so ffmpeg pulls the stream and decodes it to raw PCM on stdout for a
+  # process source. -reconnect* rides out brief network drops; spaces are %20
+  # so the argument list survives snapserver's source-URI parsing (same trick
+  # as the librespot params above).
+  atcSource =
+    let
+      url = "http://d.liveatc.net/kjfk9_gnd";
+      params = lib.concatStringsSep "%20" [
+        "-nostdin"
+        "-hide_banner"
+        "-nostats"
+        "-loglevel"
+        "error"
+        "-reconnect"
+        "1"
+        "-reconnect_streamed"
+        "1"
+        "-reconnect_delay_max"
+        "5"
+        "-i"
+        url
+        "-ac"
+        "2"
+        "-ar"
+        "44100"
+        "-f"
+        "s16le"
+        "-"
+      ];
+    in
+    "process:///${lib.getExe pkgs.ffmpeg-headless}?name=KJFK-Ground&sampleformat=44100:16:2&params=${params}";
 in
 {
   options.custom.services.snapcast = {
@@ -54,6 +87,7 @@ in
         stream.source = [
           "librespot:///${lib.getExe librespot}?name=Spotify&devicename=${cfg.deviceName}&bitrate=320&params=${librespotParams}"
           "pipe://${airplayPipe}?name=AirPlay&mode=read&sampleformat=44100:16:2"
+          atcSource
           # Follows whichever of the above is currently playing, so a client can
           # sit on one stream and always hear the active source. Pinned to the
           # 44.1kHz rate both real sources emit so nothing gets resampled.
@@ -62,6 +96,15 @@ in
 
         # Snapclients connect here; opened per-interface by the host firewall.
         tcp-streaming.enabled = true;
+
+        # JSON-RPC control interface. hearthd drives snapcast through this, and
+        # the Snapcast phone app speaks the same raw TCP protocol, so both reach
+        # it over Nebula. Bind it to the Nebula IP rather than exposing it on the
+        # LAN; the colocated hearthd connects to the same address (see below).
+        tcp-control = {
+          enabled = true;
+          bind_to_address = config.custom.dns.nebula.ipv4;
+        };
 
         # Control/web UI is reached over Nebula via the reverse proxy below.
         http = {
@@ -74,6 +117,14 @@ in
           url_prefix = "https://snapcast.${config.ogygia.domain}";
         };
       };
+    };
+
+    # tcp-control binds to the Nebula IP, which only exists once the tunnel is
+    # up; without this snapserver races nebula and fails to bind, taking the
+    # audio streams down with it.
+    systemd.services.snapserver = {
+      after = [ "nebula-online@ogygia.service" ];
+      wants = [ "nebula-online@ogygia.service" ];
     };
 
     # AirPlay 2 receiver runs as its own service rather than being spawned by
