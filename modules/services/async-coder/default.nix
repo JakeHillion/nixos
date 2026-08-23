@@ -125,20 +125,6 @@ in
           };
         };
 
-        agents = {
-          pi = {
-            api_key_file = pkgs.writeText "async-coder-dummy-key" "unused";
-            api_url = "http://127.0.0.1:9100/v1/batch/10000";
-            api = "openai-completions";
-            provider = "llm-proxy";
-            model = "deepseek/deepseek-v4-flash-0731";
-
-            # upstream is 1M, but let's have it compact earlier as 1M would be
-            # really expensive for the way we use async-coder
-            context_window = "500000";
-          };
-        };
-
         opencode = {
           api_key_file = pkgs.writeText "async-coder-dummy-key" "unused";
           api_url = "http://127.0.0.1:9100/v1/batch/10000";

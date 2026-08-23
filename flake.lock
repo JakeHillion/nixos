@@ -144,16 +144,15 @@
         "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
-        "lastModified": 1787496606,
-        "narHash": "sha256-MAkJTVK16fo8zvIANgZ9ztBjYY6RkcpxSWuZAtkTMZw=",
-        "ref": "jj/lqusmwwxupoy",
-        "rev": "f8c08acddecdb861c63df4a7febccf309bc2977d",
-        "revCount": 132,
+        "lastModified": 1783021031,
+        "narHash": "sha256-iteSHrc1Cywo1/mHQ/+svTuDYFeEfnInomCdRdZkHIQ=",
+        "ref": "refs/heads/main",
+        "rev": "a3550869e6cd6e9bcc828bb8a6afcbafc7faca3c",
+        "revCount": 123,
         "type": "git",
         "url": "https://gitea.hillion.co.uk/JakeHillion/async-coder.git"
       },
       "original": {
-        "ref": "jj/lqusmwwxupoy",
         "type": "git",
         "url": "https://gitea.hillion.co.uk/JakeHillion/async-coder.git"
       }
@@ -347,11 +346,11 @@
         "rust-analyzer-src": "rust-analyzer-src_2"
       },
       "locked": {
-        "lastModified": 1786862861,
-        "narHash": "sha256-mo8fjp9i/Kl7rl5NnOCwnKCDAeynSV0vBoEeE//3JBE=",
+        "lastModified": 1786900242,
+        "narHash": "sha256-52Fj2HDnEeW13PAjZJiSuTqzDbCBKu4841O6WLJKcig=",
         "owner": "nix-community",
         "repo": "fenix",
-        "rev": "702015af79108e50a1d6a3a64516a88e62477ffa",
+        "rev": "27a7186cfd33b512c0bfe5e60c385cb5938323fc",
         "type": "github"
       },
       "original": {
@@ -671,11 +670,11 @@
         "treefmt-nix": "treefmt-nix_5"
       },
       "locked": {
-        "lastModified": 1786924036,
-        "narHash": "sha256-AQNtrVUt7erBw4f+QBpGUn1jUX6FDc7NGH3+X6VrtcM=",
+        "lastModified": 1787496828,
+        "narHash": "sha256-pHzDreuqnutv+JZ4wVRGKKmqkwfSew+fIjLxawxZgOQ=",
         "owner": "JakeHillion",
         "repo": "hearthd",
-        "rev": "dc455ce02e1b74b6e6d11a6fb55e11140b41372e",
+        "rev": "e2ab9a2b454d6eadecdfe735d2c0d0215a18b434",
         "type": "github"
       },
       "original": {
@@ -1373,11 +1372,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785945821,
-        "narHash": "sha256-NLSyTCW4K4ofhNBllt3omPasm6QpralXH1DBZOc91Dw=",
+        "lastModified": 1786901030,
+        "narHash": "sha256-WSFCsDSE5ffgD2MqzkM2CYjeFiKhRF/dJUN8uedb6YE=",
         "owner": "numtide",
         "repo": "treefmt-nix",
-        "rev": "ae7910970dddc408fe6ab1c8e4b277bb21d72dc0",
+        "rev": "27b3b12a8e6375f28ebe122f07d230ca5459bbfa",
         "type": "github"
       },
       "original": {
