@@ -1,5 +1,25 @@
 {
   "version": 1,
+  "settings": {
+    "hearthd": {
+      "enabled": true,
+      "base_url": "https://hearthd.iot.home.jakehillion.me"
+    },
+    "snapcast": {
+      "enabled": true,
+      "host": "stinger.iot.home.jakehillion.me",
+      "port": 1704
+    },
+    "wake_word": {
+      "enabled": true,
+      "model": "hey_mycroft"
+    },
+    "voice": {
+      "enabled": true,
+      "base_url": "https://homeassistant.iot.home.jakehillion.me",
+      "pipeline_id": ""
+    }
+  },
   "root": {
     "type": "photo_screensaver",
     "mode": "solar",
