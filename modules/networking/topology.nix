@@ -437,6 +437,11 @@
                 hwAddress = "a4:0e:2b:52:ec:e0";
                 dhcpReservation = true;
               };
+              "17" = {
+                hostname = "3dprinter";
+                hwAddress = "e8:06:90:9f:ae:a4";
+                dhcpReservation = true;
+              };
             };
           };
 
