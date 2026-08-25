@@ -69,6 +69,16 @@
       }];
     };
 
+    ## Health-checked cellular failover: probes the primary WAN's upstream
+    ## and flips the cellular route metric between standby (2048) and active
+    ## (999) as described above.
+    custom.networking.cellularFailover = {
+      enable = true;
+      primaryInterface = "enp2s0";
+      interface = "cellular";
+      gateway = "10.69.186.1";
+    };
+
     ## WireGuard VPN Server
     networking.wireguard.interfaces."wg0" = {
       ips = [ "10.200.0.1/24" ];
