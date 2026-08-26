@@ -4,12 +4,27 @@ let
   cfg = config.custom.home.pi;
   user = config.custom.user;
   piPackage = pkgs.unstable.pi-coding-agent;
+  piExtensions = pkgs.linkFarm "pi-extensions" [
+    {
+      name = "subagent";
+      path = "${piPackage}/lib/node_modules/pi-monorepo/examples/extensions/subagent";
+    }
+  ];
   piSettings = {
     lastChangelogVersion = piPackage.version;
     defaultProvider = "openai-codex";
     defaultModel = "gpt-5.6-sol";
     defaultThinkingLevel = "medium";
     enableInstallTelemetry = false;
+  };
+  piModels.providers.llm-proxy = {
+    baseUrl = "http://127.0.0.1:9100/v1/batch/30000";
+    api = "openai-completions";
+    apiKey = "unused";
+    models = [{
+      id = "deepseek/deepseek-v4-flash-0731";
+      contextWindow = 1000000;
+    }];
   };
 in
 {
@@ -33,9 +48,23 @@ in
         };
       };
 
-      home.file.".pi/agent/settings.json" = {
-        text = builtins.toJSON piSettings;
-        force = true;
+      home.file = {
+        ".pi/agent/settings.json" = {
+          text = builtins.toJSON piSettings;
+          force = true;
+        };
+        ".pi/agent/models.json" = {
+          text = builtins.toJSON piModels;
+          force = true;
+        };
+        ".pi/agent/agents" = {
+          source = ./agents;
+          force = true;
+        };
+        ".pi/agent/extensions" = {
+          source = piExtensions;
+          force = true;
+        };
       };
     };
   };
