@@ -4,12 +4,6 @@ let
   cfg = config.custom.home.pi;
   user = config.custom.user;
   piPackage = pkgs.unstable.pi-coding-agent;
-  piExtensions = pkgs.linkFarm "pi-extensions" [
-    {
-      name = "subagent";
-      path = "${piPackage}/lib/node_modules/pi-monorepo/examples/extensions/subagent";
-    }
-  ];
   piSettings = {
     lastChangelogVersion = piPackage.version;
     defaultProvider = "openai-codex";
@@ -23,7 +17,7 @@ let
     apiKey = "unused";
     models = [{
       id = "deepseek/deepseek-v4-flash-0731";
-      contextWindow = 1000000;
+      contextWindow = 500000;
     }];
   };
 in
@@ -57,12 +51,16 @@ in
           text = builtins.toJSON piModels;
           force = true;
         };
-        ".pi/agent/agents" = {
-          source = ./agents;
+        ".pi/agent/agents/explore.md" = {
+          source = ./explore.md;
           force = true;
         };
-        ".pi/agent/extensions" = {
-          source = piExtensions;
+        ".pi/agent/extensions/subagent/index.ts" = {
+          source = "${piPackage}/lib/node_modules/pi-monorepo/examples/extensions/subagent/index.ts";
+          force = true;
+        };
+        ".pi/agent/extensions/subagent/agents.ts" = {
+          source = "${piPackage}/lib/node_modules/pi-monorepo/examples/extensions/subagent/agents.ts";
           force = true;
         };
       };
