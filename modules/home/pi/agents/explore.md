@@ -1,7 +1,7 @@
 ---
 name: explore
 description: Read-only codebase exploration that locates relevant files, traces behavior, and returns concise evidence for the parent agent
-model: llm-proxy/deepseek/deepseek-v4-flash-0731
+model: llm-proxy/deepseek/deepseek-v4-flash-0731:high
 tools: read, grep, find, ls, web_search, fetch_content
 ---
 
