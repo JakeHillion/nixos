@@ -11,6 +11,15 @@ let
     defaultThinkingLevel = "medium";
     enableInstallTelemetry = false;
   };
+  piModels.providers.llm-proxy = {
+    baseUrl = "http://127.0.0.1:9100/v1/batch/30000";
+    api = "openai-completions";
+    apiKey = "unused";
+    models = [{
+      id = "deepseek/deepseek-v4-flash-0731";
+      contextWindow = 500000;
+    }];
+  };
 in
 {
   options.custom.home.pi.enable = lib.mkEnableOption "Pi coding agent setup";
@@ -33,9 +42,27 @@ in
         };
       };
 
-      home.file.".pi/agent/settings.json" = {
-        text = builtins.toJSON piSettings;
-        force = true;
+      home.file = {
+        ".pi/agent/settings.json" = {
+          text = builtins.toJSON piSettings;
+          force = true;
+        };
+        ".pi/agent/models.json" = {
+          text = builtins.toJSON piModels;
+          force = true;
+        };
+        ".pi/agent/agents/explore.md" = {
+          source = ./explore.md;
+          force = true;
+        };
+        ".pi/agent/extensions/subagent/index.ts" = {
+          source = "${piPackage}/lib/node_modules/pi-monorepo/examples/extensions/subagent/index.ts";
+          force = true;
+        };
+        ".pi/agent/extensions/subagent/agents.ts" = {
+          source = "${piPackage}/lib/node_modules/pi-monorepo/examples/extensions/subagent/agents.ts";
+          force = true;
+        };
       };
     };
   };
