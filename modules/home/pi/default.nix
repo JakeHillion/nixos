@@ -49,11 +49,22 @@ let
   };
   piSettings = {
     lastChangelogVersion = piPackage.version;
-    defaultProvider = "openai-codex";
-    defaultModel = "gpt-5.6-sol";
-    defaultThinkingLevel = "medium";
+    defaultProvider = "llm-proxy";
+    defaultModel = "deepseek/deepseek-v4-flash-0731";
+    defaultThinkingLevel = "max";
     enableInstallTelemetry = false;
+    # Restrict the default (/model picker) scoped list to just these models;
+    # Tab in the picker still reveals the full "all" list when a GPT model is wanted.
+    enabledModels = [
+      "gpt-5.6-sol"
+      "gpt-5.6-terra"
+      "gpt-5.6-luna"
+      "deepseek/deepseek-v4-flash-0731"
+    ];
   };
+  # DeepSeek V4-Flash-0731 supports reasoning_effort in {off, low, high, max}
+  # (per the upstream HF/Fireworks model cards). "medium"/"minimal" are not
+  # valid, so null them out to hide the unsupported thinking levels.
   piModels.providers.llm-proxy = {
     baseUrl = "http://127.0.0.1:9100/v1/batch/30000";
     api = "openai-completions";
@@ -61,6 +72,15 @@ let
     models = [{
       id = "deepseek/deepseek-v4-flash-0731";
       contextWindow = 1000000;
+      reasoning = true;
+      compat = { thinkingFormat = "deepseek"; };
+      thinkingLevelMap = {
+        minimal = null;
+        low = "low";
+        medium = null;
+        high = "high";
+        max = "max";
+      };
     }];
   };
 in
