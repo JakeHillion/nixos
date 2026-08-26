@@ -12,6 +12,7 @@ in
     ./neomutt.nix
     ./nix-trusted-settings.nix
     ./opencode.nix
+    ./pi
     ./tmux
   ];
 
