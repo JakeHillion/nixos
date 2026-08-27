@@ -99,6 +99,18 @@ in
         skills_path = skillsDir;
         allowed_skills = [ "commit" "github-fetch" ];
 
+        permissions = [
+          { prefix = "cat"; }
+          { prefix = "echo"; }
+          { prefix = "git diff"; }
+          { prefix = "git log"; }
+          { prefix = "git status"; }
+          { prefix = "grep"; }
+          { prefix = "nix build"; }
+          { prefix = "nix flake check"; }
+          { prefix = "which"; }
+        ];
+
         forges = {
           gitea = {
             type = "gitea";
@@ -107,7 +119,17 @@ in
             token_file = config.age.secrets."async-coder/gitea-token".path;
 
             repositories = [
-              { owner = "JakeHillion"; name = "async-coder"; envrc = true; }
+              {
+                owner = "JakeHillion";
+                name = "async-coder";
+                envrc = true;
+                permissions = [
+                  { prefix = "cargo build"; }
+                  { prefix = "cargo clippy"; }
+                  { prefix = "cargo fmt"; }
+                  { prefix = "cargo test"; }
+                ];
+              }
               { owner = "JakeHillion"; name = "nixos"; jujutsu_mode = true; envrc = true; }
               { owner = "JakeHillion"; name = "personal-agent"; envrc = true; }
               { owner = "JakeHillion"; name = "testquorum"; envrc = true; }
