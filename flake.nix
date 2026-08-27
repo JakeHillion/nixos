@@ -37,7 +37,7 @@
     ogygia.url = "github:JakeHillion/ogygia-nix";
     ogygia.inputs.nixpkgs.follows = "nixpkgs";
 
-    async-coder.url = "git+https://gitea.hillion.co.uk/JakeHillion/async-coder.git";
+    async-coder.url = "git+https://gitea.hillion.co.uk/JakeHillion/async-coder.git?ref=jj/orusqyptxzyr";
     async-coder.inputs.nixpkgs.follows = "nixpkgs";
 
     hearthd.url = "github:JakeHillion/hearthd";
@@ -103,6 +103,7 @@
             gitea-actions-runner = final.unstable.gitea-actions-runner;
           };
           "llm-proxy" = final.callPackage ./pkgs/llm-proxy.nix { };
+          "piPackages"."pi-web-access" = final.callPackage ./pkgs/pi-web-access.nix { };
         })
       ];
       mkSystem = import ./lib/mkSystem.nix { inherit inputs; };
@@ -186,6 +187,7 @@
 
           packages.caddy-with-dns = pkgs.caddy-with-dns;
           packages.llm-proxy = pkgs.llm-proxy;
+          packages.piPackages = pkgs.piPackages;
 
           devShells.default = pkgs.mkShell {
             packages = [
