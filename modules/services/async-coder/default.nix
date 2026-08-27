@@ -99,6 +99,33 @@ in
         skills_path = skillsDir;
         allowed_skills = [ "commit" "github-fetch" ];
 
+        permissions.allow = [
+          { exact = "git branch --contains"; }
+          { exact = "git branch --show-current"; }
+
+          { prefix = "cat"; }
+          { prefix = "echo"; }
+          { prefix = "git add"; }
+          { prefix = "git cat-file"; }
+          { prefix = "git diff"; }
+          { prefix = "git log"; }
+          { prefix = "git merge-base"; }
+          { prefix = "git reflog"; }
+          { prefix = "git rev-parse"; }
+          { prefix = "git show"; }
+          { prefix = "git status"; }
+          { prefix = "grep"; }
+          { prefix = "head"; }
+          { prefix = "ls"; }
+          { prefix = "nix build"; }
+          { prefix = "nix flake check"; }
+          { prefix = "nix fmt"; }
+          { prefix = "rg"; }
+          { prefix = "tail"; }
+          { prefix = "wc"; }
+          { prefix = "which"; }
+        ];
+
         forges = {
           gitea = {
             type = "gitea";
@@ -107,7 +134,18 @@ in
             token_file = config.age.secrets."async-coder/gitea-token".path;
 
             repositories = [
-              { owner = "JakeHillion"; name = "async-coder"; envrc = true; }
+              {
+                owner = "JakeHillion";
+                name = "async-coder";
+                envrc = true;
+                permissions.allow = [
+                  { prefix = "cargo build"; }
+                  { prefix = "cargo check"; }
+                  { prefix = "cargo clippy"; }
+                  { prefix = "cargo fmt"; }
+                  { prefix = "cargo test"; }
+                ];
+              }
               { owner = "JakeHillion"; name = "nixos"; jujutsu_mode = true; envrc = true; }
               { owner = "JakeHillion"; name = "personal-agent"; envrc = true; }
               { owner = "JakeHillion"; name = "testquorum"; envrc = true; }
@@ -128,6 +166,8 @@ in
         };
 
         agents = {
+          default = "pi";
+
           pi = {
             api_key_file = pkgs.writeText "async-coder-dummy-key" "unused";
             api_url = "http://127.0.0.1:9100/v1/batch/10000";
