@@ -47,7 +47,6 @@ in
     };
 
     custom.home.opencode.enable = true;
-    custom.home.pi.enable = true;
 
     # Remote builder for aarch64-linux builds
     nix.distributedBuilds = true;

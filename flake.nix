@@ -103,7 +103,6 @@
             gitea-actions-runner = final.unstable.gitea-actions-runner;
           };
           "llm-proxy" = final.callPackage ./pkgs/llm-proxy.nix { };
-          "piPackages"."pi-web-access" = final.callPackage ./pkgs/pi-web-access.nix { };
         })
       ];
       mkSystem = import ./lib/mkSystem.nix { inherit inputs; };
@@ -187,7 +186,6 @@
 
           packages.caddy-with-dns = pkgs.caddy-with-dns;
           packages.llm-proxy = pkgs.llm-proxy;
-          packages.piPackages = pkgs.piPackages;
 
           devShells.default = pkgs.mkShell {
             packages = [
