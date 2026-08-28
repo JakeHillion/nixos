@@ -104,10 +104,12 @@ in
 
           { prefix = "cat"; }
           { prefix = "echo"; }
+          { prefix = "git add"; }
           { prefix = "git cat-file"; }
           { prefix = "git diff"; }
           { prefix = "git log"; }
           { prefix = "git merge-base"; }
+          { prefix = "git reflog"; }
           { prefix = "git status"; }
           { prefix = "grep"; }
           { prefix = "head"; }
