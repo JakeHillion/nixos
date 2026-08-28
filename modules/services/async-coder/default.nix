@@ -99,7 +99,7 @@ in
         skills_path = skillsDir;
         allowed_skills = [ "commit" "github-fetch" ];
 
-        permissions = [
+        permissions.allow = [
           { prefix = "cat"; }
           { prefix = "echo"; }
           { prefix = "git diff"; }
@@ -123,7 +123,7 @@ in
                 owner = "JakeHillion";
                 name = "async-coder";
                 envrc = true;
-                permissions = [
+                permissions.allow = [
                   { prefix = "cargo build"; }
                   { prefix = "cargo clippy"; }
                   { prefix = "cargo fmt"; }
