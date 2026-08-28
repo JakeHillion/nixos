@@ -144,16 +144,16 @@
         "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
-        "lastModified": 1787928471,
-        "narHash": "sha256-5dvfEsIjVzmtW+03kErf7+k4s9Ynt9cbUd0QrjhGDn8=",
-        "ref": "feature/trysqykxlwyu",
-        "rev": "3b3be9a0ca751822888425d40c2b24a10cc6a37f",
-        "revCount": 151,
+        "lastModified": 1787937874,
+        "narHash": "sha256-qJxUc/BiDF8YrPq5s/smNzaeIQAcgplVJ7wNarrQHYI=",
+        "ref": "feature/xkyyurruxxmq",
+        "rev": "8568a4d094e050b9135ccbde7852aafe0f2f2abe",
+        "revCount": 153,
         "type": "git",
         "url": "https://gitea.hillion.co.uk/JakeHillion/async-coder.git"
       },
       "original": {
-        "ref": "feature/trysqykxlwyu",
+        "ref": "feature/xkyyurruxxmq",
         "type": "git",
         "url": "https://gitea.hillion.co.uk/JakeHillion/async-coder.git"
       }
