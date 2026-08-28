@@ -100,14 +100,23 @@ in
         allowed_skills = [ "commit" "github-fetch" ];
 
         permissions.allow = [
+          { exact = "git branch --show-current"; }
+
           { prefix = "cat"; }
           { prefix = "echo"; }
+          { prefix = "git cat-file"; }
           { prefix = "git diff"; }
           { prefix = "git log"; }
+          { prefix = "git merge-base"; }
           { prefix = "git status"; }
           { prefix = "grep"; }
+          { prefix = "head"; }
+          { prefix = "ls"; }
           { prefix = "nix build"; }
           { prefix = "nix flake check"; }
+          { prefix = "nix fmt"; }
+          { prefix = "tail"; }
+          { prefix = "wc"; }
           { prefix = "which"; }
         ];
 
@@ -125,6 +134,7 @@ in
                 envrc = true;
                 permissions.allow = [
                   { prefix = "cargo build"; }
+                  { prefix = "cargo check"; }
                   { prefix = "cargo clippy"; }
                   { prefix = "cargo fmt"; }
                   { prefix = "cargo test"; }
