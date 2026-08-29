@@ -63,7 +63,11 @@ in
 
     deviceName = lib.mkOption {
       type = lib.types.str;
-      default = config.networking.hostName;
+      # This host is currently the only place snapcast runs, and its audio feed
+      # is location-agnostic (it can be routed anywhere in the flat or nowhere), so
+      # the advertised name describes where it lives rather than a single room. If
+      # a second feed is ever added, bump the suffix here ("Jake's Flat 1").
+      default = "Jake's Flat";
       description = "Name advertised to Spotify Connect and AirPlay.";
     };
 
