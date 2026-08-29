@@ -105,6 +105,7 @@ in
           { prefix = "cat"; }
           { prefix = "echo"; }
           { prefix = "git add"; }
+          { prefix = "git show"; }
           { prefix = "git cat-file"; }
           { prefix = "git diff"; }
           { prefix = "git log"; }
@@ -117,6 +118,7 @@ in
           { prefix = "nix build"; }
           { prefix = "nix flake check"; }
           { prefix = "nix fmt"; }
+          { prefix = "rg"; }
           { prefix = "tail"; }
           { prefix = "wc"; }
           { prefix = "which"; }
