@@ -100,17 +100,19 @@ in
         allowed_skills = [ "commit" "github-fetch" ];
 
         permissions.allow = [
+          { exact = "git branch --contains"; }
           { exact = "git branch --show-current"; }
 
           { prefix = "cat"; }
           { prefix = "echo"; }
           { prefix = "git add"; }
-          { prefix = "git show"; }
           { prefix = "git cat-file"; }
           { prefix = "git diff"; }
           { prefix = "git log"; }
           { prefix = "git merge-base"; }
           { prefix = "git reflog"; }
+          { prefix = "git rev-parse"; }
+          { prefix = "git show"; }
           { prefix = "git status"; }
           { prefix = "grep"; }
           { prefix = "head"; }
@@ -164,6 +166,8 @@ in
         };
 
         agents = {
+          default = "pi";
+
           pi = {
             api_key_file = pkgs.writeText "async-coder-dummy-key" "unused";
             api_url = "http://127.0.0.1:9100/v1/batch/10000";
