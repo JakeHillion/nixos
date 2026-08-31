@@ -120,7 +120,7 @@ in
 
                   "appdata/blackmagic-cam" = {
                     id = "thermodynamic-ultramodern-asynchronism";
-                    devices = [ "jakes-iphone.mob" "phoenix.st" ];
+                    devices = [ "bob.lt" "jakes-iphone.mob" "phoenix.st" ];
                     # Sync smallest files first so the importer can
                     # process and free remote storage more quickly.
                     order = "smallestFirst";
