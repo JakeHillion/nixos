@@ -23,13 +23,6 @@ in
       after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
 
-      unitConfig = {
-        # Bound the retries below. Without a limit they repeat indefinitely,
-        # and because each one resets OnUnitInactiveSec the 6h timer never
-        # reaches its trigger.
-        StartLimitIntervalSec = "2h";
-        StartLimitBurst = 4;
-      };
 
       serviceConfig = {
         Type = "oneshot";
@@ -70,7 +63,11 @@ in
             [[ "$file" =~ \[([a-zA-Z0-9_-]{11})\]\. ]] || continue
             video_id="''${BASH_REMATCH[1]}"
 
-            grep -qxF "$video_id" "$playlist_videos" && continue
+            # -- : video IDs can begin with a hyphen, which grep would
+            # otherwise read as options.
+            if grep -qxF -- "$video_id" "$playlist_videos"; then
+              continue
+            fi
 
             rm -f -- "$file"
             echo "Deleted video: $video_id"
@@ -127,11 +124,8 @@ in
           fi
         ''}";
 
-        # Retry transient failures (rate limiting, a flaky network) sooner than
-        # the 6h timer would. StartLimitBurst above stops this repeating
-        # forever; once it trips, the timer takes over again.
         Restart = "on-failure";
-        RestartSec = "20m";
+        RestartSec = "75m";
       };
     };
 
