@@ -3,6 +3,7 @@
 let
   cfg = config.custom.services.offline-youtube;
   syncDir = "${config.custom.syncthing.baseDir}/media/offline-youtube";
+  archive = "${syncDir}/.yt-dlp-archive.txt";
 in
 {
   options.custom.services.offline-youtube = {
@@ -21,6 +22,7 @@ in
       after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
 
+
       serviceConfig = {
         Type = "oneshot";
         User = "jake";
@@ -30,76 +32,88 @@ in
         # Load playlist URL from secret
         EnvironmentFile = config.age.secrets."offline-youtube/playlist.env".path;
 
+        RuntimeDirectory = "offline-youtube";
+
         # Clean up videos no longer in playlist before downloading
         ExecStartPre = "${pkgs.writeShellScript "cleanup-removed-videos" ''
           set -euo pipefail
 
-          # Create temporary files
-          current_videos=$(mktemp)
-          playlist_videos=$(mktemp)
-          current_sorted=$(mktemp)
-          playlist_sorted=$(mktemp)
+          playlist_videos="$RUNTIME_DIRECTORY/playlist-ids"
 
-          # Extract video IDs from downloaded files
+          # Get playlist video IDs. Failing here aborts the unit before
+          # anything is deleted: an empty list is indistinguishable from every
+          # video having been taken off the playlist.
+          ${pkgs.yt-dlp}/bin/yt-dlp --flat-playlist --print id "$PLAYLIST_URL" > "$playlist_videos"
+          [[ -s "$playlist_videos" ]]
+
           shopt -s nullglob
-          for file in *.mkv *.mp4 *.webm; do
+          for file in *; do
+            [[ -f "$file" ]] || continue
+
             # Extract ID from filename pattern: "Title [ID].ext"
-            if [[ "$file" =~ \[([a-zA-Z0-9_-]+)\]\. ]]; then
-              echo "''${BASH_REMATCH[1]}" >> "$current_videos"
+            [[ "$file" =~ \[([a-zA-Z0-9_-]{11})\]\. ]] || continue
+            video_id="''${BASH_REMATCH[1]}"
+
+            # -- : video IDs can begin with a hyphen, which grep would
+            # otherwise read as options.
+            if grep -qxF -- "$video_id" "$playlist_videos"; then
+              continue
             fi
+
+            rm -f -- "$file"
+            echo "Deleted video: $video_id"
+
+            # Drop the archive entry too, otherwise re-adding the video to the
+            # playlist would never download it again.
+            sed -i "/^youtube $video_id\$/d" ${archive}
           done
-
-          # Get playlist video IDs
-          ${pkgs.yt-dlp}/bin/yt-dlp --flat-playlist --print id "$PLAYLIST_URL" > "$playlist_videos" 2>/dev/null || true
-
-          # Find videos to delete (in current-videos but not in playlist-videos)
-          if [[ -s "$current_videos" ]] && [[ -s "$playlist_videos" ]]; then
-            sort -u "$current_videos" > "$current_sorted"
-            sort -u "$playlist_videos" > "$playlist_sorted"
-
-            comm -23 "$current_sorted" "$playlist_sorted" | while read -r video_id; do
-              # Find and delete files matching this video ID
-              find . -maxdepth 1 -type f -name "*\[$video_id\].*" -delete
-              echo "Deleted video: $video_id"
-            done
-          fi
-
-          # Cleanup temp files
-          rm -f "$current_videos" "$playlist_videos" "$current_sorted" "$playlist_sorted"
         ''}";
 
-        # yt-dlp command with all required options
-        ExecStart = lib.strings.concatStringsSep " " [
-          "${pkgs.yt-dlp}/bin/yt-dlp"
+        ExecStart = "${pkgs.writeShellScript "sync-playlist" ''
+          set -euo pipefail
 
-          # Format: best video + best audio
-          "-f 'bestvideo+bestaudio/best'"
+          playlist_videos="$RUNTIME_DIRECTORY/playlist-ids"
+          wanted="$RUNTIME_DIRECTORY/wanted"
+          log="$RUNTIME_DIRECTORY/log"
 
-          # SponsorBlock: skip sponsors, create chapters for everything
-          "--sponsorblock-mark all"
-          "--sponsorblock-remove sponsor"
+          touch ${archive}
+          sed 's/^/youtube /' "$playlist_videos" > "$wanted"
 
-          # Download archive to track what's been downloaded
-          "--download-archive '${syncDir}/.yt-dlp-archive.txt'"
+          considered=$(wc -l < "$playlist_videos")
+          present=$(grep -cFxf "$wanted" ${archive} || true)
 
-          # Output template
-          "-o '%(title)s [%(id)s].%(ext)s'"
+          ${pkgs.yt-dlp}/bin/yt-dlp \
+            -f 'bestvideo+bestaudio/best' \
+            --sponsorblock-mark all \
+            --sponsorblock-remove sponsor \
+            --download-archive ${archive} \
+            -o '%(title)s [%(id)s].%(ext)s' \
+            --merge-output-format mkv \
+            --embed-metadata \
+            --embed-chapters \
+            --embed-subs \
+            --retries 10 \
+            --fragment-retries 10 \
+            --ignore-errors \
+            --no-progress \
+            "$PLAYLIST_URL" 2>&1 | tee "$log" || true
 
-          # Merge to mkv for best compatibility
-          "--merge-output-format mkv"
+          # The archive records exactly the videos that downloaded, so the
+          # counts come from it rather than from parsing yt-dlp's output.
+          settled=$(grep -cFxf "$wanted" ${archive} || true)
 
-          # Embed metadata and chapters
-          "--embed-metadata"
-          "--embed-chapters"
-          "--embed-subs"
+          echo "--- sync summary ---"
+          echo "considered:      $considered"
+          echo "already present: $present"
+          echo "downloaded:      $((settled - present))"
+          echo "failed:          $((considered - settled))"
 
-          # Retry on errors
-          "--retries 10"
-          "--fragment-retries 10"
-
-          # Use the playlist URL from the environment variable
-          "\"$PLAYLIST_URL\""
-        ];
+          if [[ "$settled" -lt "$considered" ]]; then
+            echo "failures:"
+            grep '^ERROR:' "$log" | sort -u | sed 's/^/  - /'
+            exit 1
+          fi
+        ''}";
 
         Restart = "on-failure";
         RestartSec = "75m";

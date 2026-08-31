@@ -103,6 +103,7 @@
             gitea-actions-runner = final.unstable.gitea-actions-runner;
           };
           "llm-proxy" = final.callPackage ./pkgs/llm-proxy.nix { };
+          "yt-dlp" = final.callPackage ./pkgs/yt-dlp.nix { yt-dlp = prev.yt-dlp; };
           "piPackages"."pi-web-access" = final.callPackage ./pkgs/pi-web-access.nix { };
         })
       ];
