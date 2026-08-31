@@ -4,7 +4,6 @@ let
   cfg = config.custom.services.offline-youtube;
   syncDir = "${config.custom.syncthing.baseDir}/media/offline-youtube";
   archive = "${syncDir}/.yt-dlp-archive.txt";
-  cacheDir = "/var/cache/offline-youtube";
 in
 {
   options.custom.services.offline-youtube = {
@@ -34,14 +33,6 @@ in
         EnvironmentFile = config.age.secrets."offline-youtube/playlist.env".path;
 
         RuntimeDirectory = "offline-youtube";
-
-        # yt-dlp drives a JavaScript runtime to solve YouTube's player
-        # challenges, which needs a writable cache of its own.
-        CacheDirectory = "offline-youtube";
-        Environment = [
-          "XDG_CACHE_HOME=${cacheDir}"
-          "DENO_DIR=${cacheDir}/deno"
-        ];
 
         # Clean up videos no longer in playlist before downloading
         ExecStartPre = "${pkgs.writeShellScript "cleanup-removed-videos" ''
