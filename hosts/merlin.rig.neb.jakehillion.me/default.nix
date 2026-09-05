@@ -46,6 +46,7 @@
     custom.users.jake.password = true;
     security.sudo.wheelNeedsPassword = lib.mkForce true;
     custom.desktop.sway.enable = true;
+    custom.desktop.automount.enable = true;
 
     ## Gaming
     custom.games.steam.enable = true;
@@ -76,9 +77,6 @@
         dockerSocket.enable = true;
       };
     };
-
-    ## Udisks
-    services.udisks2.enable = true;
 
     ## Syncthing
     custom.syncthing = {

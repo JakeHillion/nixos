@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ./automount.nix
     ./awesome
     ./sway
     ./timewall.nix

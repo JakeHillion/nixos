@@ -88,6 +88,7 @@
     ## Desktop
     custom.users.jake.password = true;
     custom.desktop.sway.enable = true;
+    custom.desktop.automount.enable = true;
     custom.games.steam.enable = true;
 
     security.sudo.wheelNeedsPassword = lib.mkForce true;
