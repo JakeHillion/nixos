@@ -1,3 +1,5 @@
+import base64
+import hashlib
 import heapq
 import os
 import subprocess
@@ -56,18 +58,66 @@ class Event:
         return self.timestamp < other.timestamp
 
 
-def list_mov_files() -> list[Path]:
-    return [f for f in WATCH_DIR.iterdir() if f.suffix.lower() == ".mov"]
+MEDIA_SUFFIXES = {
+    # video
+    ".mov", ".mp4", ".m4v", ".avi", ".mkv", ".webm",
+    # common raster photos
+    ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp",
+    ".tif", ".tiff", ".heic", ".heif", ".avif",
+    # camera raw
+    ".dng", ".cr2", ".cr3", ".nef", ".arw", ".orf",
+    ".raf", ".rw2", ".pef", ".srw",
+}
 
 
-def query_immich_asset(file_name: str, api_key: str) -> Optional[dict]:
-    """Query Immich for an asset by original file name."""
+def is_media_file(name: str) -> bool:
+    return Path(name).suffix.lower() in MEDIA_SUFFIXES
+
+
+def file_checksum(path: Path) -> str:
+    """SHA-1 of file content, base64-encoded (matches Immich asset checksum)."""
+    digest = hashlib.sha1()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            digest.update(chunk)
+    return base64.b64encode(digest.digest()).decode("ascii")
+
+
+def list_media_files() -> list[Path]:
+    return [f for f in WATCH_DIR.iterdir() if is_media_file(f.name)]
+
+
+def find_asset_by_checksum(file_path: Path, api_key: str) -> Optional[dict]:
+    """Find an asset by content checksum (unique regardless of file name)."""
+    headers = {"x-api-key": api_key}
+    checksum = file_checksum(file_path)
+    try:
+        resp = requests.post(
+            f"{IMMICH_URL}/api/search/metadata",
+            headers=headers,
+            json={"checksum": checksum},
+            timeout=30,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        assets = data.get("assets", {}).get("items", [])
+        if assets:
+            return max(assets, key=lambda a: a.get("createdAt", ""))
+    except Exception as e:
+        log.warning(
+            f"Failed to query Immich by checksum for {file_path.name}: {e}"
+        )
+    return None
+
+
+def find_asset_by_name(file_path: Path, api_key: str) -> Optional[dict]:
+    """Find an asset by original file name (fallback; ambiguous on collisions)."""
     headers = {"x-api-key": api_key}
     try:
         resp = requests.post(
             f"{IMMICH_URL}/api/search/metadata",
             headers=headers,
-            json={"originalFileName": file_name},
+            json={"originalFileName": file_path.name},
             timeout=30,
         )
         resp.raise_for_status()
@@ -76,15 +126,21 @@ def query_immich_asset(file_name: str, api_key: str) -> Optional[dict]:
         if assets:
             if len(assets) > 1:
                 log.warning(
-                    f"Found {len(assets)} Immich assets " f"for {file_name}"
+                    f"Found {len(assets)} Immich assets for "
+                    f"{file_path.name}; by-name match is ambiguous"
                 )
-            return max(
-                assets,
-                key=lambda a: a.get("createdAt", ""),
-            )
+            return max(assets, key=lambda a: a.get("createdAt", ""))
     except Exception as e:
-        log.warning(f"Failed to query Immich for {file_name}: {e}")
+        log.warning(f"Failed to query Immich for {file_path.name}: {e}")
     return None
+
+
+def query_immich_asset(file_path: Path, api_key: str) -> Optional[dict]:
+    """Find an Immich asset, preferring a unique checksum match."""
+    asset = find_asset_by_checksum(file_path, api_key)
+    if asset:
+        return asset
+    return find_asset_by_name(file_path, api_key)
 
 
 def upload_to_immich(file_path: Path, api_key: str) -> bool:
@@ -270,11 +326,14 @@ def main():
     last_seen_start: dict[str, Optional[datetime]] = {}
     last_seen_exit: dict[str, Optional[datetime]] = {}
 
-    for mov_file in list_mov_files():
-        asset = query_immich_asset(mov_file.name, api_key)
+    for media_file in list_media_files():
+        # Strict checksum check decides whether to upload; a by-name
+        # hit must not skip a genuinely new file whose name collides
+        # with an unrelated asset already in Immich.
+        asset = find_asset_by_checksum(media_file, api_key)
         if not asset:
-            upload_to_immich(mov_file, api_key)
-            asset = query_immich_asset(mov_file.name, api_key)
+            upload_to_immich(media_file, api_key)
+        asset = query_immich_asset(media_file, api_key)
         if asset:
             created_str = asset.get("createdAt")
             if created_str:
@@ -286,13 +345,13 @@ def main():
                         Event(
                             timestamp=created_at,
                             event_type="ImmichFileCreated",
-                            file_name=mov_file.name,
+                            file_name=media_file.name,
                         )
                     )
                 except ValueError as e:
                     log.warning(
                         f"Failed to parse timestamp for "
-                        f"{mov_file.name}: {e}"
+                        f"{media_file.name}: {e}"
                     )
 
     for svc in RESTIC_SERVICES:
@@ -329,12 +388,12 @@ def main():
 
         # Process inotify events (new .mov files)
         for ie in inotify_events:
-            if ie.name and ie.name.lower().endswith(".mov"):
+            if ie.name and is_media_file(ie.name):
                 log.info(f"New file detected: {ie.name}")
                 file_path = WATCH_DIR / ie.name
                 if file_path.exists():
                     upload_to_immich(file_path, api_key)
-                    asset = query_immich_asset(ie.name, api_key)
+                    asset = query_immich_asset(file_path, api_key)
                     if not asset:
                         log.warning(
                             f"Asset not found in Immich after "
