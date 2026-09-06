@@ -3,7 +3,7 @@ import heapq
 import os
 import subprocess
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
@@ -46,6 +46,35 @@ def get_api_key() -> str:
     return IMMICH_API_KEY_FILE.read_text().strip()
 
 
+def _parse_immich_timestamp(created_str: str) -> Optional[datetime]:
+    """Parse an Immich `createdAt` (ISO 8601, UTC) as UTC-aware."""
+    try:
+        return datetime.fromisoformat(created_str.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+def _parse_systemd_timestamp(ts_str: str) -> Optional[datetime]:
+    """Parse a `systemctl show` timestamp (naive local time) to UTC-aware.
+
+    systemctl reports `ExecMain*Timestamp` in the host's local timezone, but
+    strptime's *%Z* leaves the datetime naive. Use datetime.timestamp(), which
+    interprets a naive datetime as the local wall-clock, then re-express as
+    UTC. This correctly accounts for DST (e.g. Europe/London BST) so all events
+    share one UTC basis.
+    """
+    if not ts_str:
+        return None
+    try:
+        naive_local = datetime.strptime(ts_str, "%a %Y-%m-%d %H:%M:%S %Z")
+    except ValueError:
+        return None
+    try:
+        return datetime.fromtimestamp(naive_local.timestamp(), tz=timezone.utc)
+    except (ValueError, OverflowError, OSError):
+        return None
+
+
 @dataclass
 class Event:
     timestamp: datetime
@@ -55,6 +84,8 @@ class Event:
     region: Optional[str] = None
 
     def __lt__(self, other):
+        if self.timestamp.tzinfo is None or other.timestamp.tzinfo is None:
+            raise ValueError("Event timestamps must be timezone-aware (UTC)")
         return self.timestamp < other.timestamp
 
 
@@ -144,9 +175,7 @@ def fetch_created_at(asset_id: str, api_key: str) -> Optional[datetime]:
         resp.raise_for_status()
         created_str = resp.json().get("createdAt")
         if created_str:
-            return datetime.fromisoformat(
-                created_str.replace("Z", "+00:00")
-            ).replace(tzinfo=None)
+            return _parse_immich_timestamp(created_str)
     except Exception as e:
         log.warning(f"Failed to fetch asset {asset_id}: {e}")
     return None
@@ -211,21 +240,11 @@ def get_service_timestamps(
             if line.startswith("ExecMainStartTimestamp="):
                 ts_str = line.split("=", 1)[1].strip()
                 if ts_str:
-                    try:
-                        start_time = datetime.strptime(
-                            ts_str, "%a %Y-%m-%d %H:%M:%S %Z"
-                        )
-                    except ValueError:
-                        pass
+                    start_time = _parse_systemd_timestamp(ts_str)
             elif line.startswith("ExecMainExitTimestamp="):
                 ts_str = line.split("=", 1)[1].strip()
                 if ts_str:
-                    try:
-                        exit_time = datetime.strptime(
-                            ts_str, "%a %Y-%m-%d %H:%M:%S %Z"
-                        )
-                    except ValueError:
-                        pass
+                    exit_time = _parse_systemd_timestamp(ts_str)
             elif line.startswith("Result="):
                 success = line.split("=", 1)[1].strip() == "success"
 
