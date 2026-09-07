@@ -58,8 +58,19 @@ class Event:
         return self.timestamp < other.timestamp
 
 
-def list_mov_files() -> list[Path]:
-    return [f for f in WATCH_DIR.iterdir() if f.suffix.lower() == ".mov"]
+MEDIA_SUFFIXES = {
+    ".mov",
+    ".jpg",
+    ".jpeg",
+}
+
+
+def is_media_file(name: str) -> bool:
+    return Path(name).suffix.lower() in MEDIA_SUFFIXES
+
+
+def list_media_files() -> list[Path]:
+    return [f for f in WATCH_DIR.iterdir() if is_media_file(f.name)]
 
 
 def file_sha1(file_path: Path) -> str:
@@ -337,7 +348,7 @@ def main():
     last_seen_start: dict[str, Optional[datetime]] = {}
     last_seen_exit: dict[str, Optional[datetime]] = {}
 
-    files = list_mov_files()
+    files = list_media_files()
     checksums = {mov_file.name: file_sha1(mov_file) for mov_file in files}
 
     # Single bulk-upload-check covering the whole inbox.
@@ -409,12 +420,12 @@ def main():
         inotify_events = inotify.read(timeout=POLL_INTERVAL * 1000)
         new_events: list[Event] = []
 
-        # Process inotify events (new .mov files) in one batch.
+        # Process inotify events (new media files) in one batch.
         candidate_paths: dict[str, Path] = {}
         pending_checksums = {ev.checksum for ev in events + new_events}
         candidates: dict[str, str] = {}  # filename -> checksum
         for ie in inotify_events:
-            if not (ie.name and ie.name.lower().endswith(".mov")):
+            if not (ie.name and is_media_file(ie.name)):
                 continue
             log.info(f"New file detected: {ie.name}")
             file_path = WATCH_DIR / ie.name
