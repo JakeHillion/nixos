@@ -1,4 +1,3 @@
-import hashlib
 import heapq
 import os
 import subprocess
@@ -51,7 +50,6 @@ class Event:
     timestamp: datetime
     event_type: str
     file_name: Optional[str] = None
-    checksum: Optional[str] = None
     region: Optional[str] = None
 
     def __lt__(self, other):
@@ -62,82 +60,30 @@ def list_mov_files() -> list[Path]:
     return [f for f in WATCH_DIR.iterdir() if f.suffix.lower() == ".mov"]
 
 
-def file_sha1(file_path: Path) -> str:
-    """Compute the SHA1 hex checksum of a file, matching Immich's checksum."""
-    h = hashlib.sha1()
-    with open(file_path, "rb") as f:
-        while True:
-            chunk = f.read(1024 * 1024)
-            if not chunk:
-                break
-            h.update(chunk)
-    return h.hexdigest()
-
-
-def check_immich_assets(
-    checksums: dict[str, str], api_key: str
-) -> dict[str, Optional[str]]:
-    """Map each {filename: checksum} to its existing Immich asset id.
-
-    A single bulk-upload-check request covers all checksums at once; it matches
-    purely by content checksum (not filename), so it is robust to filename
-    collisions between cameras. A file with no matching asset maps to None.
-    """
-    result_map: dict[str, Optional[str]] = {name: None for name in checksums}
+def query_immich_asset(file_name: str, api_key: str) -> Optional[dict]:
+    """Query Immich for an asset by original file name."""
     headers = {"x-api-key": api_key}
     try:
         resp = requests.post(
-            f"{IMMICH_URL}/api/assets/bulk-upload-check",
+            f"{IMMICH_URL}/api/search/metadata",
             headers=headers,
-            json={
-                "assets": [
-                    {"id": name, "checksum": checksum}
-                    for name, checksum in checksums.items()
-                ]
-            },
-            timeout=60,
-        )
-        resp.raise_for_status()
-        for result in resp.json().get("results", []):
-            name = result.get("id")
-            action = result.get("action")
-            if name not in result_map:
-                continue
-            if action == "reject":
-                asset_id = result.get("assetId")
-                if not asset_id:
-                    log.warning(
-                        f"Immich reports duplicate but no assetId for "
-                        f"{name}"
-                    )
-                result_map[name] = asset_id
-            elif action != "accept":
-                log.warning(
-                    f"Unexpected bulk-upload-check action for {name}: "
-                    f"{result}"
-                )
-    except Exception as e:
-        log.warning(f"Failed to query Immich for checksums: {e}")
-    return result_map
-
-
-def fetch_created_at(asset_id: str, api_key: str) -> Optional[datetime]:
-    """Fetch an asset by id from Immich and return its createdAt."""
-    headers = {"x-api-key": api_key}
-    try:
-        resp = requests.get(
-            f"{IMMICH_URL}/api/assets/{asset_id}",
-            headers=headers,
+            json={"originalFileName": file_name},
             timeout=30,
         )
         resp.raise_for_status()
-        created_str = resp.json().get("createdAt")
-        if created_str:
-            return datetime.fromisoformat(
-                created_str.replace("Z", "+00:00")
-            ).replace(tzinfo=None)
+        data = resp.json()
+        assets = data.get("assets", {}).get("items", [])
+        if assets:
+            if len(assets) > 1:
+                log.warning(
+                    f"Found {len(assets)} Immich assets " f"for {file_name}"
+                )
+            return max(
+                assets,
+                key=lambda a: a.get("createdAt", ""),
+            )
     except Exception as e:
-        log.warning(f"Failed to fetch asset {asset_id}: {e}")
+        log.warning(f"Failed to query Immich for {file_name}: {e}")
     return None
 
 
@@ -268,9 +214,7 @@ def try_cleanup(events: list[Event]) -> None:
         if clone_complete != set(CLONE_REGIONS):
             break
 
-        # Full chain found — delete the file. Verify the on-disk content
-        # still matches the recorded checksum before deleting, so a
-        # same-named file from a different camera is never removed.
+        # Full chain found — delete the file
         file_path = WATCH_DIR / head.file_name
 
         def _label(e: Event) -> str:
@@ -282,17 +226,6 @@ def try_cleanup(events: list[Event]) -> None:
         )
 
         try:
-            if head.checksum is not None:
-                disk_checksum = file_sha1(file_path)
-                if disk_checksum != head.checksum:
-                    log.error(
-                        f"Refusing to delete {head.file_name}: on-disk "
-                        f"content changed since import "
-                        f"(checksum {disk_checksum}, expected "
-                        f"{head.checksum}). Leaving file for manual review."
-                    )
-                    events.pop(0)
-                    continue
             file_path.unlink()
             log.info(f"Deleted {head.file_name}: {chain_desc}")
         except FileNotFoundError:
@@ -337,45 +270,30 @@ def main():
     last_seen_start: dict[str, Optional[datetime]] = {}
     last_seen_exit: dict[str, Optional[datetime]] = {}
 
-    files = list_mov_files()
-    checksums = {mov_file.name: file_sha1(mov_file) for mov_file in files}
-
-    # Single bulk-upload-check covering the whole inbox.
-    first_check = check_immich_assets(checksums, api_key)
-    for name, asset_id in first_check.items():
-        if asset_id is None:
-            log.info(
-                f"New content {name} (checksum {checksums[name]}), "
-                f"uploading to Immich"
-            )
-            upload_to_immich(WATCH_DIR / name, api_key)
-        else:
-            log.info(
-                f"Already in Immich as asset {asset_id} for {name} "
-                f"(checksum {checksums[name]}); tracking for deletion "
-                f"against the next restic chain, no upload"
-            )
-
-    # Re-check so freshly-uploaded files get their asset ids.
-    results = check_immich_assets(checksums, api_key)
-    for name, asset_id in results.items():
-        if not asset_id:
-            log.warning(f"Asset not found in Immich after upload: {name}")
-            continue
-        created_at = fetch_created_at(asset_id, api_key)
-        if created_at:
-            events.append(
-                Event(
-                    timestamp=created_at,
-                    event_type="ImmichFileCreated",
-                    file_name=name,
-                    checksum=checksums[name],
-                )
-            )
-        else:
-            log.warning(
-                f"Failed to read createdAt for {name} (asset {asset_id})"
-            )
+    for mov_file in list_mov_files():
+        asset = query_immich_asset(mov_file.name, api_key)
+        if not asset:
+            upload_to_immich(mov_file, api_key)
+            asset = query_immich_asset(mov_file.name, api_key)
+        if asset:
+            created_str = asset.get("createdAt")
+            if created_str:
+                try:
+                    created_at = datetime.fromisoformat(
+                        created_str.replace("Z", "+00:00")
+                    ).replace(tzinfo=None)
+                    events.append(
+                        Event(
+                            timestamp=created_at,
+                            event_type="ImmichFileCreated",
+                            file_name=mov_file.name,
+                        )
+                    )
+                except ValueError as e:
+                    log.warning(
+                        f"Failed to parse timestamp for "
+                        f"{mov_file.name}: {e}"
+                    )
 
     for svc in RESTIC_SERVICES:
         start_time, exit_time, success = get_service_timestamps(svc)
@@ -409,75 +327,38 @@ def main():
         inotify_events = inotify.read(timeout=POLL_INTERVAL * 1000)
         new_events: list[Event] = []
 
-        # Process inotify events (new .mov files) in one batch.
-        candidate_paths: dict[str, Path] = {}
-        pending_checksums = {ev.checksum for ev in events + new_events}
-        candidates: dict[str, str] = {}  # filename -> checksum
+        # Process inotify events (new .mov files)
         for ie in inotify_events:
-            if not (ie.name and ie.name.lower().endswith(".mov")):
-                continue
-            log.info(f"New file detected: {ie.name}")
-            file_path = WATCH_DIR / ie.name
-            if not file_path.exists():
-                continue
-
-            checksum = file_sha1(file_path)
-
-            # Dedupe by checksum across pending events so the same
-            # content (e.g. CLOSE_WRITE then MOVED_TO, or identical
-            # bytes under two names) is only imported once.
-            if checksum in pending_checksums:
-                log.info(
-                    f"Skipping {ie.name}: content already imported "
-                    f"(checksum {checksum})"
-                )
-                continue
-
-            candidate_paths[ie.name] = file_path
-            candidates[ie.name] = checksum
-
-        if candidates:
-            # Single bulk-upload-check for the whole batch.
-            first_check = check_immich_assets(candidates, api_key)
-            for name, asset_id in first_check.items():
-                if asset_id is None:
-                    log.info(
-                        f"New content {name} (checksum {candidates[name]}), "
-                        f"uploading to Immich"
-                    )
-                    upload_to_immich(candidate_paths[name], api_key)
-                else:
-                    log.info(
-                        f"Already in Immich as asset {asset_id} for "
-                        f"{name} (checksum {candidates[name]}); tracking "
-                        f"for deletion against the next restic chain, "
-                        f"no upload"
-                    )
-
-            # Re-check so freshly-uploaded files get their asset ids.
-            results = check_immich_assets(candidates, api_key)
-            for name, asset_id in results.items():
-                if not asset_id:
-                    log.warning(
-                        f"Asset not found in Immich after upload: {name}"
-                    )
-                    continue
-                created_at = fetch_created_at(asset_id, api_key)
-                if created_at:
-                    new_events.append(
-                        Event(
-                            timestamp=created_at,
-                            event_type="ImmichFileCreated",
-                            file_name=name,
-                            checksum=candidates[name],
+            if ie.name and ie.name.lower().endswith(".mov"):
+                log.info(f"New file detected: {ie.name}")
+                file_path = WATCH_DIR / ie.name
+                if file_path.exists():
+                    upload_to_immich(file_path, api_key)
+                    asset = query_immich_asset(ie.name, api_key)
+                    if not asset:
+                        log.warning(
+                            f"Asset not found in Immich after "
+                            f"upload: {ie.name}"
                         )
-                    )
-                else:
-                    log.warning(
-                        f"Failed to read createdAt for {name} "
-                        f"(asset {asset_id}). It has been uploaded but "
-                        f"will not be tracked for deletion."
-                    )
+                    else:
+                        created_str = asset.get("createdAt")
+                        if created_str:
+                            try:
+                                created_at = datetime.fromisoformat(
+                                    created_str.replace("Z", "+00:00")
+                                ).replace(tzinfo=None)
+                                new_events.append(
+                                    Event(
+                                        timestamp=created_at,
+                                        event_type="ImmichFileCreated",
+                                        file_name=ie.name,
+                                    )
+                                )
+                            except ValueError as e:
+                                log.warning(
+                                    f"Failed to parse timestamp "
+                                    f"for {ie.name}: {e}"
+                                )
 
         # Poll systemd for restic service changes
         for svc in RESTIC_SERVICES:
