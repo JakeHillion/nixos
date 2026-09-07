@@ -63,7 +63,7 @@ in
 
     deviceName = lib.mkOption {
       type = lib.types.str;
-      default = config.networking.hostName;
+      default = "Jake's Flat";
       description = "Name advertised to Spotify Connect and AirPlay.";
     };
 
@@ -85,7 +85,7 @@ in
       enable = true;
       settings = {
         stream.source = [
-          "librespot:///${lib.getExe librespot}?name=Spotify&devicename=${cfg.deviceName}&bitrate=320&params=${librespotParams}"
+          "librespot:///${lib.getExe librespot}?name=Spotify&devicename=${lib.escapeURL cfg.deviceName}&bitrate=320&params=${librespotParams}"
           "pipe://${airplayPipe}?name=AirPlay&mode=read&sampleformat=44100:16:2"
           atcSource
           # Follows whichever of the above is currently playing, so a client can
