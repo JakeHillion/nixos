@@ -7,7 +7,6 @@
     ./authoritative_dns.nix
     ./awtrix-fireworks-tokens
     ./awtrix-octopus-agile
-    ./blackmagic-cam-importer
     ./buildbot-nix-master.nix
     ./buildbot-nix-worker.nix
     ./couchdb
@@ -21,6 +20,7 @@
     ./homebox.nix
     ./protonmail-bridge.nix
     ./immich.nix
+    ./immich-dropbox-importer
     ./jellyfin.nix
     ./journal-remote.nix
     ./llm-proxy

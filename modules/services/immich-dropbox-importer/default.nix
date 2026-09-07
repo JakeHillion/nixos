@@ -1,28 +1,28 @@
 { config, pkgs, lib, ... }:
 
 let
-  cfg = config.custom.services.blackmagic-cam-importer;
+  cfg = config.custom.services.immich-dropbox-importer;
 
-  watchDir = "${config.custom.syncthing.baseDir}/appdata/blackmagic-cam";
+  watchDir = "${config.custom.syncthing.baseDir}/appdata/immich-dropbox";
   immichUrl = "https://immich.${config.ogygia.domain}";
 
-  lifecycleScript = pkgs.writers.writePython3 "blackmagic-cam-importer"
+  lifecycleScript = pkgs.writers.writePython3 "immich-dropbox-importer"
     {
       libraries = with pkgs.python3Packages; [ inotify-simple requests ];
     }
-    (builtins.readFile ./blackmagic-cam-importer.py);
+    (builtins.readFile ./immich-dropbox-importer.py);
 
 in
 {
-  options.custom.services.blackmagic-cam-importer = {
-    enable = lib.mkEnableOption "blackmagic camera video lifecycle management";
+  options.custom.services.immich-dropbox-importer = {
+    enable = lib.mkEnableOption "Immich drop box import lifecycle management";
   };
 
   config = lib.mkIf cfg.enable {
-    age.secrets."blackmagic-cam-importer/immich-api-key".file = ./immich-api-key.age;
+    age.secrets."immich-dropbox-importer/immich-api-key".file = ./immich-api-key.age;
 
-    systemd.services.blackmagic-cam-importer = {
-      description = "Blackmagic camera video lifecycle management";
+    systemd.services.immich-dropbox-importer = {
+      description = "Immich drop box import lifecycle management";
       wantedBy = [ "multi-user.target" ];
       after = [ "network.target" ];
 
@@ -35,7 +35,7 @@ in
         User = "jake";
         Group = "users";
         LoadCredential = [
-          "immich-api-key:${config.age.secrets."blackmagic-cam-importer/immich-api-key".path}"
+          "immich-api-key:${config.age.secrets."immich-dropbox-importer/immich-api-key".path}"
         ];
       };
 
