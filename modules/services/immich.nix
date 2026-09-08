@@ -1,9 +1,12 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, nixpkgs-unstable, ... }:
 
 let
   cfg = config.custom.services.immich;
 in
 {
+  imports = [ "${nixpkgs-unstable}/nixos/modules/services/web-apps/immich.nix" ];
+  disabledModules = [ "services/web-apps/immich.nix" ];
+
   options.custom.services.immich = {
     enable = lib.mkEnableOption "immich";
   };
@@ -48,6 +51,7 @@ in
 
     services.immich = {
       enable = true;
+      package = pkgs.unstable.immich;
     };
 
     systemd.services.immich-restic-clone-trigger = {

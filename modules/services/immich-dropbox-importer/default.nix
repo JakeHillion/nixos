@@ -26,7 +26,7 @@ in
       wantedBy = [ "multi-user.target" ];
       after = [ "network.target" ];
 
-      path = [ pkgs.immich-cli pkgs.systemd ];
+      path = [ pkgs.unstable.immich-cli pkgs.systemd ];
 
       serviceConfig = {
         ExecStart = lifecycleScript;
