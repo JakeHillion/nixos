@@ -11,8 +11,6 @@ in
   config = lib.mkIf cfg.enable {
     age.secrets."immich/restic/b52.key" = {
       rekeyFile = ../../secrets/restic/b52.age;
-      owner = "immich";
-      group = "immich";
     };
 
     users.users.immich.uid = config.ids.uids.immich;
@@ -25,9 +23,15 @@ in
       '';
     };
 
+    services.postgresqlBackup = {
+      enable = true;
+      compression = "none"; # for better diffing
+      databases = [ "immich" ];
+    };
+
     services.restic.backups."immich" = {
       repository = "rest:https://restic.${config.ogygia.domain}/b52";
-      user = "immich";
+      user = "root"; # the database dump is only readable by postgres
       passwordFile = config.age.secrets."immich/restic/b52.key".path;
 
       timerConfig = {
@@ -36,7 +40,10 @@ in
         RandomizedDelaySec = "5m";
       };
 
-      paths = [ config.services.immich.mediaLocation ];
+      paths = [
+        config.services.immich.mediaLocation
+        "${config.services.postgresqlBackup.location}/immich.sql"
+      ];
     };
 
     services.immich = {
