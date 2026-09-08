@@ -118,8 +118,8 @@ in
                     ];
                   };
 
-                  "appdata/blackmagic-cam" = {
-                    id = "thermodynamic-ultramodern-asynchronism";
+                  "appdata/immich-dropbox" = {
+                    id = "haromised-wireless-differential";
                     devices = [ "bob.lt" "jakes-iphone.mob" "phoenix.st" ];
                     # Sync smallest files first so the importer can
                     # process and free remote storage more quickly.
@@ -165,7 +165,7 @@ in
           fullExcludes = [
             "${cfg.baseDir}/.st"
             "${cfg.baseDir}/*/.stfolder"
-            "${cfg.baseDir}/appdata/blackmagic-cam"
+            "${cfg.baseDir}/appdata/immich-dropbox"
             "${cfg.baseDir}/media/travel-shows"
             "${cfg.baseDir}/media/offline-youtube"
           ];

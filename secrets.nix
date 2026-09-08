@@ -116,8 +116,8 @@ in
   # Offline YouTube secrets
   "modules/services/offline-youtube/playlist.env.age".publicKeys = [ neb.st.phoenix ];
 
-  # Blackmagic camera importer
-  "modules/services/blackmagic-cam-importer/immich-api-key.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
+  # Immich drop box importer
+  "modules/services/immich-dropbox-importer/immich-api-key.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
 
   # mautrix-discord bridge
   "modules/services/mautrix-discord/registration.yaml.age".publicKeys = jake_users ++ [

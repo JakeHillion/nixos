@@ -30,7 +30,6 @@ in
           buildbot-nix-worker = "iceman.cx.${config.ogygia.domain}";
           awtrix-fireworks-tokens = "stinger.pop.${config.ogygia.domain}";
           awtrix-octopus-agile = "stinger.pop.${config.ogygia.domain}";
-          blackmagic-cam-importer = "phoenix.st.${config.ogygia.domain}";
           couchdb = "warlock.cx.${config.ogygia.domain}";
           downloads = "phoenix.st.${config.ogygia.domain}";
           etcd = [
@@ -46,6 +45,7 @@ in
           homeassistant = "stinger.pop.${config.ogygia.domain}";
           homebox = "boron.cx.${config.ogygia.domain}";
           immich = "phoenix.st.${config.ogygia.domain}";
+          immich-dropbox-importer = "phoenix.st.${config.ogygia.domain}";
           jellyfin = "phoenix.st.${config.ogygia.domain}";
           journal_remote = "phoenix.st.${config.ogygia.domain}";
           mastodon = "";

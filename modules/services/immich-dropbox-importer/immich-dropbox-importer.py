@@ -123,7 +123,7 @@ def check_immich_assets(
 
     A single bulk-upload-check request covers all checksums at once; it matches
     purely by content checksum (not filename), so it is robust to filename
-    collisions between cameras. A file with no matching asset maps to None.
+    collisions between sources. A file with no matching asset maps to None.
     """
     result_map: dict[str, Optional[str]] = {name: None for name in checksums}
     headers = {"x-api-key": api_key}
@@ -300,7 +300,7 @@ def try_cleanup(events: list[Event]) -> None:
 
         # Full chain found — delete the file. Verify the on-disk content
         # still matches the recorded checksum before deleting, so a
-        # same-named file from a different camera is never removed.
+        # same-named file from a different source is never removed.
         file_path = WATCH_DIR / head.file_name
 
         def _label(e: Event) -> str:
@@ -352,7 +352,7 @@ def log_queue(events: list[Event]) -> None:
 
 
 def main():
-    log.info("Starting blackmagic-cam-importer")
+    log.info("Starting immich-dropbox-importer")
 
     api_key = get_api_key()
 
