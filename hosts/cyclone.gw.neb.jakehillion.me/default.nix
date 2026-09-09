@@ -36,6 +36,10 @@
         iifname "lan" oifname "openclaw" ip daddr 10.116.242.2 udp dport 4242 counter accept comment "LAN to fanboy Nebula"
         iifname "openclaw" oifname "lan" ct state { established, related } counter accept comment "Established back from openclaw"
 
+        # Maverick (LAN) -> 3D printer (IoT VLAN), bypassing SSH tunnel via cyclone
+        iifname "lan" oifname "iot" ip saddr 10.64.50.30 ip daddr 10.239.19.17 counter accept comment "Maverick to 3D printer"
+        iifname "iot" oifname "lan" ip saddr 10.239.19.17 ip daddr 10.64.50.30 ct state { established, related } counter accept comment "3D printer to Maverick established"
+
         # Cellular failover: internet-enabled networks out, established back
         iifname { "lan", "iot", "openclaw" } oifname "cellular" counter accept comment "LAN to cellular failover"
         iifname "cellular" oifname { "lan", "iot", "openclaw" } ct state { established, related } counter accept comment "Cellular to LAN established"
