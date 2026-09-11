@@ -30,7 +30,6 @@
       gitea-actions-vm = 415;
       backup-git = 416;
       shairport = 417;
-      go-librespot = 418;
 
       ## Consistent People
       jake = 1000;
@@ -62,7 +61,6 @@
       gitea-actions-vm = 415;
       backup-git = 416;
       shairport = 417;
-      go-librespot = 418;
 
       ## Consistent Groups
       mediaaccess = 1200;
