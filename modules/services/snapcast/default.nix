@@ -57,6 +57,17 @@ let
   # user, which shairport could then not write to.
   airplayPipe = "/run/snapcast/airplay";
 
+  # shairport writes AirPlay metadata -- tags, cover art, transport state and
+  # the tokens needed to control the sender -- to this second pipe.
+  airplayMetadataPipe = "/run/snapcast/airplay-metadata";
+
+  # snapserver execs control scripts directly, so this one needs its interpreter
+  # and, for resolving the sender's DACP remote over mDNS, avahi on PATH.
+  airplayControlScript = pkgs.writeShellScript "meta_airplay" ''
+    export PATH=${lib.makeBinPath [ pkgs.avahi ]}:$PATH
+    exec ${pkgs.python3}/bin/python3 ${./meta_airplay.py} --metadata-pipe=${airplayMetadataPipe} "$@"
+  '';
+
   # LiveATC feeds are plain MP3 over HTTP, which snapcast has no native source
   # for, so ffmpeg pulls the stream and decodes it to raw PCM on stdout for a
   # process source. -reconnect* rides out brief network drops; spaces are %20
@@ -118,7 +129,7 @@ in
       settings = {
         stream.source = [
           "pipe://${spotifyPipe}?name=Spotify&mode=read&sampleformat=44100:16:2&controlscript=${spotifyControlScript}&controlscriptparams=--librespot-port=${toString spotifyApiPort}"
-          "pipe://${airplayPipe}?name=AirPlay&mode=read&sampleformat=44100:16:2"
+          "pipe://${airplayPipe}?name=AirPlay&mode=read&sampleformat=44100:16:2&controlscript=${airplayControlScript}"
           atcSource
           # Follows whichever of the above is currently playing, so a client can
           # sit on one stream and always hear the active source. Pinned to the
@@ -203,6 +214,16 @@ in
           output_backend = "pipe";
           port = cfg.airplayPort;
         };
+        # Solicit metadata from the sender and hand it to the control script on
+        # the stream source above.
+        metadata = {
+          enabled = "yes";
+          include_cover_art = "yes";
+          pipe_name = airplayMetadataPipe;
+          # Only the dbus, MPRIS and MQTT interfaces read art back off disk,
+          # and none of them are in use, so caching it would just accumulate.
+          cover_art_cache_directory = "";
+        };
         pipe = {
           name = airplayPipe;
           # snapserver reads this pipe as a fixed 44100:16:2 stream. shairport's
@@ -224,11 +245,13 @@ in
       wants = [ "nqptp.service" ];
     };
 
-    # Pre-create each audio pipe owned by the service that writes it and
-    # world-readable so the snapserver dynamic user can read it.
+    # Pre-create each pipe owned by the service that writes it and
+    # world-readable so the snapserver dynamic user (and the control script it
+    # spawns) can read it.
     systemd.tmpfiles.rules = [
       "d ${builtins.dirOf airplayPipe} 0755 root root -"
       "p ${airplayPipe} 0644 shairport shairport -"
+      "p ${airplayMetadataPipe} 0644 shairport shairport -"
       "p ${spotifyPipe} 0644 go-librespot go-librespot -"
     ];
 
