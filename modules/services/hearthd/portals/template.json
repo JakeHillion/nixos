@@ -93,6 +93,7 @@
                   { "type": "environment", "name": "Loft", "temperature": { "$": "environment.loft.temperature" }, "humidity": { "$": "environment.loft.humidity" } }
                 ]
               },
+              { "type": "now_playing" },
               {
                 "type": "weather",
                 "source": { "$": "weather" }
