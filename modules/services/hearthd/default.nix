@@ -174,7 +174,10 @@ in
           locations = [ "home" ];
         };
 
-        integrations.snapcast.port = 1705;
+        integrations.snapcast = {
+          host = "::1";
+          port = 1705;
+        };
       };
     };
   };
