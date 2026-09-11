@@ -106,7 +106,7 @@
             443 # HTTPS 1-2
             1400 # HA Sonos
             5000 # snapcast AirPlay 2 RTSP/control (shairport-sync)
-            5354 # snapcast Spotify Connect (librespot zeroconf)
+            5354 # snapcast Spotify Connect (go-librespot zeroconf)
             7654 # Tang
             21063 # HomeKit
           ];
@@ -134,7 +134,6 @@
             80 # HTTP 1-2
             443 # HTTPS 1-2
             1704 # snapcast client stream
-            1705 # snapcast control port
           ];
           allowedUDPPorts = lib.mkForce [
             443 # HTTP 3

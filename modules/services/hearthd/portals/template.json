@@ -8,7 +8,6 @@
     "snapcast": {
       "enabled": true,
       "host": "stinger.iot.home.jakehillion.me",
-      "volume_sync": true,
       "port": 1704
     },
     "wake_word": {
