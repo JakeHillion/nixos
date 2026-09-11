@@ -57,14 +57,13 @@ let
   # user, which shairport could then not write to.
   airplayPipe = "/run/snapcast/airplay";
 
-  # shairport writes AirPlay metadata -- tags, cover art, transport state and
-  # the tokens needed to control the sender -- to this second pipe.
+  # shairport writes AirPlay metadata -- tags, cover art and transport state --
+  # to this second pipe.
   airplayMetadataPipe = "/run/snapcast/airplay-metadata";
 
-  # snapserver execs control scripts directly, so this one needs its interpreter
-  # and, for resolving the sender's DACP remote over mDNS, avahi on PATH.
+  # snapserver execs control scripts directly rather than through an
+  # interpreter, so wrap it.
   airplayControlScript = pkgs.writeShellScript "meta_airplay" ''
-    export PATH=${lib.makeBinPath [ pkgs.avahi ]}:$PATH
     exec ${pkgs.python3}/bin/python3 ${./meta_airplay.py} --metadata-pipe=${airplayMetadataPipe} "$@"
   '';
 
