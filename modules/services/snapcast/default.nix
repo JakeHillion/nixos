@@ -4,19 +4,52 @@ let
 
   shairport = pkgs.shairport-sync.override { enableAirplay2 = true; };
 
-  # librespot ships its own mDNS responder that binds 5353 and would collide
-  # with the system avahi. Build it with avahi support so it registers through
-  # the system daemon instead (the default build only supports libmdns).
-  librespot = pkgs.librespot.override { withAvahi = true; };
+  # go-librespot decodes Spotify audio to this pipe; snapserver reads it as a
+  # pipe source. tmpfiles pre-creates it owned by go-librespot, and snapserver
+  # uses mode=read, so the fifo isn't created (and owned) by snapserver's
+  # dynamic user, which go-librespot could then not write to.
+  spotifyPipe = "/run/snapcast/spotify";
 
-  # Register through avahi rather than the bundled responder, and pin the port
-  # the Spotify Connect handshake listens on so it can be opened on the LAN.
-  librespotParams = lib.concatStringsSep "%20" [
-    "--zeroconf-backend"
-    "avahi"
-    "--zeroconf-port"
-    (toString cfg.librespotZeroconfPort)
-  ];
+  # Holds go-librespot's lockfile and session state, plus the generated config
+  # it reads on startup.
+  goLibrespotStateDir = "/var/lib/go-librespot";
+
+  # Loopback-only HTTP/websocket API that the control script below reads track
+  # metadata from and issues transport commands to.
+  spotifyApiPort = 24879;
+
+  goLibrespotConfig = (pkgs.formats.yaml { }).generate "go-librespot.yml" {
+    device_name = cfg.deviceName;
+    device_type = "speaker";
+    bitrate = 320;
+
+    audio_backend = "pipe";
+    audio_output_pipe = spotifyPipe;
+    audio_output_pipe_format = "s16le";
+
+    # Register through avahi rather than the bundled responder, which would
+    # bind 5353 and collide with the system daemon. Pin the port the Spotify
+    # Connect handshake listens on so it can be opened on the LAN.
+    zeroconf_backend = "avahi";
+    zeroconf_port = cfg.spotifyZeroconfPort;
+
+    server = {
+      enabled = true;
+      address = "127.0.0.1";
+      port = spotifyApiPort;
+    };
+  };
+
+  # snapcast ships a control script for go-librespot, but not the Python
+  # environment it needs, and snapserver execs the script directly rather than
+  # through an interpreter. Wrap it.
+  spotifyControlScript =
+    let
+      python = pkgs.python3.withPackages (ps: [ ps.websocket-client ps.requests ]);
+    in
+    pkgs.writeShellScript "meta_go-librespot" ''
+      exec ${python}/bin/python3 ${config.services.snapserver.package}/share/snapserver/plug-ins/meta_go-librespot.py "$@"
+    '';
 
   # shairport-sync decodes AirPlay audio to this pipe; snapserver reads it as a
   # pipe source. tmpfiles pre-creates it owned by shairport, and snapserver uses
@@ -27,8 +60,7 @@ let
   # LiveATC feeds are plain MP3 over HTTP, which snapcast has no native source
   # for, so ffmpeg pulls the stream and decodes it to raw PCM on stdout for a
   # process source. -reconnect* rides out brief network drops; spaces are %20
-  # so the argument list survives snapserver's source-URI parsing (same trick
-  # as the librespot params above).
+  # so the argument list survives snapserver's source-URI parsing.
   atcSource =
     let
       url = "http://d.liveatc.net/kjfk9_gnd";
@@ -67,10 +99,10 @@ in
       description = "Name advertised to Spotify Connect and AirPlay.";
     };
 
-    librespotZeroconfPort = lib.mkOption {
+    spotifyZeroconfPort = lib.mkOption {
       type = lib.types.port;
       default = 5354;
-      description = "Port librespot advertises the Spotify Connect handshake on.";
+      description = "Port go-librespot advertises the Spotify Connect handshake on.";
     };
 
     airplayPort = lib.mkOption {
@@ -85,7 +117,7 @@ in
       enable = true;
       settings = {
         stream.source = [
-          "librespot:///${lib.getExe librespot}?name=Spotify&devicename=${lib.escapeURL cfg.deviceName}&bitrate=320&params=${librespotParams}"
+          "pipe://${spotifyPipe}?name=Spotify&mode=read&sampleformat=44100:16:2&controlscript=${spotifyControlScript}&controlscriptparams=--librespot-port=${toString spotifyApiPort}"
           "pipe://${airplayPipe}?name=AirPlay&mode=read&sampleformat=44100:16:2"
           atcSource
           # Follows whichever of the above is currently playing, so a client can
@@ -99,8 +131,12 @@ in
 
         # JSON-RPC control interface. hearthd drives snapcast through this, and
         # the Snapcast phone app speaks the same raw TCP protocol, so both reach
-        # it over Nebula.
-        tcp-control.enabled = true;
+        # it over Nebula. Bind it to the Nebula IP rather than exposing it on the
+        # LAN; the colocated hearthd connects to the same address (see below).
+        tcp-control = {
+          enabled = true;
+          bind_to_address = config.custom.dns.nebula.ipv4;
+        };
 
         # Control/web UI is reached over Nebula via the reverse proxy below.
         http = {
@@ -122,6 +158,36 @@ in
       after = [ "nebula-online@ogygia.service" ];
       wants = [ "nebula-online@ogygia.service" ];
     };
+
+    # Spotify Connect receiver runs as its own service rather than being spawned
+    # by snapserver, so it gets a writable directory for its lockfile and
+    # session state. It decodes to a pipe that snapserver reads above.
+    systemd.services.go-librespot = {
+      description = "go-librespot Spotify Connect receiver";
+      wantedBy = [ "multi-user.target" ];
+      after = [ "network.target" "avahi-daemon.service" ];
+      wants = [ "avahi-daemon.service" ];
+      serviceConfig = {
+        # StateDirectory has systemd create and chown the config directory
+        # during startup, ordered after the impermanence bind-mount via
+        # RequiresMountsFor, so the ownership cannot race the mount.
+        StateDirectory = "go-librespot";
+        StateDirectoryMode = "0700";
+        # go-librespot reads its config from inside that same directory, so
+        # the link is laid down once systemd has set the directory up.
+        ExecStartPre = "${lib.getExe' pkgs.coreutils "ln"} -sfn ${goLibrespotConfig} ${goLibrespotStateDir}/config.yml";
+        ExecStart = "${lib.getExe pkgs.unstable.go-librespot} --config_dir ${goLibrespotStateDir}";
+        User = "go-librespot";
+        Group = "go-librespot";
+        Restart = "on-failure";
+      };
+    };
+    users.users.go-librespot = {
+      isSystemUser = true;
+      group = "go-librespot";
+      uid = config.ids.uids.go-librespot;
+    };
+    users.groups.go-librespot.gid = config.ids.gids.go-librespot;
 
     # AirPlay 2 receiver runs as its own service rather than being spawned by
     # snapserver, so it gets a config file and a persistent home for its pairing
@@ -158,11 +224,12 @@ in
       wants = [ "nqptp.service" ];
     };
 
-    # Pre-create the audio pipe owned by shairport and world-readable so the
-    # snapserver dynamic user can read it.
+    # Pre-create each audio pipe owned by the service that writes it and
+    # world-readable so the snapserver dynamic user can read it.
     systemd.tmpfiles.rules = [
-      "d ${builtins.dirOf airplayPipe} 0755 shairport shairport -"
+      "d ${builtins.dirOf airplayPipe} 0755 root root -"
       "p ${airplayPipe} 0644 shairport shairport -"
+      "p ${spotifyPipe} 0644 go-librespot go-librespot -"
     ];
 
     # AirPlay 2 keeps time against a PTP clock provided by nqptp, which shares it
@@ -178,11 +245,13 @@ in
       };
     };
 
-    # snapserver state (DynamicUser, so /var/lib/private) and shairport's AirPlay
-    # pairing identity both need to survive reboots on impermanence hosts.
+    # snapserver state (DynamicUser, so /var/lib/private), shairport's AirPlay
+    # pairing identity and go-librespot's session state all need to survive
+    # reboots on impermanence hosts.
     custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [
       "/var/lib/private/snapserver"
       "/var/lib/shairport-sync"
+      goLibrespotStateDir
     ];
 
     custom.www.nebula = {
