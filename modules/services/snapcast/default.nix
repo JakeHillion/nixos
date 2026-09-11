@@ -99,12 +99,8 @@ in
 
         # JSON-RPC control interface. hearthd drives snapcast through this, and
         # the Snapcast phone app speaks the same raw TCP protocol, so both reach
-        # it over Nebula. Bind it to the Nebula IP rather than exposing it on the
-        # LAN; the colocated hearthd connects to the same address (see below).
-        tcp-control = {
-          enabled = true;
-          bind_to_address = config.custom.dns.nebula.ipv4;
-        };
+        # it over Nebula.
+        tcp-control.enabled = true;
 
         # Control/web UI is reached over Nebula via the reverse proxy below.
         http = {
