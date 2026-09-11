@@ -23,6 +23,14 @@ let
     device_type = "speaker";
     bitrate = 320;
 
+    # Take the lossless file where the account and the track have one; bitrate
+    # above only picks between the lossy formats. The output below is s16le,
+    # and every other source feeding the meta stream is pinned to 44100:16:2 --
+    # AirPlay is 16 bit at the protocol level and cannot follow anything wider
+    # -- so deeper samples are truncated on the way out. Widening it would mean
+    # moving every source in lockstep for a gain only Spotify could realise.
+    flac_enabled = true;
+
     audio_backend = "pipe";
     audio_output_pipe = spotifyPipe;
     audio_output_pipe_format = "s16le";
