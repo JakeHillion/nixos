@@ -134,6 +134,7 @@
             80 # HTTP 1-2
             443 # HTTPS 1-2
             1704 # snapcast client stream
+            1705 # snapcast control port
           ];
           allowedUDPPorts = lib.mkForce [
             443 # HTTP 3
