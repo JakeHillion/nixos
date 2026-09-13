@@ -82,125 +82,146 @@ in
       enable = true;
       opencode-package = pkgs.unstable.opencode;
       pi-package = pkgs.unstable.pi-coding-agent;
-      settings = {
-        homeserver_url = "https://matrix.hillion.co.uk";
-        username = shortHost;
-        password_file = config.age.secrets."async-coder/${shortHost}.password".path;
+      settings =
+        let
+          cargoAllows = [
+            { prefix = "cargo build"; }
+            { prefix = "cargo check"; }
+            { prefix = "cargo clippy"; }
+            { prefix = "cargo fmt"; }
+            { prefix = "cargo test"; }
+          ];
+        in
+        {
+          homeserver_url = "https://matrix.hillion.co.uk";
+          username = shortHost;
+          password_file = config.age.secrets."async-coder/${shortHost}.password".path;
 
-        avatar = ./${shortHost}.png;
-        store_path = "/var/lib/async-coder/store";
-        device_display_name = "async-coder";
-        trusted_users = [ "@jake:hillion.co.uk" ];
-        root_space = "!WhggIMMfLMutJEDsdv:hillion.co.uk";
+          avatar = ./${shortHost}.png;
+          store_path = "/var/lib/async-coder/store";
+          device_display_name = "async-coder";
+          trusted_users = [ "@jake:hillion.co.uk" ];
+          root_space = "!WhggIMMfLMutJEDsdv:hillion.co.uk";
 
-        git_author_name = "Jake Hillion";
-        git_author_email = "jake@hillion.co.uk";
+          git_author_name = "Jake Hillion";
+          git_author_email = "jake@hillion.co.uk";
 
-        skills_path = skillsDir;
-        allowed_skills = [ "commit" "github-fetch" ];
+          skills_path = skillsDir;
+          allowed_skills = [ "commit" "github-fetch" ];
 
-        permissions.allow = [
-          { exact = "git branch --contains"; }
-          { exact = "git branch --show-current"; }
+          permissions.allow = [
+            { exact = "cargo --version"; }
+            { exact = "git branch --contains"; }
+            { exact = "git branch --show-current"; }
+            { exact = "nix --version"; }
+            { exact = "rustc --version"; }
 
-          { prefix = "cat"; }
-          { prefix = "echo"; }
-          { prefix = "git add"; }
-          { prefix = "git cat-file"; }
-          { prefix = "git diff"; }
-          { prefix = "git log"; }
-          { prefix = "git merge-base"; }
-          { prefix = "git reflog"; }
-          { prefix = "git rev-parse"; }
-          { prefix = "git show"; }
-          { prefix = "git status"; }
-          { prefix = "grep"; }
-          { prefix = "head"; }
-          { prefix = "ls"; }
-          { prefix = "nix build"; }
-          { prefix = "nix flake check"; }
-          { prefix = "nix fmt"; }
-          { prefix = "rg"; }
-          { prefix = "tail"; }
-          { prefix = "wc"; }
-          { prefix = "which"; }
-        ];
+            { prefix = "cat"; }
+            { prefix = "command -v"; }
+            { prefix = "echo"; }
+            { prefix = "git add"; }
+            { prefix = "git cat-file"; }
+            { prefix = "git diff"; }
+            { prefix = "git log"; }
+            { prefix = "git merge-base"; }
+            { prefix = "git reflog"; }
+            { prefix = "git rev-parse"; }
+            { prefix = "git show"; }
+            { prefix = "git status"; }
+            { prefix = "grep"; }
+            { prefix = "head"; }
+            { prefix = "ls"; }
+            { prefix = "nix build"; }
+            { prefix = "nix flake check"; }
+            { prefix = "nix fmt"; }
+            { prefix = "rg"; }
+            { prefix = "sort"; }
+            { prefix = "tail"; }
+            { prefix = "wc"; }
+            { prefix = "which"; }
+          ];
 
-        forges = {
-          gitea = {
-            type = "gitea";
-            url = "https://gitea.hillion.co.uk";
-            ssh_url = "git@ssh.gitea.hillion.co.uk";
-            token_file = config.age.secrets."async-coder/gitea-token".path;
+          forges = {
+            gitea = {
+              type = "gitea";
+              url = "https://gitea.hillion.co.uk";
+              ssh_url = "git@ssh.gitea.hillion.co.uk";
+              token_file = config.age.secrets."async-coder/gitea-token".path;
 
-            repositories = [
-              {
-                owner = "JakeHillion";
-                name = "async-coder";
-                envrc = true;
-                permissions.allow = [
-                  { prefix = "cargo build"; }
-                  { prefix = "cargo check"; }
-                  { prefix = "cargo clippy"; }
-                  { prefix = "cargo fmt"; }
-                  { prefix = "cargo test"; }
-                ];
-              }
-              { owner = "JakeHillion"; name = "nixos"; jujutsu_mode = true; envrc = true; }
-              { owner = "JakeHillion"; name = "personal-agent"; envrc = true; }
-              { owner = "JakeHillion"; name = "testquorum"; envrc = true; }
-              { owner = "jjtechholdings"; name = "monorepo"; }
-            ];
+              repositories = [
+                { owner = "JakeHillion"; name = "nixos"; jujutsu_mode = true; envrc = true; }
+                { owner = "JakeHillion"; name = "testquorum"; envrc = true; }
+                { owner = "jjtechholdings"; name = "monorepo"; }
+
+                {
+                  owner = "JakeHillion";
+                  name = "async-coder";
+                  envrc = true;
+                  permissions.allow = cargoAllows;
+                }
+                {
+                  owner = "JakeHillion";
+                  name = "personal-agent";
+                  envrc = true;
+                  permissions.allow = cargoAllows;
+                }
+              ];
+            };
+
+            github = {
+              type = "github";
+
+              repositories = [
+                { owner = "JakeHillion"; name = "hearthd-kiosk"; envrc = true; }
+                { owner = "JakeHillion"; name = "ogygia-nix"; envrc = true; }
+                { owner = "testquorum"; name = "testquorum-rs"; envrc = true; }
+
+                {
+                  owner = "JakeHillion";
+                  name = "hearthd";
+                  envrc = true;
+                  permissions.allow = cargoAllows;
+                }
+              ];
+            };
           };
 
-          github = {
-            type = "github";
+          agents = {
+            default = "pi";
 
-            repositories = [
-              { owner = "JakeHillion"; name = "hearthd"; envrc = true; }
-              { owner = "JakeHillion"; name = "hearthd-kiosk"; envrc = true; }
-              { owner = "JakeHillion"; name = "ogygia-nix"; envrc = true; }
-              { owner = "testquorum"; name = "testquorum-rs"; envrc = true; }
-            ];
+            pi = {
+              api_key_file = pkgs.writeText "async-coder-dummy-key" "unused";
+              api_url = "http://127.0.0.1:9100/v1/batch/10000";
+              api = "openai-completions";
+              provider = "llm-proxy";
+              model = "deepseek/deepseek-v4-flash-0731";
+
+              # upstream is 1M, but let's have it compact earlier as 1M would be
+              # really expensive for the way we use async-coder
+              context_window = 500000;
+            };
           };
-        };
 
-        agents = {
-          default = "pi";
-
-          pi = {
+          opencode = {
             api_key_file = pkgs.writeText "async-coder-dummy-key" "unused";
             api_url = "http://127.0.0.1:9100/v1/batch/10000";
-            api = "openai-completions";
-            provider = "llm-proxy";
             model = "deepseek/deepseek-v4-flash-0731";
-
-            # upstream is 1M, but let's have it compact earlier as 1M would be
-            # really expensive for the way we use async-coder
-            context_window = 500000;
-          };
-        };
-
-        opencode = {
-          api_key_file = pkgs.writeText "async-coder-dummy-key" "unused";
-          api_url = "http://127.0.0.1:9100/v1/batch/10000";
-          model = "deepseek/deepseek-v4-flash-0731";
-          cheap_fast_model = "minimax/minimax-m2.7";
-          provider = "llm-proxy";
-          base_port = 18900;
-          mcp = {
-            context7 = {
-              type = "remote";
-              url = "https://mcp.context7.com/mcp";
-              headers = {
-                CONTEXT7_API_KEY = {
-                  "$file" = config.age.secrets."async-coder/context7-api-key".path;
+            cheap_fast_model = "minimax/minimax-m2.7";
+            provider = "llm-proxy";
+            base_port = 18900;
+            mcp = {
+              context7 = {
+                type = "remote";
+                url = "https://mcp.context7.com/mcp";
+                headers = {
+                  CONTEXT7_API_KEY = {
+                    "$file" = config.age.secrets."async-coder/context7-api-key".path;
+                  };
                 };
               };
             };
           };
         };
-      };
     };
   };
 }
