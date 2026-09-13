@@ -100,10 +100,14 @@ in
         allowed_skills = [ "commit" "github-fetch" ];
 
         permissions.allow = [
+          { exact = "cargo --version"; }
           { exact = "git branch --contains"; }
           { exact = "git branch --show-current"; }
+          { exact = "nix --version"; }
+          { exact = "rustc --version"; }
 
           { prefix = "cat"; }
+          { prefix = "command -v"; }
           { prefix = "echo"; }
           { prefix = "git add"; }
           { prefix = "git cat-file"; }
@@ -121,6 +125,7 @@ in
           { prefix = "nix flake check"; }
           { prefix = "nix fmt"; }
           { prefix = "rg"; }
+          { prefix = "sort"; }
           { prefix = "tail"; }
           { prefix = "wc"; }
           { prefix = "which"; }
