@@ -49,6 +49,19 @@ in
 
     custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/lib/private/matter-server" ];
 
+    # matter-server binds /etc/resolv.conf read-only and refuses to start if the
+    # file is absent. On an impermanent /etc it is written by resolvconf during
+    # boot, which the upstream ordering (network-online.target only) does not
+    # guarantee happens first, and the unit has no Restart= to recover from it.
+    systemd.services.matter-server = {
+      after = [ "resolvconf.service" ];
+      wants = [ "resolvconf.service" ];
+      serviceConfig = {
+        Restart = "on-failure";
+        RestartSec = 5;
+      };
+    };
+
     age.secrets = {
       "backups/homeassistant/restic/mig29" = lib.mkIf cfg.backup {
         rekeyFile = ../../../secrets/restic/mig29.age;
@@ -216,6 +229,8 @@ in
                 "homeassistant.components.matter" = "debug";
                 "matter_server" = "debug";
                 "chip" = "debug";
+                # Logs the config entry, including the account password, at info.
+                "custom_components.ecoflow_cloud" = "warning";
               };
             };
 
