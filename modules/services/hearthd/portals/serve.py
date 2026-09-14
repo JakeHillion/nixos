@@ -49,6 +49,13 @@ ENVIRONMENT_SENSORS = {
     "living_room": "sensor.0x54ef441000d20037",
     "loft": "sensor.0x54ef441000d20a5a",
 }
+# The light whose on/off state the Portal mirrors onto its own display: the
+# panel is lit exactly when this light is. Published under a clean slug for the
+# same reason the environment sensors are — the template binds "screen.on" and
+# never sees a device id. It also *has* to be a slug: the state blob is
+# addressed by dotted path, and an entity_id is full of dots, so the lights map
+# below can't be reached into from a template.
+SCREEN_SOURCE_ENTITY_ID = "light.0xf0d1b800001906e8"
 # The weather node the Portal shows. hearthd publishes one node per configured
 # met.no location; we pick the "home" one.
 WEATHER_ENTITY_ID = "weather.home"
@@ -282,6 +289,22 @@ def normalise_weather(hearthd):
     }
 
 
+def normalise_screen(hearthd):
+    """Whether the Portal's display should be lit, from its source light.
+
+    A missing or unreadable source leaves this null rather than false, which the
+    Portal reads as "nobody is driving the screen" and hands the panel back to
+    the device's own timeout. Reporting false would black it out on any hiccup.
+    """
+    node = node_by_entity_id(hearthd).get(SCREEN_SOURCE_ENTITY_ID)
+    if node is None:
+        return {"on": None}
+    on_off = primary_clusters(node).get("OnOff")
+    if on_off is None:
+        return {"on": None}
+    return {"on": bool(on_off.get("on_off"))}
+
+
 def build_state(template_path, hearthd_url):
     """The /state document: template hash, refresh cadence, live state blob."""
     now_utc = datetime.datetime.now(datetime.timezone.utc)
@@ -293,6 +316,7 @@ def build_state(template_path, hearthd_url):
             "lights": normalise_lights(hearthd),
             "environment": normalise_environment(hearthd),
             "weather": normalise_weather(hearthd),
+            "screen": normalise_screen(hearthd),
             "sun": solar_position(PORTAL_LAT, PORTAL_LON, now_utc),
         },
     }
