@@ -16,7 +16,6 @@ let
 
   # IoT clients permitted to reach the hearthd vhost.
   hearthdAllowedClients = [
-    "10.239.19.4" # hallway-wall-tablet
     "10.239.19.16" # bedroom-portal
   ];
 
