@@ -31,14 +31,14 @@ in
     custom.home.nix-trusted-settings = {
       enable = true;
       substituters = [
-        "https://hearthd.cachix.org"
+        "https://nixcache.hearthd.dev"
         "https://nixcache.jakehillion.me"
+        "https://nixcache.testquorum.dev"
         "https://ogygia.cachix.org"
         "https://sched-ext.cachix.org"
-        "https://nixcache.testquorum.dev"
       ];
       trustedPublicKeys = [
-        "hearthd.cachix.org-1:Lt/GTziCLrilXymMR1tEX1TZkv5ZEqF6JKfyS5aGEqY="
+        "nixcache.hearthd.dev-1:nDKId0zqk7popcBT1tHB9j3nAGU3meWFuJjWzVKab/o="
         "nixcache.jakehillion.me-1:HQsjYdrcs3ilS/ngtlbTQXU4Xfsm+va5NN7yoK0wKMg="
         "ogygia.cachix.org-1:xb4bnMPeWgSP81Xs0Vl7ZU4Ez7Ul65qp/EoZ40pDaWo="
         "sched-ext.cachix.org-1:dtoM9QOUUqJs3JkmSgVoKYp9cLY0BrupOqp4DVz35/g="
