@@ -13,6 +13,7 @@
     ./downloads
     ./etcd.nix
     ./firefly-iii
+    ./foldingathome
     ./frigate.nix
     ./gitea
     ./hearthd
