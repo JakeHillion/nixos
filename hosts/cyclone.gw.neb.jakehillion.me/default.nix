@@ -80,6 +80,14 @@
           publicKey = "AeCCmn+x3wEGCTMBtkfe17G+nJ7enOgvbWoj+a3lZQA=";
           allowedIPs = [ "10.200.0.2/32" ];
         }
+        {
+          publicKey = "4O4WYJbmg9WM2eLbOcoGdqgyR9Ze369mi3tEcJEOUXE=";
+          allowedIPs = [ "10.200.0.3/32" ];
+        }
+        {
+          publicKey = "iKRGC/2ngNt8kJiedoFwAGawTs4DO/IQUGb4XjM5AVk=";
+          allowedIPs = [ "10.200.0.4/32" ];
+        }
       ];
     };
 
