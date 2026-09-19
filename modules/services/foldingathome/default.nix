@@ -5,6 +5,42 @@ let
 
   tariffCode = "E-1R-${cfg.octopus.productCode}-${cfg.octopus.region}";
 
+  # fah-client ships "paused": true in the default resource group
+  # (src/resources/group.json) and registers no option to change it, so a fresh
+  # client sits idle until something tells it to fold. Its HTTP server exposes a
+  # single route, a websocket; everything else redirects to the hosted Web
+  # Control. Sending the fold command is idempotent, and the resulting unpaused
+  # state is written to client.db.
+  unpause = pkgs.writeShellApplication {
+    name = "foldingathome-unpause";
+    runtimeInputs = with pkgs; [ coreutils ];
+    text = ''
+      set -euo pipefail
+
+      payload='{"cmd":"state","state":"fold"}'
+
+      for attempt in $(seq 60); do
+        if exec 3<>/dev/tcp/127.0.0.1/7396; then break; fi
+        if [ "$attempt" = 60 ]; then
+          echo "timed out waiting for the client to start listening" >&2
+          exit 1
+        fi
+        sleep 1
+      done
+
+      printf 'GET /api/websocket HTTP/1.1\r\nHost: 127.0.0.1:7396\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: AAAAAAAAAAAAAAAAAAAAAA==\r\nSec-WebSocket-Version: 13\r\n\r\n' >&3
+
+      read -r status <&3
+      case "$status" in
+        *101*) ;;
+        *) echo "unexpected handshake response: $status" >&2; exit 1 ;;
+      esac
+
+      # Client frames must be masked, but an all zero key leaves the payload as is.
+      printf '%b%s' "\x81\x$(printf '%02x' $((0x80 | ''${#payload})))\x00\x00\x00\x00" "$payload" >&3
+    '';
+  };
+
   priceGate = pkgs.writeShellApplication {
     name = "foldingathome-price-gate";
     runtimeInputs = with pkgs; [ curl jq coreutils gawk systemd ];
@@ -108,8 +144,26 @@ in
       daemonNiceLevel = 19;
     };
 
-    # Started and stopped by the price gate rather than at boot.
-    systemd.services.foldingathome.wantedBy = lib.mkForce [ ];
+    # The client execs cores it downloads into its state directory. systemd
+    # mounts that directory noexec for DynamicUser services, which fails every
+    # such exec with EACCES, so run as a fixed user instead.
+    users.users.foldingathome = {
+      isSystemUser = true;
+      group = "foldingathome";
+      uid = config.ids.uids.foldingathome;
+    };
+    users.groups.foldingathome.gid = config.ids.gids.foldingathome;
+
+    systemd.services.foldingathome = {
+      # Started and stopped by the price gate rather than at boot.
+      wantedBy = lib.mkForce [ ];
+      serviceConfig = {
+        DynamicUser = lib.mkForce false;
+        User = "foldingathome";
+        Group = "foldingathome";
+        ExecStartPost = lib.getExe unpause;
+      };
+    };
 
     systemd.services.foldingathome-price-gate = {
       description = "Start or stop Folding@home based on the current electricity price";
@@ -139,6 +193,6 @@ in
 
     # Work unit progress is checkpointed here, so a reboot or a price swing
     # doesn't throw away partial work.
-    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/lib/private/foldingathome" ];
+    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/lib/foldingathome" ];
   };
 }
