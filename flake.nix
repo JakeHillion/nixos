@@ -40,6 +40,11 @@
     async-coder.url = "git+https://gitea.hillion.co.uk/JakeHillion/async-coder.git";
     async-coder.inputs.nixpkgs.follows = "nixpkgs";
 
+    # No nixpkgs.follows: the Rust cross-build to ARMv6 and the prebuilt Arduino
+    # toolchain are pinned against the nixpkgs this flake locks, and only the
+    # NixOS module is consumed from here.
+    dancefloor.url = "git+https://gitea.hillion.co.uk/JakeHillion/dancefloor-monorepo.git?ref=jj/pppmmsnksnsu";
+
     hearthd.url = "github:JakeHillion/hearthd";
     hearthd.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -64,6 +69,7 @@
     , agenix-rekey
     , async-coder
     , buildbot-nix
+    , dancefloor
     , darwin
     , disko
     , flake-utils
