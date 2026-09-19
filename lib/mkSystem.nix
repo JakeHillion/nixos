@@ -12,6 +12,7 @@
     inputs.async-coder.nixosModules.default
     inputs.buildbot-nix.nixosModules.buildbot-master
     inputs.buildbot-nix.nixosModules.buildbot-worker
+    inputs.dancefloor.nixosModules.default
     inputs.disko.nixosModules.disko
     inputs.personal-agent.nixosModules.default
     inputs.hearthd.nixosModules.default

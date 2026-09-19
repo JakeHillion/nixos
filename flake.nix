@@ -40,6 +40,9 @@
     async-coder.url = "git+https://gitea.hillion.co.uk/JakeHillion/async-coder.git";
     async-coder.inputs.nixpkgs.follows = "nixpkgs";
 
+    dancefloor.url = "git+https://gitea.hillion.co.uk/JakeHillion/dancefloor-monorepo.git";
+    dancefloor.inputs.nixpkgs.follows = "nixpkgs";
+
     hearthd.url = "github:JakeHillion/hearthd";
     hearthd.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -64,6 +67,7 @@
     , agenix-rekey
     , async-coder
     , buildbot-nix
+    , dancefloor
     , darwin
     , disko
     , flake-utils
