@@ -38,6 +38,7 @@
     };
     ids.gids = {
       ## Defined System Groups (see https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/misc/ids.nix)
+      foldingathome = 37; # reserved but commented out upstream
       unifi = 183;
       chia = 185;
       gitea = 186;

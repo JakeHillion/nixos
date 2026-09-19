@@ -42,6 +42,9 @@
       instances = 8;
     };
 
+    ## Put spare cycles to use while electricity is free
+    custom.services.foldingathome.enable = true;
+
     # Allow performing emulated builds in QEMU
     boot.binfmt.emulatedSystems = [
       "aarch64-linux"
