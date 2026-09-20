@@ -43,7 +43,7 @@
     # No nixpkgs.follows: the Rust cross-build to ARMv6 and the prebuilt Arduino
     # toolchain are pinned against the nixpkgs this flake locks, and only the
     # NixOS module is consumed from here.
-    dancefloor.url = "git+https://gitea.hillion.co.uk/JakeHillion/dancefloor-monorepo.git?ref=jj/xpltmmopvyoy";
+    dancefloor.url = "git+https://gitea.hillion.co.uk/JakeHillion/dancefloor-monorepo.git?ref=jj/pppmmsnksnsu";
 
     hearthd.url = "github:JakeHillion/hearthd";
     hearthd.inputs.nixpkgs.follows = "nixpkgs";

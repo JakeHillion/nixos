@@ -277,16 +277,16 @@
         "treefmt-nix": "treefmt-nix_5"
       },
       "locked": {
-        "lastModified": 1789847595,
-        "narHash": "sha256-ZgTina05nOpDT/mT4hTdSE0vGXkHGbiLO8OWa443BPI=",
-        "ref": "jj/xpltmmopvyoy",
-        "rev": "8e3ff1fa31e6bfedef0ab23d7a7c8dc1b02f631c",
-        "revCount": 22,
+        "lastModified": 1789896359,
+        "narHash": "sha256-ijOSUv2AVeCcS5bqC5uO6WdvTugwVGdJ7wj4fiR13iE=",
+        "ref": "jj/pppmmsnksnsu",
+        "rev": "36390cf39cffb77df0dbbd7e5ccd028011b95985",
+        "revCount": 26,
         "type": "git",
         "url": "https://gitea.hillion.co.uk/JakeHillion/dancefloor-monorepo.git"
       },
       "original": {
-        "ref": "jj/xpltmmopvyoy",
+        "ref": "jj/pppmmsnksnsu",
         "type": "git",
         "url": "https://gitea.hillion.co.uk/JakeHillion/dancefloor-monorepo.git"
       }
