@@ -18,23 +18,33 @@ let
     runtimeInputs = with pkgs; [ coreutils ] ++ lib.optionals cfg.gpu.enable [ jq ];
     text = ''
       set -euo pipefail
+      export LC_ALL=C
 
-      for attempt in $(seq 60); do
-        if exec 3<>/dev/tcp/127.0.0.1/7396; then break; fi
-        if [ "$attempt" = 60 ]; then
-          echo "timed out waiting for the client to start listening" >&2
-          exit 1
-        fi
-        sleep 1
-      done
+      # Leaves the socket on fd 3, positioned at the first websocket frame.
+      open() {
+        local attempt line
 
-      printf 'GET /api/websocket HTTP/1.1\r\nHost: 127.0.0.1:7396\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: AAAAAAAAAAAAAAAAAAAAAA==\r\nSec-WebSocket-Version: 13\r\n\r\n' >&3
+        for attempt in $(seq 60); do
+          if exec 3<>/dev/tcp/127.0.0.1/7396; then break; fi
+          if [ "$attempt" = 60 ]; then
+            echo "timed out waiting for the client to start listening" >&2
+            exit 1
+          fi
+          sleep 1
+        done
 
-      read -r status <&3
-      case "$status" in
-        *101*) ;;
-        *) echo "unexpected handshake response: $status" >&2; exit 1 ;;
-      esac
+        printf 'GET /api/websocket HTTP/1.1\r\nHost: 127.0.0.1:7396\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: AAAAAAAAAAAAAAAAAAAAAA==\r\nSec-WebSocket-Version: 13\r\n\r\n' >&3
+
+        read -r line <&3
+        case "$line" in
+          *101*) ;;
+          *) echo "unexpected handshake response: $line" >&2; exit 1 ;;
+        esac
+
+        while read -r line <&3; do
+          [ "$line" = $'\r' ] && break
+        done
+      }
 
       send() {
         local payload="$1"
@@ -52,30 +62,58 @@ let
       }
 
       ${lib.optionalString cfg.gpu.enable ''
-        # The client identifies a GPU by its PCI bus, slot and function printed
-        # in decimal rather than the usual hex (cbang's PCIDevice::getID), so
-        # spell the same names out of sysfs. Listing a device the client can't
-        # fold on costs nothing: it still has to carry a species in the
-        # Folding@home GPU database before work is requested for it.
+        byte() { dd bs=1 count=1 status=none <&3 | od -An -tu1 | tr -d ' \n'; }
+
+        # The client greets every new connection with its whole state as one
+        # text frame. Server frames carry no mask, so the payload follows the
+        # length directly.
+        readState() {
+          local opcode length high low
+
+          opcode=$(byte)
+          if [ "$opcode" != 129 ]; then
+            echo "unexpected websocket opcode $opcode" >&2
+            exit 1
+          fi
+
+          length=$(byte)
+          if [ "$length" = 126 ]; then
+            high=$(byte)
+            low=$(byte)
+            length=$((high * 256 + low))
+          elif [ "$length" = 127 ]; then
+            echo "state frame is implausibly large" >&2
+            exit 1
+          fi
+
+          head -c "$length" <&3
+        }
+
+        # Enable only the GPUs the client itself calls supported, which means it
+        # found both a compute device and a species for them in the Folding@home
+        # database. Enabling anything else wedges the group rather than being
+        # ignored: Group::waitOnGPU holds off every work unit request, CPU ones
+        # included, for as long as an enabled GPU is missing from that list.
         gpus=()
-        for device in /sys/bus/pci/devices/*; do
-          # 0x03 is the PCI display controller class.
-          case "$(cat "$device/class")" in
-            0x03*) ;;
-            *) continue ;;
-          esac
+        for attempt in $(seq 15); do
+          open
+          mapfile -t gpus < <(readState | jq -r '(.info.gpus // {}) | to_entries[] | select(.value.supported) | .key')
+          exec 3>&-
 
-          address=''${device##*/}          # e.g. 0000:03:00.0
-          address=''${address#*:}          # drop the domain
-          slotFunction=''${address#*:}
+          [ ''${#gpus[@]} -gt 0 ] && break
 
-          gpus+=("$(printf 'gpu:%02d:%02d:%02d' "0x''${address%%:*}" "0x''${slotFunction%%.*}" "0x''${slotFunction#*.}")")
+          # Detection waits on the GPU database, fetched on the first run.
+          echo "attempt $attempt: no supported GPU yet"
+          sleep 1
         done
 
         echo "enabling GPUs: ''${gpus[*]:-none found}"
-
+      ''}
+      open
+      ${lib.optionalString cfg.gpu.enable ''
         # Naming the default group drops every other resource group, which is
-        # fine as long as nothing else creates any.
+        # fine as long as nothing else creates any. Sending this even when no
+        # GPU was found is deliberate: it clears out stale entries.
         send "$(jq -cn --args '{
           cmd: "config",
           config: {
