@@ -137,6 +137,15 @@ in
           }
           reverse_proxy http://${locations.services.buildbot-nix-master}:8010
         '';
+        "dancefloor.hillion.co.uk".extraConfig = ''
+          tls {
+            dns cloudflare {
+              zone_token {env.CF_ZONE_TOKEN}
+              api_token {env.CF_API_TOKEN_HILLION_CO_UK}
+            }
+          }
+          reverse_proxy http://${locations.services.dancefloor}:8080
+        '';
         "ntfy.hillion.co.uk".extraConfig = ''
           tls {
             dns cloudflare {
