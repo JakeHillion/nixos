@@ -7,37 +7,123 @@ let
 
   # fah-client ships "paused": true in the default resource group
   # (src/resources/group.json) and registers no option to change it, so a fresh
-  # client sits idle until something tells it to fold. Its HTTP server exposes a
-  # single route, a websocket; everything else redirects to the hosted Web
-  # Control. Sending the fold command is idempotent, and the resulting unpaused
-  # state is written to client.db.
-  unpause = pkgs.writeShellApplication {
-    name = "foldingathome-unpause";
-    runtimeInputs = with pkgs; [ coreutils ];
+  # client sits idle until something tells it to fold. GPUs are held back the
+  # same way: Config::isGPUEnabled reports any GPU missing from the group's
+  # gpus dict as disabled, and that dict also starts out empty. Its HTTP server
+  # exposes a single route, a websocket; everything else redirects to the
+  # hosted Web Control. Both commands are idempotent, and the state they leave
+  # behind is written to client.db.
+  configure = pkgs.writeShellApplication {
+    name = "foldingathome-configure";
+    runtimeInputs = with pkgs; [ coreutils ] ++ lib.optionals cfg.gpu.enable [ jq ];
     text = ''
       set -euo pipefail
+      export LC_ALL=C
 
-      payload='{"cmd":"state","state":"fold"}'
+      # Leaves the socket on fd 3, positioned at the first websocket frame.
+      open() {
+        local attempt line
 
-      for attempt in $(seq 60); do
-        if exec 3<>/dev/tcp/127.0.0.1/7396; then break; fi
-        if [ "$attempt" = 60 ]; then
-          echo "timed out waiting for the client to start listening" >&2
-          exit 1
+        for attempt in $(seq 60); do
+          if exec 3<>/dev/tcp/127.0.0.1/7396; then break; fi
+          if [ "$attempt" = 60 ]; then
+            echo "timed out waiting for the client to start listening" >&2
+            exit 1
+          fi
+          sleep 1
+        done
+
+        printf 'GET /api/websocket HTTP/1.1\r\nHost: 127.0.0.1:7396\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: AAAAAAAAAAAAAAAAAAAAAA==\r\nSec-WebSocket-Version: 13\r\n\r\n' >&3
+
+        read -r line <&3
+        case "$line" in
+          *101*) ;;
+          *) echo "unexpected handshake response: $line" >&2; exit 1 ;;
+        esac
+
+        while read -r line <&3; do
+          [ "$line" = $'\r' ] && break
+        done
+      }
+
+      send() {
+        local payload="$1"
+        local length=''${#payload}
+        local header
+
+        if [ "$length" -lt 126 ]; then
+          header="\x81\x$(printf '%02x' $((0x80 | length)))"
+        else
+          header="\x81\xfe\x$(printf '%02x' $((length >> 8)))\x$(printf '%02x' $((length & 0xff)))"
         fi
-        sleep 1
-      done
 
-      printf 'GET /api/websocket HTTP/1.1\r\nHost: 127.0.0.1:7396\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: AAAAAAAAAAAAAAAAAAAAAA==\r\nSec-WebSocket-Version: 13\r\n\r\n' >&3
+        # Client frames must be masked, but an all zero key leaves the payload as is.
+        printf '%b%s' "$header\x00\x00\x00\x00" "$payload" >&3
+      }
 
-      read -r status <&3
-      case "$status" in
-        *101*) ;;
-        *) echo "unexpected handshake response: $status" >&2; exit 1 ;;
-      esac
+      ${lib.optionalString cfg.gpu.enable ''
+        byte() { dd bs=1 count=1 status=none <&3 | od -An -tu1 | tr -d ' \n'; }
 
-      # Client frames must be masked, but an all zero key leaves the payload as is.
-      printf '%b%s' "\x81\x$(printf '%02x' $((0x80 | ''${#payload})))\x00\x00\x00\x00" "$payload" >&3
+        # The client greets every new connection with its whole state as one
+        # text frame. Server frames carry no mask, so the payload follows the
+        # length directly.
+        readState() {
+          local opcode length high low
+
+          opcode=$(byte)
+          if [ "$opcode" != 129 ]; then
+            echo "unexpected websocket opcode $opcode" >&2
+            exit 1
+          fi
+
+          length=$(byte)
+          if [ "$length" = 126 ]; then
+            high=$(byte)
+            low=$(byte)
+            length=$((high * 256 + low))
+          elif [ "$length" = 127 ]; then
+            echo "state frame is implausibly large" >&2
+            exit 1
+          fi
+
+          head -c "$length" <&3
+        }
+
+        # Enable only the GPUs the client itself calls supported, which means it
+        # found both a compute device and a species for them in the Folding@home
+        # database. Enabling anything else wedges the group rather than being
+        # ignored: Group::waitOnGPU holds off every work unit request, CPU ones
+        # included, for as long as an enabled GPU is missing from that list.
+        gpus=()
+        for attempt in $(seq 15); do
+          open
+          mapfile -t gpus < <(readState | jq -r '(.info.gpus // {}) | to_entries[] | select(.value.supported) | .key')
+          exec 3>&-
+
+          [ ''${#gpus[@]} -gt 0 ] && break
+
+          # Detection waits on the GPU database, fetched on the first run.
+          echo "attempt $attempt: no supported GPU yet"
+          sleep 1
+        done
+
+        echo "enabling GPUs: ''${gpus[*]:-none found}"
+      ''}
+      open
+      ${lib.optionalString cfg.gpu.enable ''
+        # Naming the default group drops every other resource group, which is
+        # fine as long as nothing else creates any. Sending this even when no
+        # GPU was found is deliberate: it clears out stale entries.
+        send "$(jq -cn --args '{
+          cmd: "config",
+          config: {
+            groups: {
+              "": {gpus: ($ARGS.positional | map({(.): {enabled: true}}) | add // {})}
+            }
+          }
+        }' "''${gpus[@]}")"
+      ''}
+      send '{"cmd":"state","state":"fold"}'
     '';
   };
 
@@ -130,6 +216,15 @@ in
       };
     };
 
+    gpu.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = ''
+        Fold on this host's GPUs as well as its CPUs. The compute runtime
+        provided is ROCm's OpenCL, so only AMD GPUs are covered.
+      '';
+    };
+
     extraArgs = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ ];
@@ -151,8 +246,20 @@ in
       isSystemUser = true;
       group = "foldingathome";
       uid = config.ids.uids.foldingathome;
+      # render owns /dev/kfd and the DRM render nodes, which ROCm's OpenCL
+      # needs to reach the GPU.
+      extraGroups = lib.optional cfg.gpu.enable "render";
     };
     users.groups.foldingathome.gid = config.ids.gids.foldingathome;
+
+    # fahclient is an FHS environment carrying the ocl-icd loader, which reads
+    # its vendor list from /run/opengl-driver/etc/OpenCL/vendors. Nothing else
+    # is needed to reach the GPU from inside it: bwrap binds /run and /nix
+    # through, so the ICD and the library it names both resolve.
+    hardware.graphics = lib.mkIf cfg.gpu.enable {
+      enable = true;
+      extraPackages = [ pkgs.rocmPackages.clr.icd ];
+    };
 
     systemd.services.foldingathome = {
       # Started and stopped by the price gate rather than at boot.
@@ -161,7 +268,7 @@ in
         DynamicUser = lib.mkForce false;
         User = "foldingathome";
         Group = "foldingathome";
-        ExecStartPost = lib.getExe unpause;
+        ExecStartPost = lib.getExe configure;
       };
     };
 
