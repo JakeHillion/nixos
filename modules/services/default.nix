@@ -10,7 +10,6 @@
     ./buildbot-nix-master.nix
     ./buildbot-nix-worker.nix
     ./couchdb
-    ./dancefloor.nix
     ./downloads
     ./etcd.nix
     ./firefly-iii

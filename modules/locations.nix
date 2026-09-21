@@ -31,7 +31,6 @@ in
           awtrix-fireworks-tokens = "stinger.pop.${config.ogygia.domain}";
           awtrix-octopus-agile = "stinger.pop.${config.ogygia.domain}";
           couchdb = "warlock.cx.${config.ogygia.domain}";
-          dancefloor = "iceman.cx.${config.ogygia.domain}";
           downloads = "phoenix.st.${config.ogygia.domain}";
           etcd = [
             "iceman.cx.${config.ogygia.domain}"
