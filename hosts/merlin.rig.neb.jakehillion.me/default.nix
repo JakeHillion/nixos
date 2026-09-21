@@ -51,6 +51,11 @@
     ## Gaming
     custom.games.steam.enable = true;
 
+    custom.services.foldingathome = {
+      enable = true;
+      gpu.enable = true;
+    };
+
     ## Impermanence
     custom.impermanence = {
       enable = true;
