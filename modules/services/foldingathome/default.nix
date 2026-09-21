@@ -112,8 +112,7 @@ let
       open
       ${lib.optionalString cfg.gpu.enable ''
         # Naming the default group drops every other resource group, which is
-        # fine as long as nothing else creates any. Sending this even when no
-        # GPU was found is deliberate: it clears out stale entries.
+        # fine as long as nothing else creates any.
         send "$(jq -cn --args '{
           cmd: "config",
           config: {
@@ -253,9 +252,7 @@ in
     users.groups.foldingathome.gid = config.ids.gids.foldingathome;
 
     # fahclient is an FHS environment carrying the ocl-icd loader, which reads
-    # its vendor list from /run/opengl-driver/etc/OpenCL/vendors. Nothing else
-    # is needed to reach the GPU from inside it: bwrap binds /run and /nix
-    # through, so the ICD and the library it names both resolve.
+    # its vendor list from /run/opengl-driver/etc/OpenCL/vendors.
     hardware.graphics = lib.mkIf cfg.gpu.enable {
       enable = true;
       extraPackages = [ pkgs.rocmPackages.clr.icd ];

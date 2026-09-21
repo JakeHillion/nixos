@@ -51,7 +51,6 @@
     ## Gaming
     custom.games.steam.enable = true;
 
-    ## Put spare cycles to use while electricity is free
     custom.services.foldingathome = {
       enable = true;
       gpu.enable = true;
