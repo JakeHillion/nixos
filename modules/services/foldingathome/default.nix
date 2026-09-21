@@ -7,17 +7,17 @@ let
 
   # fah-client ships "paused": true in the default resource group
   # (src/resources/group.json) and registers no option to change it, so a fresh
-  # client sits idle until something tells it to fold. Its HTTP server exposes a
-  # single route, a websocket; everything else redirects to the hosted Web
-  # Control. Sending the fold command is idempotent, and the resulting unpaused
-  # state is written to client.db.
-  unpause = pkgs.writeShellApplication {
-    name = "foldingathome-unpause";
-    runtimeInputs = with pkgs; [ coreutils ];
+  # client sits idle until something tells it to fold. GPUs are held back the
+  # same way: Config::isGPUEnabled reports any GPU missing from the group's
+  # gpus dict as disabled, and that dict also starts out empty. Its HTTP server
+  # exposes a single route, a websocket; everything else redirects to the
+  # hosted Web Control. Both commands are idempotent, and the state they leave
+  # behind is written to client.db.
+  configure = pkgs.writeShellApplication {
+    name = "foldingathome-configure";
+    runtimeInputs = with pkgs; [ coreutils ] ++ lib.optionals cfg.gpu.enable [ jq ];
     text = ''
       set -euo pipefail
-
-      payload='{"cmd":"state","state":"fold"}'
 
       for attempt in $(seq 60); do
         if exec 3<>/dev/tcp/127.0.0.1/7396; then break; fi
@@ -36,8 +36,56 @@ let
         *) echo "unexpected handshake response: $status" >&2; exit 1 ;;
       esac
 
-      # Client frames must be masked, but an all zero key leaves the payload as is.
-      printf '%b%s' "\x81\x$(printf '%02x' $((0x80 | ''${#payload})))\x00\x00\x00\x00" "$payload" >&3
+      send() {
+        local payload="$1"
+        local length=''${#payload}
+        local header
+
+        if [ "$length" -lt 126 ]; then
+          header="\x81\x$(printf '%02x' $((0x80 | length)))"
+        else
+          header="\x81\xfe\x$(printf '%02x' $((length >> 8)))\x$(printf '%02x' $((length & 0xff)))"
+        fi
+
+        # Client frames must be masked, but an all zero key leaves the payload as is.
+        printf '%b%s' "$header\x00\x00\x00\x00" "$payload" >&3
+      }
+
+      ${lib.optionalString cfg.gpu.enable ''
+        # The client identifies a GPU by its PCI bus, slot and function printed
+        # in decimal rather than the usual hex (cbang's PCIDevice::getID), so
+        # spell the same names out of sysfs. Listing a device the client can't
+        # fold on costs nothing: it still has to carry a species in the
+        # Folding@home GPU database before work is requested for it.
+        gpus=()
+        for device in /sys/bus/pci/devices/*; do
+          # 0x03 is the PCI display controller class.
+          case "$(cat "$device/class")" in
+            0x03*) ;;
+            *) continue ;;
+          esac
+
+          address=''${device##*/}          # e.g. 0000:03:00.0
+          address=''${address#*:}          # drop the domain
+          slotFunction=''${address#*:}
+
+          gpus+=("$(printf 'gpu:%02d:%02d:%02d' "0x''${address%%:*}" "0x''${slotFunction%%.*}" "0x''${slotFunction#*.}")")
+        done
+
+        echo "enabling GPUs: ''${gpus[*]:-none found}"
+
+        # Naming the default group drops every other resource group, which is
+        # fine as long as nothing else creates any.
+        send "$(jq -cn --args '{
+          cmd: "config",
+          config: {
+            groups: {
+              "": {gpus: ($ARGS.positional | map({(.): {enabled: true}}) | add // {})}
+            }
+          }
+        }' "''${gpus[@]}")"
+      ''}
+      send '{"cmd":"state","state":"fold"}'
     '';
   };
 
@@ -130,6 +178,15 @@ in
       };
     };
 
+    gpu.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = ''
+        Fold on this host's GPUs as well as its CPUs. The compute runtime
+        provided is ROCm's OpenCL, so only AMD GPUs are covered.
+      '';
+    };
+
     extraArgs = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ ];
@@ -151,8 +208,20 @@ in
       isSystemUser = true;
       group = "foldingathome";
       uid = config.ids.uids.foldingathome;
+      # render owns /dev/kfd and the DRM render nodes, which ROCm's OpenCL
+      # needs to reach the GPU.
+      extraGroups = lib.optional cfg.gpu.enable "render";
     };
     users.groups.foldingathome.gid = config.ids.gids.foldingathome;
+
+    # fahclient is an FHS environment carrying the ocl-icd loader, which reads
+    # its vendor list from /run/opengl-driver/etc/OpenCL/vendors. Nothing else
+    # is needed to reach the GPU from inside it: bwrap binds /run and /nix
+    # through, so the ICD and the library it names both resolve.
+    hardware.graphics = lib.mkIf cfg.gpu.enable {
+      enable = true;
+      extraPackages = [ pkgs.rocmPackages.clr.icd ];
+    };
 
     systemd.services.foldingathome = {
       # Started and stopped by the price gate rather than at boot.
@@ -161,7 +230,7 @@ in
         DynamicUser = lib.mkForce false;
         User = "foldingathome";
         Group = "foldingathome";
-        ExecStartPost = lib.getExe unpause;
+        ExecStartPost = lib.getExe configure;
       };
     };
 
