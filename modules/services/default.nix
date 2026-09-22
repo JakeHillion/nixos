@@ -5,7 +5,6 @@
     ./acme-dns-api
     ./async-coder
     ./authoritative_dns.nix
-    ./awtrix-fireworks-tokens
     ./awtrix-octopus-agile
     ./buildbot-nix-master.nix
     ./buildbot-nix-worker.nix

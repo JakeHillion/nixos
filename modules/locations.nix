@@ -28,7 +28,6 @@ in
           ];
           buildbot-nix-master = "iceman.cx.${config.ogygia.domain}";
           buildbot-nix-worker = "iceman.cx.${config.ogygia.domain}";
-          awtrix-fireworks-tokens = "stinger.pop.${config.ogygia.domain}";
           awtrix-octopus-agile = "stinger.pop.${config.ogygia.domain}";
           couchdb = "warlock.cx.${config.ogygia.domain}";
           dancefloor = "iceman.cx.${config.ogygia.domain}";
