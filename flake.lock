@@ -279,11 +279,11 @@
         "treefmt-nix": "treefmt-nix_5"
       },
       "locked": {
-        "lastModified": 1790000987,
-        "narHash": "sha256-zgbrlOXdOyNgo/0aYSl5loO/hc2dCRmS7pAAvTfb+lM=",
+        "lastModified": 1790005095,
+        "narHash": "sha256-jlapnBTo13D8qHXNmqe19k+v6wH3sGo7fVn8eCyqrnU=",
         "ref": "refs/heads/main",
-        "rev": "7d938d23c43f60d7698df1b6168c386fd26f3a4f",
-        "revCount": 31,
+        "rev": "9e85a2b0ddb5a2259cc66af7fb0794ab9870d3e7",
+        "revCount": 33,
         "type": "git",
         "url": "https://gitea.hillion.co.uk/JakeHillion/dancefloor-monorepo.git"
       },
@@ -790,11 +790,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1789978077,
-        "narHash": "sha256-p/e37FfVifxJQJM7OiiVbUXdpj6eXmOJk34TKLKyYe4=",
+        "lastModified": 1790002393,
+        "narHash": "sha256-K52mRzjlCKWaFf+Z3SmoxACg/UzNNR4eUiRZUe1tMs4=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "a26f7158fbc4aa740fcc7fa79a01e1ed29910bc2",
+        "rev": "fae3c7589610212a87c89a968f2321d2bc823f38",
         "type": "github"
       },
       "original": {
@@ -983,11 +983,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1789857755,
-        "narHash": "sha256-7kkG90Hi1woXJ9IUNUejvfSG1JR20Uj1BTVDLO7d1+Y=",
+        "lastModified": 1790005494,
+        "narHash": "sha256-7I+M7RgMZEwFraQ+5M5l0yivrvnFUcm44m0WRIFjlyY=",
         "owner": "JakeHillion",
         "repo": "nixpkgs2",
-        "rev": "96a78656d1ab0a22e79036e9817f21e85aa312e3",
+        "rev": "a0e090e7cbd7c46d65d5d6c86c138be87abbaf68",
         "type": "github"
       },
       "original": {
