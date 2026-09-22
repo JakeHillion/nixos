@@ -121,6 +121,14 @@ in
 
   config = lib.mkIf cfg.enable {
     custom.services.llm_proxy.providers = {
+      digitalocean = lib.mkDefault {
+        url = "https://inference.do-ai.run/v1";
+        apiKeyCredential = "digitalocean-api-key";
+        apiKeyFile = config.age.secrets."llm-proxy/digitalocean-api-key".path;
+        models = {
+          "deepseek/deepseek-v4-flash-0731" = "deepseek-v4-flash-0731";
+        };
+      };
       ollama-cloud = lib.mkDefault {
         url = "https://ollama.com/v1";
         apiKeyCredential = "ollama-cloud-api-key";
@@ -144,7 +152,6 @@ in
           "moonshotai/kimi-k3" = "accounts/fireworks/models/kimi-k3";
           "zai/glm-5.2" = "accounts/fireworks/models/glm-5p2";
           "deepseek/deepseek-v4-pro-0813" = "accounts/fireworks/models/deepseek-v4-pro-0813";
-          "deepseek/deepseek-v4-flash-0731" = "accounts/fireworks/models/deepseek-v4-flash-0731";
         };
       };
       openai = lib.mkDefault {
@@ -158,6 +165,9 @@ in
       };
     };
 
+    age.secrets."llm-proxy/digitalocean-api-key" = {
+      rekeyFile = ./digitalocean.age;
+    };
     age.secrets."llm-proxy/ollama-cloud-api-key" = {
       rekeyFile = ./ollama-cloud.age;
     };
