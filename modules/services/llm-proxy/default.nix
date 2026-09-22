@@ -129,16 +129,6 @@ in
           "deepseek/deepseek-v4-flash-0731" = "deepseek-v4-flash-0731";
         };
       };
-      ollama-cloud = lib.mkDefault {
-        url = "https://ollama.com/v1";
-        apiKeyCredential = "ollama-cloud-api-key";
-        apiKeyFile = config.age.secrets."llm-proxy/ollama-cloud-api-key".path;
-        models = {
-          "moonshotai/kimi-k2.6" = "kimi-k2.6";
-          "moonshotai/kimi-k2.7-code" = "kimi-k2.7-code";
-          "minimax/minimax-m2.7" = "minimax-m2.7";
-        };
-      };
       fireworks = lib.mkDefault {
         url = "https://api.fireworks.ai/inference/v1";
         apiKeyCredential = "fireworks-api-key";
@@ -149,7 +139,6 @@ in
         ];
         models = {
           "moonshotai/kimi-k3" = "accounts/fireworks/models/kimi-k3";
-          "zai/glm-5.2" = "accounts/fireworks/models/glm-5p2";
         };
       };
       openai = lib.mkDefault {
@@ -165,9 +154,6 @@ in
 
     age.secrets."llm-proxy/digitalocean-api-key" = {
       rekeyFile = ./digitalocean.age;
-    };
-    age.secrets."llm-proxy/ollama-cloud-api-key" = {
-      rekeyFile = ./ollama-cloud.age;
     };
     age.secrets."llm-proxy/fireworks-api-key" = {
       rekeyFile = ./fireworks.age;
