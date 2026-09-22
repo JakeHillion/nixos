@@ -206,7 +206,7 @@ in
             api_key_file = pkgs.writeText "async-coder-dummy-key" "unused";
             api_url = "http://127.0.0.1:9100/v1/batch/10000";
             model = "deepseek/deepseek-v4-flash-0731";
-            cheap_fast_model = "minimax/minimax-m2.7";
+            cheap_fast_model = "deepseek/deepseek-v4-flash-0731";
             provider = "llm-proxy";
             base_port = 18900;
             mcp = {
