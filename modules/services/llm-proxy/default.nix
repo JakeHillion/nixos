@@ -137,7 +137,6 @@ in
           "moonshotai/kimi-k2.6" = "kimi-k2.6";
           "moonshotai/kimi-k2.7-code" = "kimi-k2.7-code";
           "minimax/minimax-m2.7" = "minimax-m2.7";
-          "zai/glm-5.1" = "glm-5.1";
         };
       };
       fireworks = lib.mkDefault {
@@ -151,7 +150,6 @@ in
         models = {
           "moonshotai/kimi-k3" = "accounts/fireworks/models/kimi-k3";
           "zai/glm-5.2" = "accounts/fireworks/models/glm-5p2";
-          "deepseek/deepseek-v4-pro-0813" = "accounts/fireworks/models/deepseek-v4-pro-0813";
         };
       };
       openai = lib.mkDefault {
