@@ -14,22 +14,44 @@ let
     in
     if builtins.isList authDns then builtins.head authDns else authDns;
 
-  # IoT clients permitted to reach the hearthd vhost.
-  hearthdAllowedClients = [
-    "10.239.19.16" # bedroom-portal
-  ];
+  # One kiosk per template in ./portals, named after its file: bedroom.json is
+  # the kiosk that polls /extra/portals/bedroom/state. Dropping a template in is
+  # the whole act of adding a kiosk. Every kiosk is served the same state;
+  # `template` is the only thing that distinguishes them.
+  kiosks =
+    let
+      dir = ./portals;
+    in
+    lib.mapAttrs'
+      (file: _: lib.nameValuePair (lib.removeSuffix ".json" file) {
+        template = dir + "/${file}";
+      })
+      (lib.filterAttrs (file: type: type == "regular" && lib.hasSuffix ".json" file)
+        (builtins.readDir dir));
 
   # Portal dashboard server: serves /state and /template/<hash> for Portals,
   # pulling live light state from the colocated hearthd. Exposed on the IoT
   # vhost under /extra/portals/ (see caddy below).
   portalsPort = 8566;
 
+  kioskTemplateArgs = lib.concatStringsSep " "
+    (lib.mapAttrsToList (name: k: "--template ${name}=${k.template}") kiosks);
+
+  # The screen shapes the kiosks come in. Every wallpaper is rendered once per
+  # class, and each class's set is served under its own prefix, so a kiosk only
+  # ever fetches frames already cropped to its own screen. A template picks its
+  # class by the prefix in its `photos` URLs.
+  screenClasses = {
+    landscape = { width = 1280; height = 800; };
+    portrait = { width = 800; height = 1280; };
+  };
+
   # Portal screensavers are pre-rendered from Apple dynamic-desktop HEICs held on
   # the NAS (wallpapers.${domain}). Each HEIC packs every time-of-day frame into
   # one >100 MiB container; the Portals are tiny, so we render each frame to a
-  # 1280x800 JPEG and emit per-frame sun-elevation metadata, served read-only
-  # under /static/screensavers/<slug>/ (see caddy below) so the Portal never
-  # touches the HEICs. To add or drop a wallpaper, edit this set;
+  # class-sized JPEG and emit per-frame sun-elevation metadata, served read-only
+  # under /static/screensavers/<class>/<slug>/ (see caddy below) so the Portal
+  # never touches the HEICs. To add or drop a wallpaper, edit this set;
   # `nix store prefetch-file <url>` gives the hash.
   wallpaperBaseUrl = "https://wallpapers.${config.ogygia.domain}/JetsonCreative/24_Hour_Naturescapes";
   wallpapers = {
@@ -41,19 +63,23 @@ let
     "joshua-tree" = { file = "24hr-JoshuaTree.heic"; sha256 = "df8a33d880022f6c5220a225d1cc3113f6b45d8f4ab801a5f7a4fddd3170205a"; };
   };
 
-  renderWallpaper = name: w: ''
-    python3 ${./screensavers/build.py} ${pkgs.fetchurl {
+  renderWallpaper = class: c: name: w: ''
+    python3 ${./screensavers/build.py} --width ${toString c.width} --height ${toString c.height} ${pkgs.fetchurl {
       url = "${wallpaperBaseUrl}/${w.file}";
       inherit (w) sha256;
-    }} "$out/${name}"
+    }} "$out/${class}/${name}"
   '';
+
+  renderClass = class: c:
+    lib.concatStringsSep "\n"
+      (lib.mapAttrsToList (renderWallpaper class c) wallpapers);
 
   screensavers = pkgs.runCommand "hearthd-screensavers"
     {
       nativeBuildInputs = [ pkgs.imagemagick pkgs.exiftool pkgs.python3 ];
     } ''
     mkdir -p "$out"
-    ${lib.concatStringsSep "\n" (lib.mapAttrsToList renderWallpaper wallpapers)}
+    ${lib.concatStringsSep "\n" (lib.mapAttrsToList renderClass screenClasses)}
   '';
 in
 {
@@ -99,9 +125,6 @@ in
             }
           }
 
-          @blocked not remote_ip ${lib.concatStringsSep " " hearthdAllowedClients}
-          respond @blocked "<h1>Access Denied</h1>" 403
-
           handle_path /extra/portals/* {
             reverse_proxy http://127.0.0.1:${toString portalsPort}
           }
@@ -123,7 +146,7 @@ in
       wantedBy = [ "multi-user.target" ];
       after = [ "network.target" "hearthd.service" ];
       serviceConfig = {
-        ExecStart = "${pkgs.python3}/bin/python3 ${./portals/serve.py} ${./portals/template.json} --host 127.0.0.1 --port ${toString portalsPort} --hearthd http://127.0.0.1:8565";
+        ExecStart = "${pkgs.python3}/bin/python3 ${./portals/serve.py} ${kioskTemplateArgs} --host 127.0.0.1 --port ${toString portalsPort} --hearthd http://127.0.0.1:8565";
         DynamicUser = true;
         Restart = "on-failure";
         RestartSec = 5;
