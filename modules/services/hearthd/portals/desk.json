@@ -38,9 +38,69 @@
       "https://hearthd.iot.home.jakehillion.me/static/screensavers/portrait/yosemite-lukens/metadata.json"
     ],
     "child": {
-      "type": "clock",
-      "show_seconds": false,
-      "timezone": "Europe/London"
+      "type": "carousel",
+      "pages": [
+        {
+          "title": "Desk",
+          "child": {
+            "type": "grid",
+            "children": [
+              {
+                "type": "light_group",
+                "title": "Lights",
+                "source": { "$": "lights" },
+                "on_targets": [
+                  "light.0x001788010cfca626",
+                  "light.0xf0d1b8000018998a",
+                  "light.0x001788010be51b09"
+                ],
+                "lights": [
+                  {
+                    "entity_id": "light.0x001788010cfca626",
+                    "name": "Light",
+                    "endpoint": 1,
+                    "dimmable": true,
+                    "color": false
+                  },
+                  {
+                    "entity_id": "light.0xf0d1b8000018998a",
+                    "name": "Lamp",
+                    "endpoint": 1,
+                    "dimmable": true,
+                    "color": false
+                  },
+                  {
+                    "entity_id": "light.0x001788010be51b09",
+                    "name": "Hue",
+                    "endpoint": 1,
+                    "dimmable": true,
+                    "color": false
+                  },
+                  {
+                    "entity_id": "light.1221051039810110150109113116116_2",
+                    "name": "Desk Lights",
+                    "endpoint": 1,
+                    "dimmable": true,
+                    "color": false
+                  },
+                  {
+                    "entity_id": "light.0x84ba20fffecebac8",
+                    "name": "Desk Lamp",
+                    "endpoint": 1,
+                    "dimmable": true,
+                    "color": false
+                  }
+                ]
+              },
+              {
+                "type": "clock",
+                "show_seconds": false,
+                "timezone": "Europe/London"
+              }
+            ]
+          }
+        }
+      ]
     }
   }
 }
