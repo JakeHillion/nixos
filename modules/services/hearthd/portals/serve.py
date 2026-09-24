@@ -14,11 +14,14 @@ Serves the two endpoints a kiosk polls:
                            about, and the template selects from it by entity_id.
                            A name we have no template for is a 404.
   GET /template/<hash>  -> the template body, but only when <hash> matches the
-                           sha256 of a template we serve. This stays outside the
-                           per-kiosk paths because the hash alone determines the
-                           body. The kiosk derives this URL from the hash in its
-                           state document and verifies the body against it, so
-                           the two must agree.
+                           sha256 of a template we serve. The kiosk derives this
+                           URL from the hash in its state document and verifies
+                           the body against it, so the two must agree. It
+                           resolves that URL relative to its own state endpoint,
+                           so the request usually arrives prefixed as
+                           /<kiosk>/template/<hash>; both spellings are served,
+                           and the prefix is ignored because the hash alone
+                           determines the body.
 
 Template paths are immutable Nix store paths; changing one is a redeploy, which
 restarts this server with the new paths. Both indexes are therefore built once
@@ -349,15 +352,20 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         # Any query string is ignored; a kiosk names itself in the path.
-        path = urlsplit(self.path).path
-        if path.startswith("/template/"):
-            self._handle_template(path[len("/template/") :])
-            return
-        kiosk, _, tail = path.lstrip("/").partition("/")
-        if kiosk and tail == "state":
-            self._handle_state(kiosk)
-            return
-        self._send_json(404, {"error": "not found"})
+        segments = urlsplit(self.path).path.strip("/").split("/")
+        # A kiosk resolves its template URL relative to its own state endpoint,
+        # so template requests arrive as <kiosk>/template/<hash>. A body is
+        # addressed by its hash alone, so drop the kiosk segment rather than
+        # check it — whoever asks for a hash we serve gets that body.
+        if len(segments) == 3 and segments[1] == "template":
+            segments = segments[1:]
+
+        if len(segments) == 2 and segments[0] == "template":
+            self._handle_template(segments[1])
+        elif len(segments) == 2 and segments[1] == "state":
+            self._handle_state(segments[0])
+        else:
+            self._send_json(404, {"error": "not found"})
 
     def _handle_state(self, kiosk):
         template_hash = self.templates.hash_for(kiosk)
