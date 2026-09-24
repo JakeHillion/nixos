@@ -84,8 +84,8 @@
                     "color": false
                   },
                   {
-                    "entity_id": "light.0x84ba20fffecebac8",
-                    "name": "Desk Lamp",
+                    "entity_id": "light.0xf0d1b80000146cab",
+                    "name": "Kitchen",
                     "endpoint": 1,
                     "dimmable": true,
                     "color": false
