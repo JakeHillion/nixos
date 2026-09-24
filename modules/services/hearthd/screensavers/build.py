@@ -8,17 +8,20 @@ the Portals are tiny, so we pre-render each frame to a downscaled JPEG and emit
 the frame->sun/time mapping as metadata.json. The Portal then picks a frame for
 the current sun elevation without ever fetching the HEIC.
 
-Frames are center-cropped to TARGET_W x TARGET_H: scaled so the shorter axis
-fills the target, with the overflow on the longer axis trimmed equally from both
-sides. Aspect ratio is preserved (no warping); only the edges are lost.
+Frames are center-cropped to the requested width x height: scaled so the shorter
+axis fills the target, with the overflow on the longer axis trimmed equally from
+both sides. Aspect ratio is preserved (no warping); only the edges are lost.
+Portals come in more than one screen shape, so each wallpaper is rendered once
+per shape and each resulting set is served under its own prefix.
 
 ImageMagick reads every top-level HEIC image as one sequence, in file order, so
 scene N corresponds to apple_desktop image index N. A single decode pass renders
 all frames.
 
-Usage: build.py SOURCE.heic OUTDIR
+Usage: build.py SOURCE.heic OUTDIR [--width W] [--height H]
 """
 
+import argparse
 import base64
 import json
 import os
@@ -27,13 +30,13 @@ import re
 import subprocess
 import sys
 
-TARGET_W = 1280
-TARGET_H = 800
+DEFAULT_WIDTH = 1280
+DEFAULT_HEIGHT = 800
 JPEG_QUALITY = 88
 
 
-def render_frames(heic, outdir):
-    """Crop every HEIC frame to TARGET_W x TARGET_H; write <index>.jpg.
+def render_frames(heic, outdir, width, height):
+    """Crop every HEIC frame to width x height; write <index>.jpg.
 
     Returns the sorted list of frame indices actually written.
     """
@@ -42,11 +45,11 @@ def render_frames(heic, outdir):
             "magick",
             heic,
             "-resize",
-            f"{TARGET_W}x{TARGET_H}^",
+            f"{width}x{height}^",
             "-gravity",
             "center",
             "-extent",
-            f"{TARGET_W}x{TARGET_H}",
+            f"{width}x{height}",
             "-quality",
             str(JPEG_QUALITY),
             "-interlace",
@@ -94,7 +97,7 @@ def appearance_label(index, appearance):
     return None
 
 
-def build_metadata(heic, indices):
+def build_metadata(heic, indices, width, height):
     """Assemble the metadata document mapping each frame to its sun/time data."""
     scheme, plist = read_apple_desktop(heic)
     appearance = (plist or {}).get("ap") if plist else None
@@ -138,8 +141,8 @@ def build_metadata(heic, indices):
 
     meta = {
         "source": source,
-        "width": TARGET_W,
-        "height": TARGET_H,
+        "width": width,
+        "height": height,
         "count": len(frames),
         "scheme": scheme or "static",
         "frames": frames,
@@ -153,15 +156,32 @@ def build_metadata(heic, indices):
 
 
 def main(argv=None):
-    argv = sys.argv[1:] if argv is None else argv
-    if len(argv) != 2:
-        sys.exit("usage: build.py SOURCE.heic OUTDIR")
-    heic, outdir = argv
-    os.makedirs(outdir, exist_ok=True)
+    parser = argparse.ArgumentParser(
+        description="Render a Portal screensaver set from a dynamic-wallpaper HEIC."
+    )
+    parser.add_argument("heic", help="source .heic to render")
+    parser.add_argument(
+        "outdir", help="directory to write frames and metadata to"
+    )
+    parser.add_argument(
+        "--width",
+        type=int,
+        default=DEFAULT_WIDTH,
+        help="frame width in pixels",
+    )
+    parser.add_argument(
+        "--height",
+        type=int,
+        default=DEFAULT_HEIGHT,
+        help="frame height in pixels",
+    )
+    args = parser.parse_args(argv)
 
-    indices = render_frames(heic, outdir)
-    meta = build_metadata(heic, indices)
-    with open(os.path.join(outdir, "metadata.json"), "w") as f:
+    os.makedirs(args.outdir, exist_ok=True)
+
+    indices = render_frames(args.heic, args.outdir, args.width, args.height)
+    meta = build_metadata(args.heic, indices, args.width, args.height)
+    with open(os.path.join(args.outdir, "metadata.json"), "w") as f:
         json.dump(meta, f, indent=2)
         f.write("\n")
 
