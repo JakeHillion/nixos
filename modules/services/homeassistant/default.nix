@@ -14,6 +14,7 @@ let
     "10.239.19.4" # hallway-wall-tablet
     "10.239.19.14" # fph-sat1-lr
     "10.239.19.16" # bedroom-portal
+    "10.239.19.18" # desk-portal
   ];
 
   # Override the nixpkgs ecoflow_cloud (pinned to v1.4.1) with the latest
@@ -244,10 +245,12 @@ in
                   trusted_networks = [
                     "10.239.19.4/32"
                     "10.239.19.16/32"
+                    "10.239.19.18/32"
                   ];
                   trusted_users = {
                     "10.239.19.4" = "fb4979873ecb480d9e3bb336250fa344";
                     "10.239.19.16" = "fb4979873ecb480d9e3bb336250fa344";
+                    "10.239.19.18" = "fb4979873ecb480d9e3bb336250fa344";
                   };
                   allow_bypass_login = true;
                 }

@@ -1,24 +1,35 @@
 #!/usr/bin/env python3
-"""Portal dashboard server.
+"""Kiosk dashboard server.
 
-Serves the two endpoints a Portal polls:
+Serves the two endpoints a kiosk polls:
 
-  GET /state            -> the live state document: the current template hash,
-                           a refresh interval, and the state blob. The light
-                           states are pulled live from hearthd on each request;
-                           everything else the template needs is baked into the
-                           template itself as literals.
+  GET /<kiosk>/state    -> the live state document for a named kiosk: its
+                           template hash, a refresh interval, and the state
+                           blob. The light states are pulled live from hearthd
+                           on each request; everything else the template needs
+                           is baked into the template itself as literals. The
+                           name picks the template only — every kiosk is served
+                           the same state, since none of it is kiosk-scoped: the
+                           lights map holds every switchable light hearthd knows
+                           about, and the template selects from it by entity_id.
+                           A name we have no template for is a 404.
   GET /template/<hash>  -> the template body, but only when <hash> matches the
-                           sha256 of the file we're serving. The Portal derives
-                           this URL from the hash in /state and verifies the body
-                           against it, so the two must agree.
+                           sha256 of a template we serve. The kiosk derives this
+                           URL from the hash in its state document and verifies
+                           the body against it, so the two must agree. It
+                           resolves that URL relative to its own state endpoint,
+                           so the request usually arrives prefixed as
+                           /<kiosk>/template/<hash>; both spellings are served,
+                           and the prefix is ignored because the hash alone
+                           determines the body.
 
-The template path is an immutable Nix store path; changing the template is a
-redeploy, which restarts this server with the new path. The hash in /state and
-the body at /template/<hash> are computed from that file, so they always agree.
+Template paths are immutable Nix store paths; changing one is a redeploy, which
+restarts this server with the new paths. Both indexes are therefore built once
+at startup, and a hash handed out in a state document always resolves.
 
 Usage:
-    serve.py TEMPLATE_PATH [--host HOST] [--port PORT] [--hearthd URL]
+    serve.py --template KIOSK=PATH [--template KIOSK=PATH ...]
+             [--host HOST] [--port PORT] [--hearthd URL]
 """
 
 import argparse
@@ -29,18 +40,19 @@ import math
 import sys
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from urllib.parse import urlsplit
 
 DEFAULT_HEARTHD = "https://hearthd.neb.jakehillion.me"
-# How often we ask the Portal to poll /state, in seconds.
+# How often we ask the kiosk to poll for state, in seconds.
 REFRESH_INTERVAL = 10
 # hearthd exposes each node's clusters under endpoint 1.
 PRIMARY_ENDPOINT = "1"
 # The home's location, used to place the sun for the solar wallpaper. This is
-# the same hardcoded London fix we use elsewhere; the Portal itself never needs
+# the same hardcoded London fix we use elsewhere; the kiosk itself never needs
 # coordinates, only the resulting sun position, so it lives here.
-PORTAL_LAT = 51.47789474404557
-PORTAL_LON = -0.0014709754224478695
-# The environment sensors the Portal shows, in display order, mapped from the
+KIOSK_LAT = 51.47789474404557
+KIOSK_LON = -0.0014709754224478695
+# The environment sensors the kiosk shows, in display order, mapped from the
 # clean slug the template references to hearthd's opaque device id. This mapping
 # is the whole point of doing it here: the template only ever sees the slug.
 ENVIRONMENT_SENSORS = {
@@ -49,11 +61,11 @@ ENVIRONMENT_SENSORS = {
     "living_room": "sensor.0x54ef441000d20037",
     "loft": "sensor.0x54ef441000d20a5a",
 }
-# The weather node the Portal shows. hearthd publishes one node per configured
+# The weather node the kiosk shows. hearthd publishes one node per configured
 # met.no location; we pick the "home" one.
 WEATHER_ENTITY_ID = "weather.home"
 # Map the PascalCase WeatherCondition enum from hearthd to the snake_case values
-# the Portal's weather widget expects.
+# the kiosk's weather widget expects.
 WEATHER_CONDITIONS = {
     "ClearSky": "clear_sky",
     "ClearNight": "clear_night",
@@ -69,14 +81,38 @@ WEATHER_CONDITIONS = {
 
 
 def template_bytes(path):
-    """Read the template file as raw bytes (what we hash and serve verbatim)."""
+    """Read a template file as raw bytes (what we hash and serve verbatim)."""
     with open(path, "rb") as f:
         return f.read()
 
 
-def template_hash(path):
-    """sha256 of the template file, hex — the id the Portal fetches it by."""
-    return hashlib.sha256(template_bytes(path)).hexdigest()
+class Templates:
+    """The templates this server serves, indexed by kiosk name and by hash.
+
+    Template files are immutable Nix store paths, so both indexes are built once
+    at startup — an unreadable template is a broken deploy, and failing at
+    startup beats failing per request. Indexing the bodies by content hash also
+    means two kiosks on identical templates share a hash, and so one fetch.
+    """
+
+    def __init__(self, by_kiosk):
+        self.by_kiosk = dict(by_kiosk)
+        self.hash_by_path = {}
+        self.path_by_hash = {}
+        for path in self.by_kiosk.values():
+            digest = hashlib.sha256(template_bytes(path)).hexdigest()
+            self.hash_by_path[path] = digest
+            self.path_by_hash[digest] = path
+
+    def hash_for(self, kiosk):
+        """The template hash to hand a kiosk, or None if we serve it none."""
+        path = self.by_kiosk.get(kiosk)
+        return None if path is None else self.hash_by_path[path]
+
+    def body_for(self, digest):
+        """The raw template body for a hash, or None if we don't serve it."""
+        path = self.path_by_hash.get(digest)
+        return None if path is None else template_bytes(path)
 
 
 def solar_position(lat, lon, when_utc):
@@ -88,7 +124,7 @@ def solar_position(lat, lon, when_utc):
     16-frame wallpapers it drives — and the geometric (unrefracted) position,
     which is what the frame metadata's elevation/azimuth are keyed to.
 
-    The Portal picks a wallpaper collection for the day and then, frame by
+    The kiosk picks a wallpaper collection for the day and then, frame by
     frame, renders the image whose stored sun position is nearest this one.
     """
     y, mo = when_utc.year, when_utc.month
@@ -190,7 +226,7 @@ def centi(value):
 
 
 def normalise_lights(hearthd):
-    """Reduce hearthd's node/cluster tree to the flat light map the Portal reads.
+    """Reduce hearthd's node/cluster tree to the flat light map the kiosk reads.
 
     Keyed by entity_id (which is also the command path param, so no second
     lookup is needed). Every switchable light hearthd knows about is published;
@@ -214,7 +250,7 @@ def normalise_lights(hearthd):
 
         # Colour: none of these lights expose ColorControl yet, and the hearthd
         # colour read/command shape isn't pinned down. Emit hs only once that's
-        # known; until then the Portal treats a light with no hs as non-colour.
+        # known; until then the kiosk treats a light with no hs as non-colour.
         color = clusters.get("ColorControl")
         if color is not None:
             entry["hs"] = (
@@ -226,7 +262,7 @@ def normalise_lights(hearthd):
 
 
 def normalise_environment(hearthd):
-    """Map the Portal's named environment sensors to their live readings.
+    """Map the kiosk's named environment sensors to their live readings.
 
     Keyed by the clean slug from ENVIRONMENT_SENSORS, so the template references
     "environment.bedroom.temperature" and never a device id. hearthd reports
@@ -258,11 +294,11 @@ def node_by_entity_id(hearthd):
 
 
 def normalise_weather(hearthd):
-    """Extract the live weather reading for the Portal's weather widget.
+    """Extract the live weather reading for the kiosk's weather widget.
 
     hearthd's met.no integration publishes a `weather.home` node with the
     temperature in centi-degrees Celsius and a PascalCase WeatherCondition.
-    The Portal expects degrees Celsius and a snake_case condition string, so we
+    The kiosk expects degrees Celsius and a snake_case condition string, so we
     rescale and map here. If the node is missing or has no reading yet, both
     fields come through as null and the widget shows its placeholder state.
     """
@@ -282,25 +318,28 @@ def normalise_weather(hearthd):
     }
 
 
-def build_state(template_path, hearthd_url):
-    """The /state document: template hash, refresh cadence, live state blob."""
+def build_state(template_hash, hearthd_url):
+    """The /state document: template hash, refresh cadence, live state blob.
+
+    Every kiosk gets the same state blob; only the hash differs.
+    """
     now_utc = datetime.datetime.now(datetime.timezone.utc)
     hearthd = fetch_hearthd_state(hearthd_url)
     return {
-        "template": template_hash(template_path),
+        "template": template_hash,
         "refresh_interval": REFRESH_INTERVAL,
         "state": {
             "lights": normalise_lights(hearthd),
             "environment": normalise_environment(hearthd),
             "weather": normalise_weather(hearthd),
-            "sun": solar_position(PORTAL_LAT, PORTAL_LON, now_utc),
+            "sun": solar_position(KIOSK_LAT, KIOSK_LON, now_utc),
         },
     }
 
 
 class Handler(BaseHTTPRequestHandler):
     # Set per-server in main(); shared by all requests.
-    template_path = None
+    templates = None
     hearthd_url = None
 
     def _send_json(self, code, payload):
@@ -312,30 +351,42 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_GET(self):
-        if self.path == "/state":
-            self._handle_state()
-        elif self.path.startswith("/template/"):
-            self._handle_template(self.path[len("/template/") :])
+        # Any query string is ignored; a kiosk names itself in the path.
+        segments = urlsplit(self.path).path.strip("/").split("/")
+        # A kiosk resolves its template URL relative to its own state endpoint,
+        # so template requests arrive as <kiosk>/template/<hash>. A body is
+        # addressed by its hash alone, so drop the kiosk segment rather than
+        # check it — whoever asks for a hash we serve gets that body.
+        if len(segments) == 3 and segments[1] == "template":
+            segments = segments[1:]
+
+        if len(segments) == 2 and segments[0] == "template":
+            self._handle_template(segments[1])
+        elif len(segments) == 2 and segments[1] == "state":
+            self._handle_state(segments[0])
         else:
             self._send_json(404, {"error": "not found"})
 
-    def _handle_state(self):
+    def _handle_state(self, kiosk):
+        template_hash = self.templates.hash_for(kiosk)
+        if template_hash is None:
+            self._send_json(404, {"error": "unknown kiosk"})
+            return
         try:
-            state = build_state(self.template_path, self.hearthd_url)
+            state = build_state(template_hash, self.hearthd_url)
         except Exception as e:  # hearthd unreachable, bad template, etc.
-            # 5xx makes the Portal back off and keep its last-good screen.
+            # 5xx makes the kiosk back off and keep its last-good screen.
             self._send_json(502, {"error": f"upstream: {e}"})
             return
         self._send_json(200, state)
 
     def _handle_template(self, requested_hash):
         try:
-            body = template_bytes(self.template_path)
+            body = self.templates.body_for(requested_hash)
         except Exception as e:
             self._send_json(500, {"error": f"template: {e}"})
             return
-        actual = hashlib.sha256(body).hexdigest()
-        if requested_hash != actual:
+        if body is None:
             # The requested hash names a template we no longer serve.
             self._send_json(404, {"error": "unknown template hash"})
             return
@@ -349,9 +400,26 @@ class Handler(BaseHTTPRequestHandler):
         sys.stderr.write("%s - %s\n" % (self.address_string(), fmt % args))
 
 
+def kiosk_template(spec):
+    """Parse a --template KIOSK=PATH argument into its two halves."""
+    kiosk, sep, path = spec.partition("=")
+    if not (sep and kiosk and path):
+        raise argparse.ArgumentTypeError(f"expected KIOSK=PATH, got {spec!r}")
+    return kiosk, path
+
+
 def main(argv=None):
-    parser = argparse.ArgumentParser(description="Portal dashboard server.")
-    parser.add_argument("template", help="path to the template file to serve")
+    parser = argparse.ArgumentParser(description="Kiosk dashboard server.")
+    parser.add_argument(
+        "--template",
+        dest="kiosk_templates",
+        action="append",
+        default=[],
+        type=kiosk_template,
+        required=True,
+        metavar="KIOSK=PATH",
+        help="template for one kiosk name; repeatable",
+    )
     parser.add_argument("--host", default="0.0.0.0", help="bind address")
     parser.add_argument("--port", type=int, default=8099, help="bind port")
     parser.add_argument(
@@ -359,13 +427,15 @@ def main(argv=None):
     )
     args = parser.parse_args(argv)
 
-    Handler.template_path = args.template
+    Handler.templates = Templates(args.kiosk_templates)
     Handler.hearthd_url = args.hearthd.rstrip("/")
 
     server = ThreadingHTTPServer((args.host, args.port), Handler)
+    kiosks = ",".join(sorted(Handler.templates.by_kiosk))
     print(
-        f"serving /state and /template/<hash> on {args.host}:{args.port} "
-        f"(template={args.template}, hearthd={Handler.hearthd_url})",
+        f"serving /<kiosk>/state and /template/<hash> on "
+        f"{args.host}:{args.port} "
+        f"(kiosks={kiosks}, hearthd={Handler.hearthd_url})",
         file=sys.stderr,
     )
     try:

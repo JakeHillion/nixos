@@ -442,6 +442,11 @@
                 hwAddress = "e8:06:90:9f:ae:a4";
                 dhcpReservation = true;
               };
+              "18" = {
+                hostname = "desk-portal";
+                hwAddress = "a4:0e:2b:35:02:35";
+                dhcpReservation = true;
+              };
             };
           };
 
