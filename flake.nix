@@ -202,6 +202,15 @@
               pkgs.rustfmt
             ];
           };
+
+          # Tooling for the flake-update workflow, pinned by this flake rather
+          # than pulled from the registry at job time.
+          devShells.ci = pkgs.mkShell {
+            packages = [
+              pkgs.jq
+              pkgs.jujutsu
+            ];
+          };
         }))
         (flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ] (
           system:
