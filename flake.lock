@@ -178,22 +178,6 @@
         "type": "github"
       }
     },
-    "connectedhomeip": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1790283320,
-        "narHash": "sha256-r8rfL2JZeR0Y96+usTMaCCB8qVD1Zf5iUZNmmC46QnM=",
-        "owner": "project-chip",
-        "repo": "connectedhomeip",
-        "rev": "49551352ecd6d4274cff1a1dde611cd4eb555f45",
-        "type": "github"
-      },
-      "original": {
-        "owner": "project-chip",
-        "repo": "connectedhomeip",
-        "type": "github"
-      }
-    },
     "crane": {
       "locked": {
         "lastModified": 1787326676,
@@ -756,7 +740,6 @@
     "hearthd": {
       "inputs": {
         "advisory-db": "advisory-db_2",
-        "connectedhomeip": "connectedhomeip",
         "crane": "crane_3",
         "fenix": "fenix_3",
         "flake-utils": "flake-utils_4",
@@ -766,11 +749,11 @@
         "treefmt-nix": "treefmt-nix_6"
       },
       "locked": {
-        "lastModified": 1790371396,
-        "narHash": "sha256-8OFO7II03e/h44PjJgX2wmJ552zxg8hsxfr8ESYMiDc=",
+        "lastModified": 1790073769,
+        "narHash": "sha256-LhOnnyScrG4c99K+93VWerKJuW6uIME/tF5PG8ThpTI=",
         "owner": "JakeHillion",
         "repo": "hearthd",
-        "rev": "e89895ff627038caac59ee3a78c03c002eb5a7d9",
+        "rev": "30bc66bc0c0e9a2b956b41128e29aaaec9bdebb5",
         "type": "github"
       },
       "original": {
@@ -1042,16 +1025,17 @@
         "treefmt-nix": "treefmt-nix_9"
       },
       "locked": {
-        "lastModified": 1786323062,
-        "narHash": "sha256-PBHsGzhjFtqGQYrmX7lxMIqhvrWv4ZNQTgmbY92JSUc=",
+        "lastModified": 1790446480,
+        "narHash": "sha256-nAQtFj+Yf02gmuZ63MNaCdXeuKN8MHPQ1YXfBH9Ua8k=",
         "owner": "JakeHillion",
         "repo": "ogygia-nix",
-        "rev": "ba81ff2e56073deb1502190f8f0342d1f35348d1",
+        "rev": "e8d963a42c7d12298cbcf7db9070f937eeb49717",
         "type": "github"
       },
       "original": {
         "owner": "JakeHillion",
         "repo": "ogygia-nix",
+        "rev": "e8d963a42c7d12298cbcf7db9070f937eeb49717",
         "type": "github"
       }
     },
