@@ -2,6 +2,10 @@
 
 let
   cfg = config.custom.services.tang;
+
+  servedGroups = lib.lists.filter
+    (g: lib.attrsets.hasAttr config.networking.fqdn g.pins)
+    (lib.attrsets.attrValues config.custom.tang.fleet.groups);
 in
 {
   options.custom.services.tang = {
@@ -13,14 +17,7 @@ in
 
     services.tang = {
       enable = true;
-      ipAddressAllow = [
-        "10.64.50.0/24"
-        "37.27.136.99/32"
-        "127.0.0.0/8"
-        "138.201.252.214/32"
-        "140.238.103.110/32"
-        "185.240.111.53/32"
-      ];
+      ipAddressAllow = [ "127.0.0.0/8" ] ++ lib.lists.unique (lib.lists.concatMap (g: g.sources) servedGroups);
     };
 
     networking.firewall.allowedTCPPorts = [ 7654 ];
