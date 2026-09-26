@@ -68,9 +68,17 @@ in
             thp = "mk6z2KAxuW1zee0S7D7qOFchgyiyei9XvJaF9pJkqK0";
             lan = "http://10.64.50.29:7654";
           };
+          "phoenix.st.${domain}" = {
+            thp = "STUB";
+            lan = "http://10.64.50.27:7654";
+          };
           "boron.cx.${domain}" = {
             thp = "UzoraC1HFiCmhtz6f43N-6sqY77YDHXNi7Eow9RA9D0";
             wan = "http://138.201.252.214:7654";
+          };
+          "iceman.cx.${domain}" = {
+            thp = "STUB";
+            wan = "http://37.27.136.99:7654";
           };
           "li.pop.${domain}" = {
             thp = "_rbDZVBx35wwUu36P7C-DlQJhQQt4zO8g6r5prT0RWs";
@@ -86,6 +94,7 @@ in
               "cyclone.gw.${domain}" = "lan";
               "warlock.cx.${domain}" = "lan";
               "stinger.pop.${domain}" = "lan";
+              "phoenix.st.${domain}" = "lan";
             };
             clients = [
               "maverick.cx.${domain}"
@@ -104,6 +113,7 @@ in
             pins = {
               "cyclone.gw.${domain}" = "wan";
               "boron.cx.${domain}" = "wan";
+              "iceman.cx.${domain}" = "wan";
               "li.pop.${domain}" = "wan";
             };
             clients = [
