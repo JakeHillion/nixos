@@ -73,6 +73,7 @@ in
           tang = [
             "boron.cx.${config.ogygia.domain}"
             "cyclone.gw.${config.ogygia.domain}"
+            "iceman.cx.${config.ogygia.domain}"
             "li.pop.${config.ogygia.domain}"
             "stinger.pop.${config.ogygia.domain}"
             "warlock.cx.${config.ogygia.domain}"
