@@ -1025,16 +1025,15 @@
         "treefmt-nix": "treefmt-nix_9"
       },
       "locked": {
-        "lastModified": 1790450864,
-        "narHash": "sha256-sQO0ePlJ5V3NhDN8lFcTZ4gEF7Vy5MJOrtfcbZRvISg=",
+        "lastModified": 1790458770,
+        "narHash": "sha256-ztM5btz1eg3vPyYoyDbj6EG1Slpj0yIhLEuY7w2IKCc=",
         "owner": "JakeHillion",
         "repo": "ogygia-nix",
-        "rev": "c1c5a80a3c764caf21dc74db89c205d02660b8b1",
+        "rev": "e256add195f32ab8c5ff4314b570a0ba756b3f7a",
         "type": "github"
       },
       "original": {
         "owner": "JakeHillion",
-        "ref": "jj/mnvvpoluqznn",
         "repo": "ogygia-nix",
         "type": "github"
       }

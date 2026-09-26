@@ -34,7 +34,7 @@
     nixos-generators.url = "github:nix-community/nixos-generators";
     nixos-generators.inputs.nixpkgs.follows = "nixpkgs";
 
-    ogygia.url = "github:JakeHillion/ogygia-nix/jj/mnvvpoluqznn";
+    ogygia.url = "github:JakeHillion/ogygia-nix";
     ogygia.inputs.nixpkgs.follows = "nixpkgs";
 
     async-coder.url = "git+https://gitea.hillion.co.uk/JakeHillion/async-coder.git";
@@ -200,6 +200,15 @@
               pkgs.clippy
               pkgs.rustc
               pkgs.rustfmt
+            ];
+          };
+
+          # Tooling for the flake-update workflow, pinned by this flake rather
+          # than pulled from the registry at job time.
+          devShells.ci = pkgs.mkShell {
+            packages = [
+              pkgs.jq
+              pkgs.jujutsu
             ];
           };
         }))

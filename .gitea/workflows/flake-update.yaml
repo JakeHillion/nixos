@@ -1,0 +1,76 @@
+name: flake-update
+
+on:
+  # TODO: remove. Lets this be tested from a branch before the dispatch button
+  # exists on main; a push supplies no inputs, hence the fallback on INPUT.
+  push:
+  workflow_dispatch:
+    inputs:
+      input:
+        description: flake input to update
+        required: true
+        default: hearthd
+
+jobs:
+  update:
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24 # v31.11.1
+
+      - uses: nicknovitski/nix-develop@9be7cfb4b10451d3390a75dc18ad0465bed4932a # v1.2.1
+        with:
+          arguments: .#ci
+
+      - name: Update flake input
+        id: update
+        env:
+          INPUT: ${{ github.event.inputs.input || 'hearthd' }}
+        run: |
+          node="$(jq -r --arg i "$INPUT" '.nodes.root.inputs[$i]' flake.lock)"
+          rev() { jq -r --arg n "$node" '.nodes[$n].locked.rev' flake.lock; }
+
+          old="$(rev)"
+          nix flake update "$INPUT"
+          new="$(rev)"
+
+          # github inputs record owner/repo rather than a clone URL.
+          url="$(jq -r --arg n "$node" '.nodes[$n].locked | if .type == "github" then "https://github.com/\(.owner)/\(.repo)" else .url end' flake.lock)"
+
+          {
+            echo "old=$old"
+            echo "new=$new"
+            echo "url=$url"
+          } >> "$GITHUB_OUTPUT"
+
+          if [ "$old" = "$new" ]; then
+            echo "$INPUT is already at $new"
+          fi
+
+      - name: Commit
+        if: steps.update.outputs.old != steps.update.outputs.new
+        env:
+          INPUT: ${{ github.event.inputs.input || 'hearthd' }}
+          OLD: ${{ steps.update.outputs.old }}
+          NEW: ${{ steps.update.outputs.new }}
+          URL: ${{ steps.update.outputs.url }}
+          JJ_USER: Gitea Actions
+          JJ_EMAIL: gitea-actions@noreply.gitea.hillion.co.uk
+        run: |
+          src="$(mktemp -d)/src"
+          git clone --quiet --bare --filter=tree:0 "$URL" "$src"
+
+          # jj, not git, so the commit carries the change-id header.
+          jj git init --colocate
+          jj commit -m "chore(deps): update $INPUT
+
+          $(git -C "$src" log --oneline --no-decorate "$OLD..$NEW")" flake.lock
+
+      - name: Push
+        if: steps.update.outputs.old != steps.update.outputs.new
+        env:
+          INPUT: ${{ github.event.inputs.input || 'hearthd' }}
+        # Fixed branch per input: a re-run replaces the previous attempt, and
+        # `ogygia update canary flake-update/<input>` needs no revision lookup.
+        run: git push --force origin "HEAD:refs/heads/flake-update/$INPUT"
