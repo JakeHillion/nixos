@@ -75,6 +75,7 @@ in
             "cyclone.gw.${config.ogygia.domain}"
             "iceman.cx.${config.ogygia.domain}"
             "li.pop.${config.ogygia.domain}"
+            "phoenix.st.${config.ogygia.domain}"
             "stinger.pop.${config.ogygia.domain}"
             "warlock.cx.${config.ogygia.domain}"
           ];

@@ -68,6 +68,10 @@ in
             thp = "mk6z2KAxuW1zee0S7D7qOFchgyiyei9XvJaF9pJkqK0";
             lan = "http://10.64.50.29:7654";
           };
+          "phoenix.st.${domain}" = {
+            thp = "STUB";
+            lan = "http://10.64.50.27:7654";
+          };
           "boron.cx.${domain}" = {
             thp = "UzoraC1HFiCmhtz6f43N-6sqY77YDHXNi7Eow9RA9D0";
             wan = "http://138.201.252.214:7654";
@@ -90,6 +94,7 @@ in
               "cyclone.gw.${domain}" = "lan";
               "warlock.cx.${domain}" = "lan";
               "stinger.pop.${domain}" = "lan";
+              "phoenix.st.${domain}" = "lan";
             };
             clients = [
               "maverick.cx.${domain}"

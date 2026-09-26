@@ -233,6 +233,7 @@ in
     networking.firewall = {
       allowedTCPPorts = lib.mkForce [
         22 # SSH
+        7654 # Tang
       ];
       allowedUDPPorts = lib.mkForce [ ];
       interfaces = {
