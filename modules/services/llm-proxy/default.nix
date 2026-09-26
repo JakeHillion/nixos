@@ -148,7 +148,6 @@ in
         responses = true;
         models = {
           "openai/gpt-5.6-terra" = "gpt-5.6-terra";
-          "openai/gpt-6-luna" = "gpt-6-luna";
         };
       };
     };
