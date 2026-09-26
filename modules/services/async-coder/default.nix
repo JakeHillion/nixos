@@ -203,7 +203,7 @@ in
               # on openai-responses pi only asks for the encrypted reasoning it
               # replays on the next request when the model reasons, and setting
               # an effort is what marks it as one
-              reasoning_effort = "high";
+              reasoning_effort = "max";
             };
           };
 
