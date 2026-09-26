@@ -1025,11 +1025,11 @@
         "treefmt-nix": "treefmt-nix_9"
       },
       "locked": {
-        "lastModified": 1786323062,
-        "narHash": "sha256-PBHsGzhjFtqGQYrmX7lxMIqhvrWv4ZNQTgmbY92JSUc=",
+        "lastModified": 1790458770,
+        "narHash": "sha256-ztM5btz1eg3vPyYoyDbj6EG1Slpj0yIhLEuY7w2IKCc=",
         "owner": "JakeHillion",
         "repo": "ogygia-nix",
-        "rev": "ba81ff2e56073deb1502190f8f0342d1f35348d1",
+        "rev": "e256add195f32ab8c5ff4314b570a0ba756b3f7a",
         "type": "github"
       },
       "original": {
