@@ -23,7 +23,6 @@ in
       };
 
       archive.enable = true;
-      nebula.enable = true;
     };
 
     custom.www.nebula = {
