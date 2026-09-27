@@ -198,6 +198,7 @@
               pkgs.age
               pkgs.cargo
               pkgs.clippy
+              pkgs.nebula
               pkgs.rustc
               pkgs.rustfmt
             ];
