@@ -61,6 +61,13 @@ ENVIRONMENT_SENSORS = {
     "living_room": "sensor.0x54ef441000d20037",
     "loft": "sensor.0x54ef441000d20a5a",
 }
+# The light each kiosk's screen follows, mapped from kiosk name to the light's
+# entity id. A kiosk whose screen_power widget binds "screens.<name>" then
+# switches its panel exactly when that light switches; the hallway light is on a
+# motion sensor, so the panel wakes and sleeps with the room.
+SCREEN_LIGHTS = {
+    "hallway": "light.0xf0d1b800001906e8",
+}
 # The weather node the kiosk shows. hearthd publishes one node per configured
 # met.no location; we pick the "home" one.
 WEATHER_ENTITY_ID = "weather.home"
@@ -261,6 +268,21 @@ def normalise_lights(hearthd):
     return lights
 
 
+def normalise_screens(lights):
+    """Whether each kiosk's screen should be lit, from the light it follows.
+
+    Keyed by kiosk name so a template binds "screens.<name>" and never an entity
+    id — the same indirection ENVIRONMENT_SENSORS does, and unavoidable here:
+    binding paths are dotted, and the dot in an entity id makes the lights map
+    unreachable that way. A light hearthd isn't reporting comes through as null,
+    which the kiosk reads as "leave the screen alone" rather than "turn it off".
+    """
+    return {
+        kiosk: lights[entity_id]["on"] if entity_id in lights else None
+        for kiosk, entity_id in SCREEN_LIGHTS.items()
+    }
+
+
 def normalise_environment(hearthd):
     """Map the kiosk's named environment sensors to their live readings.
 
@@ -325,11 +347,13 @@ def build_state(template_hash, hearthd_url):
     """
     now_utc = datetime.datetime.now(datetime.timezone.utc)
     hearthd = fetch_hearthd_state(hearthd_url)
+    lights = normalise_lights(hearthd)
     return {
         "template": template_hash,
         "refresh_interval": REFRESH_INTERVAL,
         "state": {
-            "lights": normalise_lights(hearthd),
+            "lights": lights,
+            "screens": normalise_screens(lights),
             "environment": normalise_environment(hearthd),
             "weather": normalise_weather(hearthd),
             "sun": solar_position(KIOSK_LAT, KIOSK_LON, now_utc),
