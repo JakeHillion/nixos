@@ -22,8 +22,13 @@
     }
   },
   "root": {
-    "type": "clock",
-    "show_seconds": false,
-    "timezone": "Europe/London"
+    "type": "screen_power",
+    "on": { "$": "screens.hallway" },
+    "wake_seconds": 120,
+    "child": {
+      "type": "clock",
+      "show_seconds": false,
+      "timezone": "Europe/London"
+    }
   }
 }
