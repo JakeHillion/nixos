@@ -45,7 +45,7 @@ in
         };
 
         llm = {
-          default_model = "GPT 5.6 Terra (immediate)";
+          default_model = "GPT 6 Sol (immediate)";
           batch_model = "DeepSeek V4 Flash (batch60k)";
 
           debug = {
@@ -59,8 +59,8 @@ in
               base_url = "http://127.0.0.1:9100/v1/immediate";
               token_file = pkgs.writeText "personal-agent-dummy-token" "unused";
               models = [{
-                id = "openai/gpt-5.6-terra";
-                name = "GPT 5.6 Terra (immediate)";
+                id = "openai/gpt-6-sol";
+                name = "GPT 6 Sol (immediate)";
                 api = "responses";
               }];
             }
@@ -73,7 +73,9 @@ in
           ];
         };
 
-        memory.nightly.enabled = true;
+        # Log nightly memory changes to investigate cache misses without
+        # applying them.
+        memory.nightly.enabled = "log";
 
         tick = {
           enabled = true;

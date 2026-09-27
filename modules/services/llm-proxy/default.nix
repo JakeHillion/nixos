@@ -147,7 +147,7 @@ in
         apiKeyFile = config.age.secrets."llm-proxy/openai-api-key".path;
         responses = true;
         models = {
-          "openai/gpt-5.6-terra" = "gpt-5.6-terra";
+          "openai/gpt-6-sol" = "gpt-6-sol";
           "openai/gpt-6-luna" = "gpt-6-luna";
         };
       };
