@@ -45,7 +45,7 @@ in
         };
 
         llm = {
-          default_model = "GPT 6 Sol (immediate)";
+          default_model = "GPT 6.1 Sol (immediate)";
           batch_model = "DeepSeek V4 Flash (batch60k)";
 
           debug = {
@@ -59,8 +59,8 @@ in
               base_url = "http://127.0.0.1:9100/v1/immediate";
               token_file = pkgs.writeText "personal-agent-dummy-token" "unused";
               models = [{
-                id = "openai/gpt-6-sol";
-                name = "GPT 6 Sol (immediate)";
+                id = "openai/gpt-6.1-sol";
+                name = "GPT 6.1 Sol (immediate)";
                 api = "responses";
               }];
             }
