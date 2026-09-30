@@ -148,6 +148,7 @@ in
         responses = true;
         models = {
           "openai/gpt-6-sol" = "gpt-6-sol";
+          "openai/gpt-6.1-sol" = "gpt-6.1-sol";
           "openai/gpt-6-luna" = "gpt-6-luna";
         };
       };
