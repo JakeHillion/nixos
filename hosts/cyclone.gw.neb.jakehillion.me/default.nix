@@ -51,6 +51,16 @@
       '';
     };
 
+    ## Fail over to cellular when the primary WAN stops reaching the internet
+    custom.networking.wanFailover = {
+      enable = true;
+      primaryInterface = "enp2s0";
+      backup = {
+        interface = "cellular";
+        gateway = "10.69.186.1";
+      };
+    };
+
     ## Cellular VLAN on SFP+ port (high metric so primary WAN stays default)
     networking.vlans.cellular = {
       id = 5;
