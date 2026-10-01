@@ -2,8 +2,8 @@
 
 {
   imports = [
-    ./cellular-failover.nix
     ./router.nix
+    ./wan_failover.nix
     ./topology.nix
   ];
 }

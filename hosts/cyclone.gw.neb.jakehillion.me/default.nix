@@ -51,6 +51,16 @@
       '';
     };
 
+    ## Fail over to cellular when the primary WAN stops reaching the internet
+    custom.networking.wanFailover = {
+      enable = true;
+      primaryInterface = "enp2s0";
+      backup = {
+        interface = "cellular";
+        gateway = "10.69.186.1";
+      };
+    };
+
     ## Cellular VLAN on SFP+ port (high metric so primary WAN stays default)
     networking.vlans.cellular = {
       id = 5;
@@ -67,16 +77,6 @@
         via = "10.69.186.1";
         options.metric = "2048";
       }];
-    };
-
-    ## Health-checked cellular failover: probes the primary WAN's upstream
-    ## and flips the cellular route metric between standby (2048) and active
-    ## (999) as described above.
-    custom.networking.cellularFailover = {
-      enable = true;
-      primaryInterface = "enp2s0";
-      interface = "cellular";
-      gateway = "10.69.186.1";
     };
 
     ## WireGuard VPN Server
