@@ -156,20 +156,20 @@
         in
         nixpkgs.lib.genAttrs fqdns mkHost;
 
-      darwinConfigurations = {
-        jakehillion-mba-m2-15 = darwin.lib.darwinSystem {
+      darwinConfigurations = nixpkgs.lib.genAttrs (builtins.attrNames (builtins.readDir ./darwin)) (hostName:
+        darwin.lib.darwinSystem {
           system = "aarch64-darwin";
           specialArgs = inputs;
 
           modules = [
-            ./darwin/jakehillion-mba-m2-15/configuration.nix
+            ./darwin/${hostName}/configuration.nix
 
             ({ config, ... }: {
+              system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
               nixpkgs.overlays = getSystemOverlays "aarch64-darwin" config.nixpkgs.config;
             })
           ];
-        };
-      };
+        });
 
     } // nixpkgs.lib.recursiveUpdate
       (nixpkgs.lib.recursiveUpdate
