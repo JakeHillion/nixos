@@ -59,6 +59,7 @@ in
           ];
           ntfy = "boron.cx.${config.ogygia.domain}";
           offline-youtube = "phoenix.st.${config.ogygia.domain}";
+          ogygia-nix-eval-fuzz = "iceman.cx.${config.ogygia.domain}";
           openthread-border-router = "stinger.pop.${config.ogygia.domain}";
           openwebui = "warlock.cx.${config.ogygia.domain}";
           personal_agent = "fanboy.cx.${config.ogygia.domain}";
