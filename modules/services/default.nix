@@ -33,6 +33,7 @@
     ./nix-prefetch-repos.nix
     ./nix-remote-builder.nix
     ./ntfy.nix
+    ./ogygia-nix-eval-fuzz.nix
     ./offline-youtube
     ./openthread-border-router.nix
     ./openwebui
