@@ -31,7 +31,6 @@
       backup-git = 416;
       shairport = 417;
       go-librespot = 418;
-      ogygia-nix-eval-fuzz = 419;
 
       ## Consistent People
       jake = 1000;
@@ -65,7 +64,6 @@
       backup-git = 416;
       shairport = 417;
       go-librespot = 418;
-      ogygia-nix-eval-fuzz = 419;
 
       ## Consistent Groups
       mediaaccess = 1200;
