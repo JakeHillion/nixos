@@ -1,9 +1,6 @@
 name: flake-update
 
 on:
-  # TODO: remove. Lets this be tested from a branch before the dispatch button
-  # exists on main; a push supplies no inputs, hence the fallback on INPUT.
-  push:
   workflow_dispatch:
     inputs:
       input:
