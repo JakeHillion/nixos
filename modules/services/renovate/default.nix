@@ -3,12 +3,20 @@
 let
   cfg = config.custom.services.renovate;
 
+  gitAuthorName = "Renovate Bot";
+  gitAuthorEmail = "renovate-bot@noreply.gitea.hillion.co.uk";
+
   # Git wrapper that adds change-id headers to commits using jj
   gitWrapper = pkgs.writeShellScriptBin "git" ''
     set -euo pipefail
 
     REAL_GIT="${pkgs.git}/bin/git"
-    JJ="${pkgs.jujutsu}/bin/jj"
+
+    # Renovate spawns git with a filtered environment, so jj takes its identity
+    # on the command line instead of from JJ_USER/JJ_EMAIL.
+    jj() {
+      "${pkgs.jujutsu}/bin/jj" --config "user.name=${gitAuthorName}" --config "user.email=${gitAuthorEmail}" "$@"
+    }
 
     # Always run the real git command first
     "$REAL_GIT" "$@"
@@ -43,17 +51,17 @@ let
 
     # Initialize jj colocation if needed
     if [ ! -d .jj ]; then
-      "$JJ" git init
+      jj git init
     fi
 
     # Generate and export change-id to the new commit
-    "$JJ" metaedit --update-change-id @-
+    jj metaedit --update-change-id @-
   '';
 
   configFile = pkgs.writeText "renovate-config.js" ''
     module.exports = {
         "endpoint": "https://gitea.hillion.co.uk/api/v1",
-        "gitAuthor": "Renovate Bot <renovate-bot@noreply.gitea.hillion.co.uk>",
+        "gitAuthor": "${gitAuthorName} <${gitAuthorEmail}>",
         "platform": "gitea",
         "onboardingConfigFileName": "renovate.json",
         "autodiscover": true,
@@ -102,9 +110,6 @@ in
         HOME = "%C/renovate";
         RENOVATE_CONFIG_FILE = toString configFile;
         LOG_LEVEL = "debug";
-        # jj requires user identity
-        JJ_USER = "Renovate Bot";
-        JJ_EMAIL = "renovate-bot@noreply.gitea.hillion.co.uk";
       };
     };
 
