@@ -39,6 +39,7 @@ in
       uid = config.ids.uids.${user};
       group = user;
       isSystemUser = true;
+      home = stateDir;
     };
     users.groups.${user}.gid = config.ids.gids.${user};
 
