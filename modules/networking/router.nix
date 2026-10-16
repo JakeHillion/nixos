@@ -18,6 +18,12 @@ in
       description = "Extra nftables rules to add to the forward chain";
     };
 
+    extraInputRules = lib.mkOption {
+      type = lib.types.lines;
+      default = "";
+      description = "Extra nftables rules to add to the input chain";
+    };
+
     extraNatRules = lib.mkOption {
       type = lib.types.lines;
       default = "";
@@ -266,6 +272,9 @@ in
                     ) (lib.lists.filter (rule: rule != null) getAllPortForwardingRules))
                   )
                 }
+
+                # Extra input rules
+                ${cfg.extraInputRules}
 
                 # Drop all other WAN traffic
                 iifname { "${locationCfg.wanInterface}" } counter drop
