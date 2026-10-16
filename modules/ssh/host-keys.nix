@@ -40,6 +40,7 @@ rec {
           };
           st = {
             phoenix = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBPQcp9MzabvwbViNmILVNfipMUnwV+5okRfhOuV7+Mt root@phoenix";
+            sundown = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIvdUiigIOOLHWS/iuFujDzfYBg55kiBBimQnrWRJWVR root@sundown";
           };
           storage = {
             theon = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN59psLVu3/sQORA4x3p8H3ei8MCQlcwX5T+k3kBeBMf root@theon";
