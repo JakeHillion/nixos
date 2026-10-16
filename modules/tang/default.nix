@@ -138,12 +138,15 @@ in
       boot.initrd = {
         availableKernelModules = [ cfg.networkingModule ];
 
-        # Configure systemd-networkd directly in initrd. We don't go via
-        # boot.initrd.network.enable because that auto-translates the full
-        # stage 2 networking.interfaces.* into boot.initrd.systemd.network,
-        # which doesn't tolerate stage 2 route schemas (e.g. cyclone's
-        # cellular VLAN).
-        systemd.network = {
+        # Hosts on networkd in stage 2 run the same networkd configuration in
+        # initrd, translated from networking.* by boot.initrd.network.enable,
+        # so stage 2 takes over the links exactly as initrd configured them.
+        network.enable = config.networking.useNetworkd;
+
+        # Hosts on scripted networking get networkd configured directly. The
+        # translation doesn't tolerate scripted-only route schemas (e.g.
+        # cyclone's cellular VLAN).
+        systemd.network = lib.mkIf (!config.networking.useNetworkd) {
           enable = true;
           # Fallback DHCP on the tang interface. Hosts that set a static
           # `ip=...` kernel parameter get a higher-priority 91-*.network from
