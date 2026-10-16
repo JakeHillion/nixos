@@ -26,7 +26,6 @@ let
     autodial = yes
     redial = yes
     redial timeout = 15
-    refuse authentication = yes
     length bit = yes
     pppoptfile = ${pppOptions}
   '';
