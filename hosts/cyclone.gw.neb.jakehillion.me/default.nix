@@ -41,6 +41,17 @@
         iifname "cellular" oifname { "lan", "iot", "openclaw" } ct state { established, related } counter accept comment "Cellular to LAN established"
         iifname "wg0" oifname "cellular" counter accept comment "WireGuard to cellular failover"
         iifname "cellular" oifname "wg0" ct state { established, related } counter accept comment "Cellular to WireGuard established"
+
+        # Olilo: IPv6 only, stateful
+        meta nfproto ipv6 oifname "olilo" tcp flags syn tcp option maxseg size set rt mtu comment "Clamp MSS to tunnel MTU"
+        meta nfproto ipv6 iifname "olilo" tcp flags syn tcp option maxseg size set rt mtu comment "Clamp MSS to tunnel MTU"
+        meta nfproto ipv6 iifname "lan" oifname "olilo" counter accept comment "LAN to Olilo IPv6"
+        meta nfproto ipv6 iifname "olilo" oifname "lan" ct state { established, related } counter accept comment "Olilo IPv6 to LAN established"
+      '';
+      extraInputRules = ''
+        # Olilo: ICMPv6 (NDP, PMTU) and DHCPv6-PD replies
+        meta nfproto ipv6 iifname "olilo" meta l4proto ipv6-icmp counter accept comment "Olilo ICMPv6"
+        meta nfproto ipv6 iifname "olilo" udp sport 547 udp dport 546 counter accept comment "Olilo DHCPv6 client"
       '';
       extraNatRules = ''
         # WireGuard NAT masquerading
@@ -60,6 +71,20 @@
         gateway = "10.69.186.1";
       };
     };
+
+    ## Olilo L2TP: IPv6 uplink. IPv4 on the session is never routed.
+    age.secrets."olilo-l2tp-password".rekeyFile = ./olilo-l2tp-password.age;
+
+    custom.networking.l2tp = {
+      enable = true;
+      server = "l2tp.olilo.co.uk";
+      username = "jake.hillion@olilo.l2tp";
+      passwordFile = config.age.secrets."olilo-l2tp-password".path;
+      ifname = "olilo";
+      delegatedPrefix = "2a11:2646:14b6::/48";
+    };
+
+    boot.kernel.sysctl."net.ipv6.conf.all.forwarding" = true;
 
     ## Cellular VLAN on SFP+ port (high metric so primary WAN stays default)
     networking.vlans.cellular = {
@@ -124,9 +149,9 @@
     # Disable systemd-timesyncd since we're using chrony
     services.timesyncd.enable = false;
 
-    ## Internal IPv6: SLAAC over ULAs
+    ## IPv6: SLAAC with a global /64 from the Olilo /48 on LAN, ULA on IoT
     networking.interfaces.lan.ipv6.addresses = [{
-      address = "fd25:b6e8:09ff::1";
+      address = "2a11:2646:14b6:1::1";
       prefixLength = 64;
     }];
     networking.interfaces.iot.ipv6.addresses = [{
@@ -141,8 +166,7 @@
           AdvSendAdvert on;
           AdvManagedFlag off;
           AdvOtherConfigFlag off;
-          AdvDefaultLifetime 0;
-          prefix fd25:b6e8:09ff::/64 {
+          prefix 2a11:2646:14b6:1::/64 {
             AdvOnLink on;
             AdvAutonomous on;
             AdvRouterAddr on;
