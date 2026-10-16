@@ -135,6 +135,12 @@ in
     }
 
     (lib.mkIf cfg.enable {
+      # networkd's default DUID is derived from the machine ID, which differs
+      # between initrd and stage 2 and isn't persisted, so each stage would
+      # present a different DHCP client ID. Derive it from the MAC instead.
+      systemd.network.config.dhcpV4Config.DUIDType =
+        lib.mkIf config.networking.useNetworkd "link-layer";
+
       boot.initrd = {
         availableKernelModules = [ cfg.networkingModule ];
 
@@ -143,19 +149,25 @@ in
         # so stage 2 takes over the links exactly as initrd configured them.
         network.enable = config.networking.useNetworkd;
 
-        # Hosts on scripted networking get networkd configured directly. The
-        # translation doesn't tolerate scripted-only route schemas (e.g.
-        # cyclone's cellular VLAN).
-        systemd.network = lib.mkIf (!config.networking.useNetworkd) {
-          enable = true;
-          # Fallback DHCP on the tang interface. Hosts that set a static
-          # `ip=...` kernel parameter get a higher-priority 91-*.network from
-          # systemd-network-generator that wins over this 99-*.
-          networks."99-tang-dhcp" = {
-            matchConfig.Driver = cfg.networkingModule;
-            networkConfig.DHCP = "yes";
-          };
-        };
+        systemd.network = lib.mkMerge [
+          (lib.mkIf config.networking.useNetworkd {
+            config.dhcpV4Config.DUIDType = "link-layer";
+          })
+
+          # Hosts on scripted networking get networkd configured directly. The
+          # translation doesn't tolerate scripted-only route schemas (e.g.
+          # cyclone's cellular VLAN).
+          (lib.mkIf (!config.networking.useNetworkd) {
+            enable = true;
+            # Fallback DHCP on the tang interface. Hosts that set a static
+            # `ip=...` kernel parameter get a higher-priority 91-*.network from
+            # systemd-network-generator that wins over this 99-*.
+            networks."99-tang-dhcp" = {
+              matchConfig.Driver = cfg.networkingModule;
+              networkConfig.DHCP = "yes";
+            };
+          })
+        ];
 
         clevis = {
           enable = true;
