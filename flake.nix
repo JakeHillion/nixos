@@ -34,7 +34,7 @@
     nixos-generators.url = "github:nix-community/nixos-generators";
     nixos-generators.inputs.nixpkgs.follows = "nixpkgs";
 
-    ogygia.url = "github:JakeHillion/ogygia-nix";
+    ogygia.url = "github:JakeHillion/ogygia-nix?ref=jj/lmrrzqusqskx";
     ogygia.inputs.nixpkgs.follows = "nixpkgs";
 
     async-coder.url = "git+https://gitea.hillion.co.uk/JakeHillion/async-coder.git";
@@ -126,6 +126,35 @@
         userFlake = self;
         nixosConfigurations = self.nixosConfigurations;
       };
+
+      # Devices with no system configuration that join the Nebula mesh, such
+      # as Macs running the Ogygia app. They borrow the fleet's topology from
+      # a NixOS host, because the shared module that sets it depends on NixOS.
+      ogygiaConfigurations =
+        let
+          fleet = self.nixosConfigurations."boron.cx.neb.jakehillion.me".config.ogygia.nebula;
+        in
+        {
+          "fritz.cx.neb.jakehillion.me" = ogygia.lib.mkOgygiaConfiguration {
+            name = "fritz.cx.neb.jakehillion.me";
+            inherit (nixpkgs) lib;
+            modules = [{
+              ogygia.nebula = {
+                inherit (fleet) certDir topology;
+                groups = [ ];
+                pubKey = ''
+                  -----BEGIN NEBULA X25519 PUBLIC KEY-----
+                  8uH3OZGOq0BNR2EOogOggwc4JhH9NuA7kl+fr4pPGSE=
+                  -----END NEBULA X25519 PUBLIC KEY-----
+                '';
+                firewall.inbound = [
+                  # Allow ICMP from any peer, so ping works as a diagnostic.
+                  { host = "any"; port = "any"; proto = "icmp"; }
+                ];
+              };
+            }];
+          };
+        };
 
       nixosConfigurations =
         let
