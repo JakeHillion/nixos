@@ -56,9 +56,13 @@
     users.users.jake.extraGroups = [ "podman" ];
 
     networking = {
+      useNetworkd = true;
       useDHCP = false;
 
-      defaultGateway.address = "10.64.50.1";
+      defaultGateway = {
+        address = "10.64.50.1";
+        interface = "enp5s0f1np1";
+      };
 
       interfaces = {
         enp5s0f1np1 = {
@@ -72,5 +76,6 @@
         };
       };
     };
+    services.resolved.enable = false;
   };
 }
