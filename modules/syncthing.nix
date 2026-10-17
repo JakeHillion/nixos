@@ -38,6 +38,7 @@ in
                 "boron.cx" = "LX5YKSC-SV22B4A-ESU7YPL-AANIT55-OVT3UJN-3FKNKUF-E7AOTOW-MMPNJQL";
                 "iceman.cx" = "KBX6XFW-UHWPOF4-YLDWPPT-B6TYZME-WJ4AN7I-TABTNT7-DKIXLCU-JPB62AZ";
                 "jakehillion-mba-m2-15.lt" = "7NAXX6J-4RRJD6B-NP5LG3L-LUIGASI-OXLPS3H-ACLCXBA-RZNSRXN-CXMFZQC";
+                "jakehillion-mba-m5-15.lt" = "LZQG6RB-3KDZAJ3-RC5DRQE-ILVYLJV-OTYAHTE-GLW4F43-FISMRMA-RJLQSQR";
                 "jakes-ipad.mob" = "QPNNJBC-SZQG4ZH-J7R4M2B-YUY6DLH-DFP6HBS-ASPKR5S-CARCET3-OBJAGAI";
                 "jakes-iphone.mob" = "QHG6BBS-UPCFLPE-2OZGDZR-QUSKLVP-NEEEGXG-E6TMAXU-7YUHJ4I-AWLDKAB";
                 "maverick.cx" = "7T6JSBR-WM6TQEX-T46WRPS-6YKYGA3-OHOXOCQ-ULBYH7K-W7ZGZFC-NJTXBQO";
@@ -97,6 +98,7 @@ in
                     id = "sustainable-horizontal-skating";
                     devices = [
                       "jakehillion-mba-m2-15.lt"
+                      "jakehillion-mba-m5-15.lt"
                       "jakes-ipad.mob"
                       "merlin.rig"
                       "phoenix.st"
