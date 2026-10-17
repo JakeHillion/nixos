@@ -15,9 +15,6 @@
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
 
-    boot.kernelParams = [
-      "ip=dhcp"
-    ];
     custom.tang = {
       enable = true;
       networkingModule = "igc";
@@ -109,10 +106,24 @@
 
     # Networking
     networking = {
+      useNetworkd = true;
       interfaces.enp171s0.name = "eth0";
       interfaces.enp172s0.name = "eth1";
+      nameservers = lib.mkBefore [ "10.64.50.1" ];
     };
-    networking.nameservers = lib.mkForce [ ]; # Trust the DHCP nameservers
+    services.resolved.enable = false;
+
+    systemd.network.links = {
+      "10-eth0" = {
+        matchConfig.MACAddress = "b0:41:6f:13:20:14";
+        linkConfig.Name = "eth0";
+      };
+      "10-eth1" = {
+        matchConfig.MACAddress = "b0:41:6f:13:20:15";
+        linkConfig.Name = "eth1";
+      };
+    };
+    boot.initrd.systemd.network.links = config.systemd.network.links;
 
     networking.firewall = {
       allowedTCPPorts = lib.mkForce [
