@@ -8,19 +8,6 @@
       "* 2-5 * * *"
     ]
   },
-  "customManagers": [
-    {
-      "customType": "regex",
-      "managerFilePatterns": [
-        "/modules/oci-containers/versions.json/"
-      ],
-      "matchStrings": [
-        "\"(?<depName>[^\"]+)\":\\s*\"(?<currentValue>[^\"]+)\""
-      ],
-      "datasourceTemplate": "docker",
-      "versioningTemplate": "docker"
-    }
-  ],
   "rebaseWhen": "behind-base-branch",
   "packageRules": [
     {

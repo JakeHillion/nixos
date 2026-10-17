@@ -84,10 +84,6 @@ in
       ];
     };
 
-    custom.chia = lib.mkIf config.custom.chia.enable {
-      path = lib.mkOverride 999 "${cfg.base}/chia";
-    };
-
     environment.persistence = lib.mkMerge [
       {
         "${cfg.base}/system" = {
