@@ -99,18 +99,6 @@ in
     systemd.services.syncthing.after = [ "zfs-mount.service" ];
     systemd.services.syncthing.requires = [ "zfs-mount.service" ];
 
-    ## Chia
-    age.secrets."chia/farmer.key" = {
-      file = ../../secrets/chia/farmer.key.age;
-      owner = "chia";
-      group = "chia";
-    };
-    custom.chia = {
-      enable = true;
-      keyFile = config.age.secrets."chia/farmer.key".path;
-      plotDirectories = builtins.genList (i: "/mnt/d${toString i}/plots/contract-k32") 8;
-    };
-
     ## Journal Remote
     services.journald.remote.output = "/${zpool_name}/logs/journal/";
 

@@ -3,7 +3,6 @@
 {
   imports = [
     ./backups
-    ./chia.nix
     ./compressed_ram.nix
     ./defaults.nix
     ./desktop
@@ -14,7 +13,6 @@
     ./impermanence.nix
     ./locations.nix
     ./networking
-    ./oci-containers
     ./ogygia
     ./profiles
     ./prometheus

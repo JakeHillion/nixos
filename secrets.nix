@@ -50,9 +50,6 @@ in
   "modules/services/mastodon/social.hillion.co.uk/vapid_private_key.age".publicKeys = jake_users ++ [ ];
   "modules/services/mastodon/social.hillion.co.uk/mastodon_at_social.hillion.co.uk.age".publicKeys = jake_users ++ [ ];
 
-  # Chia Secrets
-  "secrets/chia/farmer.key.age".publicKeys = jake_users ++ [ neb.st.phoenix ];
-
   # Storj Secrets
   "secrets/storj/auth.age".publicKeys = jake_users ++ [ ];
 
