@@ -10,8 +10,9 @@ Serves the two endpoints a kiosk polls:
                            is baked into the template itself as literals. The
                            name picks the template only — every kiosk is served
                            the same state, since none of it is kiosk-scoped: the
-                           lights map holds every switchable light hearthd knows
-                           about, and the template selects from it by entity_id.
+                           lights map holds every aliased switchable node
+                           hearthd knows about, and the template selects from it
+                           by alias.
                            A name we have no template for is a 404.
   GET /template/<hash>  -> the template body, but only when <hash> matches the
                            sha256 of a template we serve. The kiosk derives this
@@ -53,24 +54,23 @@ PRIMARY_ENDPOINT = "1"
 KIOSK_LAT = 51.47789474404557
 KIOSK_LON = -0.0014709754224478695
 # The environment sensors the kiosk shows, in display order, mapped from the
-# clean slug the template references to hearthd's opaque device id. This mapping
-# is the whole point of doing it here: the template only ever sees the slug.
+# slug the template references to the sensor's hearthd alias.
 ENVIRONMENT_SENSORS = {
-    "bedroom": "sensor.0x00158d00093e8e6d",
-    "bathroom": "sensor.0x00158d0009cbf790",
-    "living_room": "sensor.0x54ef441000d20037",
-    "loft": "sensor.0x54ef441000d20a5a",
+    "bedroom": "bedroom_environment_sensor",
+    "bathroom": "bathroom_environment_sensor",
+    "living_room": "living_room_table_environment_sensor",
+    "loft": "loft_environment_sensor",
 }
 # The light each kiosk's screen follows, mapped from kiosk name to the light's
-# entity id. A kiosk whose screen_power widget binds "screens.<name>" then
+# hearthd alias. A kiosk whose screen_power widget binds "screens.<name>" then
 # switches its panel exactly when that light switches; the hallway light is on a
 # motion sensor, so the panel wakes and sleeps with the room.
 SCREEN_LIGHTS = {
-    "hallway": "light.0xf0d1b800001906e8",
+    "hallway": "hallway_light",
 }
-# The weather node the kiosk shows. hearthd publishes one node per configured
-# met.no location; we pick the "home" one.
-WEATHER_ENTITY_ID = "weather.home"
+# The hearthd alias of the weather node the kiosk shows: the met.no node for
+# the "home" location.
+WEATHER_ALIAS = "weather_home"
 # Map the PascalCase WeatherCondition enum from hearthd to the snake_case values
 # the kiosk's weather widget expects.
 WEATHER_CONDITIONS = {
@@ -218,6 +218,19 @@ def fetch_hearthd_state(hearthd_url):
         return json.load(resp)
 
 
+def nodes_by_alias(hearthd):
+    """Index hearthd's announced nodes by their configured aliases.
+
+    An alias whose node hasn't been announced yet is left out.
+    """
+    nodes = hearthd.get("nodes", {})
+    return {
+        alias: nodes[node_id]
+        for alias, node_id in hearthd.get("aliases", {}).items()
+        if node_id in nodes
+    }
+
+
 def primary_clusters(node):
     """The clusters on a node's primary endpoint (endpoint 1, else the first)."""
     endpoints = node.get("endpoints", {})
@@ -235,16 +248,12 @@ def centi(value):
 def normalise_lights(hearthd):
     """Reduce hearthd's node/cluster tree to the flat light map the kiosk reads.
 
-    Keyed by entity_id (which is also the command path param, so no second
-    lookup is needed). Every switchable light hearthd knows about is published;
-    the template picks whichever it references.
+    Keyed by hearthd alias (which is also the command path param, so no second
+    lookup is needed). Every aliased switchable node is published; the template
+    picks whichever it references.
     """
     lights = {}
-    for node in hearthd.get("nodes", {}).values():
-        entity_id = node.get("entity_id", "")
-        if not entity_id.startswith("light."):
-            continue
-
+    for alias, node in nodes_by_alias(hearthd).items():
         clusters = primary_clusters(node)
 
         on_off = clusters.get("OnOff")
@@ -264,40 +273,36 @@ def normalise_lights(hearthd):
                 None  # TODO: normalise once the ColorControl spec lands
             )
 
-        lights[entity_id] = entry
+        lights[alias] = entry
     return lights
 
 
 def normalise_screens(lights):
     """Whether each kiosk's screen should be lit, from the light it follows.
 
-    Keyed by kiosk name so a template binds "screens.<name>" and never an entity
-    id — the same indirection ENVIRONMENT_SENSORS does, and unavoidable here:
-    binding paths are dotted, and the dot in an entity id makes the lights map
-    unreachable that way. A light hearthd isn't reporting comes through as null,
+    Keyed by kiosk name so a template binds "screens.<name>" and never names a
+    light — the same indirection ENVIRONMENT_SENSORS does. A light hearthd isn't
+    reporting comes through as null,
     which the kiosk reads as "leave the screen alone" rather than "turn it off".
     """
     return {
-        kiosk: lights[entity_id]["on"] if entity_id in lights else None
-        for kiosk, entity_id in SCREEN_LIGHTS.items()
+        kiosk: lights[alias]["on"] if alias in lights else None
+        for kiosk, alias in SCREEN_LIGHTS.items()
     }
 
 
 def normalise_environment(hearthd):
     """Map the kiosk's named environment sensors to their live readings.
 
-    Keyed by the clean slug from ENVIRONMENT_SENSORS, so the template references
-    "environment.bedroom.temperature" and never a device id. hearthd reports
+    Keyed by the slug from ENVIRONMENT_SENSORS, so the template references
+    "environment.bedroom.temperature" and never an alias. hearthd reports
     temperature/humidity in hundredths (3020 -> 30.2 degC, 4150 -> 41.5 %); a
     sensor that's absent or not yet reporting comes through as null.
     """
-    by_entity_id = {
-        node.get("entity_id", ""): node
-        for node in hearthd.get("nodes", {}).values()
-    }
+    by_alias = nodes_by_alias(hearthd)
     environment = {}
-    for slug, entity_id in ENVIRONMENT_SENSORS.items():
-        clusters = primary_clusters(by_entity_id.get(entity_id, {}))
+    for slug, alias in ENVIRONMENT_SENSORS.items():
+        clusters = primary_clusters(by_alias.get(alias, {}))
         temperature = clusters.get("TemperatureMeasurement") or {}
         humidity = clusters.get("RelativeHumidityMeasurement") or {}
         environment[slug] = {
@@ -307,24 +312,16 @@ def normalise_environment(hearthd):
     return environment
 
 
-def node_by_entity_id(hearthd):
-    """Index hearthd's nodes by their entity_id."""
-    return {
-        node.get("entity_id", ""): node
-        for node in hearthd.get("nodes", {}).values()
-    }
-
-
 def normalise_weather(hearthd):
     """Extract the live weather reading for the kiosk's weather widget.
 
-    hearthd's met.no integration publishes a `weather.home` node with the
+    hearthd's met.no integration publishes a node per location, with the
     temperature in centi-degrees Celsius and a PascalCase WeatherCondition.
     The kiosk expects degrees Celsius and a snake_case condition string, so we
     rescale and map here. If the node is missing or has no reading yet, both
     fields come through as null and the widget shows its placeholder state.
     """
-    node = node_by_entity_id(hearthd).get(WEATHER_ENTITY_ID, {})
+    node = nodes_by_alias(hearthd).get(WEATHER_ALIAS, {})
     clusters = primary_clusters(node)
     temperature = clusters.get("TemperatureMeasurement") or {}
     condition = clusters.get("WeatherCondition") or {}

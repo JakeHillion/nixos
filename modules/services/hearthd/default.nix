@@ -6,7 +6,11 @@ let
   # Secrets managed via agenix-rekey. Each entry registers an
   # age.secrets."hearthd/<name>".rekeyFile pointing at <name>.age, and its
   # decrypted path is appended to services.hearthd.secretConfigs below.
-  rekeySecrets = [ "ecoflow.toml" ];
+  #
+  # aliases.toml holds the [aliases] for nodes whose integration key is a
+  # device address (Zigbee IEEE addresses and the like). hearthd merges it with
+  # the public aliases in services.hearthd.config below.
+  rekeySecrets = [ "ecoflow.toml" "aliases.toml" ];
 
   acmeApiHost =
     let
@@ -135,6 +139,9 @@ in
           }
 
           handle {
+            # The Portal app commands nodes at /v1/entities/<name>/command;
+            # hearthd serves the same command at /v1/nodes/<name>/command.
+            uri path_regexp ^/v1/entities/ /v1/nodes/
             reverse_proxy http://127.0.0.1:8565
           }
         '';
@@ -179,6 +186,12 @@ in
         };
 
         locations.default = "home";
+
+        # Aliases whose keys are safe to publish. Those keyed by device
+        # address live in the aliases.toml secret.
+        aliases = {
+          weather_home = { integration = "metno"; key = "home"; };
+        };
 
         http = {
           listen = "127.0.0.1";

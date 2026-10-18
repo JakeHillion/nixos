@@ -50,41 +50,41 @@
                 "title": "Lights",
                 "source": { "$": "lights" },
                 "on_targets": [
-                  "light.0x001788010cfca626",
-                  "light.0xf0d1b8000018998a",
-                  "light.0x001788010be51b09"
+                  "living_room_light",
+                  "living_room_lamp",
+                  "living_room_hue_lamp"
                 ],
                 "lights": [
                   {
-                    "entity_id": "light.0x001788010cfca626",
+                    "entity_id": "living_room_light",
                     "name": "Light",
                     "endpoint": 1,
                     "dimmable": true,
                     "color": false
                   },
                   {
-                    "entity_id": "light.0xf0d1b8000018998a",
+                    "entity_id": "living_room_lamp",
                     "name": "Lamp",
                     "endpoint": 1,
                     "dimmable": true,
                     "color": false
                   },
                   {
-                    "entity_id": "light.0x001788010be51b09",
+                    "entity_id": "living_room_hue_lamp",
                     "name": "Hue",
                     "endpoint": 1,
                     "dimmable": true,
                     "color": false
                   },
                   {
-                    "entity_id": "light.1221051039810110150109113116116_2",
+                    "entity_id": "living_room_desk_lights",
                     "name": "Desk Lights",
                     "endpoint": 1,
                     "dimmable": true,
                     "color": false
                   },
                   {
-                    "entity_id": "light.0xf0d1b80000146cab",
+                    "entity_id": "kitchen_light",
                     "name": "Kitchen",
                     "endpoint": 1,
                     "dimmable": true,
