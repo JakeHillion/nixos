@@ -50,32 +50,32 @@
                 "title": "Lights",
                 "source": { "$": "lights" },
                 "on_targets": [
-                  "light.0xf0d1b8000018e736"
+                  "bedroom_lamp"
                 ],
                 "lights": [
                   {
-                    "entity_id": "light.0xf0d1b80000190215",
+                    "entity_id": "bedroom_light",
                     "name": "Light",
                     "endpoint": 1,
                     "dimmable": true,
                     "color": false
                   },
                   {
-                    "entity_id": "light.0xf0d1b80000190278",
+                    "entity_id": "cubby_light",
                     "name": "Cubby",
                     "endpoint": 1,
                     "dimmable": true,
                     "color": false
                   },
                   {
-                    "entity_id": "light.0xf0d1b8000018e736",
+                    "entity_id": "bedroom_lamp",
                     "name": "Lamp",
                     "endpoint": 1,
                     "dimmable": true,
                     "color": false
                   },
                   {
-                    "entity_id": "light.0x001788010d1a6cae",
+                    "entity_id": "bedroom_hue_bloom",
                     "name": "Hue",
                     "endpoint": 1,
                     "dimmable": true,
