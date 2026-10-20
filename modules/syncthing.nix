@@ -163,11 +163,12 @@ in
             "${cfg.baseDir}/media/audiobooks"
           ];
           fullExcludes = [
-            "${cfg.baseDir}/.st"
             "${cfg.baseDir}/*/.stfolder"
+            "${cfg.baseDir}/.st"
             "${cfg.baseDir}/appdata/immich-dropbox"
-            "${cfg.baseDir}/media/travel-shows"
             "${cfg.baseDir}/media/offline-youtube"
+            "${cfg.baseDir}/media/travel-shows"
+            "${cfg.baseDir}/projects/ogygia-nix/ogygia-nix-eval/fuzzing"
           ];
         in
         {
