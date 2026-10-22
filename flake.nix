@@ -15,8 +15,6 @@
 
     agenix.url = "github:ryantm/agenix";
     agenix.inputs.nixpkgs.follows = "nixpkgs";
-    agenix.inputs.darwin.follows = "darwin";
-    agenix.inputs.home-manager.follows = "home-manager";
 
     agenix-rekey.url = "github:oddlama/agenix-rekey";
     agenix-rekey.inputs.nixpkgs.follows = "nixpkgs";
@@ -190,7 +188,7 @@
 
           packages.caddy-with-dns = pkgs.caddy-with-dns;
           packages.llm-proxy = pkgs.llm-proxy;
-          packages.piPackages = pkgs.piPackages;
+          packages.pi-web-access = pkgs.piPackages.pi-web-access;
 
           devShells.default = pkgs.mkShell {
             packages = [
