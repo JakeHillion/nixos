@@ -68,6 +68,10 @@ in
         IOSchedulingClass = "idle";
         OOMScoreAdjust = 1000;
 
+        # The reference Nix aborts on inputs that exhaust its memory. Those are
+        # expected results, not crashes worth a core dump and backtrace each.
+        LimitCORE = 0;
+
         ProtectSystem = "strict";
         ProtectHome = true;
         PrivateTmp = true;
