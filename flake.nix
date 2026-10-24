@@ -125,6 +125,64 @@
         nixosConfigurations = self.nixosConfigurations;
       };
 
+      # Devices with no system configuration that join the Nebula mesh, such
+      # as Macs running the Ogygia app. They borrow the fleet's topology from
+      # a NixOS host, because the shared module that sets it depends on NixOS.
+      ogygiaConfigurations =
+        let
+          fleet = self.nixosConfigurations."boron.cx.neb.jakehillion.me".config.ogygia.nebula;
+        in
+        {
+          "fritz.cx.neb.jakehillion.me" = ogygia.lib.mkOgygiaConfiguration {
+            name = "fritz.cx.neb.jakehillion.me";
+            inherit (nixpkgs) lib;
+            modules = [{
+              ogygia.nebula = {
+                inherit (fleet) certDir topology;
+                groups = [ ];
+                pubKey = ''
+                  -----BEGIN NEBULA X25519 PUBLIC KEY-----
+                  8uH3OZGOq0BNR2EOogOggwc4JhH9NuA7kl+fr4pPGSE=
+                  -----END NEBULA X25519 PUBLIC KEY-----
+                '';
+                # The same inbound rules the shared module gives every NixOS
+                # host: SSH from any peer, everything (mosh, Screen Sharing)
+                # from legacy-full-access, and ICMP from any peer.
+                firewall.inbound = [
+                  { host = "any"; port = 22; proto = "tcp"; }
+                  { groups = [ "legacy-full-access" ]; port = "any"; proto = "any"; }
+                  { host = "any"; port = "any"; proto = "icmp"; }
+                ];
+              };
+            }];
+          };
+          "jakehillion-mba-m5-15.lt.neb.jakehillion.me" = ogygia.lib.mkOgygiaConfiguration {
+            name = "jakehillion-mba-m5-15.lt.neb.jakehillion.me";
+            inherit (nixpkgs) lib;
+            modules = [{
+              ogygia.nebula = {
+                inherit (fleet) certDir topology;
+                groups = [ "legacy-full-access" "syncthing" ];
+                pubKey = ''
+                  -----BEGIN NEBULA X25519 PUBLIC KEY-----
+                  FJvS6c7ct1p8cOEwVn8VTM5SqSZGQEYDHgZ20B104lA=
+                  -----END NEBULA X25519 PUBLIC KEY-----
+                '';
+                # The same inbound rules the shared module gives every NixOS
+                # host: SSH from any peer, everything (mosh, Screen Sharing)
+                # from legacy-full-access, and ICMP from any peer. Plus the
+                # rule the syncthing module gives its hosts.
+                firewall.inbound = [
+                  { host = "any"; port = 22; proto = "tcp"; }
+                  { groups = [ "legacy-full-access" ]; port = "any"; proto = "any"; }
+                  { host = "any"; port = "any"; proto = "icmp"; }
+                  { groups = [ "syncthing" ]; port = 22000; proto = "tcp"; }
+                ];
+              };
+            }];
+          };
+        };
+
       nixosConfigurations =
         let
           fqdns = builtins.attrNames (builtins.readDir ./hosts);
