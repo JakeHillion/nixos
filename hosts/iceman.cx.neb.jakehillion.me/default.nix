@@ -53,9 +53,12 @@
     networking.firewall.interfaces.eth0 = {
       allowedTCPPorts = [
         53 # DNS
+        80 # HTTP 1-2
+        443 # HTTPS 1-2
       ];
       allowedUDPPorts = [
         53 # DNS
+        443 # HTTP 3
         4242 # Nebula Lighthouse
       ];
     };
