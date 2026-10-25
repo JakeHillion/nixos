@@ -31,10 +31,11 @@ cat closure.nar.zst | ssh boron.cx.neb.jakehillion.me sh -c 'unzstd | sudo nix-s
 ## Project Structure
 
 - `/hosts/` - Host-specific configurations (18 hosts, each in `<fqdn>/default.nix`)
+- `/castaways/` - Fleet members with no NixOS configuration, each in `<fqdn>/default.nix` (see [Adding a New Castaway](#adding-a-new-castaway))
 - `/modules/` - Reusable NixOS modules (networking, services, www, etc.)
   - `/modules/networking/` - Network topology, router, and DHCP configuration
 - `/models/` - Hardware configuration templates (8 models for different hardware)
-- `/lib/` - Shared Nix utilities (`mkSystem.nix` for host composition)
+- `/lib/` - Shared Nix utilities (`mkSystem.nix` for host composition, `mkCastaway.nix` for castaways)
 - `/pkgs/` - Custom package definitions
 - `/secrets/` - Encrypted secrets via agenix
 - `/scripts/` - Utility scripts
@@ -79,8 +80,8 @@ Read `modules/networking/topology.nix` and `modules/networking/router.nix` direc
 
 DNS is split across two modules:
 
-- **`modules/dns.nix`** — Centralised DNS/IP mappings for the entire fleet.
-  - Exposes `config.custom.dns.authoritative.ipv4` (and `.ipv6`), a read-only nested attribute set mapping FQDNs to IP addresses (e.g. `me.jakehillion.neb.cx.boron = "172.20.0.1"`).
+- **`modules/dns/`** — Centralised DNS/IP mappings for the entire fleet.
+  - `authoritative.nix` exposes `config.custom.dns.authoritative.ipv4` (and `.ipv6`), a read-only nested attribute set mapping FQDNs to IP addresses (e.g. `me.jakehillion.neb.cx.boron = "172.20.0.1"`).
   - Derives `config.custom.dns.nebula.ipv4` for the current host from those mappings.
   - Populates `networking.hosts` so every host can resolve every other fleet host locally.
   - Contains an assertion that all Nebula IPs are unique.
@@ -95,7 +96,7 @@ DNS is split across two modules:
   - Knot listens only on the Nebula IP (`${config.custom.dns.nebula.ipv4}@53`).
   - The service depends on `nebula-online@ogygia.service`.
 
-When adding a new host, update `modules/dns.nix` with its Nebula IP so it is resolvable both locally and via the authoritative server.
+When adding a new host, update `modules/dns/authoritative.nix` with its Nebula IP so it is resolvable both locally and via the authoritative server.
 
 ## Common Tasks
 
@@ -111,6 +112,16 @@ When adding a new host, update `modules/dns.nix` with its Nebula IP so it is res
 - **`system.stateVersion`** must match the NixOS release the host is *first installed with* — i.e. the release the flake currently tracks (check the build output, e.g. `nixos-system-<host>-26.05...`), NOT whatever an older host happens to have pinned. Copying an old host's `stateVersion` onto a brand-new host is always wrong.
 
 Treat any copied host as a starting point, and sanity-check each value against what this specific host actually needs.
+
+### Adding a New Castaway
+
+A castaway is a fleet member with no NixOS configuration, such as a Mac running the Ogygia app, that takes only its Nebula config from this repo. Castaways are exposed as the `ogygiaConfigurations` flake output, built by `lib/mkCastaway.nix` from the shared `modules/castaway` module plus the castaway's own directory.
+
+1. Create `/castaways/<fqdn>/default.nix` setting `ogygia.nebula.pubKey` (the key the Ogygia app generated) and any extra `ogygia.nebula.groups`. Set `custom.syncthing.enable = true` for a Syncthing peer.
+2. Add its Nebula IP to `modules/dns/authoritative.nix`.
+3. Run `ogygia nebula rekey --host <fqdn>` and commit the cert.
+
+Castaways evaluate only `modules/castaway` and what it imports, never the NixOS module tree, so anything shared with them (e.g. `modules/ogygia/fleet.nix`, `modules/syncthing/nebula.nix`) must depend on nothing NixOS provides.
 
 ### Secret Management
 

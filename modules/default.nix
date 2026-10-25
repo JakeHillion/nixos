@@ -6,7 +6,7 @@
     ./compressed_ram.nix
     ./defaults.nix
     ./desktop
-    ./dns.nix
+    ./dns
     ./games
     ./home
     ./ids.nix
@@ -23,7 +23,7 @@
     ./shell
     ./ssh
     ./storj.nix
-    ./syncthing.nix
+    ./syncthing
     ./tang
     ./users.nix
     ./www
