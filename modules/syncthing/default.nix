@@ -136,23 +136,18 @@ in
           };
       };
 
-      ogygia.nebula = {
-        groups = [ "syncthing" ];
-        firewall.inbound = [
-          { groups = [ "syncthing" ]; port = 22000; proto = "tcp"; }
-        ];
-      };
+      ogygia.nebula = import ./nebula.nix;
     }
 
     (lib.mkIf cfg.backups.enable {
       age.secrets = {
         "restic/syncthing/mig29.key" = {
-          rekeyFile = ../secrets/restic/mig29.age;
+          rekeyFile = ../../secrets/restic/mig29.age;
           owner = "jake";
           group = "users";
         };
         "restic/syncthing/b52.key" = {
-          rekeyFile = ../secrets/restic/b52.age;
+          rekeyFile = ../../secrets/restic/b52.age;
           owner = "jake";
           group = "users";
         };
