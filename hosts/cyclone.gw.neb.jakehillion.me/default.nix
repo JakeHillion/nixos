@@ -1,5 +1,8 @@
 { config, pkgs, lib, ... }:
 
+let
+  wan = config.custom.networking.topology.home.wanInterface;
+in
 {
   imports = [
     ../../models/t0-topton-1u-10g
@@ -10,7 +13,11 @@
 
     custom.defaults = true;
     custom.locations.autoServe = true;
-    custom.tang.enable = true;
+    custom.tang = {
+      enable = true;
+      # WAN is on an SFP+ port
+      networkingModule = lib.mkForce "ixgbe";
+    };
 
     ogygia.nebula = {
       groups = [ "legacy-full-access" ];
@@ -29,8 +36,8 @@
       auto = true;
       extraForwardRules = ''
         # WireGuard VPN forwarding rules
-        iifname "wg0" oifname "enp2s0" accept comment "WireGuard to WAN"
-        iifname "enp2s0" oifname "wg0" ct state related,established accept comment "WAN to WireGuard established"
+        iifname "wg0" oifname "${wan}" accept comment "WireGuard to WAN"
+        iifname "${wan}" oifname "wg0" ct state related,established accept comment "WAN to WireGuard established"
 
         # Allow LAN to reach fanboy Nebula port
         iifname "lan" oifname "openclaw" ip daddr 10.116.242.2 udp dport 4242 counter accept comment "LAN to fanboy Nebula"
@@ -55,7 +62,7 @@
       '';
       extraNatRules = ''
         # WireGuard NAT masquerading
-        iifname "wg0" oifname "enp2s0" masquerade comment "WireGuard NAT"
+        iifname "wg0" oifname "${wan}" masquerade comment "WireGuard NAT"
 
         # Cellular failover NAT masquerading
         oifname "cellular" masquerade comment "Cellular NAT"
@@ -65,7 +72,7 @@
     ## Fail over to cellular when the primary WAN stops reaching the internet
     custom.networking.wanFailover = {
       enable = true;
-      primaryInterface = "enp2s0";
+      primaryInterface = wan;
       backup = {
         interface = "cellular";
         gateway = "10.69.186.1";
