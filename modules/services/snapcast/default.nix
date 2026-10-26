@@ -14,6 +14,14 @@ let
   # it reads on startup.
   goLibrespotStateDir = "/var/lib/go-librespot";
 
+  # Encrypted audio files downloaded from the Spotify CDN, kept so replays skip
+  # the download. Written straight to persistent storage on impermanence hosts
+  # so it survives reboots.
+  goLibrespotCacheDir =
+    if config.custom.impermanence.enable
+    then "${config.custom.impermanence.base}/services/go-librespot/cache"
+    else "/var/cache/go-librespot";
+
   # Loopback-only HTTP/websocket API that the control script below reads track
   # metadata from and issues transport commands to.
   spotifyApiPort = 24879;
@@ -22,6 +30,12 @@ let
     device_name = cfg.deviceName;
     device_type = "speaker";
     bitrate = 320;
+
+    cache = {
+      enabled = true;
+      dir = goLibrespotCacheDir;
+      size_limit = "100GB";
+    };
 
     audio_backend = "pipe";
     audio_output_pipe = spotifyPipe;
@@ -179,6 +193,8 @@ in
         # RequiresMountsFor, so the ownership cannot race the mount.
         StateDirectory = "go-librespot";
         StateDirectoryMode = "0700";
+        CacheDirectory = lib.mkIf (!config.custom.impermanence.enable) "go-librespot";
+        CacheDirectoryMode = lib.mkIf (!config.custom.impermanence.enable) "0700";
         # go-librespot reads its config from inside that same directory, so
         # the link is laid down once systemd has set the directory up.
         ExecStartPre = "${lib.getExe' pkgs.coreutils "ln"} -sfn ${goLibrespotConfig} ${goLibrespotStateDir}/config.yml";
@@ -248,6 +264,11 @@ in
       "p ${airplayPipe} 0644 shairport shairport -"
       "p ${airplayMetadataPipe} 0644 shairport shairport -"
       "p ${spotifyPipe} 0644 go-librespot go-librespot -"
+    ] ++ lib.optionals config.custom.impermanence.enable [
+      # Elsewhere CacheDirectory creates the cache, but it only manages paths
+      # under /var/cache.
+      "d ${builtins.dirOf goLibrespotCacheDir} 0700 go-librespot go-librespot -"
+      "d ${goLibrespotCacheDir} 0700 go-librespot go-librespot -"
     ];
 
     # AirPlay 2 keeps time against a PTP clock provided by nqptp, which shares it
