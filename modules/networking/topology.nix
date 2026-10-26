@@ -199,7 +199,7 @@
       home = {
         description = "Home Network";
         routerDevice = "cyclone.gw.${config.ogygia.domain}";
-        wanInterface = "enp2s0";
+        wanInterface = "enp1s0f1";
         wanMacAddress = "b4:fb:e4:b0:90:3c";
         staticWanIP = "185.240.111.53";
 
