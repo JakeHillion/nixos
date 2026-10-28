@@ -45,6 +45,7 @@
     ./searxng
     ./snapcast
     ./status
+    ./supos
     ./tang.nix
     ./unifi.nix
     ./zigbee2mqtt.nix

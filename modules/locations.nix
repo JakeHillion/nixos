@@ -71,6 +71,7 @@ in
           searxng = "warlock.cx.${config.ogygia.domain}";
           snapcast = "stinger.pop.${config.ogygia.domain}";
           status = "iceman.cx.${config.ogygia.domain}";
+          supos = "iceman.cx.${config.ogygia.domain}";
           tang = [
             "boron.cx.${config.ogygia.domain}"
             "cyclone.gw.${config.ogygia.domain}"
