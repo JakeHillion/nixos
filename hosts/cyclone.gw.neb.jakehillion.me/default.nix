@@ -34,7 +34,7 @@ in
     networking.useNetworkd = true;
     services.resolved.enable = false;
 
-    # Only the WAN is needed to reach tang in initrd.
+    # Only the uplink is needed to reach tang in initrd.
     boot.initrd.systemd.network =
       let
         vlans = [ "40-cameras" "40-cellular" "40-iot" "40-lan" "40-openclaw" ];
@@ -57,15 +57,7 @@ in
         iifname "lan" oifname "openclaw" ip daddr 10.116.242.2 udp dport 4242 counter accept comment "LAN to fanboy Nebula"
         iifname "openclaw" oifname "lan" ct state { established, related } counter accept comment "Established back from openclaw"
 
-        # Cellular failover: internet-enabled networks out, established back
-        iifname { "lan", "iot", "openclaw" } oifname "cellular" counter accept comment "LAN to cellular failover"
-        iifname "cellular" oifname { "lan", "iot", "openclaw" } ct state { established, related } counter accept comment "Cellular to LAN established"
-        iifname "wg0" oifname "cellular" counter accept comment "WireGuard to cellular failover"
-        iifname "cellular" oifname "wg0" ct state { established, related } counter accept comment "Cellular to WireGuard established"
-
-        # Olilo: IPv6 only, stateful
-        meta nfproto ipv6 oifname "olilo" tcp flags syn tcp option maxseg size set rt mtu comment "Clamp MSS to tunnel MTU"
-        meta nfproto ipv6 iifname "olilo" tcp flags syn tcp option maxseg size set rt mtu comment "Clamp MSS to tunnel MTU"
+        # Olilo IPv6: LAN only, stateful
         meta nfproto ipv6 iifname "lan" oifname "olilo" counter accept comment "LAN to Olilo IPv6"
         meta nfproto ipv6 iifname "olilo" oifname "lan" ct state { established, related } counter accept comment "Olilo IPv6 to LAN established"
       '';
@@ -77,23 +69,11 @@ in
       extraNatRules = ''
         # WireGuard NAT masquerading
         iifname "wg0" oifname "${wan}" masquerade comment "WireGuard NAT"
-
-        # Cellular failover NAT masquerading
-        oifname "cellular" masquerade comment "Cellular NAT"
       '';
     };
 
-    ## Fail over to cellular when the primary WAN stops reaching the internet
-    custom.networking.wanFailover = {
-      enable = true;
-      primaryInterface = wan;
-      backup = {
-        interface = "cellular";
-        gateway = "10.69.186.1";
-      };
-    };
-
-    ## Olilo L2TP: IPv6 uplink. IPv4 on the session is never routed.
+    ## Olilo L2TP: the WAN, carrying the static IPv4 and IPv6. The tunnel runs
+    ## over the uplink, or over cellular while the uplink is unhealthy.
     age.secrets."olilo-l2tp-password".rekeyFile = ./olilo-l2tp-password.age;
 
     custom.networking.l2tp = {
@@ -102,12 +82,31 @@ in
       username = "jake.hillion@olilo.l2tp";
       passwordFile = config.age.secrets."olilo-l2tp-password".path;
       ifname = "olilo";
+      ipv4.enable = true;
+      underlay = {
+        primaryInterface = config.custom.networking.topology.home.uplinkInterface;
+        backupInterface = "cellular";
+        backupGateway = "10.69.186.1";
+      };
       delegatedPrefix = "2a11:2646:14b6::/48";
+    };
+
+    # Runs before the router's forward chain so it covers every forwarded flow
+    networking.nftables.tables.olilo-mss = {
+      family = "inet";
+      content = ''
+        chain forward {
+          type filter hook forward priority mangle; policy accept;
+          oifname "olilo" tcp flags syn tcp option maxseg size set rt mtu comment "Clamp MSS to tunnel MTU"
+          iifname "olilo" tcp flags syn tcp option maxseg size set rt mtu comment "Clamp MSS to tunnel MTU"
+        }
+      '';
     };
 
     boot.kernel.sysctl."net.ipv6.conf.all.forwarding" = true;
 
-    ## Cellular VLAN on SFP+ port (high metric so primary WAN stays default)
+    ## Cellular VLAN on SFP+ port: the tunnel's backup underlay. The high
+    ## metric default only carries cyclone's own traffic when nothing else can.
     networking.vlans.cellular = {
       id = 5;
       interface = "enp1s0f0";
@@ -201,7 +200,7 @@ in
 
     ## Knot DNS - public listen address
     services.knot.settings.server.listen = [
-      "185.240.111.53@53"
+      "51.241.193.85@53"
     ];
 
     ## Unbound: forwarding resolver for LAN clients. Forwards everything to

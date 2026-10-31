@@ -99,7 +99,7 @@ let
     @                                 86400 NS ns2.jakehillion.me.
     @                                 86400 NS ns3.jakehillion.me.
 
-    @                                 86400 A 185.240.111.53
+    @                                 86400 A 51.241.193.85
 
     homeassistant.iot                  21600 CNAME stinger.iot.${homeDomain}.
     hearthd.iot                        21600 CNAME stinger.iot.${homeDomain}.

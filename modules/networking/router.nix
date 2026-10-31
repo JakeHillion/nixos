@@ -91,6 +91,13 @@ in
       # Filter networks that have DHCP enabled
       dhcpNetworks = lib.attrsets.filterAttrs (name: netCfg: netCfg.dhcpEnabled) locationCfg.networks;
 
+      # Physical interface that takes DHCP and the WAN MAC
+      uplinkInterface =
+        if locationCfg.uplinkInterface != null then locationCfg.uplinkInterface else locationCfg.wanInterface;
+
+      # Interfaces whose inbound traffic is dropped unless explicitly allowed
+      untrustedInterfaces = lib.lists.unique [ locationCfg.wanInterface uplinkInterface ];
+
       # Get interface name for a network (handles regular interfaces and VLANs)
       getInterfaceName = name: netCfg:
         if netCfg.vlanId == null then netCfg.interface else name;
@@ -215,7 +222,7 @@ in
         interfaces =
           # WAN interface
           {
-            "${locationCfg.wanInterface}" = {
+            "${uplinkInterface}" = {
               useDHCP = true;
               macAddress = locationCfg.wanMacAddress;
             };
@@ -267,7 +274,7 @@ in
                   (lib.lists.flatten 
                     (map (rule: 
                       map (proto: 
-                        "iifname \"${locationCfg.wanInterface}\" ${proto} dport ${toString rule.externalPort} counter accept comment \"${rule.description}\""
+                        "meta nfproto ipv4 iifname \"${locationCfg.wanInterface}\" ${proto} dport ${toString rule.externalPort} counter accept comment \"${rule.description}\""
                       ) (protocolRules rule.protocol)
                     ) (lib.lists.filter (rule: rule != null) getAllPortForwardingRules))
                   )
@@ -277,21 +284,23 @@ in
                 ${cfg.extraInputRules}
 
                 # Drop all other WAN traffic
-                iifname { "${locationCfg.wanInterface}" } counter drop
+                iifname {
+                  ${lib.strings.concatStringsSep ",\n      " (map (i: "\"${i}\"") untrustedInterfaces)}
+                } counter drop
               }
 
               chain forward {
                 type filter hook forward priority filter; policy drop;
 
                 # Allow trusted LAN to WAN (internet access)
-                iifname {
+                meta nfproto ipv4 iifname {
                   ${lib.strings.concatStringsSep ",\n      " (map (i: "\"${i}\"") internetInterfaceNames)}
                 } oifname {
                   "${locationCfg.wanInterface}"
                 } counter accept comment "Allow trusted LAN to WAN"
 
                 # Allow established connections back to LANs
-                iifname {
+                meta nfproto ipv4 iifname {
                   "${locationCfg.wanInterface}"
                 } oifname {
                   ${lib.strings.concatStringsSep ",\n      " (map (i: "\"${i}\"") internetInterfaceNames)}
@@ -374,16 +383,24 @@ in
       # interface appears (in initrd too, since stage 2 .link files are bundled
       # into systemd stage 1's initramfs). Needed for tang/clevis unlock against
       # an upstream that expects a stable MAC.
-      systemd.network.links."10-${locationCfg.wanInterface}" = lib.mkIf (config.custom.tang.enable && locationCfg.wanMacAddress != null) {
-        matchConfig.OriginalName = locationCfg.wanInterface;
+      systemd.network.links."10-${uplinkInterface}" = lib.mkIf (config.custom.tang.enable && locationCfg.wanMacAddress != null) {
+        matchConfig.OriginalName = uplinkInterface;
         linkConfig.MACAddress = locationCfg.wanMacAddress;
       };
 
       # The router resolves through its configured nameservers. Ignoring the
       # lease's DNS servers also stops networkd pinning host routes to them via
-      # the WAN.
-      systemd.network.networks."40-${locationCfg.wanInterface}".dhcpV4Config.UseDNS =
-        lib.mkIf config.networking.useNetworkd false;
+      # the uplink.
+      systemd.network.networks = lib.mkIf config.networking.useNetworkd ({
+        "40-${uplinkInterface}".dhcpV4Config.UseDNS = false;
+      } //
+      # VLAN parents carry no addresses and never leave the configuring state,
+      # which holds network-online.target until wait-online times out.
+      lib.attrsets.listToAttrs (map
+        (iface: lib.attrsets.nameValuePair "40-${iface}" {
+          linkConfig.RequiredForOnline = "no";
+        })
+        (lib.lists.unique (lib.attrsets.mapAttrsToList (name: netCfg: netCfg.interface) vlanNetworks))));
 
       custom.impermanence.extraDirs = lib.mkIf (config.custom.impermanence.enable && dhcpNetworks != { }) [
         "/var/lib/private/kea"
