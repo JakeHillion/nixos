@@ -21,6 +21,8 @@
 
     custom.tang.enable = true;
 
+    custom.services.llm_proxy.enable = true;
+
     ## Gitea Actions
     custom.services.gitea.actions-vm = {
       enable = true;

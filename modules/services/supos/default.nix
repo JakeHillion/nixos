@@ -48,7 +48,6 @@ in
   config = lib.mkIf cfg.enable {
     age.secrets = {
       "supos/oidc-client-secret".rekeyFile = ./oidc-client-secret.age;
-      "supos/environment".rekeyFile = ./environment.age;
 
       "backups/supos/restic/mig29" = lib.mkIf cfg.backup {
         rekeyFile = ../../../secrets/restic/mig29.age;
@@ -125,7 +124,6 @@ in
         DynamicUser = true;
         User = "supos";
         Group = "supos";
-        EnvironmentFile = config.age.secrets."supos/environment".path;
         LoadCredential = "oidc-client-secret:${config.age.secrets."supos/oidc-client-secret".path}";
 
         ExecStart = lib.escapeShellArgs ([
