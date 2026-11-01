@@ -1,69 +1,50 @@
-{ lib, stdenv, go, xcaddy, cacert, git, caddy }:
+{ lib, buildGoModule, caddy }:
 
 let
-  # Local plugin source
-  jakehillionPlugin = ./caddy-dns-jakehillion;
+  src = ./caddy-dns-jakehillion;
 
-  # Remote plugins with versions
-  cloudflarePlugin = "github.com/caddy-dns/cloudflare@v0.2.1";
-
-  version = caddy.version;
+  # Caddy's version comes from the module's go.mod rather than nixpkgs, so
+  # nixpkgs updates never change the vendored dependencies.
+  version = lib.removePrefix "v" (builtins.head (builtins.match
+    ".*[[:space:]]github.com/caddyserver/caddy/v2 (v[^[:space:]]+).*"
+    (builtins.readFile "${src}/go.mod")));
 in
-caddy.overrideAttrs (finalAttrs: prevAttrs: {
+buildGoModule {
   pname = "caddy-with-dns";
-  vendorHash = null;
-  subPackages = [ "." ];
+  inherit version src;
 
-  src = stdenv.mkDerivation {
-    pname = "caddy-src-with-dns-plugins";
-    inherit version;
+  vendorHash = "sha256-QxR/GZotZb3VDcLyokrYT6HGvVD9aoJP0/rlXfyuVrM=";
 
-    nativeBuildInputs = [
-      go
-      xcaddy
-      cacert
-      git
-    ];
+  subPackages = [ "cmd/caddy" ];
 
-    dontUnpack = true;
+  ldflags = [
+    "-s"
+    "-X github.com/caddyserver/caddy/v2.CustomVersion=v${version}"
+  ];
 
-    buildPhase = ''
-      export GOCACHE=$TMPDIR/go-cache
-      export GOPATH="$TMPDIR/go"
+  tags = [
+    "nobadger"
+    "nomysql"
+    "nopgx"
+  ];
 
-      # Build Caddy source with cloudflare plugin
-      XCADDY_SKIP_BUILD=1 TMPDIR="$PWD" xcaddy build v${version} \
-        --with ${cloudflarePlugin}
+  # Use only the system CA store. The embedded fallback bundle does not get cacert updates.
+  postConfigure = ''
+    chmod u+w vendor/github.com/caddyserver/caddy/v2/cmd
+    rm vendor/github.com/caddyserver/caddy/v2/cmd/x509rootsfallback.go
+  '';
 
-      cd buildenv*
+  # The NixOS module loads the units through systemd.packages.
+  postInstall = ''
+    install -Dm644 ${caddy.dist}/init/caddy.service ${caddy.dist}/init/caddy-api.service -t $out/lib/systemd/system
 
-      # Copy local plugin to a location outside vendor
-      mkdir -p local-plugins/github.com/jakehillion
-      cp -r ${jakehillionPlugin} local-plugins/github.com/jakehillion/caddy-dns-jakehillion
-      chmod -R u+w local-plugins
+    substituteInPlace $out/lib/systemd/system/caddy.service $out/lib/systemd/system/caddy-api.service \
+      --replace-fail "/usr/bin/caddy" "$out/bin/caddy"
+  '';
 
-      # Add import for our plugin to main.go (xcaddy generates main.go at root)
-      sed -i 's|import (|import (\n\t_ "github.com/jakehillion/caddy-dns-jakehillion"|' main.go
-
-      # Update go.mod to include local plugin with replacement pointing outside vendor
-      echo 'require github.com/jakehillion/caddy-dns-jakehillion v0.0.0' >> go.mod
-      echo 'replace github.com/jakehillion/caddy-dns-jakehillion => ./local-plugins/github.com/jakehillion/caddy-dns-jakehillion' >> go.mod
-
-      # Resolve transitive dependencies from local plugin, then vendor
-      go mod tidy
-      go mod vendor
-    '';
-
-    installPhase = ''
-      cd ..
-      mv buildenv* $out
-    '';
-
-    outputHashMode = "recursive";
-    outputHash = "sha256-KPgdw6u7OwW2dQsOQuPR6TQBznaq8hwDxDolIRyUFis=";
-    outputHashAlgo = "sha256";
+  meta = {
+    inherit (caddy.meta) homepage license;
+    description = "Caddy with Cloudflare and jakehillion DNS providers";
+    mainProgram = "caddy";
   };
-
-  # Skip install check since we have a local plugin
-  doInstallCheck = false;
-})
+}
