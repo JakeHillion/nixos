@@ -31,6 +31,20 @@ in
     ## Interactive password
     custom.users.jake.password = true;
 
+    networking.useNetworkd = true;
+    services.resolved.enable = false;
+
+    # Only the WAN is needed to reach tang in initrd.
+    boot.initrd.systemd.network =
+      let
+        vlans = [ "40-cameras" "40-cellular" "40-iot" "40-lan" "40-openclaw" ];
+        disable = names: lib.attrsets.genAttrs names (_: { enable = false; });
+      in
+      {
+        netdevs = disable vlans;
+        networks = disable (vlans ++ [ "40-enp1s0f0" ]);
+      };
+
     ## Use the network topology abstraction
     custom.networking.router = {
       auto = true;
@@ -103,20 +117,17 @@ in
         address = "10.69.186.2";
         prefixLength = 24;
       }];
-      ipv4.routes = [{
-        address = "0.0.0.0";
-        prefixLength = 0;
-        via = "10.69.186.1";
-        options.metric = "2048";
-      }];
     };
+    systemd.network.networks."40-cellular".routes = [{
+      Gateway = "10.69.186.1";
+      Metric = 2048;
+    }];
 
     ## WireGuard VPN Server
     networking.wireguard.interfaces."wg0" = {
       ips = [ "10.200.0.1/24" ];
       listenPort = 51820;
       privateKeyFile = "/data/wireguard/wg0-private";
-      generatePrivateKeyFile = true;
       peers = [
         {
           publicKey = "AeCCmn+x3wEGCTMBtkfe17G+nJ7enOgvbWoj+a3lZQA=";
@@ -128,11 +139,6 @@ in
         }
       ];
     };
-
-    # Ensure WireGuard directory exists on persistent storage
-    systemd.tmpfiles.rules = [
-      "d /data/wireguard 0700 root root -"
-    ];
 
     ## Run a persistent iperf3 server
     services.iperf3.enable = true;

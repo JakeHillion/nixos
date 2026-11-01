@@ -5,7 +5,7 @@ let
 
   # Metric of the default route installed via the backup while failed over.
   # Must beat whatever the primary's DHCP client installs (dhcpcd uses 1000 +
-  # ifindex for wired interfaces).
+  # ifindex for wired interfaces, networkd 1024).
   failoverMetric = 100;
 
   # Seconds between probe rounds.
@@ -119,6 +119,11 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    # The failover route is installed on a networkd-managed link outside any
+    # .network file, which networkd would otherwise remove as foreign.
+    systemd.network.config.networkConfig.ManageForeignRoutes =
+      lib.mkIf config.networking.useNetworkd false;
+
     systemd.services.wan-failover = {
       description = "WAN failover monitor";
       wantedBy = [ "multi-user.target" ];
