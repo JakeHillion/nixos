@@ -5,18 +5,49 @@ let
 
   pppOptions = "/run/xl2tpd/${cfg.ifname}.options";
 
-  # IPv4 is negotiated so the LNS accepts the session, but nothing is ever
-  # routed over it: drop the peer route pppd installs as soon as IPCP is up.
-  ipUp = pkgs.writeShellScript "l2tp-ip-up" ''
-    ${pkgs.iproute2}/bin/ip -4 route flush dev ${lib.strings.escapeShellArg cfg.ifname}
+  ip = "${pkgs.iproute2}/bin/ip";
+  ifname = lib.strings.escapeShellArg cfg.ifname;
+  uplink = lib.strings.escapeShellArg cfg.ipv4.uplinkInterface;
+
+  resolveLns = ''
+    lns=$(${pkgs.getent}/bin/getent ahostsv4 ${lib.strings.escapeShellArg cfg.server} | ${pkgs.gawk}/bin/awk 'NR == 1 { print $1 }')
+  '';
+
+  ipUp =
+    if cfg.ipv4.enable then
+    # The tunnel runs over the uplink, so once the default route moves into
+    # the tunnel the LNS must stay reachable via the uplink's gateway.
+      pkgs.writeShellScript "l2tp-ip-up" ''
+        ${resolveLns}
+        gateway=$(${ip} -4 route show default dev ${uplink} | ${pkgs.gawk}/bin/awk '$2 == "via" { print $3; exit }')
+        if [ -z "$lns" ] || [ -z "$gateway" ]; then
+          echo "no route to the LNS via ${cfg.ipv4.uplinkInterface}, not routing IPv4" >&2
+          exit 0
+        fi
+        ${ip} -4 route replace "$lns/32" via "$gateway" dev ${uplink}
+        ${ip} -4 route replace default dev ${ifname} metric ${toString cfg.ipv4.metric}
+      ''
+    else
+    # IPv4 is negotiated so the LNS accepts the session, but nothing is ever
+    # routed over it: drop the peer route pppd installs as soon as IPCP is up.
+      pkgs.writeShellScript "l2tp-ip-up" ''
+        ${ip} -4 route flush dev ${ifname}
+      '';
+
+  # Drop the LNS host route so a redial follows the uplink's current gateway.
+  ipDown = pkgs.writeShellScript "l2tp-ip-down" ''
+    ${resolveLns}
+    if [ -n "$lns" ]; then
+      ${ip} -4 route del "$lns/32" dev ${uplink} || true
+    fi
   '';
 
   ipv6Up = pkgs.writeShellScript "l2tp-ipv6-up" ''
-    ${pkgs.iproute2}/bin/ip -6 route replace default dev ${lib.strings.escapeShellArg cfg.ifname}
+    ${ip} -6 route replace default dev ${ifname}
     ${lib.strings.optionalString (cfg.delegatedPrefix != null) ''
       # Traffic for unassigned parts of the delegation would otherwise follow
       # the default route straight back up the tunnel.
-      ${pkgs.iproute2}/bin/ip -6 route replace unreachable ${cfg.delegatedPrefix}
+      ${ip} -6 route replace unreachable ${cfg.delegatedPrefix}
     ''}
   '';
 
@@ -32,7 +63,7 @@ let
 in
 {
   options.custom.networking.l2tp = {
-    enable = lib.mkEnableOption "an L2TP (no IPsec) uplink used for IPv6 only";
+    enable = lib.mkEnableOption "an L2TP (no IPsec) uplink";
 
     server = lib.mkOption {
       type = lib.types.str;
@@ -59,6 +90,21 @@ in
       type = lib.types.int;
       default = 1460;
       description = "PPP MTU/MRU. Leaves room for IPv4, UDP, L2TP and PPP headers inside a 1500 byte WAN.";
+    };
+
+    ipv4 = {
+      enable = lib.mkEnableOption "routing IPv4 over the tunnel. Without it only IPv6 is routed";
+
+      uplinkInterface = lib.mkOption {
+        type = lib.types.str;
+        description = "Interface the tunnel itself runs over. The LNS is pinned to this interface's default gateway.";
+      };
+
+      metric = lib.mkOption {
+        type = lib.types.int;
+        default = 512;
+        description = "Metric of the IPv4 default route via the tunnel. Must beat the uplink's own default route.";
+      };
     };
 
     delegatedPrefix = lib.mkOption {
@@ -101,6 +147,7 @@ in
         lcp-echo-interval 10
         lcp-echo-failure 6
         ip-up-script ${ipUp}
+        ${lib.strings.optionalString cfg.ipv4.enable "ip-down-script ${ipDown}"}
         ipv6-up-script ${ipv6Up}
         EOF
       '';
