@@ -176,20 +176,10 @@
             description = "WAN interface name on the router";
           };
 
-          uplinkInterface = lib.mkOption {
-            type = lib.types.nullOr lib.types.str;
-            default = null;
-            description = ''
-              Physical interface the WAN is carried over, when the WAN interface
-              is a tunnel. It takes DHCP and the WAN MAC address, and inbound
-              traffic on it is dropped like the WAN's.
-            '';
-          };
-
           wanMacAddress = lib.mkOption {
             type = lib.types.nullOr lib.types.str;
             default = null;
-            description = "MAC address to set on the WAN interface, or on the uplink interface if set (for ISP identification)";
+            description = "MAC address to set on the WAN interface (for ISP identification)";
           };
 
           staticWanIP = lib.mkOption {
@@ -209,10 +199,9 @@
       home = {
         description = "Home Network";
         routerDevice = "cyclone.gw.${config.ogygia.domain}";
-        wanInterface = "olilo";
-        uplinkInterface = "enp1s0f1";
+        wanInterface = "enp1s0f1";
         wanMacAddress = "b4:fb:e4:b0:90:3c";
-        staticWanIP = "51.241.193.85";
+        staticWanIP = "185.240.111.53";
 
         networks = {
           lan = {

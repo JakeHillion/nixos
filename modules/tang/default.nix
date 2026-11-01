@@ -58,7 +58,7 @@ in
           "cyclone.gw.${domain}" = {
             thp = "L-njyA01teJse7gxbkBJMc6DuLKrwlvqfrbvKj528m4";
             lan = "http://10.64.50.1:7654";
-            wan = "http://51.241.193.85:7654";
+            wan = "http://185.240.111.53:7654";
           };
           "warlock.cx.${domain}" = {
             thp = "m4sWMYoNuEv1Z5PuWeZ3tUkfFSJCyaeL4WxYWQY6piU";

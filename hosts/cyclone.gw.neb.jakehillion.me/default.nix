@@ -49,7 +49,9 @@ in
         iifname "wg0" oifname "cellular" counter accept comment "WireGuard to cellular failover"
         iifname "cellular" oifname "wg0" ct state { established, related } counter accept comment "Cellular to WireGuard established"
 
-        # Olilo IPv6: LAN only, stateful
+        # Olilo: IPv6 only, stateful
+        meta nfproto ipv6 oifname "olilo" tcp flags syn tcp option maxseg size set rt mtu comment "Clamp MSS to tunnel MTU"
+        meta nfproto ipv6 iifname "olilo" tcp flags syn tcp option maxseg size set rt mtu comment "Clamp MSS to tunnel MTU"
         meta nfproto ipv6 iifname "lan" oifname "olilo" counter accept comment "LAN to Olilo IPv6"
         meta nfproto ipv6 iifname "olilo" oifname "lan" ct state { established, related } counter accept comment "Olilo IPv6 to LAN established"
       '';
@@ -77,7 +79,7 @@ in
       };
     };
 
-    ## Olilo L2TP: the WAN, carrying the static IPv4 and IPv6 over the uplink
+    ## Olilo L2TP: IPv6 uplink. IPv4 on the session is never routed.
     age.secrets."olilo-l2tp-password".rekeyFile = ./olilo-l2tp-password.age;
 
     custom.networking.l2tp = {
@@ -86,23 +88,7 @@ in
       username = "jake.hillion@olilo.l2tp";
       passwordFile = config.age.secrets."olilo-l2tp-password".path;
       ifname = "olilo";
-      ipv4 = {
-        enable = true;
-        uplinkInterface = config.custom.networking.topology.home.uplinkInterface;
-      };
       delegatedPrefix = "2a11:2646:14b6::/48";
-    };
-
-    # Runs before the router's forward chain so it covers every forwarded flow
-    networking.nftables.tables.olilo-mss = {
-      family = "inet";
-      content = ''
-        chain forward {
-          type filter hook forward priority mangle; policy accept;
-          oifname "olilo" tcp flags syn tcp option maxseg size set rt mtu comment "Clamp MSS to tunnel MTU"
-          iifname "olilo" tcp flags syn tcp option maxseg size set rt mtu comment "Clamp MSS to tunnel MTU"
-        }
-      '';
     };
 
     boot.kernel.sysctl."net.ipv6.conf.all.forwarding" = true;
@@ -209,7 +195,7 @@ in
 
     ## Knot DNS - public listen address
     services.knot.settings.server.listen = [
-      "51.241.193.85@53"
+      "185.240.111.53@53"
     ];
 
     ## Unbound: forwarding resolver for LAN clients. Forwards everything to
