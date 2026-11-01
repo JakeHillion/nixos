@@ -11,15 +11,6 @@ let
     ${pkgs.iproute2}/bin/ip -4 route flush dev ${lib.strings.escapeShellArg cfg.ifname}
   '';
 
-  ipv6Up = pkgs.writeShellScript "l2tp-ipv6-up" ''
-    ${pkgs.iproute2}/bin/ip -6 route replace default dev ${lib.strings.escapeShellArg cfg.ifname}
-    ${lib.strings.optionalString (cfg.delegatedPrefix != null) ''
-      # Traffic for unassigned parts of the delegation would otherwise follow
-      # the default route straight back up the tunnel.
-      ${pkgs.iproute2}/bin/ip -6 route replace unreachable ${cfg.delegatedPrefix}
-    ''}
-  '';
-
   xl2tpdConf = pkgs.writeText "xl2tpd.conf" ''
     [lac ${cfg.ifname}]
     lns = ${cfg.server}
@@ -101,7 +92,6 @@ in
         lcp-echo-interval 10
         lcp-echo-failure 6
         ip-up-script ${ipUp}
-        ipv6-up-script ${ipv6Up}
         EOF
       '';
 
@@ -114,16 +104,33 @@ in
       };
     };
 
-    networking.dhcpcd = {
-      allowInterfaces = [ cfg.ifname ];
-      extraConfig = ''
-        interface ${cfg.ifname}
-          noipv4
-          noipv6rs
-          nohook resolv.conf
-          ia_na 1
-          ${lib.strings.optionalString (cfg.delegatedPrefix != null) "ia_pd 2/${cfg.delegatedPrefix} -"}
-      '';
+    systemd.network.networks."50-${cfg.ifname}" = {
+      matchConfig.Name = cfg.ifname;
+      networkConfig = {
+        DHCP = "ipv6";
+        IPv6AcceptRA = false;
+        # pppd assigns the addresses, including the link-local one IPV6CP
+        # negotiates, which DHCPv6 is sent from. The kernel generates none on
+        # ppp links, but networkd only runs DHCPv6 with this enabled.
+        LinkLocalAddressing = "ipv6";
+        KeepConfiguration = "static";
+      };
+      dhcpV6Config = {
+        WithoutRA = "solicit";
+        UseDNS = false;
+      } // lib.attrsets.optionalAttrs (cfg.delegatedPrefix != null) {
+        PrefixDelegationHint = cfg.delegatedPrefix;
+      };
+      routes = [
+        { Destination = "::/0"; }
+      ] ++ lib.lists.optional (cfg.delegatedPrefix != null) {
+        # Traffic for unassigned parts of the delegation would otherwise follow
+        # the default route straight back up the tunnel.
+        Destination = cfg.delegatedPrefix;
+        Type = "unreachable";
+      };
+      # The tunnel only dials once the network is online.
+      linkConfig.RequiredForOnline = "no";
     };
   };
 }

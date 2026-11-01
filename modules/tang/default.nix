@@ -156,8 +156,8 @@ in
           })
 
           # Hosts on scripted networking get networkd configured directly. The
-          # translation doesn't tolerate scripted-only route schemas (e.g.
-          # cyclone's cellular VLAN).
+          # translation doesn't tolerate scripted-only route schemas (e.g. a
+          # string metric in a route's options).
           (lib.mkIf (!config.networking.useNetworkd) {
             enable = true;
             # Fallback DHCP on the tang interface. Hosts that set a static

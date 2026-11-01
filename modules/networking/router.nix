@@ -379,6 +379,12 @@ in
         linkConfig.MACAddress = locationCfg.wanMacAddress;
       };
 
+      # The router resolves through its configured nameservers. Ignoring the
+      # lease's DNS servers also stops networkd pinning host routes to them via
+      # the WAN.
+      systemd.network.networks."40-${locationCfg.wanInterface}".dhcpV4Config.UseDNS =
+        lib.mkIf config.networking.useNetworkd false;
+
       custom.impermanence.extraDirs = lib.mkIf (config.custom.impermanence.enable && dhcpNetworks != { }) [
         "/var/lib/private/kea"
       ];
