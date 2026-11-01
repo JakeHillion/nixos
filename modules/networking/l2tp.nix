@@ -110,8 +110,9 @@ in
         DHCP = "ipv6";
         IPv6AcceptRA = false;
         # pppd assigns the addresses, including the link-local one IPV6CP
-        # negotiates, which DHCPv6 is sent from.
-        LinkLocalAddressing = "no";
+        # negotiates, which DHCPv6 is sent from. The kernel generates none on
+        # ppp links, but networkd only runs DHCPv6 with this enabled.
+        LinkLocalAddressing = "ipv6";
         KeepConfiguration = "static";
       };
       dhcpV6Config = {
