@@ -105,11 +105,6 @@ in
                     ];
                   };
 
-                  "appdata/supobot" = {
-                    id = "contaminated-ample-demonisation";
-                    devices = allDevices;
-                  };
-
                   "appdata/claude" = {
                     id = "periodical-disjoint-pier";
                     devices = [
