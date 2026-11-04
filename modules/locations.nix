@@ -48,6 +48,7 @@ in
           immich-dropbox-importer = "phoenix.st.${config.ogygia.domain}";
           jellyfin = "phoenix.st.${config.ogygia.domain}";
           journal_remote = "phoenix.st.${config.ogygia.domain}";
+          mail = "warlock.cx.${config.ogygia.domain}";
           mastodon = "";
           matrix = "boron.cx.${config.ogygia.domain}";
           mautrix_discord = "warlock.cx.${config.ogygia.domain}";
