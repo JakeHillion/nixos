@@ -13,11 +13,7 @@ in
 
     custom.defaults = true;
     custom.locations.autoServe = true;
-    custom.tang = {
-      enable = true;
-      # WAN is on an SFP+ port
-      networkingModule = lib.mkForce "ixgbe";
-    };
+    custom.tang.enable = true;
 
     ogygia.nebula = {
       groups = [ "legacy-full-access" ];
@@ -34,7 +30,7 @@ in
     networking.useNetworkd = true;
     services.resolved.enable = false;
 
-    # Only the uplink is needed to reach tang in initrd.
+    # Only G.Network on enp2s0 is needed to reach tang in initrd.
     boot.initrd.systemd.network =
       let
         vlans = [ "40-cameras" "40-cellular" "40-iot" "40-lan" "40-openclaw" ];
@@ -42,16 +38,13 @@ in
       in
       {
         netdevs = disable vlans;
-        networks = disable (vlans ++ [ "40-enp1s0f0" ]) // {
-          "40-enp2s0".linkConfig.RequiredForOnline = "no";
-        };
+        networks = disable (vlans ++ [ "40-enp1s0f0" "40-enp3s0" ]);
       };
 
-    boot.initrd.availableKernelModules = [ "igc" ];
     networking.interfaces.enp2s0.useDHCP = true;
     systemd.network.links."10-enp2s0" = {
       matchConfig.OriginalName = "enp2s0";
-      linkConfig.MACAddress = config.custom.networking.topology.home.wanMacAddress;
+      linkConfig.MACAddress = "b4:fb:e4:b0:90:3c";
     };
     systemd.network.networks."40-enp2s0" = {
       linkConfig.RequiredForOnline = "no";

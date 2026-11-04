@@ -210,8 +210,7 @@
         description = "Home Network";
         routerDevice = "cyclone.gw.${config.ogygia.domain}";
         wanInterface = "olilo";
-        uplinkInterface = "enp1s0f1";
-        wanMacAddress = "b4:fb:e4:b0:90:3c";
+        uplinkInterface = "enp3s0";
         staticWanIP = "51.241.193.85";
 
         networks = {
