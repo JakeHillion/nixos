@@ -197,6 +197,12 @@
             default = null;
             description = "Static WAN IP address for NAT reflection/loopback (even if the WAN interface uses DHCP)";
           };
+
+          routedSubnets = lib.mkOption {
+            type = lib.types.listOf lib.types.str;
+            default = [ ];
+            description = "Public IPv4 subnets the ISP routes to the WAN address. Traffic sourced from them leaves the WAN without masquerading.";
+          };
         };
       });
       default = { };
@@ -212,6 +218,7 @@
         wanInterface = "olilo";
         uplinkInterface = "enp3s0";
         staticWanIP = "51.241.193.85";
+        routedSubnets = [ "51.194.133.160/29" ];
 
         networks = {
           lan = {
@@ -476,6 +483,18 @@
           };
 
           # Note: VLAN 4 = mtu9000, VLAN 5 = cellular (configured on switch, not in topology)
+
+          # Public services on the routed subnets. The private subnet only
+          # gives the router an on-link address for hosts to use as gateway.
+          dmz = {
+            description = "DMZ Network";
+            vlanId = 6;
+            subnet = "10.214.61.0/24";
+            interface = "enp1s0f0";
+            dhcpEnabled = false;
+            internetAccess = false;
+            trustedNetwork = false;
+          };
 
           openclaw = {
             description = "OpenClaw Network";

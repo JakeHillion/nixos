@@ -32,6 +32,9 @@
       shairport = 417;
       go-librespot = 418;
       ogygia-nix-eval-fuzz = 419;
+      vmail = 420;
+      acme = 421;
+      redis-rspamd = 422;
 
       ## Consistent People
       jake = 1000;
@@ -66,6 +69,9 @@
       shairport = 417;
       go-librespot = 418;
       ogygia-nix-eval-fuzz = 419;
+      vmail = 420;
+      acme = 421;
+      redis-rspamd = 422;
 
       ## Consistent Groups
       mediaaccess = 1200;

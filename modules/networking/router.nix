@@ -365,7 +365,7 @@ in
                 type nat hook postrouting priority filter; policy accept;
 
                 # Masquerade outgoing WAN traffic
-                oifname "${locationCfg.wanInterface}" masquerade
+                oifname "${locationCfg.wanInterface}" ${lib.strings.optionalString (locationCfg.routedSubnets != [ ]) "ip saddr != { ${lib.strings.concatStringsSep ", " locationCfg.routedSubnets} } "}masquerade
 
                 # Extra NAT rules
                 ${cfg.extraNatRules}
