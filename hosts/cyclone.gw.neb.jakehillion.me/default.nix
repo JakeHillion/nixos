@@ -48,11 +48,9 @@ in
     };
     systemd.network.networks."40-enp2s0" = {
       linkConfig.RequiredForOnline = "no";
-      dhcpV4Config = {
-        RouteMetric = 8192;
-        UseDNS = false;
-      };
+      dhcpV4Config.UseDNS = false;
     };
+    systemd.network.networks."40-enp3s0".dhcpV4Config.RouteMetric = 8192;
 
     ## Use the network topology abstraction
     custom.networking.router = {
@@ -82,7 +80,7 @@ in
     };
 
     ## Olilo L2TP: the WAN, carrying the static IPv4 and IPv6. The tunnel runs
-    ## over the uplink, or over cellular while the uplink is unhealthy.
+    ## over G.Network, or over cellular while G.Network is unhealthy.
     age.secrets."olilo-l2tp-password".rekeyFile = ./olilo-l2tp-password.age;
 
     custom.networking.l2tp = {
@@ -93,7 +91,7 @@ in
       ifname = "olilo";
       ipv4.enable = true;
       underlay = {
-        primaryInterface = config.custom.networking.topology.home.uplinkInterface;
+        primaryInterface = "enp2s0";
         backupInterface = "cellular";
         backupGateway = "10.69.186.1";
       };
