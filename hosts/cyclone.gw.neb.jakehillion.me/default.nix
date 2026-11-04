@@ -42,8 +42,24 @@ in
       in
       {
         netdevs = disable vlans;
-        networks = disable (vlans ++ [ "40-enp1s0f0" ]);
+        networks = disable (vlans ++ [ "40-enp1s0f0" ]) // {
+          "40-enp2s0".linkConfig.RequiredForOnline = "no";
+        };
       };
+
+    boot.initrd.availableKernelModules = [ "igc" ];
+    networking.interfaces.enp2s0.useDHCP = true;
+    systemd.network.links."10-enp2s0" = {
+      matchConfig.OriginalName = "enp2s0";
+      linkConfig.MACAddress = config.custom.networking.topology.home.wanMacAddress;
+    };
+    systemd.network.networks."40-enp2s0" = {
+      linkConfig.RequiredForOnline = "no";
+      dhcpV4Config = {
+        RouteMetric = 8192;
+        UseDNS = false;
+      };
+    };
 
     ## Use the network topology abstraction
     custom.networking.router = {
