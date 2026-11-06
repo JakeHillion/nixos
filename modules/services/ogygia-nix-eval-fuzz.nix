@@ -72,6 +72,14 @@ in
         # expected results, not crashes worth a core dump and backtrace each.
         LimitCORE = 0;
 
+        # The fuzzer gives each Nix run a cgroup of its own, and must be the
+        # only process in the cgroup it starts in, so this script runs in a
+        # subgroup and starts the fuzzer in a sibling of it.
+        Delegate = true;
+        DelegateSubgroup = "supervisor";
+        # Nix runs out of memory in its own cgroups as a matter of course.
+        OOMPolicy = "continue";
+
         ProtectSystem = "strict";
         ProtectHome = true;
         PrivateTmp = true;
@@ -82,18 +90,28 @@ in
         set -euo pipefail
 
         head_rev() {
-          git ls-remote --exit-code https://github.com/JakeHillion/ogygia-nix ${lib.escapeShellArg cfg.ref} | head -n1 | cut -f1
+          git ls-remote --exit-code https://github.com/ogygia-nix/ogygia-nix ${lib.escapeShellArg cfg.ref} | head -n1 | cut -f1
         }
 
         build() {
-          nix build --print-out-paths "github:JakeHillion/ogygia-nix/$1#ogygia-nix-eval-fuzz" --out-link "$STATE_DIRECTORY/$2"
+          nix build --print-out-paths "github:ogygia-nix/ogygia-nix/$1#ogygia-nix-eval-fuzz" --out-link "$STATE_DIRECTORY/$2"
         }
 
+        # The cgroup delegated to this unit, holding this script's subgroup.
+        cgroup=/sys/fs/cgroup$(sed -n 's/^0:://p' /proc/self/cgroup)
+        cgroup=''${cgroup%/*}
+        echo +memory > "$cgroup/cgroup.subtree_control"
+
         # The fuzzer leads its own process group, which its -fork workers
-        # join, so the whole of it can be signalled and waited for.
+        # join, so the whole of it can be signalled and waited for. It starts
+        # alone in a fresh cgroup, which it divides between itself and Nix.
         start() {
           echo "fuzzing $rev ($fuzzer)"
-          setsid "$fuzzer/bin/ogygia-nix-eval-fuzz" run . &
+          mkdir "$cgroup/fuzzing"
+          (
+            echo "$BASHPID" > "$cgroup/fuzzing/cgroup.procs"
+            exec setsid "$fuzzer/bin/ogygia-nix-eval-fuzz" run .
+          ) &
           fuzz=$!
         }
 
@@ -110,6 +128,7 @@ in
             sleep 1
           done
           wait "$fuzz" 2>/dev/null || true
+          find "$cgroup/fuzzing" -depth -type d -delete
         }
 
         until rev=$(head_rev) && fuzzer=$(build "$rev" current); do
