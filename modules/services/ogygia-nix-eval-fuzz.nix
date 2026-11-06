@@ -22,7 +22,8 @@ in
 
     ref = lib.mkOption {
       type = lib.types.str;
-      default = "HEAD";
+      # default = "HEAD";
+      default = "refs/heads/jj/nnryopwpotqn";
       example = "refs/heads/my-branch";
       description = "Upstream ref whose latest commit is fuzzed.";
     };
@@ -72,6 +73,9 @@ in
         # expected results, not crashes worth a core dump and backtrace each.
         LimitCORE = 0;
 
+        # Allow child cgroup creation.
+        Delegate = true;
+
         ProtectSystem = "strict";
         ProtectHome = true;
         PrivateTmp = true;
@@ -82,11 +86,11 @@ in
         set -euo pipefail
 
         head_rev() {
-          git ls-remote --exit-code https://github.com/JakeHillion/ogygia-nix ${lib.escapeShellArg cfg.ref} | head -n1 | cut -f1
+          git ls-remote --exit-code https://github.com/ogygia-nix/ogygia-nix ${lib.escapeShellArg cfg.ref} | head -n1 | cut -f1
         }
 
         build() {
-          nix build --print-out-paths "github:JakeHillion/ogygia-nix/$1#ogygia-nix-eval-fuzz" --out-link "$STATE_DIRECTORY/$2"
+          nix build --print-out-paths "github:ogygia-nix/ogygia-nix/$1#ogygia-nix-eval-fuzz" --out-link "$STATE_DIRECTORY/$2"
         }
 
         # The fuzzer leads its own process group, which its -fork workers
