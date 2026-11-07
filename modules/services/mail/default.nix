@@ -284,6 +284,8 @@ in
               };
 
               "protocol lmtp" = {
+                # OpenSMTPD's Delivered-To carries the original recipient
+                lmtp_hdr_delivery_address = "none";
                 mail_plugins.sieve = true;
                 "sieve_script filing" = {
                   type = "before";
