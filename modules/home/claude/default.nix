@@ -5,6 +5,11 @@ let
 
   claudeSettings = {
     remoteControlAtStartup = false;
+    attribution = {
+      commit = "";
+      pr = "";
+      sessionUrl = false;
+    };
     env = {
       CLAUDE_CODE_RETRY_WATCHDOG = "1";
       CLAUDE_CODE_MAX_RETRIES = "1000";
