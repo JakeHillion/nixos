@@ -69,8 +69,8 @@ in
         meta nfproto ipv6 iifname "olilo" oifname "lan" ct state { established, related } counter accept comment "Olilo IPv6 to LAN established"
 
         # DMZ: only listed services in, and out to Olilo only from public addresses
-        oifname "dmz" ip daddr 51.194.133.162 tcp dport { 25, 80, 465, 993 } counter accept comment "Mail"
-        oifname "dmz" ip6 daddr 2a11:2646:14b6:2::1 tcp dport { 25, 80, 465, 993 } counter accept comment "Mail IPv6"
+        oifname "dmz" ip daddr 51.194.133.162 tcp dport { 25, 80, 465, 587, 993 } counter accept comment "Mail"
+        oifname "dmz" ip6 daddr 2a11:2646:14b6:2::1 tcp dport { 25, 80, 465, 587, 993 } counter accept comment "Mail IPv6"
         oifname "dmz" meta l4proto { icmp, ipv6-icmp } counter accept comment "ICMP to DMZ"
         oifname "dmz" ct state { established, related } counter accept comment "Established to DMZ"
         # Outbound mail goes through the relay, so direct SMTP from the DMZ is never legitimate

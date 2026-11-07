@@ -105,7 +105,7 @@ in
             hostName = "mx";
             domain = "jakehillion.me";
             useHostResolvConf = false;
-            firewall.allowedTCPPorts = [ 25 80 465 993 ];
+            firewall.allowedTCPPorts = [ 25 80 465 587 993 ];
           };
 
           systemd.network = {
@@ -175,6 +175,7 @@ in
 
                 listen on mv-dmz tls pki ${hostname} hostname ${hostname} filter rspamd
                 listen on mv-dmz port 465 smtps pki ${hostname} hostname ${hostname} auth <users>
+                listen on mv-dmz port 587 tls-require pki ${hostname} hostname ${hostname} auth <users>
 
                 action "deliver" lmtp "/run/dovecot2/lmtp" rcpt-to virtual <virtuals>
                 action "outbound" relay host smtp+tls://mythic@smtp-auth.mythic-beasts.com:587 auth <credentials> helo ${hostname}
