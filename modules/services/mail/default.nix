@@ -223,6 +223,9 @@ in
               mail_driver = "maildir";
               mail_home = "/var/lib/mail/%{user | domain}/%{user | username}";
               mail_path = "~/Maildir";
+              # Maildir++ uses '.' as its separator, so it needs escaping
+              # in folder names
+              mailbox_list_storage_escape_char = "^";
               mail_uid = "vmail";
               mail_gid = "vmail";
               first_valid_uid = hostConfig.ids.uids.vmail;
@@ -276,13 +279,15 @@ in
                   auto = "subscribe";
                   mailbox_autoexpunge = "30d";
                 };
+                "mailbox \"Archived Accounts/jakehillion@live.co.uk\"".auto = "subscribe";
+                "mailbox \"Archived Accounts/jshillion@hotmail.co.uk\"".auto = "subscribe";
               };
 
               "protocol lmtp" = {
                 mail_plugins.sieve = true;
-                "sieve_script spam-to-junk" = {
+                "sieve_script filing" = {
                   type = "before";
-                  path = ./spam-to-junk.sieve;
+                  path = ./filing.sieve;
                 };
               };
 
