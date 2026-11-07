@@ -43,6 +43,7 @@
 
       # Delegation
       custom.impermanence.enable = true;
+      custom.impermanence.cache.device = "/dev/mapper/disk1-crypt";
     }
 
     (lib.mkIf config.custom.tang.enable {
