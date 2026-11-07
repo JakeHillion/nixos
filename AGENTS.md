@@ -129,6 +129,17 @@ Secrets are managed with agenix. Place module-specific secrets (API keys, SSH ke
 
 Two secret mechanisms coexist — classic agenix and agenix-rekey — and they are registered and rekeyed differently. See the "Secret management" section of [README.md](README.md) before adding or moving a secret.
 
+#### Agent-tier secrets
+
+If `/run/agenix/claude/agent-identity` exists on the host you're on, you may read and modify agenix-rekey sources named `*.agent.age` with the devshell's `agent-secret` script:
+
+- `agent-secret cat FILE` decrypts to stdout. `agent-secret write FILE` encrypts stdin to `FILE`, creating it if needed. Edit by catting to a file in your scratchpad, changing it, and writing it back.
+- After adding, changing or removing an agent-tier secret, or enabling one on a new host, run `agent-secret rekey` and commit the result under `secrets/rekeyed/`. It writes the new outputs and `git rm`s committed outputs that no host tracks any more, which the `rekeyed-secrets` flake check would otherwise fail CI on. No human is needed for this.
+- If it reports an orphan it didn't remove because the file isn't committed, delete that file yourself.
+- Use `agent-secret`, never `agenix edit`, for any agenix-rekey source; `agenix edit` drops the agent recipient from `*.agent.age` files.
+- Sources named plain `*.age` are master-only. You can't read them. If `agent-secret rekey` lists master-tier outputs as missing, tell the user they need to run `agenix rekey -a` rather than working around it.
+- Material that's private but fine for agents to see goes in a new `*.agent.age` source; ask the user when unsure which tier a new secret belongs in.
+
 ## Coding Conventions
 
 - **Avoid global `with lib;`**: Use fully qualified names (e.g., `lib.mkOption`, `lib.strings.concatStringsSep`). The main codebase (modules/, hosts/, lib/) strictly follows this — only pkgs/ uses `with lib;` in meta blocks.
