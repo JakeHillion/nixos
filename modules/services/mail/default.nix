@@ -15,6 +15,7 @@ let
     "/var/lib/redis-rspamd" = "redis-rspamd";
     "/var/lib/acme" = "acme";
     "/var/spool/smtpd" = "smtpd";
+    "/var/lib/fail2ban" = "fail2ban";
   };
 in
 {
@@ -327,6 +328,47 @@ in
             enable = true;
             port = 6379;
             bind = "127.0.0.1";
+          };
+
+          # Port 25 is left to rspamd, as it takes no logins
+          services.fail2ban = {
+            enable = true;
+            maxretry = 5;
+            bantime = "1h";
+            bantime-increment = {
+              enable = true;
+              maxtime = "14d";
+            };
+            jails = {
+              dovecot-imap = {
+                settings.port = "993";
+                filter = {
+                  INCLUDES.before = "common.conf";
+                  Definition = {
+                    _daemon = "dovecot";
+                    failregex = ''^%(__prefix_line)simap-login: Login aborted: .* \(auth_failed\): .*\brip=<ADDR>,'';
+                    journalmatch = "_SYSTEMD_UNIT=dovecot.service";
+                  };
+                };
+              };
+              # The address and the failure are logged on separate lines,
+              # tied together by the session ID
+              opensmtpd-auth = {
+                settings.port = "465,587";
+                filter = {
+                  INCLUDES.before = "common.conf";
+                  Definition = {
+                    _daemon = "smtpd";
+                    prefregex = ''^%(__prefix_line)s<F-MLFID>[0-9a-f]+</F-MLFID> <F-CONTENT>smtp (?:connected|authentication) .+</F-CONTENT>$'';
+                    failregex = lib.strings.concatStringsSep "\n            " [
+                      ''^<F-NOFAIL>smtp connected</F-NOFAIL> address=<ADDR> host=\S+$''
+                      ''^smtp authentication user=\S* result=permfail$''
+                    ];
+                    journalmatch = "_SYSTEMD_UNIT=opensmtpd.service";
+                  };
+                };
+              };
+            };
           };
         };
       }) config;
