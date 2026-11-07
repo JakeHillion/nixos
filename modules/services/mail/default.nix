@@ -310,6 +310,13 @@ in
             locals."redis.conf".text = ''
               servers = "127.0.0.1:6379";
             '';
+            # Apply the sender's DMARC policy: quarantine goes to Junk
+            locals."dmarc.conf".text = ''
+              actions {
+                quarantine = "add_header";
+                reject = "reject";
+              }
+            '';
             # Treat private ranges like any other sender. local.d merges
             # with the default list, so this has to replace it.
             overrides."options.inc".text = ''
