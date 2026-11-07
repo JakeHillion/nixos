@@ -1,7 +1,45 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, utils, ... }:
 
 let
   cfg = config.custom.impermanence;
+
+  # Wanted by (not required by) the mount so that restarting this unit never
+  # propagates to the mount and unmounts a cache that is in use.
+  resetCacheUnit = mountPoint: unit: {
+    description = "Recreate ${cfg.cache.path} as an empty btrfs subvolume";
+    wantedBy = [ "${utils.escapeSystemdPath mountPoint}.mount" ];
+    before = [ "${utils.escapeSystemdPath mountPoint}.mount" ];
+    requires = [ "${utils.escapeSystemdPath cfg.cache.device}.device" ];
+    after = [ "${utils.escapeSystemdPath cfg.cache.device}.device" ];
+    unitConfig.DefaultDependencies = false;
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+  } // unit;
+
+  # Unless mountPoint is already mounted, mounts the btrfs top level at $top and
+  # replaces the cache subvolume with an empty one, running extra before $top is
+  # unmounted. Never touches a subvolume that is in use at mountPoint.
+  recreateCacheSubvolume = { mountPoint, extra ? "" }: ''
+    while read -r _ mnt _; do
+      if [ "$mnt" = ${mountPoint} ]; then
+        echo "${mountPoint} is already mounted, leaving it alone"
+        exit 0
+      fi
+    done < /proc/self/mounts
+
+    top=$(mktemp -d -p /run reset-cache.XXXXXX)
+    mount -t btrfs -o subvolid=5 ${cfg.cache.device} "$top"
+    trap 'umount "$top" && rmdir "$top"' EXIT
+
+    if [ -e "$top/${cfg.cache.subvolume}" ]; then
+      btrfs subvolume delete --recursive "$top/${cfg.cache.subvolume}"
+    fi
+    btrfs subvolume create "$top/${cfg.cache.subvolume}"
+    chmod 1777 "$top/${cfg.cache.subvolume}"
+    ${extra}
+  '';
 in
 {
   options.custom.impermanence = {
@@ -16,6 +54,16 @@ in
       path = lib.mkOption {
         type = lib.types.str;
         default = "/cache";
+      };
+      device = lib.mkOption {
+        type = lib.types.strMatching "/dev/.+";
+        example = "/dev/mapper/disk0-crypt";
+        description = "Block device of the btrfs filesystem holding the cache subvolume. Must be btrfs.";
+      };
+      subvolume = lib.mkOption {
+        type = lib.types.str;
+        default = "cache";
+        description = "Name of the subvolume directly under the btrfs top level (subvolid=5), recreated empty on every boot and mounted at path.";
       };
       extraDirs = lib.mkOption {
         type = with lib.types; listOf str;
@@ -45,37 +93,91 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    fileSystems = {
-      ${cfg.base}.neededForBoot = true;
-    } // (
-      # nixpkgs 26.05 dropped the "auto" default for fileSystems.<name>.fsType.
-      # impermanence creates bind-mount fileSystems entries without setting
-      # fsType, so supply "none" for every persisted directory.
-      let
-        inherit (lib) attrsets lists strings;
-        collectRootDirs = pcfg:
-          builtins.map
+    fileSystems = lib.mkMerge [
+      {
+        ${cfg.base}.neededForBoot = true;
+      }
+      (lib.mkIf cfg.cache.enable (
+        # If the cache cannot be prepared, carry on with it and the directories
+        # persisted on it in RAM rather than failing local-fs.target and
+        # dropping to emergency mode. nofail drops the ordering before the
+        # filesystem targets, so add it back: boot still waits for the mounts.
+        let
+          nofail = [
+            "nofail"
+            "x-systemd.before=local-fs.target"
+            "x-systemd.before=initrd-fs.target"
+          ];
+          cacheDirs = builtins.map
             (d: if builtins.isString d then d else d.directory)
-            (pcfg.directories or [ ]);
-        collectUserDirs = pcfg:
-          lists.flatten (attrsets.mapAttrsToList
-            (user: ucfg:
-              let homeDir = config.users.users.${user}.home or "/home/${user}"; in
-              builtins.map
-                (d:
-                  let sub = if builtins.isString d then d else d.directory; in
-                  "${homeDir}/${sub}")
-                (ucfg.directories or [ ]))
-            (pcfg.users or { }));
-        allDirs = lists.flatten (attrsets.mapAttrsToList
-          (_: pcfg: collectRootDirs pcfg ++ collectUserDirs pcfg)
-          config.environment.persistence);
-        prependSlash = d: if strings.hasPrefix "/" d then d else "/" + d;
-      in
-      attrsets.listToAttrs (builtins.map
-        (d: { name = prependSlash d; value = { fsType = lib.mkDefault "none"; }; })
-        allDirs)
-    );
+            (config.environment.persistence."${cfg.cache.path}/system".directories or [ ]);
+        in
+        {
+          ${cfg.cache.path} = {
+            device = cfg.cache.device;
+            fsType = "btrfs";
+            options = [ "subvol=${cfg.cache.subvolume}" ] ++ nofail;
+            neededForBoot = true;
+          };
+        } // lib.attrsets.genAttrs cacheDirs (_: { options = nofail; })
+      ))
+      (
+        # nixpkgs 26.05 dropped the "auto" default for fileSystems.<name>.fsType.
+        # impermanence creates bind-mount fileSystems entries without setting
+        # fsType, so supply "none" for every persisted directory.
+        let
+          inherit (lib) attrsets lists strings;
+          collectRootDirs = pcfg:
+            builtins.map
+              (d: if builtins.isString d then d else d.directory)
+              (pcfg.directories or [ ]);
+          collectUserDirs = pcfg:
+            lists.flatten (attrsets.mapAttrsToList
+              (user: ucfg:
+                let homeDir = config.users.users.${user}.home or "/home/${user}"; in
+                builtins.map
+                  (d:
+                    let sub = if builtins.isString d then d else d.directory; in
+                    "${homeDir}/${sub}")
+                  (ucfg.directories or [ ]))
+              (pcfg.users or { }));
+          allDirs = lists.flatten (attrsets.mapAttrsToList
+            (_: pcfg: collectRootDirs pcfg ++ collectUserDirs pcfg)
+            config.environment.persistence);
+          prependSlash = d: if strings.hasPrefix "/" d then d else "/" + d;
+        in
+        attrsets.listToAttrs (builtins.map
+          (d: { name = prependSlash d; value = { fsType = lib.mkDefault "none"; }; })
+          allDirs)
+      )
+    ];
+
+    # The cache is a disk-backed /tmp. Whenever it is about to be mounted and
+    # isn't already, its subvolume is recreated empty: in the initrd on every
+    # boot, and in the running system when the cache is enabled live.
+    boot.initrd.systemd.services.reset-cache = lib.mkIf cfg.cache.enable (resetCacheUnit "/sysroot${cfg.cache.path}" {
+      script = recreateCacheSubvolume { mountPoint = "/sysroot${cfg.cache.path}"; };
+    });
+    systemd.services.reset-cache = lib.mkIf cfg.cache.enable (resetCacheUnit cfg.cache.path {
+      # Only ever started by cache.mount; never re-run by a switch.
+      restartIfChanged = false;
+      path = [ pkgs.btrfs-progs pkgs.util-linux ];
+      script = recreateCacheSubvolume {
+        mountPoint = cfg.cache.path;
+        # Activation has already created impermanence's directories at the
+        # unmounted mount point. Recreate them on the new subvolume so their
+        # bind mounts find their sources.
+        extra = ''
+          if [ -d ${cfg.cache.path} ]; then
+            (cd ${cfg.cache.path} && find . -mindepth 1 -type d) | while read -r dir; do
+              mkdir "$top/${cfg.cache.subvolume}/$dir"
+              chown --reference="${cfg.cache.path}/$dir" "$top/${cfg.cache.subvolume}/$dir"
+              chmod --reference="${cfg.cache.path}/$dir" "$top/${cfg.cache.subvolume}/$dir"
+            done
+          fi
+        '';
+      };
+    });
 
     services = {
       openssh.hostKeys = [
