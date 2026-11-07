@@ -35,7 +35,7 @@
     ogygia.url = "github:JakeHillion/ogygia-nix/jj/uztxulvzkqtx";
     ogygia.inputs.nixpkgs.follows = "nixpkgs";
 
-    async-coder.url = "git+https://gitea.hillion.co.uk/JakeHillion/async-coder.git?ref=jj/nznlylrtpzvy";
+    async-coder.url = "git+https://gitea.hillion.co.uk/JakeHillion/async-coder.git";
     async-coder.inputs.nixpkgs.follows = "nixpkgs";
 
     dancefloor.url = "git+https://gitea.hillion.co.uk/JakeHillion/dancefloor-monorepo.git";
