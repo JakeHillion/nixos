@@ -37,5 +37,6 @@
 
     # Delegation
     custom.impermanence.enable = true;
+    custom.impermanence.cache.device = "/dev/mapper/disk1-crypt";
   };
 }

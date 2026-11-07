@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, utils, ... }:
 
 let
   cfg = config.custom.impermanence;
@@ -16,6 +16,16 @@ in
       path = lib.mkOption {
         type = lib.types.str;
         default = "/cache";
+      };
+      device = lib.mkOption {
+        type = lib.types.strMatching "/dev/.+";
+        example = "/dev/mapper/disk0-crypt";
+        description = "Block device of the btrfs filesystem holding the cache subvolume. Must be btrfs.";
+      };
+      subvolume = lib.mkOption {
+        type = lib.types.str;
+        default = "cache";
+        description = "Name of the subvolume directly under the btrfs top level (subvolid=5), recreated empty on every boot and mounted at path.";
       };
       extraDirs = lib.mkOption {
         type = with lib.types; listOf str;
@@ -47,6 +57,13 @@ in
   config = lib.mkIf cfg.enable {
     fileSystems = {
       ${cfg.base}.neededForBoot = true;
+    } // lib.optionalAttrs cfg.cache.enable {
+      ${cfg.cache.path} = {
+        device = cfg.cache.device;
+        fsType = "btrfs";
+        options = [ "subvol=${cfg.cache.subvolume}" ];
+        neededForBoot = true;
+      };
     } // (
       # nixpkgs 26.05 dropped the "auto" default for fileSystems.<name>.fsType.
       # impermanence creates bind-mount fileSystems entries without setting
@@ -75,6 +92,39 @@ in
       attrsets.listToAttrs (builtins.map
         (d: { name = prependSlash d; value = { fsType = lib.mkDefault "none"; }; })
         allDirs)
+    );
+
+    # The cache is a disk-backed /tmp: its subvolume is recreated empty in the
+    # initrd before being mounted, so every boot starts with nothing in it.
+    boot.initrd.systemd.services.reset-cache = lib.mkIf cfg.cache.enable (
+      let
+        deviceUnit = "${utils.escapeSystemdPath cfg.cache.device}.device";
+        mountUnit = "${utils.escapeSystemdPath "/sysroot${cfg.cache.path}"}.mount";
+      in
+      {
+        description = "Recreate ${cfg.cache.path} as an empty btrfs subvolume";
+        wantedBy = [ mountUnit ];
+        before = [ mountUnit ];
+        requires = [ deviceUnit ];
+        after = [ deviceUnit ];
+        unitConfig.DefaultDependencies = false;
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+        };
+        script = ''
+          mkdir -p /reset-cache
+          mount -t btrfs -o subvolid=5 ${cfg.cache.device} /reset-cache
+
+          if [ -e /reset-cache/${cfg.cache.subvolume} ]; then
+            btrfs subvolume delete --recursive /reset-cache/${cfg.cache.subvolume}
+          fi
+          btrfs subvolume create /reset-cache/${cfg.cache.subvolume}
+          chmod 1777 /reset-cache/${cfg.cache.subvolume}
+
+          umount /reset-cache
+        '';
+      }
     );
 
     services = {
