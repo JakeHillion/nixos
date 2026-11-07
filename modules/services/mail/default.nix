@@ -265,6 +265,7 @@ in
                 "mailbox Junk" = {
                   special_use = "\\Junk";
                   auto = "subscribe";
+                  mailbox_autoexpunge = "30d";
                 };
                 "mailbox Sent" = {
                   special_use = "\\Sent";
@@ -273,6 +274,7 @@ in
                 "mailbox Trash" = {
                   special_use = "\\Trash";
                   auto = "subscribe";
+                  mailbox_autoexpunge = "30d";
                 };
               };
 
