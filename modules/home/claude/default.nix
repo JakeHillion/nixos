@@ -49,6 +49,14 @@ in
       mode = "0400";
     };
 
+    # Lets agents read, write and rekey agent-tier secrets (*.agent.age) with
+    # agent-secret. See the "Secret management" section of README.md.
+    age.secrets."claude/agent-identity" = {
+      rekeyFile = ./agent-identity.agent.age;
+      owner = user;
+      mode = "0400";
+    };
+
     home-manager.users.${user} = {
       # Deploy skills
       home.file.".claude/skills/jj/SKILL.md".source = ./jj-skill/SKILL.md;

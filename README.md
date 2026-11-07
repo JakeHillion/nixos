@@ -10,6 +10,26 @@ Two secret mechanisms coexist in this repo. They store, register, and rekey diff
 
 New secrets should prefer agenix-rekey where possible.
 
+#### Editing agenix-rekey secrets
+
+agenix-rekey sources come in two tiers, distinguished by file name:
+
+- `*.age` — encrypted to the master identity (`secrets/master.recipients`) only. Reading one needs the master passphrase.
+- `*.agent.age` — encrypted to both the master identity and an agent identity (`secrets/agent.recipients`). Use this tier for material that must stay out of this public repo but is fine for agents to read, such as private config.
+
+The agent identity is itself an agent-tier secret (`modules/home/claude/agent-identity.agent.age`), deployed to every devbox at `/run/agenix/claude/agent-identity`.
+
+Edit every agenix-rekey source, in either tier, with the devshell's `agent-secret` script rather than `agenix edit`. It encrypts each file to the recipients for its tier, and decrypts agent-tier files with the agent identity where present, falling back to the master identity:
+
+    agent-secret cat FILE     # decrypt to stdout
+    agent-secret write FILE   # encrypt stdin
+    agent-secret edit FILE    # edit with $EDITOR
+    agent-secret rekey        # produce missing agent-tier outputs, remove orphans
+
+`agenix edit` encrypts to the master identity alone, so using it on a `*.agent.age` file drops agent access.
+
+`agent-secret rekey` writes the same `secrets/rekeyed/<hostname>/` files that `agenix rekey` would, which `agenix rekey -a` then skips as already rekeyed. `agenix rekey -a` still rekeys everything else. It also `git rm`s committed rekeyed outputs that no host tracks any more, which the `rekeyed-secrets` flake check rejects.
+
 ### Building Raspberry Pi images
 
 Raspberry Pi images that support headless SSH can be built as follows:

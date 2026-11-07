@@ -201,6 +201,11 @@
           devShells.default = pkgs.mkShell {
             packages = [
               agenix-rekey.packages.${system}.default
+              (pkgs.writeShellApplication {
+                name = "agent-secret";
+                runtimeInputs = [ pkgs.age pkgs.git pkgs.jq ];
+                text = builtins.readFile ./scripts/agent-secret.sh;
+              })
               pkgs.age
               pkgs.cargo
               pkgs.clippy
