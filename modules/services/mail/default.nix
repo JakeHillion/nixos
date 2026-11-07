@@ -174,8 +174,8 @@ in
                 filter rspamd proc-exec "${pkgs.opensmtpd-filter-rspamd}/bin/filter-rspamd"
 
                 listen on mv-dmz tls pki ${hostname} hostname ${hostname} filter rspamd
-                listen on mv-dmz port 465 smtps pki ${hostname} hostname ${hostname} auth <users>
-                listen on mv-dmz port 587 tls-require pki ${hostname} hostname ${hostname} auth <users>
+                listen on mv-dmz port 465 smtps pki ${hostname} hostname ${hostname} auth <users> mask-src
+                listen on mv-dmz port 587 tls-require pki ${hostname} hostname ${hostname} auth <users> mask-src
 
                 action "deliver" lmtp "/run/dovecot2/lmtp" rcpt-to virtual <virtuals>
                 action "outbound" relay host smtp+tls://mythic@smtp-auth.mythic-beasts.com:587 auth <credentials> helo ${hostname}
@@ -309,6 +309,11 @@ in
             };
             locals."redis.conf".text = ''
               servers = "127.0.0.1:6379";
+            '';
+            # Treat private ranges like any other sender. local.d merges
+            # with the default list, so this has to replace it.
+            overrides."options.inc".text = ''
+              local_addrs = [];
             '';
           };
           services.redis.servers.rspamd = {
