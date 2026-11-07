@@ -254,9 +254,17 @@
         in
         {
           # NixOS module tests
-          checks = import ./tests {
-            inherit pkgs system inputs;
-            lib = nixpkgs.lib;
+          checks = import ./tests
+            {
+              inherit pkgs system inputs;
+              lib = nixpkgs.lib;
+            } // {
+            rekeyed-secrets = import ./lib/checkRekeyedSecrets.nix {
+              inherit pkgs;
+              inherit (self) nixosConfigurations;
+              lib = nixpkgs.lib;
+              root = ./.;
+            };
           };
 
           # App to auto-generate all snapshots: `nix run .#generate-snapshots`
