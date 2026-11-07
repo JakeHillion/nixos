@@ -20,7 +20,6 @@
     };
 
     custom.tang.enable = true;
-    custom.impermanence.cache.enable = true;
 
     custom.services.llm_proxy.enable = true;
 

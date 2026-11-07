@@ -9,6 +9,7 @@ let
     boot.loader.grub.device = "nodev";
     fileSystems."/" = { device = "/dev/sda1"; fsType = "ext4"; };
     fileSystems."/data" = { device = "/dev/sda2"; fsType = "ext4"; };
+    fileSystems."/cache" = { device = "/dev/sda3"; fsType = "ext4"; };
 
     networking.hostName = "test";
     networking.domain = "example.com";

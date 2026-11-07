@@ -48,18 +48,39 @@
     ## Impermanence
     custom.impermanence = {
       enable = true;
-      cache = {
-        enable = true;
-        device = "/dev/disk/by-uuid/9aebe351-156a-4aa0-9a97-f09b01ac23ad";
-      };
+      cache.enable = true;
 
       userExtraFiles.jake = [
         ".ssh/id_ecdsa"
         ".ssh/id_rsa"
       ];
     };
-    nix.settings.build-dir = "${config.custom.impermanence.cache.path}/nix-builds";
-    systemd.tmpfiles.rules = [ "d ${config.custom.impermanence.cache.path}/nix-builds 0700 root root - -" ];
+    boot.initrd.systemd.services.reset-cache-subvolumes = {
+      description = "Wipe /cache/{system,nix-builds} to empty snapshots before stage 2";
+      wantedBy = [ "initrd.target" ];
+      after = [ "cryptsetup.target" ];
+      requires = [ "cryptsetup.target" ];
+      before = [ "initrd-fs.target" ];
+      unitConfig.DefaultDependencies = "no";
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+      };
+      script = ''
+        mkdir -p /reset-cache
+        mount -t btrfs -o subvol=cache /dev/mapper/disk0-crypt /reset-cache
+
+        btrfs subvolume delete /reset-cache/system
+        btrfs subvolume snapshot /reset-cache/empty_snapshot /reset-cache/system
+
+        btrfs subvolume delete /reset-cache/nix-builds
+        btrfs subvolume snapshot /reset-cache/empty_snapshot /reset-cache/nix-builds
+        chmod 0700 /reset-cache/nix-builds
+
+        umount /reset-cache
+      '';
+    };
+    nix.settings.build-dir = "/cache/nix-builds/";
 
     ## Custom Services
     custom = {

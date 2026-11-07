@@ -29,8 +29,6 @@
     ## Impermanence
     custom.impermanence = {
       enable = true;
-      cache.enable = true;
-
       userExtraFiles.jake = [
         ".ssh/id_rsa"
         ".ssh/id_ecdsa"

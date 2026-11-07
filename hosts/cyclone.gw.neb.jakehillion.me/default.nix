@@ -33,7 +33,7 @@ in
     # Only G.Network on enp2s0 is needed to reach tang in initrd.
     boot.initrd.systemd.network =
       let
-        vlans = [ "40-cameras" "40-cellular" "40-iot" "40-lan" "40-openclaw" ];
+        vlans = [ "40-cameras" "40-cellular" "40-dmz" "40-iot" "40-lan" "40-openclaw" ];
         disable = names: lib.attrsets.genAttrs names (_: { enable = false; });
       in
       {
@@ -67,11 +67,25 @@ in
         # Olilo IPv6: LAN only, stateful
         meta nfproto ipv6 iifname "lan" oifname "olilo" counter accept comment "LAN to Olilo IPv6"
         meta nfproto ipv6 iifname "olilo" oifname "lan" ct state { established, related } counter accept comment "Olilo IPv6 to LAN established"
+
+        # DMZ: only listed services in, and out to Olilo only from public addresses
+        oifname "dmz" ip daddr 51.194.133.162 tcp dport { 25, 80, 465, 993 } counter accept comment "Mail"
+        oifname "dmz" ip6 daddr 2a11:2646:14b6:2::1 tcp dport { 25, 80, 465, 993 } counter accept comment "Mail IPv6"
+        oifname "dmz" meta l4proto { icmp, ipv6-icmp } counter accept comment "ICMP to DMZ"
+        oifname "dmz" ct state { established, related } counter accept comment "Established to DMZ"
+        # Outbound mail goes through the relay, so direct SMTP from the DMZ is never legitimate
+        iifname "dmz" oifname "${wan}" tcp dport 25 counter drop comment "Direct SMTP from DMZ"
+        iifname "dmz" oifname "${wan}" ip saddr 51.194.133.160/29 counter accept comment "DMZ to Olilo"
+        iifname "dmz" oifname "${wan}" ip6 saddr 2a11:2646:14b6:2::/64 counter accept comment "DMZ IPv6 to Olilo"
+        iifname "dmz" ct state { established, related } counter accept comment "Established from DMZ"
       '';
       extraInputRules = ''
         # Olilo: ICMPv6 (NDP, PMTU) and DHCPv6-PD replies
         meta nfproto ipv6 iifname "olilo" meta l4proto ipv6-icmp counter accept comment "Olilo ICMPv6"
         meta nfproto ipv6 iifname "olilo" udp sport 547 udp dport 546 counter accept comment "Olilo DHCPv6 client"
+
+        # DMZ: NDP to the router's link-local gateway
+        meta nfproto ipv6 iifname "dmz" meta l4proto ipv6-icmp counter accept comment "DMZ ICMPv6"
       '';
       extraNatRules = ''
         # WireGuard NAT masquerading
@@ -111,6 +125,29 @@ in
     };
 
     boot.kernel.sysctl."net.ipv6.conf.all.forwarding" = true;
+
+    ## DMZ: the Olilo-routed /29 and a /64 are on-link, with a fixed
+    ## link-local address as the IPv6 gateway
+    networking.interfaces.dmz.ipv6.addresses = [{
+      address = "fe80::1";
+      prefixLength = 64;
+    }];
+    systemd.network.networks."40-dmz".routes = [
+      { Destination = "51.194.133.160/29"; }
+      { Destination = "2a11:2646:14b6:2::/64"; }
+    ];
+
+    # Public DMZ addresses are only valid as sources from the DMZ
+    networking.nftables.tables.dmz-antispoof = {
+      family = "inet";
+      content = ''
+        chain prerouting {
+          type filter hook prerouting priority raw; policy accept;
+          iifname != "dmz" ip saddr 51.194.133.160/29 counter drop comment "Routed /29 outside the DMZ"
+          iifname != "dmz" ip6 saddr 2a11:2646:14b6:2::/64 counter drop comment "DMZ /64 outside the DMZ"
+        }
+      '';
+    };
 
     ## Cellular VLAN on SFP+ port: the tunnel's backup underlay. The high
     ## metric default only carries cyclone's own traffic when nothing else can.

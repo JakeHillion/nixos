@@ -7,10 +7,7 @@ let
   config = evalConfig {
     modules = [{
       custom.impermanence.enable = true;
-      custom.impermanence.cache = {
-        enable = true;
-        device = "/dev/sda3";
-      };
+      custom.impermanence.cache.enable = true;
     }];
   };
 

@@ -25,6 +25,7 @@
     ./jellyfin.nix
     ./journal-remote.nix
     ./llm-proxy
+    ./mail
     ./mastodon
     ./matrix
     ./mautrix-discord
