@@ -45,6 +45,13 @@ in
         group = toString config.ids.gids.smtpd;
         mode = "0440";
       };
+      # Sieve filing for marketing mail. It names the senders, so it's kept
+      # out of the repo.
+      "mail/marketing.sieve" = {
+        rekeyFile = ./marketing.sieve.agent.age;
+        owner = toString config.ids.uids.vmail;
+        mode = "0400";
+      };
       # OpenSMTPD credentials table for the relay
       "mail/relay" = {
         rekeyFile = ./relay.age;
@@ -79,6 +86,7 @@ in
       restartTriggers = [
         (builtins.hashFile "sha256" config.age.secrets."mail/passwd".rekeyFile)
         (builtins.hashFile "sha256" config.age.secrets."mail/relay".rekeyFile)
+        (builtins.hashFile "sha256" config.age.secrets."mail/marketing.sieve".rekeyFile)
       ];
     };
 
@@ -95,6 +103,7 @@ in
           stateDirs // {
           "/run/agenix/mail/passwd".hostPath = config.age.secrets."mail/passwd".path;
           "/run/agenix/mail/relay".hostPath = config.age.secrets."mail/relay".path;
+          "/run/agenix/mail/marketing.sieve".hostPath = config.age.secrets."mail/marketing.sieve".path;
         }
       );
 
@@ -143,7 +152,11 @@ in
             };
           };
 
-          systemd.tmpfiles.rules = [ "d /var/lib/mail 0700 vmail vmail - -" ];
+          systemd.tmpfiles.rules = [
+            "d /var/lib/mail 0700 vmail vmail - -"
+            # sieve_script_bin_path
+            "d /var/cache/sieve 0700 vmail vmail - -"
+          ];
 
           security.acme = {
             acceptTerms = true;
@@ -284,6 +297,7 @@ in
                   auto = "subscribe";
                   mailbox_autoexpunge = "30d";
                 };
+                "mailbox Marketing".auto = "subscribe";
                 "mailbox \"Archived Accounts/jakehillion@live.co.uk\"".auto = "subscribe";
                 "mailbox \"Archived Accounts/jshillion@hotmail.co.uk\"".auto = "subscribe";
               };
@@ -292,9 +306,17 @@ in
                 # OpenSMTPD's Delivered-To carries the original recipient
                 lmtp_hdr_delivery_address = "none";
                 mail_plugins.sieve = true;
+                # Before scripts run in precedence order, and the sequence
+                # ends at the first script that files the message
                 "sieve_script filing" = {
                   type = "before";
+                  precedence = 1;
                   path = ./filing.sieve;
+                };
+                "sieve_script marketing" = {
+                  type = "before";
+                  precedence = 2;
+                  path = "/run/agenix/mail/marketing.sieve";
                 };
               };
 
@@ -302,6 +324,8 @@ in
               "protocol imap".mail_plugins.imap_sieve = true;
               sieve_plugins.sieve_imapsieve = true;
               sieve_global_extensions."vnd.dovecot.environment" = true;
+              # Every script is read-only, so compiled binaries are cached here
+              sieve_script_bin_path = "/var/cache/sieve";
               "mailbox Junk"."sieve_script learn-spam" = {
                 type = "before";
                 cause = "copy";
