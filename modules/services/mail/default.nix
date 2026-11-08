@@ -163,6 +163,10 @@ in
                   jake@jakehillion.me vmail
                   @jakehillion.me jake@jakehillion.me
                 '';
+                # Envelope senders each authenticated user may submit as
+                allowedSenders = pkgs.writeText "allowed-senders" ''
+                  jake@jakehillion.me @jakehillion.me
+                '';
               in
               ''
                 pki ${hostname} cert "/run/opensmtpd-pki/fullchain.pem"
@@ -171,12 +175,13 @@ in
                 table users passwd:/run/agenix/mail/passwd
                 table credentials file:/run/agenix/mail/relay
                 table virtuals file:${virtuals}
+                table allowed_senders file:${allowedSenders}
 
                 filter rspamd proc-exec "${pkgs.opensmtpd-filter-rspamd}/bin/filter-rspamd"
 
                 listen on mv-dmz tls pki ${hostname} hostname ${hostname} filter rspamd
-                listen on mv-dmz port 465 smtps pki ${hostname} hostname ${hostname} auth <users> mask-src
-                listen on mv-dmz port 587 tls-require pki ${hostname} hostname ${hostname} auth <users> mask-src
+                listen on mv-dmz port 465 smtps pki ${hostname} hostname ${hostname} auth <users> senders <allowed_senders> masquerade mask-src
+                listen on mv-dmz port 587 tls-require pki ${hostname} hostname ${hostname} auth <users> senders <allowed_senders> masquerade mask-src
 
                 action "deliver" lmtp "/run/dovecot2/lmtp" rcpt-to virtual <virtuals>
                 action "outbound" relay host smtp+tls://mythic@smtp-auth.mythic-beasts.com:587 auth <credentials> helo ${hostname}
