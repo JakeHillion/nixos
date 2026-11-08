@@ -175,10 +175,11 @@ in
                 virtuals = pkgs.writeText "virtuals" ''
                   jake@jakehillion.me vmail
                   @jakehillion.me jake@jakehillion.me
+                  @hillion.co.uk jake@jakehillion.me
                 '';
                 # Envelope senders each authenticated user may submit as
                 allowedSenders = pkgs.writeText "allowed-senders" ''
-                  jake@jakehillion.me @jakehillion.me
+                  jake@jakehillion.me @jakehillion.me, jake@hillion.co.uk
                 '';
               in
               ''
@@ -200,6 +201,7 @@ in
                 action "outbound" relay host smtp+tls://mythic@smtp-auth.mythic-beasts.com:587 auth <credentials> helo ${hostname}
 
                 match from any for domain "jakehillion.me" action "deliver"
+                match from any for domain "hillion.co.uk" action "deliver"
                 match from auth for any action "outbound"
                 match from local for any action "outbound"
               '';
