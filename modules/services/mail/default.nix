@@ -17,6 +17,37 @@ let
     "/var/spool/smtpd" = "smtpd";
     "/var/lib/fail2ban" = "fail2ban";
   };
+
+  # Bind-mounted into the container at the same path as on the host
+  containerSecrets = {
+    # Dovecot passwd-file, also read by OpenSMTPD's table-passwd
+    "mail/passwd" = {
+      rekeyFile = ./passwd.age;
+      owner = toString config.ids.uids.dovecot2;
+      group = toString config.ids.gids.smtpd;
+      mode = "0440";
+    };
+    # Sieve filing for marketing mail. It names the senders, so it's kept
+    # out of the repo.
+    "mail/marketing.sieve" = {
+      rekeyFile = ./marketing.sieve.agent.age;
+      owner = toString config.ids.uids.vmail;
+      mode = "0400";
+    };
+    # Sieve forwarding. It names other people's addresses, so it's kept
+    # out of the repo.
+    "mail/forwarding.sieve" = {
+      rekeyFile = ./forwarding.sieve.agent.age;
+      owner = toString config.ids.uids.vmail;
+      mode = "0400";
+    };
+    # OpenSMTPD credentials table for the relay
+    "mail/relay" = {
+      rekeyFile = ./relay.age;
+      group = toString config.ids.gids.smtpd;
+      mode = "0440";
+    };
+  };
 in
 {
   options.custom.services.mail = {
@@ -37,27 +68,7 @@ in
   config = lib.mkIf cfg.enable {
     custom.services.mail.dataPath = lib.mkIf config.custom.impermanence.enable (lib.mkOverride 999 "${config.custom.impermanence.base}/services/mail");
 
-    age.secrets = {
-      # Dovecot passwd-file, also read by OpenSMTPD's table-passwd
-      "mail/passwd" = {
-        rekeyFile = ./passwd.age;
-        owner = toString config.ids.uids.dovecot2;
-        group = toString config.ids.gids.smtpd;
-        mode = "0440";
-      };
-      # Sieve filing for marketing mail. It names the senders, so it's kept
-      # out of the repo.
-      "mail/marketing.sieve" = {
-        rekeyFile = ./marketing.sieve.agent.age;
-        owner = toString config.ids.uids.vmail;
-        mode = "0400";
-      };
-      # OpenSMTPD credentials table for the relay
-      "mail/relay" = {
-        rekeyFile = ./relay.age;
-        group = toString config.ids.gids.smtpd;
-        mode = "0440";
-      };
+    age.secrets = containerSecrets // {
       "backups/mail/restic/mig29" = lib.mkIf cfg.backup {
         rekeyFile = ../../../secrets/restic/mig29.age;
       };
@@ -83,11 +94,7 @@ in
       wants = [ "sys-subsystem-net-devices-dmz.device" ];
       after = [ "sys-subsystem-net-devices-dmz.device" ];
       # Secrets are bind-mounted as files, so the container only sees new ones on restart
-      restartTriggers = [
-        (builtins.hashFile "sha256" config.age.secrets."mail/passwd".rekeyFile)
-        (builtins.hashFile "sha256" config.age.secrets."mail/relay".rekeyFile)
-        (builtins.hashFile "sha256" config.age.secrets."mail/marketing.sieve".rekeyFile)
-      ];
+      restartTriggers = lib.attrsets.mapAttrsToList (_: s: builtins.hashFile "sha256" s.rekeyFile) containerSecrets;
     };
 
     containers."mail" = {
@@ -100,11 +107,10 @@ in
       bindMounts = lib.attrsets.mapAttrs (mountPoint: m: m // { mountPoint = "${mountPoint}:idmap"; }) (
         lib.attrsets.mapAttrs
           (_: dir: { hostPath = "${cfg.dataPath}/${dir}"; isReadOnly = false; })
-          stateDirs // {
-          "/run/agenix/mail/passwd".hostPath = config.age.secrets."mail/passwd".path;
-          "/run/agenix/mail/relay".hostPath = config.age.secrets."mail/relay".path;
-          "/run/agenix/mail/marketing.sieve".hostPath = config.age.secrets."mail/marketing.sieve".path;
-        }
+          stateDirs
+        // lib.attrsets.mapAttrs'
+          (name: _: lib.attrsets.nameValuePair config.age.secrets.${name}.path { hostPath = config.age.secrets.${name}.path; })
+          containerSecrets
       );
 
       config = (hostConfig: { config, pkgs, ... }: {
@@ -313,11 +319,20 @@ in
                   precedence = 1;
                   path = ./filing.sieve;
                 };
-                "sieve_script marketing" = {
+                # Redirects with :copy keep the message, so later scripts
+                # still file it
+                "sieve_script forwarding" = {
                   type = "before";
                   precedence = 2;
+                  path = "/run/agenix/mail/forwarding.sieve";
+                };
+                "sieve_script marketing" = {
+                  type = "before";
+                  precedence = 3;
                   path = "/run/agenix/mail/marketing.sieve";
                 };
+                # Forwards go out from our own domain so they pass SPF
+                sieve_redirect_envelope_from = "recipient";
               };
 
               # Train rspamd when mail moves into or out of Junk
