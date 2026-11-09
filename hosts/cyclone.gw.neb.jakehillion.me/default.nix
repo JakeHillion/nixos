@@ -30,6 +30,8 @@ in
     networking.useNetworkd = true;
     services.resolved.enable = false;
 
+    environment.systemPackages = [ pkgs.dig ];
+
     # Only G.Network on enp2s0 is needed to reach tang in initrd.
     boot.initrd.systemd.network =
       let
