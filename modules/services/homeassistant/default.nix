@@ -16,19 +16,6 @@ let
     "10.239.19.16" # bedroom-portal
     "10.239.19.18" # desk-portal
   ];
-
-  # Override the nixpkgs ecoflow_cloud (pinned to v1.4.1) with the latest
-  # tagged release, which adds Wave 3 support. Drop this once nixpkgs ships a
-  # release >= 1.5.0.
-  ecoflow_cloud = pkgs.home-assistant-custom-components.ecoflow_cloud.overrideAttrs (old: rec {
-    version = "1.5.0-beta3";
-    src = pkgs.fetchFromGitHub {
-      owner = "tolwi";
-      repo = "hassio-ecoflow-cloud";
-      tag = "v${version}";
-      hash = "sha256-qG/z2MHZDd5S7KWwvRViWJqEFIGBS2hNWi3w71rXB+o=";
-    };
-  });
 in
 {
   options.custom.services.homeassistant = {
@@ -183,6 +170,7 @@ in
 
       home-assistant = {
         enable = true;
+        package = pkgs.unstable.home-assistant;
 
         extraPackages = python3Packages: with python3Packages; [
           psycopg2 # postgresql support
@@ -209,14 +197,12 @@ in
           "waze_travel_time"
           "wyoming"
         ];
-        customComponents = [
-          ecoflow_cloud
-        ]
-        ++ (with pkgs.home-assistant-custom-components; [
+        customComponents = with pkgs.unstable.home-assistant-custom-components; [
           adaptive_lighting
+          ecoflow_cloud
           octopus_energy
-        ]);
-        customLovelaceModules = with pkgs.home-assistant-custom-lovelace-modules; [
+        ];
+        customLovelaceModules = with pkgs.unstable.home-assistant-custom-lovelace-modules; [
           button-card
         ];
 
