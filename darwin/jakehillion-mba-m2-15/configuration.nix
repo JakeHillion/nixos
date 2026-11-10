@@ -26,7 +26,7 @@
     environment.systemPackages = with pkgs; [
       fd
       htop
-      jujutsu
+      unstable.jujutsu
       mosh
       neovim
       nix
