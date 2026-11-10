@@ -15,7 +15,7 @@ let
     # Renovate spawns git with a filtered environment, so jj takes its identity
     # on the command line instead of from JJ_USER/JJ_EMAIL.
     jj() {
-      "${pkgs.jujutsu}/bin/jj" --config "user.name=${gitAuthorName}" --config "user.email=${gitAuthorEmail}" "$@"
+      "${pkgs.unstable.jujutsu}/bin/jj" --config "user.name=${gitAuthorName}" --config "user.email=${gitAuthorEmail}" "$@"
     }
 
     # Always run the real git command first

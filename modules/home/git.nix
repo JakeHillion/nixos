@@ -27,7 +27,7 @@ in
 
   config = lib.mkIf cfg.enable {
     home-manager.users.jake = {
-      home.packages = with pkgs; [ git-branchless jujutsu ];
+      home.packages = with pkgs; [ git-branchless unstable.jujutsu ];
 
       programs = {
         sapling = lib.mkIf (config.custom.user == "jake") {
@@ -44,6 +44,7 @@ in
 
         jujutsu = lib.mkIf (config.custom.user == "jake") {
           enable = true;
+          package = pkgs.unstable.jujutsu;
           settings = {
             user = {
               name = "Jake Hillion";

@@ -220,7 +220,7 @@
           devShells.ci = pkgs.mkShell {
             packages = [
               pkgs.jq
-              pkgs.jujutsu
+              pkgs.unstable.jujutsu
             ];
           };
         }))

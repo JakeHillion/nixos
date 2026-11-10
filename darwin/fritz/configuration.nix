@@ -31,7 +31,7 @@
       fd
       git
       htop
-      jujutsu
+      unstable.jujutsu
       mosh
       neovim
       ripgrep
