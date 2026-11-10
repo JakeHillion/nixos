@@ -191,6 +191,13 @@ in
         # address live in the aliases.toml secret.
         aliases = {
           weather_home = { integration = "metno"; key = "home"; };
+
+          phoenix_power = { integration = "snmp_pdu"; key = "rack/1"; };
+          rooster_power = { integration = "snmp_pdu"; key = "rack/2"; };
+          stinger_power = { integration = "snmp_pdu"; key = "rack/3"; };
+          warlock_power = { integration = "snmp_pdu"; key = "rack/4"; };
+          darkstar_power = { integration = "snmp_pdu"; key = "rack/6"; };
+          maverick_power = { integration = "snmp_pdu"; key = "rack/7"; };
         };
 
         http = {
@@ -219,6 +226,8 @@ in
           model = "apc_ap7921";
           host = "10.64.50.24";
           outlets."3".switchable = false;
+          outlets."5".enabled = false;
+          outlets."8".enabled = false;
         };
       };
     };
