@@ -45,7 +45,7 @@ in
         };
 
         llm = {
-          default_model = "GPT 6.1 Terra (immediate)";
+          default_model = "terra-plan";
           batch_model = "DeepSeek V4 Flash (batch60k)";
 
           debug = {
@@ -55,14 +55,9 @@ in
 
           providers = [
             {
-              name = "llm-proxy-immediate";
-              base_url = "http://127.0.0.1:9100/v1/immediate";
-              token_file = pkgs.writeText "personal-agent-dummy-token" "unused";
-              models = [{
-                id = "openai/gpt-6.1-terra";
-                name = "GPT 6.1 Terra (immediate)";
-                api = "responses";
-              }];
+              name = "chatgpt";
+              type = "chatgpt";
+              models = [{ id = "gpt-6.1-terra"; name = "terra-plan"; }];
             }
             {
               name = "llm-proxy-batch60k";
