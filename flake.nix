@@ -41,7 +41,7 @@
     dancefloor.url = "git+https://gitea.hillion.co.uk/JakeHillion/dancefloor-monorepo.git";
     dancefloor.inputs.nixpkgs.follows = "nixpkgs";
 
-    hearthd.url = "github:JakeHillion/hearthd";
+    hearthd.url = "github:JakeHillion/hearthd?ref=jj/kutzmxvvxlwt";
     hearthd.inputs.nixpkgs.follows = "nixpkgs";
 
     magicbluetoothd.url = "git+https://gitea.hillion.co.uk/JakeHillion/magicbluetoothd.git";
