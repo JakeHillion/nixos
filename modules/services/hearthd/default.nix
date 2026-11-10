@@ -10,7 +10,7 @@ let
   # aliases.toml holds the [aliases] for nodes whose integration key is a
   # device address (Zigbee IEEE addresses and the like). hearthd merges it with
   # the public aliases in services.hearthd.config below.
-  rekeySecrets = [ "ecoflow.toml" "aliases.toml" ];
+  rekeySecrets = [ "ecoflow.toml" "aliases.toml" "snmp_pdu.toml.agent" ];
 
   acmeApiHost =
     let
@@ -213,6 +213,12 @@ in
         integrations.snapcast = {
           host = "::1";
           port = 1705;
+        };
+
+        integrations.snmp_pdu.pdus.rack = {
+          model = "apc_ap7921";
+          host = "10.64.50.24";
+          outlets."3".switchable = false;
         };
       };
     };
