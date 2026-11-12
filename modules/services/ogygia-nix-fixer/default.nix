@@ -79,6 +79,68 @@ let
     exec nix develop --accept-flake-config ${repo} --command ${lib.getExe pi} \
       --session-id coordinator --name fuzz-fix-loop "$(< ${prompt})"
   '';
+  wrapper = pkgs.writeShellApplication {
+    name = "${user}-jj";
+    runtimeInputs = [ pkgs.unstable.jujutsu pkgs.git pkgs.openssh ];
+    text = ''
+      fixer_jj() {
+        jj -R ${repo} --ignore-working-copy "$@"
+      }
+
+      if [ "''${1-}" != git ] || [ "''${2-}" != push ]; then
+        fixer_jj "$@"
+        exit
+      fi
+      shift 2
+
+      # Pushing would write a bookmark into the fixer's repository, so push
+      # each change's commit straight from its Git objects instead.
+      force=
+      changes=()
+      while [ $# -gt 0 ]; do
+        case $1 in
+          -c | --change)
+            changes+=("''${2:?$1 needs a revision}")
+            shift 2
+            ;;
+          --change=*)
+            changes+=("''${1#--change=}")
+            shift
+            ;;
+          -c*)
+            changes+=("''${1#-c}")
+            shift
+            ;;
+          --force)
+            force=+
+            shift
+            ;;
+          *)
+            echo "${user}-jj: only git push [--force] -c <revision> is supported" >&2
+            exit 1
+            ;;
+        esac
+      done
+      if [ ''${#changes[@]} -eq 0 ]; then
+        echo "${user}-jj: git push needs -c <revision>" >&2
+        exit 1
+      fi
+
+      template=$(jj config get templates.git_push_bookmark)
+      refspecs=()
+      for change in "''${changes[@]}"; do
+        mapfile -t found < <(fixer_jj log --no-graph -r "$change" -T "$template"' ++ " " ++ commit_id ++ "\n"')
+        if [ ''${#found[@]} -ne 1 ]; then
+          echo "${user}-jj: $change is not exactly one revision" >&2
+          exit 1
+        fi
+        read -r bookmark commit <<<"''${found[0]}"
+        refspecs+=("$force$commit:refs/heads/$bookmark")
+      done
+
+      git -c safe.directory=${repo} -C ${repo} push git@github.com:ogygia-nix/ogygia-nix.git "''${refspecs[@]}"
+    '';
+  };
 in
 {
   options.custom.services.ogygia-nix-fixer.enable = lib.mkEnableOption "interactive Pi fuzz-finding handler";
@@ -95,9 +157,12 @@ in
       isSystemUser = true;
       inherit home;
     };
-    users.groups.${user}.gid = config.ids.gids.${user};
+    users.groups.${user} = {
+      gid = config.ids.gids.${user};
+      members = [ config.custom.user ];
+    };
     custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ home ];
-    environment.systemPackages = [ pkgs.tmux ];
+    environment.systemPackages = [ pkgs.tmux wrapper ];
 
     systemd.services.${user} = {
       description = "Interactive Pi handler for ogygia-nix fuzzer findings";
@@ -126,6 +191,10 @@ in
         ln -sfn ${../../home/pi/agents/worker.md} ${home}/.pi/agent/agents/worker.md
         if [ ! -d ${repo}/.jj ]; then
           jj git clone --colocate https://github.com/ogygia-nix/ogygia-nix.git ${repo}
+        fi
+        # jj creates this 0600, and the group can't open the repository without it.
+        if [ -e ${repo}/.jj/repo/config-id ]; then
+          chmod g+r ${repo}/.jj/repo/config-id
         fi
       '';
       script = ''
