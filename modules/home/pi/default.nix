@@ -8,7 +8,7 @@ let
   piExtensions = pkgs.linkFarm "pi-extensions" [
     {
       name = "subagent";
-      path = "${piPackage}/lib/node_modules/pi-monorepo/examples/extensions/subagent";
+      path = pkgs.piPackages.background-subagents;
     }
     {
       name = "pi-web-access";

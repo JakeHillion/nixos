@@ -1,0 +1,135 @@
+--- a/upstream.ts
++++ b/upstream.ts
+@@ -29,6 +29,7 @@
+ import { Container, Markdown, Spacer, Text } from "@earendil-works/pi-tui";
+ import { Type } from "typebox";
+ import { type AgentConfig, type AgentScope, discoverAgents } from "./agents.ts";
++import { terminateTree } from "./lifecycle.ts";
+ 
+ const MAX_PARALLEL_TASKS = 8;
+ const MAX_CONCURRENCY = 4;
+@@ -232,7 +233,10 @@
+ 			results[current] = await fn(items[current], current);
+ 		}
+ 	});
+-	await Promise.all(workers);
++	const settled = await Promise.allSettled(workers);
++	const failure = settled.find((result) => result.status === "rejected" && result.reason?.name !== "AbortError")
++		?? settled.find((result) => result.status === "rejected");
++	if (failure?.status === "rejected") throw failure.reason;
+ 	return results;
+ }
+ 
+@@ -281,6 +285,7 @@
+ 	onUpdate: OnUpdateCallback | undefined,
+ 	makeDetails: (results: SingleResult[]) => SubagentDetails,
+ ): Promise<SingleResult> {
++	signal?.throwIfAborted();
+ 	const agent = agents.find((a) => a.name === agentName);
+ 
+ 	if (!agent) {
+@@ -341,14 +346,24 @@
+ 		args.push(`Task: ${task}`);
+ 		let wasAborted = false;
+ 
+-		const exitCode = await new Promise<number>((resolve) => {
++		const exitCode = await new Promise<number>((resolve, reject) => {
++			signal?.throwIfAborted();
++			// Let the background wrapper return only after validation and approval.
++			signal?.dispatchEvent(new Event("pi-subagent-start"));
+ 			const invocation = getPiInvocation(args);
+ 			const proc = spawn(invocation.command, invocation.args, {
+ 				cwd: cwd ?? defaultCwd,
+ 				shell: false,
++				detached: true,
+ 				stdio: ["ignore", "pipe", "pipe"],
+ 			});
+ 			let buffer = "";
++			let termination = Promise.resolve();
++			const killProc = () => {
++				wasAborted = true;
++				termination = terminateTree(proc);
++				void termination.catch(reject);
++			};
+ 
+ 			const processLine = (line: string) => {
+ 				if (!line.trim()) return;
+@@ -399,8 +414,9 @@
+ 			});
+ 
+ 			proc.on("close", (code) => {
++				signal?.removeEventListener("abort", killProc);
+ 				if (buffer.trim()) processLine(buffer);
+-				resolve(code ?? 0);
++				void termination.then(() => resolve(code ?? 0), reject);
+ 			});
+ 
+ 			proc.on("error", () => {
+@@ -408,20 +424,13 @@
+ 			});
+ 
+ 			if (signal) {
+-				const killProc = () => {
+-					wasAborted = true;
+-					proc.kill("SIGTERM");
+-					setTimeout(() => {
+-						if (!proc.killed) proc.kill("SIGKILL");
+-					}, 5000);
+-				};
+ 				if (signal.aborted) killProc();
+ 				else signal.addEventListener("abort", killProc, { once: true });
+ 			}
+ 		});
+ 
+ 		currentResult.exitCode = exitCode;
+-		if (wasAborted) throw new Error("Subagent was aborted");
++		if (wasAborted) throw new DOMException("Subagent was aborted", "AbortError");
+ 		return currentResult;
+ 	} finally {
+ 		if (tmpPromptPath)
+@@ -514,6 +523,7 @@
+ 						},
+ 					],
+ 					details: makeDetails("single")([]),
++					isError: true,
+ 				};
+ 			}
+ 
+@@ -538,11 +548,13 @@
+ 					const ok = await ctx.ui.confirm(
+ 						"Run project-local agents?",
+ 						`Agents: ${names}\nSource: ${dir}\n\nProject agents are repo-controlled. Only continue for trusted repositories.`,
++						{ signal },
+ 					);
+ 					if (!ok)
+ 						return {
+ 							content: [{ type: "text", text: "Canceled: project-local agents not approved." }],
+ 							details: makeDetails(hasChain ? "chain" : hasTasks ? "parallel" : "single")([]),
++							isError: true,
+ 						};
+ 				}
+ 			}
+@@ -611,6 +623,7 @@
+ 							},
+ 						],
+ 						details: makeDetails("parallel")([]),
++						isError: true,
+ 					};
+ 
+ 				// Track all results for streaming updates
+@@ -682,6 +695,7 @@
+ 						},
+ 					],
+ 					details: makeDetails("parallel")(results),
++					isError: successCount !== results.length,
+ 				};
+ 			}
+ 
+@@ -717,6 +731,7 @@
+ 			return {
+ 				content: [{ type: "text", text: `Invalid parameters. Available agents: ${available}` }],
+ 				details: makeDetails("single")([]),
++				isError: true,
+ 			};
+ 		},
+ 
