@@ -35,6 +35,7 @@
       vmail = 420;
       acme = 421;
       redis-rspamd = 422;
+      ogygia-nix-fixer = 423;
 
       ## Consistent People
       jake = 1000;
@@ -72,6 +73,7 @@
       vmail = 420;
       acme = 421;
       redis-rspamd = 422;
+      ogygia-nix-fixer = 423;
 
       ## Consistent Groups
       mediaaccess = 1200;
