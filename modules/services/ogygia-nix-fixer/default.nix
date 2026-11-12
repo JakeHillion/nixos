@@ -78,6 +78,8 @@ let
   '';
 in
 {
+  imports = [ ./review.nix ];
+
   options.custom.services.ogygia-nix-fixer.enable = lib.mkEnableOption "interactive Pi fuzz-finding handler";
 
   config = lib.mkIf cfg.enable {
