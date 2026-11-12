@@ -105,6 +105,8 @@
           };
           "llm-proxy" = final.callPackage ./pkgs/llm-proxy.nix { };
           "piPackages"."pi-web-access" = final.callPackage ./pkgs/pi-web-access.nix { };
+          "piPackages"."background-subagents" = final.callPackage ./pkgs/pi-background-subagents { };
+          "piPackages"."loop" = final.callPackage ./pkgs/pi-loop { };
         })
       ];
       mkSystem = import ./lib/mkSystem.nix { inherit inputs; };
