@@ -76,7 +76,7 @@ let
     set -g window-size latest
   '';
   launch = pkgs.writeShellScript "${user}-pi" ''
-    exec nix develop ${repo} --command ${lib.getExe pi} \
+    exec nix develop --accept-flake-config ${repo} --command ${lib.getExe pi} \
       --session-id coordinator --name fuzz-fix-loop "$(< ${prompt})"
   '';
 in
