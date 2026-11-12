@@ -58,6 +58,7 @@ let
     and stop any worker before handing back the checkout.
   '';
   tmuxConfig = pkgs.writeText "${user}-tmux.conf" ''
+    set -g default-shell ${lib.getExe pkgs.bash}
     set -g prefix None
     set -g prefix2 None
     unbind-key -a
