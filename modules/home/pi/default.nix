@@ -11,6 +11,10 @@ let
       path = pkgs.piPackages.background-subagents;
     }
     {
+      name = "loop";
+      path = pkgs.piPackages.loop;
+    }
+    {
       name = "pi-web-access";
       path = "${piWebAccess}/lib/node_modules/pi-web-access";
     }
