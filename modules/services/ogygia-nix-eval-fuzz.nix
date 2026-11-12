@@ -5,7 +5,6 @@ let
 
   user = "ogygia-nix-eval-fuzz";
   stateDir = "/var/lib/${user}";
-  mountDir = "${stateDir}/fuzzing";
 in
 {
   options.custom.services.ogygia-nix-eval-fuzz = {
@@ -13,10 +12,11 @@ in
 
     dataDir = lib.mkOption {
       type = lib.types.str;
-      default = "${config.custom.syncthing.baseDir}/projects/ogygia-nix/ogygia-nix-eval/fuzzing";
+      default = stateDir;
       description = ''
-        Directory owned by the fuzzer: corpus, findings and runs. It must give
-        the service user rwX through access and default ACLs.
+        Directory owned by the fuzzer, holding its corpus, findings and crashed
+        inputs. Created automatically, persisted on impermanent hosts and
+        backed up to b52.
       '';
     };
 
@@ -43,6 +43,26 @@ in
     };
     users.groups.${user}.gid = config.ids.gids.${user};
 
+    custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ cfg.dataDir ];
+
+    systemd.tmpfiles.rules = [
+      "d ${cfg.dataDir} 0755 ${user} ${user} - -"
+    ];
+
+    age.secrets."restic/${user}/b52.key".rekeyFile = ../../secrets/restic/b52.age;
+
+    services.restic.backups.${user} = {
+      user = "root";
+      repository = "rest:https://restic.${config.ogygia.domain}/b52";
+      passwordFile = config.age.secrets."restic/${user}/b52.key".path;
+      paths = [ cfg.dataDir ];
+      timerConfig = {
+        OnCalendar = "daily";
+        RandomizedDelaySec = "1h";
+        Persistent = true;
+      };
+    };
+
     systemd.services.ogygia-nix-eval-fuzz = {
       description = "Differential fuzzing of ogygia-nix-eval against Nix";
       wantedBy = [ "multi-user.target" ];
@@ -56,8 +76,8 @@ in
         Group = user;
 
         StateDirectory = user;
-        BindPaths = [ "${cfg.dataDir}:${mountDir}" ];
-        WorkingDirectory = mountDir;
+        ReadWritePaths = [ cfg.dataDir ];
+        WorkingDirectory = cfg.dataDir;
 
         Restart = "on-failure";
         RestartSec = "5min";
