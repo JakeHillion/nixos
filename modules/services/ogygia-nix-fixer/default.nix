@@ -32,8 +32,10 @@ let
     and .claude/skills/fix-fuzz-finding/SKILL.md before beginning.
     Paths in those skills are relative to this repository, not the skill directory.
 
-    DIR=${home}/fuzzing; STATE=${home}/state. There is no separate tracking
-    document. Report anything requiring a decision in this conversation.
+    DIR=${home}/fuzzing; STATE=${home}/state. The tracking document is
+    STATE/tracking.md: read it before beginning and keep it up to date as the
+    fuzz-fix-loop skill describes. Report anything requiring a decision in
+    this conversation.
     On the first run, start fresh on trunk(): no old megamerge, substacks,
     Claude conversation or loop state is to be imported. On subsequent starts,
     inspect and reuse STATE/megamerge and the existing working copy; never
@@ -52,8 +54,8 @@ let
 
     Follow the skills' clean-room, testing and commit-placement rules. Never
     edit or delete findings, run recheck, start fuzzing, push, or open PRs.
-    Use nix develop --command for tools supplied by the repository's dev shell,
-    including cargo tests. Keep your own state under STATE.
+    This session already runs inside the repository's dev shell. Keep your
+    own state under STATE.
     If the user takes over, cancel the loop
     and stop any worker before handing back the checkout.
   '';
@@ -74,8 +76,8 @@ let
     set -g window-size latest
   '';
   launch = pkgs.writeShellScript "${user}-pi" ''
-    exec ${lib.getExe pi} --session-id coordinator --name fuzz-fix-loop \
-      "$(< ${prompt})"
+    exec nix develop ${repo} --command ${lib.getExe pi} \
+      --session-id coordinator --name fuzz-fix-loop "$(< ${prompt})"
   '';
 in
 {
@@ -108,7 +110,7 @@ in
         PI_TELEMETRY = "0";
         GIT_TERMINAL_PROMPT = "0";
       };
-      path = with pkgs; [ pi unstable.jujutsu git nix coreutils bash ripgrep findutils gnugrep gnused gawk curl cacert tmux ];
+      path = with pkgs; [ pi unstable.jujutsu git nix coreutils bash ripgrep findutils gnugrep gnused gawk curl cacert tmux xxd python3 diffutils patch jq file procps util-linux less tree gnutar gzip which ];
       preStart = ''
         install -d -m 0700 ${home}/.pi/agent ${home}/.config/jj
         install -d ${home}/.pi/agent/{extensions,agents,skills} ${home}/state
