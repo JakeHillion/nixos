@@ -37,6 +37,7 @@
       redis-rspamd = 422;
       vms = 423;
       chhoto-url = 424;
+      ogygia-nix-fixer = 425;
 
       ## Consistent People
       jake = 1000;
@@ -76,6 +77,7 @@
       redis-rspamd = 422;
       vms = 423;
       chhoto-url = 424;
+      ogygia-nix-fixer = 425;
 
       ## Consistent Groups
       mediaaccess = 1200;
