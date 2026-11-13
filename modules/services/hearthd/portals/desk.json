@@ -92,6 +92,7 @@
                   }
                 ]
               },
+              { "type": "now_playing" },
               {
                 "type": "clock",
                 "show_seconds": false,
