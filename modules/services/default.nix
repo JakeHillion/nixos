@@ -35,7 +35,6 @@
     ./nix-remote-builder.nix
     ./ntfy.nix
     ./ogygia-nix-eval-fuzz.nix
-    ./ogygia-nix-fixer
     ./offline-youtube
     ./openthread-border-router.nix
     ./openwebui
