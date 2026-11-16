@@ -16,7 +16,6 @@
     ./ogygia
     ./profiles
     ./prometheus
-    ./qemu-bridge-helper.nix
     ./qnap-display.nix
     ./rekey.nix
     ./sched_ext.nix

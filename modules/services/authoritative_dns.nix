@@ -63,7 +63,6 @@ let
     searxng                           21600 CNAME ${locations.services.searxng}.
     snapcast                          21600 CNAME ${locations.services.snapcast}.
     status                            21600 CNAME ${locations.services.status}.
-    unifi-os                          21600 CNAME ${locations.services.unifi-os}.
     wallpapers                        21600 CNAME phoenix.st.${domain}.
 
     mqtt.home                         21600 CNAME ${locations.services.mosquitto}.

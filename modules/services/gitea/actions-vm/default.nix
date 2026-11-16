@@ -513,7 +513,18 @@ in
       iptables -D FORWARD -i ${bridgeName} -d 192.168.0.0/16 -j DROP 2>/dev/null || true
     '';
 
-    custom.qemuBridgeHelper.allowedBridges = [ bridgeName ];
+    # SUID qemu-bridge-helper so the (DynamicUser) qemu process can attach
+    # its TAP to the bridge without holding CAP_NET_ADMIN itself.
+    security.wrappers."qemu-bridge-helper" = {
+      source = "${pkgs.qemu_kvm}/libexec/qemu-bridge-helper";
+      capabilities = "cap_net_admin+ep";
+      owner = "root";
+      group = "root";
+    };
+
+    environment.etc."qemu/bridge.conf".text = ''
+      allow ${bridgeName}
+    '';
 
     systemd.services = lib.listToAttrs (map mkInstanceService instanceIds) // {
       # Restart idle VMs after a config change. Pinned to each runnerLauncher

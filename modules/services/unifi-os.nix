@@ -3,6 +3,7 @@
 let
   cfg = config.custom.services.unifi-os;
   vmCfg = config.custom.vms.instances.unifi-os;
+  autobackupDir = "/home/uosserver/.local/share/containers/storage/volumes/uosserver_var_lib_unifi/_data/backup/autobackup";
 in
 {
   options.custom.services.unifi-os = {
@@ -61,6 +62,7 @@ in
           "unattended-upgrades"
           "podman"
           "slirp4netns"
+          "rsync"
         ];
 
         write_files = [
@@ -78,10 +80,40 @@ in
               Unattended-Upgrade::Automatic-Reboot-Time "04:00";
             '';
           }
+          # UniFi only writes its auto-backups inside its container storage, which
+          # only the guest's root can copy onto the backup share.
+          {
+            path = "/etc/systemd/system/unifi-backup-copy.service";
+            content = ''
+              [Unit]
+              Description=Copy UniFi auto-backups to the backup share
+              RequiresMountsFor=/mnt/backup
+              ConditionPathIsDirectory=${autobackupDir}
+
+              [Service]
+              Type=oneshot
+              ExecStart=/usr/bin/rsync -a --no-owner --no-group --delete ${autobackupDir}/ /mnt/backup/autobackup/
+            '';
+          }
+          {
+            path = "/etc/systemd/system/unifi-backup-copy.timer";
+            content = ''
+              [Unit]
+              Description=Copy UniFi auto-backups to the backup share hourly
+
+              [Timer]
+              OnCalendar=hourly
+              Persistent=true
+
+              [Install]
+              WantedBy=timers.target
+            '';
+          }
         ];
 
         runcmd = [
           [ "systemctl" "start" "qemu-guest-agent" ]
+          [ "systemctl" "enable" "--now" "unifi-backup-copy.timer" ]
         ];
       };
     };
@@ -89,18 +121,6 @@ in
     services.caddy = {
       enable = true;
       virtualHosts."unifi.hillion.co.uk".extraConfig = ''
-        reverse_proxy https://${vmCfg.ipv4Address}:11443 {
-          header_up Host {host}
-          transport http {
-            tls_insecure_skip_verify
-          }
-        }
-      '';
-    };
-
-    custom.www.nebula = {
-      enable = true;
-      virtualHosts."unifi-os.${config.ogygia.domain}".extraConfig = ''
         reverse_proxy https://${vmCfg.ipv4Address}:11443 {
           header_up Host {host}
           transport http {

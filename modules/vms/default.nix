@@ -538,6 +538,19 @@ in
       };
     };
 
-    custom.qemuBridgeHelper.allowedBridges = [ bridgeName ];
+    # qemu-bridge-helper with CAP_NET_ADMIN, so qemu can attach its TAP to the
+    # bridge without holding the capability itself. mkDefault because other
+    # modules may define the same wrapper, and its capabilities concatenate
+    # across definitions into a string setcap rejects.
+    security.wrappers."qemu-bridge-helper" = lib.mapAttrs (_: lib.mkDefault) {
+      source = "${pkgs.qemu_kvm}/libexec/qemu-bridge-helper";
+      capabilities = "cap_net_admin+ep";
+      owner = "root";
+      group = "root";
+    };
+
+    environment.etc."qemu/bridge.conf".text = ''
+      allow ${bridgeName}
+    '';
   };
 }
