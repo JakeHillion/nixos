@@ -316,6 +316,13 @@ let
       ${lib.concatMapStrings (vm: lib.concatMapStrings (f: ''
         iifname "${cfg.externalInterface}" ${f.proto} dport ${toString f.port} dnat ip to ${vm.ipv4Address}:${toString f.port}
       '') vm.forwardPorts) vms}
+      ${lib.concatMapStrings (vm:
+        lib.concatMapStrings (port: ''
+          ip6 daddr ${vm.ipv6Address} tcp dport ${toString port} redirect
+        '') vm.hostPorts.tcp
+        + lib.concatMapStrings (port: ''
+          ip6 daddr ${vm.ipv6Address} udp dport ${toString port} redirect
+        '') vm.hostPorts.udp) vmsWithIpv6}
     }
 
     chain postrouting {
@@ -422,6 +429,19 @@ let
         });
         default = [ ];
         description = "Ports forwarded from the host's external IPv4 address to the VM.";
+      };
+
+      hostPorts = {
+        tcp = lib.mkOption {
+          type = with lib.types; listOf port;
+          default = [ ];
+          description = "TCP ports on the VM's IPv6 address that the host answers itself, such as a reverse proxy on the host serving the VM's names. The host's firewall must allow them.";
+        };
+        udp = lib.mkOption {
+          type = with lib.types; listOf port;
+          default = [ ];
+          description = "UDP ports on the VM's IPv6 address that the host answers itself. The host's firewall must allow them.";
+        };
       };
 
       shares = lib.mkOption {

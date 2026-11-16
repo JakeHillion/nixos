@@ -33,6 +33,12 @@ in
           3478 # STUN
         ];
       };
+      # unifi.hillion.co.uk's AAAA is the VM's address, so the host's Caddy
+      # answers the web ports there as it does on the host's own IPv4.
+      hostPorts = {
+        tcp = [ 80 443 ];
+        udp = [ 443 ];
+      };
       forwardPorts = [
         { proto = "tcp"; port = 8080; }
         { proto = "udp"; port = 3478; }
@@ -78,6 +84,18 @@ in
           [ "systemctl" "start" "qemu-guest-agent" ]
         ];
       };
+    };
+
+    services.caddy = {
+      enable = true;
+      virtualHosts."unifi.hillion.co.uk".extraConfig = ''
+        reverse_proxy https://${vmCfg.ipv4Address}:11443 {
+          header_up Host {host}
+          transport http {
+            tls_insecure_skip_verify
+          }
+        }
+      '';
     };
 
     custom.www.nebula = {
