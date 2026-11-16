@@ -91,10 +91,19 @@
           address = "37.27.136.99";
           prefixLength = 26;
         }];
-        ipv6.addresses = [{
-          address = "2a01:4f9:3100:1048::2";
-          prefixLength = 64;
-        }];
+        ipv6.addresses = [
+          {
+            address = "2a01:4f9:3100:1048::2";
+            prefixLength = 64;
+          }
+          # eth0 gets no link-local address of its own. Without one, the
+          # kernel can't solicit the gateway on behalf of forwarded traffic,
+          # so the gateway entry fails and IPv6 egress stops.
+          {
+            address = "fe80::9e6b:ff:fe4e:f8f9";
+            prefixLength = 64;
+          }
+        ];
       };
       defaultGateway = {
         address = "37.27.136.65";
