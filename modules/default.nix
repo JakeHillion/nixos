@@ -26,6 +26,7 @@
     ./syncthing
     ./tang
     ./users.nix
+    ./vms
     ./www
   ];
 
