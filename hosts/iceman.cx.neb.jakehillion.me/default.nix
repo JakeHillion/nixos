@@ -66,6 +66,12 @@
       ];
     };
 
+    ## VMs
+    custom.vms = {
+      externalInterface = "eth0";
+      ipv6Prefix = "2a01:4f9:3100:1048::";
+    };
+
     ## Authoritative DNS: serve the public zones from this host's public IPs.
     services.knot.settings.server.listen = [
       "37.27.136.99@53"

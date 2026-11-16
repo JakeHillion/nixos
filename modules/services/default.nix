@@ -49,6 +49,7 @@
     ./supos
     ./tang.nix
     ./unifi.nix
+    ./unifi-os.nix
     ./zigbee2mqtt.nix
   ];
 }
