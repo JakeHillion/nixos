@@ -4,7 +4,7 @@
   config = {
     ids.uids = {
       ## Defined System Users (see https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/misc/ids.nix)
-      unifi = 183;
+      # unifi = 183; # Removed 2026-11-16
       # chia = 185; # Removed 2026-10-17
       gitea = 186;
       node-exporter = 188;
@@ -35,6 +35,7 @@
       vmail = 420;
       acme = 421;
       redis-rspamd = 422;
+      vms = 423;
 
       ## Consistent People
       jake = 1000;
@@ -43,7 +44,7 @@
     ids.gids = {
       ## Defined System Groups (see https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/misc/ids.nix)
       foldingathome = 37; # reserved but commented out upstream
-      unifi = 183;
+      # unifi = 183; # Removed 2026-11-16
       # chia = 185; # Removed 2026-10-17
       gitea = 186;
       node-exporter = 188;
@@ -72,6 +73,7 @@
       vmail = 420;
       acme = 421;
       redis-rspamd = 422;
+      vms = 423;
 
       ## Consistent Groups
       mediaaccess = 1200;
