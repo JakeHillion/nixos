@@ -82,7 +82,6 @@ in
             "stinger.pop.${config.ogygia.domain}"
             "warlock.cx.${config.ogygia.domain}"
           ];
-          unifi = "boron.cx.${config.ogygia.domain}";
           unifi-os = "iceman.cx.${config.ogygia.domain}";
           zigbee2mqtt = "stinger.pop.${config.ogygia.domain}";
         };
