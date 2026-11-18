@@ -103,3 +103,6 @@ net.iot.ipv4 = "10.239.19.18"
 ["fanboy.cx"]
 mac = "78:55:36:00:0d:ed"
 net.openclaw.ipv4 = "10.116.242.2"
+
+[living-room-camera]
+net.cameras.ipv4 = "10.133.145.2"

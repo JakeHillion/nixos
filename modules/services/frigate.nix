@@ -104,11 +104,11 @@ in
                   enabled = true;
                   ffmpeg.inputs = [
                     {
-                      path = "rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.133.145.2:554/h264Preview_01_sub";
+                      path = "rtsp://admin:{FRIGATE_RTSP_PASSWORD}@${hostConfig.custom.network.devices.living-room-camera.net.cameras.ipv4}:554/h264Preview_01_sub";
                       roles = [ "detect" ];
                     }
                     {
-                      path = "rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.133.145.2:554/h264Preview_01_main";
+                      path = "rtsp://admin:{FRIGATE_RTSP_PASSWORD}@${hostConfig.custom.network.devices.living-room-camera.net.cameras.ipv4}:554/h264Preview_01_main";
                       roles = [ "record" ];
                     }
                   ];

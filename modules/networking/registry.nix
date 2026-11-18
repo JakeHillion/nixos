@@ -78,8 +78,9 @@ in
       type = lib.types.attrsOf (lib.types.submodule {
         options = {
           mac = lib.mkOption {
-            type = lib.types.str;
-            description = "MAC address of the interface.";
+            type = lib.types.nullOr lib.types.str;
+            default = null;
+            description = "MAC address of the interface. Without one the device gets no DHCP reservation.";
           };
 
           net = lib.mkOption {
