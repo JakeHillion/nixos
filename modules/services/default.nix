@@ -8,6 +8,7 @@
     ./awtrix-octopus-agile
     ./buildbot-nix-master.nix
     ./buildbot-nix-worker.nix
+    ./chhoto-url
     ./couchdb
     ./dancefloor.nix
     ./downloads
