@@ -109,7 +109,7 @@
       useNetworkd = true;
       interfaces.enp171s0.name = "eth0";
       interfaces.enp172s0.name = "eth1";
-      nameservers = lib.mkBefore [ "10.64.50.1" ];
+      nameservers = lib.mkBefore [ config.custom.network.networks.lan.gateway ];
     };
     services.resolved.enable = false;
 
