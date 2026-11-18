@@ -31,23 +31,53 @@ let
         tagged = vlans (lib.attrsets.attrNames (lib.attrsets.filterAttrs (_: membership: membership.tagged) nets));
       };
 
-  state = name: switch:
-    let
-      # The switch is managed over the network it has an address on
-      management = lib.lists.head (lib.attrsets.attrNames
-        (lib.attrsets.filterAttrs (_: membership: membership.ipv4 != null) switch.net));
-    in
-    {
-      address = switch.net.${management}.ipv4;
-      gateway = networks.${management}.gateway;
-      user = "admin";
-      vlans = lib.attrsets.mapAttrs' (netName: network: lib.attrsets.nameValuePair (toString network.vlan) netName) networks;
-      ports = lib.attrsets.mapAttrs (port name) ports.${name};
+  # How each kind of switch is reached, and the script that configures it
+  kinds = {
+    edgeswitch = {
+      script = pkgs.writers.writePython3 "activate-edgeswitch"
+        { flakeIgnore = [ "E203" "W503" ]; }
+        (builtins.readFile ./edgeswitch.py);
+      path = [ pkgs.iputils pkgs.openssh pkgs.sshpass ];
+      # For pinging the gateway
+      capabilities = [ "CAP_NET_RAW" ];
+      # Each EdgeSwitch has its own admin password
+      secret = name: {
+        name = "switches/${name}";
+        rekeyFile = ./. + "/${name}.agent.age";
+      };
+      state = name: switch:
+        let
+          # The switch is managed over the network it has an address on
+          management = lib.lists.head (lib.attrsets.attrNames
+            (lib.attrsets.filterAttrs (_: membership: membership.ipv4 != null) switch.net));
+        in
+        {
+          address = switch.net.${management}.ipv4;
+          gateway = networks.${management}.gateway;
+          user = "admin";
+          vlans = lib.attrsets.mapAttrs' (netName: network: lib.attrsets.nameValuePair (toString network.vlan) netName) networks;
+        };
     };
 
-  scripts.edgeswitch = pkgs.writers.writePython3 "activate-edgeswitch"
-    { flakeIgnore = [ "E203" "W503" ]; }
-    (builtins.readFile ./edgeswitch.py);
+    unifi = {
+      script = pkgs.writers.writePython3 "activate-unifi"
+        { flakeIgnore = [ "E203" "W503" ]; }
+        (builtins.readFile ./unifi.py);
+      path = [ ];
+      capabilities = [ ];
+      # UniFi switches are all configured through the one controller
+      secret = _: {
+        name = "switches/unifi";
+        rekeyFile = ./unifi.age;
+      };
+      state = _: switch: {
+        controller = "https://unifi.hillion.co.uk";
+        site = "Home";
+        user = "nix-admin";
+        inherit (switch) mac;
+      };
+    };
+  };
 in
 {
   options.custom.services.switches = {
@@ -62,37 +92,43 @@ in
 
   config = lib.mkMerge [
     {
-      custom.services.switches.state = lib.attrsets.mapAttrs state switches;
+      custom.services.switches.state = lib.attrsets.mapAttrs
+        (name: switch: kinds.${switch.kind}.state name switch // {
+          ports = lib.attrsets.mapAttrs (port name) ports.${name};
+        })
+        switches;
     }
 
     (lib.mkIf cfg.enable {
       age.secrets = lib.attrsets.mapAttrs'
-        (name: _: lib.attrsets.nameValuePair "switches/${name}" {
-          rekeyFile = ./. + "/${name}.agent.age";
-        })
+        (name: switch:
+          let secret = kinds.${switch.kind}.secret name; in
+          lib.attrsets.nameValuePair secret.name { inherit (secret) rekeyFile; })
         switches;
 
       # Each switch's unit changes with its desired state, so a deploy restarts
       # exactly the units of the switches whose configuration changed.
       systemd.services = lib.attrsets.mapAttrs'
-        (name: switch: lib.attrsets.nameValuePair "activate-switch-${name}" {
-          description = "Apply the network registry to ${name}";
-          wantedBy = [ "multi-user.target" ];
-          wants = [ "network-online.target" ];
-          after = [ "network-online.target" ];
+        (name: switch:
+          let kind = kinds.${switch.kind}; in
+          lib.attrsets.nameValuePair "activate-switch-${name}" {
+            description = "Apply the network registry to ${name}";
+            wantedBy = [ "multi-user.target" ];
+            wants = [ "network-online.target" ];
+            after = [ "network-online.target" ];
 
-          path = [ pkgs.iputils pkgs.openssh pkgs.sshpass ];
+            inherit (kind) path;
 
-          serviceConfig = {
-            Type = "oneshot";
-            # A deploy only restarts a changed unit that is still active
-            RemainAfterExit = true;
-            DynamicUser = true;
-            AmbientCapabilities = [ "CAP_NET_RAW" ];
-            LoadCredential = "password:${config.age.secrets."switches/${name}".path}";
-            ExecStart = "${scripts.${switch.kind}} --password-file %d/password ${(pkgs.formats.json { }).generate "switch-${name}.json" cfg.state.${name}}";
-          };
-        })
+            serviceConfig = {
+              Type = "oneshot";
+              # A deploy only restarts a changed unit that is still active
+              RemainAfterExit = true;
+              DynamicUser = true;
+              AmbientCapabilities = kind.capabilities;
+              LoadCredential = "password:${config.age.secrets.${(kind.secret name).name}.path}";
+              ExecStart = "${kind.script} --password-file %d/password ${(pkgs.formats.json { }).generate "switch-${name}.json" cfg.state.${name}}";
+            };
+          })
         switches;
     })
   ];

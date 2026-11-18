@@ -117,3 +117,7 @@ net.cameras.ipv4 = "10.133.145.2"
 [mx]
 mac = "02:9c:3e:51:d7:a4"
 net.dmz.ipv4 = "51.194.133.162"
+
+[desk-switch]
+mac = "94:2a:6f:4e:22:d4"
+kind = "unifi"
