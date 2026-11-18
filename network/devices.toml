@@ -106,3 +106,7 @@ net.openclaw.ipv4 = "10.116.242.2"
 
 [living-room-camera]
 net.cameras.ipv4 = "10.133.145.2"
+
+[mx]
+mac = "02:9c:3e:51:d7:a4"
+net.dmz.ipv4 = "51.194.133.162"

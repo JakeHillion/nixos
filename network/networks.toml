@@ -21,6 +21,7 @@ pool = { start = "10.133.145.64", end = "10.133.145.254" }
 [dmz]
 vlan = 6
 ipv4 = "10.214.61.0/24"
+routed4 = "51.194.133.160/29"
 router = "cyclone.gw"
 
 [openclaw]

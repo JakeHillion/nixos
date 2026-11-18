@@ -4,9 +4,10 @@ let
   cfg = config.custom.services.mail;
 
   hostname = "mx.jakehillion.me";
-  ipv4 = "51.194.133.162";
+  mx = config.custom.network.devices.mx;
+  ipv4 = mx.net.dmz.ipv4;
   ipv6 = "2a11:2646:14b6:2::1";
-  gateway4 = "10.214.61.1";
+  gateway4 = config.custom.network.networks.dmz.gateway;
   gateway6 = "fe80::1";
 
   stateDirs = {
@@ -122,7 +123,7 @@ in
             enable = true;
             networks."10-dmz" = {
               matchConfig.Name = "mv-dmz";
-              linkConfig.MACAddress = "02:9c:3e:51:d7:a4";
+              linkConfig.MACAddress = mx.mac;
               address = [ "${ipv4}/32" "${ipv6}/128" ];
               routes = [
                 { Gateway = gateway4; GatewayOnLink = true; }
