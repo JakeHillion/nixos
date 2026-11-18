@@ -1,4 +1,102 @@
 {
+  "es-16-xg": {
+    "address": "10.64.50.2",
+    "gateway": "10.64.50.1",
+    "ports": {
+      "1": {
+        "description": "cyclone.gw",
+        "native": null,
+        "tagged": "all"
+      },
+      "10": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "11": {
+        "description": "phoenix.st",
+        "native": 1,
+        "tagged": [
+          3
+        ]
+      },
+      "12": {
+        "description": "es-48-500",
+        "native": null,
+        "tagged": "all"
+      },
+      "13": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "14": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "15": {
+        "description": "U7-Pro XGS",
+        "native": 1,
+        "tagged": "all"
+      },
+      "16": {
+        "description": "Desk 10Gbps",
+        "native": 1,
+        "tagged": []
+      },
+      "2": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "3": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "4": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "5": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "6": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "7": {
+        "description": "maverick.cx",
+        "native": 1,
+        "tagged": []
+      },
+      "8": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "9": {
+        "description": "rooster.cx",
+        "native": 1,
+        "tagged": []
+      }
+    },
+    "user": "admin",
+    "vlans": {
+      "1": "lan",
+      "2": "iot",
+      "3": "cameras",
+      "4": "mtu9000",
+      "5": "cellular",
+      "6": "dmz",
+      "7": "openclaw"
+    }
+  },
   "es-48-500w": {
     "address": "10.64.50.3",
     "gateway": "10.64.50.1",
