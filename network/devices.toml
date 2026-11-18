@@ -56,6 +56,9 @@ net.iot.ipv4 = "10.239.19.3"
 mac = "8c:51:09:20:53:8d"
 net.iot.ipv4 = "10.239.19.4"
 
+[fc-ntp-mini]
+net.iot.ipv4 = "10.239.19.5"
+
 [hammer]
 mac = "48:da:35:6f:f2:4b"
 net.iot.ipv4 = "10.239.19.6"
