@@ -7,7 +7,7 @@ let
 
   # Operator CA private key location for `ogygia nebula rekey`. Lives in the
   # synced `sync` folder (via the /home/<user>/local impermanence symlink).
-  caKeyTarget = "${config.users.users.${user}.home}/local/sync/sync/keys/nebula-ca-2527.key";
+  caKeyTarget = "${config.users.users.${user}.home}/local/sync/sync/keys/nebula-ca-2628.key";
 in
 {
   imports = [
