@@ -57,9 +57,10 @@ The `custom.ogygia.enable` option (enabled by default in `modules/defaults.nix`)
 The home networks are described in two layers:
 
 - `/network/` - The network registry: TOML data holding the facts that more than one machine has to agree on.
-  - `networks.toml` - Network segments by name: VLAN ID, IPv4 prefix, the device that routes it, and the DHCP pool.
-  - `devices.toml` - Network interfaces by device name: MAC address and the address on each network the interface is on. Fleet hosts are named by their FQDN without the fleet domain (e.g. `stinger.pop`).
-- `modules/networking/registry.nix` - The registry's schema. It loads the TOML into the read-only `config.custom.network.{networks,devices}` options, which every host can read.
+  - `networks.toml` - Network segments by name: VLAN ID, and for a routed network its IPv4 prefix, the device that routes it, and the DHCP pool.
+  - `devices.toml` - Network interfaces by device name: MAC address and the networks the interface is on, each with its address and whether the interface carries it as a tagged VLAN. Fleet hosts are named by their FQDN without the fleet domain (e.g. `stinger.pop`). A managed switch also has a `kind`.
+  - `ports/<switch>.toml` - One port table per managed switch: what each port is cabled to. A port cabled to a registered device is just that device's name, and carries the networks of the device's interface. Any other port states its own `native` and `tagged` networks. A key such as `31-36` covers a range of ports.
+- `modules/networking/registry.nix` - The registry's schema. It loads the TOML into the read-only `config.custom.network.{networks,devices,ports}` options, which every host can read.
 - `modules/networking/router.nix` - Implements router functionality for the networks the registry assigns to the host.
 
 Anything that is one machine's behaviour (firewall policy, WAN, DHCP options) is not registry data. It stays in that machine's Nix.
@@ -84,6 +85,14 @@ Key design decisions:
 - Router firewall (nftables) is configured from the per-network settings in `custom.networking.router.networks`
 
 Read `modules/networking/registry.nix` and `modules/networking/router.nix` directly when making changes — they contain the full schema with all available options (DNS servers, NTP servers, WAN MAC/IP, port forwarding with protocol/loopback/internalPort, etc.).
+
+### Switch Configuration
+
+`modules/services/switches/` applies the registry to the managed switches. It runs on the host named in `locations.services.switches`, with one `activate-switch-<name>` oneshot unit per switch. Each unit is handed that switch's desired state (its VLANs and, for every port in its port table, the description, native VLAN and tagged VLANs), so a deploy re-runs exactly the units of the switches whose state changed.
+
+- `edgeswitch.py` drives an EdgeSwitch over its SSH CLI. It diffs the desired state against the running config, sends the commands that close the gap, and only saves the config once the switch and the gateway are still reachable, so power-cycling the switch undoes a change that cut the host off.
+- Ports that are not in a switch's port table are left alone, as are VLANs that are on the switch but not in the registry.
+- Run a script by hand with `--dry-run` to print what it would change.
 
 ### DNS Configuration
 

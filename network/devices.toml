@@ -4,6 +4,7 @@ net.lan.ipv4 = "10.64.50.2"
 
 [es-48-500w]
 mac = "74:ac:b9:a0:e1:3b"
+kind = "edgeswitch"
 net.lan.ipv4 = "10.64.50.3"
 
 ["rooster.cx"]
@@ -13,7 +14,8 @@ net.lan.ipv4 = "10.64.50.20"
 ["warlock.cx"]
 mac = "e8:ff:1e:d9:73:5a"
 net.lan.ipv4 = "10.64.50.21"
-net.iot.ipv4 = "10.239.19.11"
+net.iot = { ipv4 = "10.239.19.11", tagged = true }
+net.dmz = { tagged = true }
 
 ["theon.storage"]
 mac = "00:1e:06:49:06:1e"
@@ -34,7 +36,7 @@ net.lan.ipv4 = "10.64.50.28"
 ["stinger.pop"]
 mac = "7c:83:34:be:30:dd"
 net.lan.ipv4 = "10.64.50.29"
-net.iot.ipv4 = "10.239.19.8"
+net.iot = { ipv4 = "10.239.19.8", tagged = true }
 
 ["maverick.cx"]
 mac = "38:05:25:34:02:37"

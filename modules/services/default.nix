@@ -48,6 +48,7 @@
     ./snapcast
     ./status
     ./supos
+    ./switches
     ./tang.nix
     ./unifi-os.nix
     ./zigbee2mqtt.nix
