@@ -91,6 +91,7 @@ Read `modules/networking/registry.nix` and `modules/networking/router.nix` direc
 `modules/services/switches/` applies the registry to the managed switches. It runs on the host named in `locations.services.switches`, with one `activate-switch-<name>` oneshot unit per switch. Each unit is handed that switch's desired state (its VLANs and, for every port in its port table, the description, native VLAN and tagged VLANs), so a deploy re-runs exactly the units of the switches whose state changed.
 
 - `edgeswitch.py` drives an EdgeSwitch over its SSH CLI. It diffs the desired state against the running config, sends the commands that close the gap, and only saves the config once the switch and the gateway are still reachable, so power-cycling the switch undoes a change that cut the host off.
+- `unifi.py` configures a UniFi switch through the controller's API. It diffs the desired state against the port settings the controller holds for the switch and writes the port overrides that close the gap. A VLAN is matched to the controller's network with that VLAN ID.
 - Ports that are not in a switch's port table are left alone, as are VLANs that are on the switch but not in the registry.
 - Run a script by hand with `--dry-run` to print what it would change.
 

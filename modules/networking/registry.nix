@@ -110,12 +110,13 @@ in
           };
 
           kind = lib.mkOption {
-            type = lib.types.nullOr (lib.types.enum [ "edgeswitch" ]);
+            type = lib.types.nullOr (lib.types.enum [ "edgeswitch" "unifi" ]);
             default = null;
             description = "For a managed switch, how it is configured. Its port table is the file named after it in network/ports.";
           };
 
           net = lib.mkOption {
+            default = { };
             description = "Networks the interface is on, by network name.";
             type = lib.types.attrsOf (lib.types.submodule {
               options = {
