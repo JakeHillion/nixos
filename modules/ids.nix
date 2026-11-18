@@ -36,6 +36,7 @@
       acme = 421;
       redis-rspamd = 422;
       vms = 423;
+      chhoto-url = 424;
 
       ## Consistent People
       jake = 1000;
@@ -74,6 +75,7 @@
       acme = 421;
       redis-rspamd = 422;
       vms = 423;
+      chhoto-url = 424;
 
       ## Consistent Groups
       mediaaccess = 1200;
