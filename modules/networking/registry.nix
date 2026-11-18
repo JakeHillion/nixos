@@ -14,12 +14,29 @@ let
       (netName: membership:
         let
           network = cfg.networks.${netName} or (throw "network/devices.toml: ${name} is on ${netName}, which is not in network/networks.toml");
-          prefixes = [ network.ipv4 ] ++ lib.lists.optional (network.routed4 != null) network.routed4;
+          prefixes = lib.lists.filter (prefix: prefix != null) [ network.ipv4 network.routed4 ];
         in
-        if lib.lists.any (prefix: ip.contains prefix membership.ipv4) prefixes then membership
+        if membership.ipv4 == null || lib.lists.any (prefix: ip.contains prefix membership.ipv4) prefixes then membership
         else throw "network/devices.toml: ${name} has ${membership.ipv4} on ${netName}, which is outside ${lib.strings.concatStringsSep " and " prefixes}")
       device.net;
   };
+
+  # A key such as "31-36" stands for each port in the range. A port's own key
+  # takes precedence over a range it falls in.
+  expandPorts = ports:
+    let
+      isRange = key: lib.strings.hasInfix "-" key;
+      expand = key:
+        let
+          bounds = map lib.strings.toInt (lib.strings.splitString "-" key);
+        in
+        map (port: lib.attrsets.nameValuePair (toString port) ports.${key})
+          (lib.lists.range (lib.lists.head bounds) (lib.lists.last bounds));
+    in
+    lib.attrsets.listToAttrs (lib.lists.concatMap expand (lib.lists.filter isRange (lib.attrsets.attrNames ports)))
+    // lib.attrsets.filterAttrs (key: _: !(isRange key)) ports;
+
+  portFiles = lib.attrsets.filterAttrs (file: _: lib.strings.hasSuffix ".toml" file) (builtins.readDir ../../network/ports);
 in
 {
   options.custom.network = {
@@ -34,7 +51,8 @@ in
           };
 
           ipv4 = lib.mkOption {
-            type = lib.types.str;
+            type = lib.types.nullOr lib.types.str;
+            default = null;
             description = "IPv4 prefix of the network, in CIDR notation.";
           };
 
@@ -45,14 +63,15 @@ in
           };
 
           router = lib.mkOption {
-            type = lib.types.str;
+            type = lib.types.nullOr lib.types.str;
+            default = null;
             description = "Device that routes the network.";
           };
 
           gateway = lib.mkOption {
-            type = lib.types.str;
+            type = lib.types.nullOr lib.types.str;
             readOnly = true;
-            default = ip.host config.ipv4 1;
+            default = if config.router != null then ip.host config.ipv4 1 else null;
             description = "IPv4 address of the router on the network: the first address of its prefix.";
           };
 
@@ -90,13 +109,26 @@ in
             description = "MAC address of the interface. Without one the device gets no DHCP reservation.";
           };
 
+          kind = lib.mkOption {
+            type = lib.types.nullOr (lib.types.enum [ "edgeswitch" ]);
+            default = null;
+            description = "For a managed switch, how it is configured. Its port table is the file named after it in network/ports.";
+          };
+
           net = lib.mkOption {
             description = "Networks the interface is on, by network name.";
             type = lib.types.attrsOf (lib.types.submodule {
               options = {
                 ipv4 = lib.mkOption {
-                  type = lib.types.str;
+                  type = lib.types.nullOr lib.types.str;
+                  default = null;
                   description = "IPv4 address of the interface on the network.";
+                };
+
+                tagged = lib.mkOption {
+                  type = lib.types.bool;
+                  default = false;
+                  description = "Whether the interface carries the network as a tagged VLAN. An interface has at most one untagged network.";
                 };
               };
             });
@@ -105,10 +137,48 @@ in
       });
       apply = lib.attrsets.mapAttrs checkDevice;
     };
+
+    ports = lib.mkOption {
+      readOnly = true;
+      description = "Port tables of the managed switches: what each port is cabled to, by switch name and port number.";
+      type = lib.types.attrsOf (lib.types.attrsOf (lib.types.coercedTo lib.types.str (device: { inherit device; }) (lib.types.submodule {
+        options = {
+          device = lib.mkOption {
+            type = lib.types.nullOr lib.types.str;
+            default = null;
+            description = "Device cabled to the port. The port's VLANs are the networks of the device's interface.";
+          };
+
+          description = lib.mkOption {
+            type = lib.types.nullOr lib.types.str;
+            default = null;
+            description = "Description of a port that is not cabled to a registered device.";
+          };
+
+          native = lib.mkOption {
+            type = lib.types.nullOr lib.types.str;
+            default = null;
+            description = "Untagged network of a port that is not cabled to a registered device.";
+          };
+
+          tagged = lib.mkOption {
+            type = lib.types.either (lib.types.enum [ "all" ]) (lib.types.listOf lib.types.str);
+            default = [ ];
+            description = "Tagged networks of a port that is not cabled to a registered device, or \"all\" for every other network.";
+          };
+        };
+      })));
+      apply = lib.attrsets.mapAttrs (_: expandPorts);
+    };
   };
 
   config.custom.network = {
     networks = lib.trivial.importTOML ../../network/networks.toml;
     devices = lib.trivial.importTOML ../../network/devices.toml;
+    ports = lib.attrsets.mapAttrs'
+      (file: _: lib.attrsets.nameValuePair
+        (lib.strings.removeSuffix ".toml" file)
+        (lib.trivial.importTOML (../../network/ports + "/${file}")))
+      portFiles;
   };
 }

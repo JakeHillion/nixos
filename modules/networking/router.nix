@@ -176,10 +176,12 @@ in
       isRouterService = rule:
         builtins.elem rule.internalIP (lib.attrsets.mapAttrsToList (_: netCfg: netCfg.gateway) networks);
 
-      # DHCP reservations for the registered devices on a network
+      # DHCP reservations for the registered devices with an address on a network
       reservations = netName:
         let
-          devices = lib.attrsets.filterAttrs (_: device: device.mac != null && device.net ? ${netName}) registry.devices;
+          devices = lib.attrsets.filterAttrs
+            (_: device: device.mac != null && (device.net.${netName}.ipv4 or null) != null)
+            registry.devices;
           address = devName: devices.${devName}.net.${netName}.ipv4;
         in
         map
