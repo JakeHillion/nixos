@@ -62,6 +62,7 @@ The home networks are described in two layers:
   - `ports/<switch>.toml` - One port table per managed switch: what each port is cabled to. A port cabled to a registered device is just that device's name, and carries the networks of the device's interface. Any other port states its own `native` and `tagged` networks. A key such as `31-36` covers a range of ports.
 - `modules/networking/registry.nix` - The registry's schema. It loads the TOML into the read-only `config.custom.network.{networks,devices,ports}` options, which every host can read.
 - `modules/networking/router.nix` - Implements router functionality for the networks the registry assigns to the host.
+- `modules/networking/host.nix` - Configures a host's interface from its own record, exposed as `config.custom.network.self`. Enable it with `custom.networking.host = { enable = true; interface = "eth0"; }`. An address the record marks `address = "static"` is configured on the interface, with the network's gateway as the default route; the record's `mtu` is applied too.
 
 Anything that is one machine's behaviour (firewall policy, WAN, DHCP options) is not registry data. It stays in that machine's Nix.
 
@@ -125,6 +126,7 @@ When adding a new host, update `modules/dns/authoritative.nix` with its Nebula I
 2. Add a `default.nix` with the host configuration
 3. Create a `system` file with the architecture (e.g., `x86_64-linux`)
 4. If needed, add a `hardware-configuration.nix` file
+5. If the host is on the home networks, add its record to `network/devices.toml` and enable `custom.networking.host` (see [Network Registry and Router Configuration](#network-registry-and-router-configuration))
 
 **When scaffolding from an existing host, do NOT blindly copy its values.** Some settings are point-in-time or host-specific and must be set for the new host, not inherited. In particular:
 

@@ -10,7 +10,8 @@ net.lan.ipv4 = "10.64.50.3"
 
 ["rooster.cx"]
 mac = "90:e2:ba:d4:84:24"
-net.lan.ipv4 = "10.64.50.20"
+mtu = 9000
+net.lan = { ipv4 = "10.64.50.20", address = "static" }
 
 ["warlock.cx"]
 mac = "e8:ff:1e:d9:73:5a"

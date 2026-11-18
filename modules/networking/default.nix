@@ -3,6 +3,7 @@
 {
   imports = [
     ./l2tp.nix
+    ./host.nix
     ./registry.nix
     ./router.nix
   ];
