@@ -2,6 +2,8 @@
 
 let
   zpool_name = "practical-defiant-coffee";
+
+  taggedNetworks = lib.attrsets.filterAttrs (_: membership: membership.tagged) config.custom.network.self.net;
 in
 {
   imports = [
@@ -177,7 +179,7 @@ in
         };
 
         "10-sfp0" = {
-          matchConfig.MACAddress = "f8:f2:1e:1e:b5:74";
+          matchConfig.MACAddress = config.custom.network.self.mac;
           linkConfig.Name = "sfp0";
         };
         "10-sfp1" = {
@@ -186,15 +188,16 @@ in
         };
       };
 
-      netdevs = {
-        "20-vlan_cameras" = {
+      # The tagged networks of sfp0's record in the network registry
+      netdevs = lib.attrsets.mapAttrs'
+        (netName: _: lib.attrsets.nameValuePair "20-vlan_${netName}" {
           netdevConfig = {
             Kind = "vlan";
-            Name = "cameras";
+            Name = netName;
           };
-          vlanConfig.Id = 3;
-        };
-      };
+          vlanConfig.Id = config.custom.network.networks.${netName}.vlan;
+        })
+        taggedNetworks;
 
       networks = {
         "10-lan" = {
@@ -202,11 +205,11 @@ in
           networkConfig.DHCP = "ipv4";
           linkConfig.RequiredForOnline = "routable";
 
-          vlan = [ "cameras" ];
+          vlan = lib.attrsets.attrNames taggedNetworks;
         };
-
-        "11-cameras" = {
-          matchConfig.Name = "cameras";
+      } // lib.attrsets.mapAttrs'
+        (netName: _: lib.attrsets.nameValuePair "11-${netName}" {
+          matchConfig.Name = netName;
           networkConfig.DHCP = "ipv4";
           linkConfig.RequiredForOnline = "routable";
 
@@ -214,8 +217,8 @@ in
             UseGateway = false;
             UseDNS = false;
           };
-        };
-      };
+        })
+        taggedNetworks;
     };
 
     networking.firewall = {
