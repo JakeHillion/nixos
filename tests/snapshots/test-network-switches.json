@@ -410,5 +410,38 @@
       "6": "dmz",
       "7": "openclaw"
     }
+  },
+  "tv-switch": {
+    "controller": "https://unifi.hillion.co.uk",
+    "mac": "d8:b3:70:fc:a6:1e",
+    "ports": {
+      "1": {
+        "description": null,
+        "native": 1,
+        "tagged": "all"
+      },
+      "2": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "3": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "4": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "5": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      }
+    },
+    "site": "Home",
+    "user": "nix-admin"
   }
 }

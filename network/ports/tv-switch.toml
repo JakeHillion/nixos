@@ -1,0 +1,2 @@
+1 = { native = "lan", tagged = "all" }
+2-5 = { native = "lan" }
