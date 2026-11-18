@@ -58,8 +58,6 @@
         ".ssh/id_rsa"
       ];
     };
-    nix.settings.build-dir = "${config.custom.impermanence.cache.path}/nix-builds";
-    systemd.tmpfiles.rules = [ "d ${config.custom.impermanence.cache.path}/nix-builds 0700 root root - -" ];
 
     ## Custom Services
     custom = {
