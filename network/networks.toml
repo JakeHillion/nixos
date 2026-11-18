@@ -1,0 +1,30 @@
+[lan]
+vlan = 1
+ipv4 = "10.64.50.0/24"
+router = "cyclone.gw"
+pool = { start = "10.64.50.64", end = "10.64.50.254" }
+
+[iot]
+vlan = 2
+ipv4 = "10.239.19.0/24"
+router = "cyclone.gw"
+pool = { start = "10.239.19.64", end = "10.239.19.254" }
+
+[cameras]
+vlan = 3
+ipv4 = "10.133.145.0/24"
+router = "cyclone.gw"
+pool = { start = "10.133.145.64", end = "10.133.145.254" }
+
+# Public services on the subnets the ISP routes to the router. The private
+# subnet only gives the router an on-link address for hosts to use as gateway.
+[dmz]
+vlan = 6
+ipv4 = "10.214.61.0/24"
+router = "cyclone.gw"
+
+[openclaw]
+vlan = 7
+ipv4 = "10.116.242.0/24"
+router = "cyclone.gw"
+pool = { start = "10.116.242.64", end = "10.116.242.254" }

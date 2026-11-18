@@ -2,14 +2,126 @@
 
 let
   cfg = config.custom.networking.router;
-  topology = config.custom.networking.topology;
+  registry = config.custom.network;
+
+  ip = import ./lib.nix { inherit lib; };
 in
 {
   options.custom.networking.router = {
     auto = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "Whether to automatically configure network interfaces based on topology";
+      description = "Whether to route the networks the registry assigns to this host";
+    };
+
+    interface = lib.mkOption {
+      type = lib.types.str;
+      description = "Interface carrying the networks' VLANs";
+    };
+
+    networks = lib.mkOption {
+      type = lib.types.attrsOf (lib.types.submodule {
+        options = {
+          dnsServers = lib.mkOption {
+            type = lib.types.listOf lib.types.str;
+            default = [ ];
+            description = "DNS servers for this network";
+          };
+
+          ntpServers = lib.mkOption {
+            type = lib.types.listOf lib.types.str;
+            default = [ ];
+            description = "NTP servers for this network";
+          };
+
+          internetAccess = lib.mkOption {
+            type = lib.types.bool;
+            default = true;
+            description = "Whether this network has access to the internet";
+          };
+
+          trustedNetwork = lib.mkOption {
+            type = lib.types.bool;
+            default = true;
+            description = "Whether this network is trusted to access the router";
+          };
+        };
+      });
+      description = "Router settings for the networks this host routes, by network name";
+    };
+
+    portForwarding = lib.mkOption {
+      type = lib.types.listOf (lib.types.submodule {
+        options = {
+          description = lib.mkOption {
+            type = lib.types.str;
+            description = "Description of the port forwarding rule";
+          };
+
+          externalPort = lib.mkOption {
+            type = lib.types.int;
+            description = "External port to forward";
+          };
+
+          internalIP = lib.mkOption {
+            type = lib.types.str;
+            description = "Internal IP address to forward to";
+          };
+
+          internalPort = lib.mkOption {
+            type = lib.types.nullOr lib.types.int;
+            default = null;
+            description = "Internal port to forward to (defaults to same as external)";
+          };
+
+          protocol = lib.mkOption {
+            type = lib.types.enum [ "tcp" "udp" "both" ];
+            default = "tcp";
+            description = "Protocol for port forwarding";
+          };
+
+          loopbackEnabled = lib.mkOption {
+            type = lib.types.bool;
+            default = true;
+            description = "Whether to enable NAT loopback for this port forward";
+          };
+        };
+      });
+      default = [ ];
+      description = "Port forwarding rules";
+    };
+
+    wanInterface = lib.mkOption {
+      type = lib.types.str;
+      description = "WAN interface name on the router";
+    };
+
+    uplinkInterface = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      description = ''
+        Physical interface the WAN is carried over, when the WAN interface
+        is a tunnel. It takes DHCP and the WAN MAC address, and inbound
+        traffic on it is dropped like the WAN's.
+      '';
+    };
+
+    wanMacAddress = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      description = "MAC address to set on the WAN interface, or on the uplink interface if set (for ISP identification)";
+    };
+
+    staticWanIP = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      description = "Static WAN IP address for NAT reflection/loopback (even if the WAN interface uses DHCP)";
+    };
+
+    routedSubnets = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      description = "Public IPv4 subnets the ISP routes to the WAN address. Traffic sourced from them leaves the WAN without masquerading.";
     };
 
     extraForwardRules = lib.mkOption {
@@ -33,175 +145,55 @@ in
 
   config =
     let
-      locationCfg = lib.lists.findSingle (loc: loc.routerDevice == config.networking.fqdn) null "multiple" (lib.attrsets.attrValues topology);
+      # The registry names fleet hosts by their FQDN without the fleet domain
+      self = lib.strings.removeSuffix ".${config.ogygia.domain}" config.networking.fqdn;
 
-      # Helper functions to work with CIDR notation
-      getCidrPrefixLength = cidr:
-        let
-          parts = lib.strings.splitString "/" cidr;
-        in
-        lib.strings.toInt (lib.lists.elemAt parts 1);
-
-      # Calculate the gateway IP (always .1 in the subnet)
-      calculateGateway = cidr:
-        let
-          parts = lib.strings.splitString "/" cidr;
-          subnetParts = lib.strings.splitString "." (lib.lists.elemAt parts 0);
-          # Replace the last octet with 1
-          gatewayParts = (lib.lists.take 3 subnetParts) ++ [ "1" ];
-        in
-        lib.strings.concatStringsSep "." gatewayParts;
-
-      # Get the gateway address (always .1 in the subnet)
-      getGateway = netCfg: calculateGateway netCfg.subnet;
-
-      # Simplify: Just return the broadcast address based on the subnet format
-      # For a /24 subnet, replace the last octet with 255
-      calculateBroadcast = cidr:
-        let
-          parts = lib.strings.splitString "/" cidr;
-          ip = lib.lists.elemAt parts 0;
-          prefix = lib.strings.toInt (lib.lists.elemAt parts 1);
-          ipParts = lib.strings.splitString "." ip;
-
-          # Handle different prefix lengths
-          result =
-            if prefix == 24 then
-            # For /24, set last octet to 255
-              "${lib.lists.elemAt ipParts 0}.${lib.lists.elemAt ipParts 1}.${lib.lists.elemAt ipParts 2}.255"
-            else if prefix == 16 then
-            # For /16, set last two octets to 255
-              "${lib.lists.elemAt ipParts 0}.${lib.lists.elemAt ipParts 1}.255.255"
-            else if prefix == 8 then
-            # For /8, set last three octets to 255
-              "${lib.lists.elemAt ipParts 0}.255.255.255"
-            else
-            # Default fallback for other prefix lengths
-            # This is a simplification - for other subnet sizes, we would need a more complex calculation
-              "${lib.lists.elemAt ipParts 0}.${lib.lists.elemAt ipParts 1}.${lib.lists.elemAt ipParts 2}.255";
-        in
-        result;
-
-      # Calculate broadcast for a network
-      getBroadcast = netCfg: calculateBroadcast netCfg.subnet;
-
-      # Filter networks that have VLANs
-      vlanNetworks = lib.attrsets.filterAttrs (name: netCfg: netCfg.vlanId != null) locationCfg.networks;
+      # Networks this host routes, with their router settings
+      routed = lib.attrsets.filterAttrs (_: netCfg: netCfg.router == self) registry.networks;
+      networks = lib.attrsets.mapAttrs (netName: netCfg: netCfg // cfg.networks.${netName}) routed;
 
       # Filter networks that have DHCP enabled
-      dhcpNetworks = lib.attrsets.filterAttrs (name: netCfg: netCfg.dhcpEnabled) locationCfg.networks;
+      dhcpNetworks = lib.attrsets.filterAttrs (_: netCfg: netCfg.pool != null) networks;
 
       # Physical interface that takes DHCP and the WAN MAC
       uplinkInterface =
-        if locationCfg.uplinkInterface != null then locationCfg.uplinkInterface else locationCfg.wanInterface;
+        if cfg.uplinkInterface != null then cfg.uplinkInterface else cfg.wanInterface;
 
       # Interfaces whose inbound traffic is dropped unless explicitly allowed
-      untrustedInterfaces = lib.lists.unique [ locationCfg.wanInterface uplinkInterface ];
+      untrustedInterfaces = lib.lists.unique [ cfg.wanInterface uplinkInterface ];
 
-      # Get interface name for a network (handles regular interfaces and VLANs)
-      getInterfaceName = name: netCfg:
-        if netCfg.vlanId == null then netCfg.interface else name;
-
-      # Filter trusted networks (for router access)
-      trustedNetworks = lib.attrsets.filterAttrs (name: netCfg: netCfg.trustedNetwork) locationCfg.networks;
-
-      # Filter networks with internet access
-      internetNetworks = lib.attrsets.filterAttrs (name: netCfg: netCfg.internetAccess) locationCfg.networks;
-
-      # Get a list of trusted interface names
-      trustedInterfaceNames = lib.attrsets.mapAttrsToList getInterfaceName trustedNetworks;
-
-      # Get a list of internet-enabled interface names
-      internetInterfaceNames = lib.attrsets.mapAttrsToList getInterfaceName internetNetworks;
+      # Each network's interface on the router is a VLAN named after it
+      trustedInterfaceNames = lib.attrsets.attrNames
+        (lib.attrsets.filterAttrs (_: netCfg: netCfg.trustedNetwork) networks);
+      internetInterfaceNames = lib.attrsets.attrNames
+        (lib.attrsets.filterAttrs (_: netCfg: netCfg.internetAccess) networks);
 
       # Helper for protocol-specific rules
       protocolRules = protocol:
         if protocol == "both" then [ "tcp" "udp" ] else [ protocol ];
 
-      # Helper to find IP address for an FQDN from devices
-      findIpByFqdn = fqdn:
-        let
-          # For each network, search through devices for matching FQDN
-          matches = lib.lists.flatten (lib.attrsets.mapAttrsToList
-            (netName: netCfg:
-              let
-                prefix = lib.strings.concatStringsSep "." (lib.lists.take 3 (lib.strings.splitString "." (lib.lists.elemAt (lib.strings.splitString "/" netCfg.subnet) 0)));
-                hostMatches = lib.attrsets.mapAttrsToList
-                  (hostId: hostCfg:
-                    if hostCfg.fqdn == fqdn then
-                      "${prefix}.${hostId}"
-                    else
-                      null
-                  )
-                  (netCfg.devices or { });
-              in
-              lib.lists.filter (ip: ip != null) hostMatches
-            )
-            locationCfg.networks);
-        in
-        if matches == [ ] then null else lib.lists.head matches;
-
       # Helper to determine if a port forward is for the router itself
       isRouterService = rule:
+        builtins.elem rule.internalIP (lib.attrsets.mapAttrsToList (_: netCfg: netCfg.gateway) networks);
+
+      # DHCP reservations for the registered devices on a network
+      reservations = netName:
         let
-          # Get effective internal IP (resolve from FQDN if needed)
-          effectiveIP =
-            if rule.internalIP != null then rule.internalIP
-            else if rule.fqdn != null then findIpByFqdn rule.fqdn
-            else null;
-          # Get all gateway IPs
-          gatewayIPs = lib.attrsets.mapAttrsToList (name: netCfg: getGateway netCfg) locationCfg.networks;
+          devices = lib.attrsets.filterAttrs (_: device: device.net ? ${netName}) registry.devices;
+          address = devName: devices.${devName}.net.${netName}.ipv4;
         in
-        effectiveIP != null && builtins.elem effectiveIP gatewayIPs;
-
-      # Helper to resolve all port forwarding rules across all networks
-      getAllPortForwardingRules =
-        lib.lists.flatten (
-          lib.attrsets.mapAttrsToList
-            (netName: netCfg:
-              # For each rule in this network
-              map
-                (rule:
-                  let
-                    # Resolve internal IP if it's not explicitly set
-                    effectiveIP =
-                      if rule.internalIP != null then rule.internalIP
-                      else if rule.fqdn != null then
-                        let
-                          # Calculate IP from the current network and host ID
-                          matches = lib.attrsets.mapAttrsToList
-                            (hostId: hostCfg:
-                              if hostCfg.fqdn == rule.fqdn then
-                                let
-                                  prefix = lib.strings.concatStringsSep "." (lib.lists.take 3 (lib.strings.splitString "." (lib.lists.elemAt (lib.strings.splitString "/" netCfg.subnet) 0)));
-                                in
-                                "${prefix}.${hostId}"
-                              else
-                                null
-                            )
-                            (netCfg.devices or { });
-                          resolvedMatches = lib.lists.filter (ip: ip != null) matches;
-                        in
-                        if resolvedMatches == [ ] then null else lib.lists.head resolvedMatches
-                      else null;
-                  in
-                  # Only include rules that have a resolved IP
-                  if effectiveIP != null then
-                    {
-                      inherit (rule) description externalPort protocol loopbackEnabled;
-                      internalIP = effectiveIP;
-                      internalPort = rule.internalPort;
-                    }
-                  else
-                    null
-                )
-                (netCfg.portForwarding or [ ])
-            )
-            locationCfg.networks
-        );
-
+        map
+          (devName: {
+            ip-address = address devName;
+            hw-address = devices.${devName}.mac;
+            hostname = lib.lists.head (lib.strings.splitString "." devName);
+          })
+          (lib.lists.sort (a: b: ip.toInt (address a) < ip.toInt (address b)) (lib.attrsets.attrNames devices));
     in
-    lib.mkIf (cfg.auto && locationCfg != null) {
+    lib.mkIf cfg.auto {
+      # Every routed network has router settings, even if only the defaults
+      custom.networking.router.networks = lib.attrsets.mapAttrs (_: _: { }) routed;
+
       networking = {
         # Disable firewall and NAT since we'll configure nftables
         firewall.enable = lib.mkForce false;
@@ -210,13 +202,13 @@ in
         # Disable global DHCP - we'll configure per interface
         useDHCP = false;
 
-        # Configure VLANs for networks that need them
+        # Each network is a VLAN on the trunk interface
         vlans = lib.attrsets.mapAttrs
-          (name: netCfg: {
-            id = netCfg.vlanId;
-            interface = netCfg.interface;
+          (_: netCfg: {
+            id = netCfg.vlan;
+            interface = cfg.interface;
           })
-          vlanNetworks;
+          networks;
 
         # Configure network interfaces
         interfaces =
@@ -224,24 +216,20 @@ in
           {
             "${uplinkInterface}" = {
               useDHCP = true;
-              macAddress = locationCfg.wanMacAddress;
+              macAddress = cfg.wanMacAddress;
             };
           } //
-          # Regular interfaces and VLANs
-          lib.attrsets.mapAttrs'
-            (name: netCfg:
-              lib.attrsets.nameValuePair
-                (if netCfg.vlanId == null then netCfg.interface else name)
+          # The router is the gateway of each network
+          lib.attrsets.mapAttrs
+            (_: netCfg: {
+              ipv4.addresses = [
                 {
-                  ipv4.addresses = [
-                    {
-                      address = getGateway netCfg;
-                      prefixLength = getCidrPrefixLength netCfg.subnet;
-                    }
-                  ];
+                  address = netCfg.gateway;
+                  prefixLength = ip.prefixLength netCfg.ipv4;
                 }
-            )
-            locationCfg.networks;
+              ];
+            })
+            networks;
 
         # Configure nftables firewall
         nftables = {
@@ -274,9 +262,9 @@ in
                   (lib.lists.flatten 
                     (map (rule: 
                       map (proto: 
-                        "meta nfproto ipv4 iifname \"${locationCfg.wanInterface}\" ${proto} dport ${toString rule.externalPort} counter accept comment \"${rule.description}\""
+                        "meta nfproto ipv4 iifname \"${cfg.wanInterface}\" ${proto} dport ${toString rule.externalPort} counter accept comment \"${rule.description}\""
                       ) (protocolRules rule.protocol)
-                    ) (lib.lists.filter (rule: rule != null) getAllPortForwardingRules))
+                    ) cfg.portForwarding)
                   )
                 }
 
@@ -296,12 +284,12 @@ in
                 meta nfproto ipv4 iifname {
                   ${lib.strings.concatStringsSep ",\n      " (map (i: "\"${i}\"") internetInterfaceNames)}
                 } oifname {
-                  "${locationCfg.wanInterface}"
+                  "${cfg.wanInterface}"
                 } counter accept comment "Allow trusted LAN to WAN"
 
                 # Allow established connections back to LANs
                 meta nfproto ipv4 iifname {
-                  "${locationCfg.wanInterface}"
+                  "${cfg.wanInterface}"
                 } oifname {
                   ${lib.strings.concatStringsSep ",\n      " (map (i: "\"${i}\"") internetInterfaceNames)}
                 } ct state { established, related } counter accept comment "Allow established back to LANs"
@@ -313,7 +301,7 @@ in
                       "ip daddr ${rule.internalIP} ${rule.protocol} dport ${toString rule.internalPort} counter accept comment \"${rule.description}\""
                     else
                       "ip daddr ${rule.internalIP} ${rule.protocol} dport ${toString rule.externalPort} counter accept comment \"${rule.description}\""
-                  ) (lib.lists.filter (rule: rule != null) getAllPortForwardingRules))
+                  ) cfg.portForwarding)
                 }
 
                 # Extra forward rules
@@ -328,35 +316,27 @@ in
                 # Port forwarding (skip DNAT for router services)
                 ${lib.strings.concatStringsSep "\n    " 
                   (map (rule: 
-                    "iifname ${locationCfg.wanInterface} ${rule.protocol} dport ${toString rule.externalPort} counter dnat to ${rule.internalIP}:${
+                    "iifname ${cfg.wanInterface} ${rule.protocol} dport ${toString rule.externalPort} counter dnat to ${rule.internalIP}:${
                       toString (if rule.internalPort != null then rule.internalPort else rule.externalPort)
                     }"
-                  ) (lib.lists.filter (rule: rule != null && !(isRouterService rule)) getAllPortForwardingRules))
+                  ) (lib.lists.filter (rule: !(isRouterService rule)) cfg.portForwarding))
                 }
                 
                 # NAT loopback/reflection for internal clients accessing WAN IP
-                ${lib.strings.optionalString (locationCfg.staticWanIP != null) (
+                ${lib.strings.optionalString (cfg.staticWanIP != null) (
                   lib.strings.concatStringsSep "\n    " 
                   (lib.lists.flatten 
                     (map (rule: 
                       if (rule.loopbackEnabled) then
-                        let
-                          # Find the LAN interface where clients will connect from
-                          lanInterfaces = lib.attrsets.mapAttrsToList
-                            (name: netCfg: 
-                              if netCfg.trustedNetwork then getInterfaceName name netCfg else null
-                            )
-                            (lib.attrsets.filterAttrs (name: netCfg: netCfg.trustedNetwork) locationCfg.networks);
-                          filteredInterfaces = lib.lists.filter (i: i != null) lanInterfaces;
-                        in
-                        map (iface: 
-                          "iifname ${iface} ip daddr ${locationCfg.staticWanIP} ${rule.protocol} dport ${toString rule.externalPort} counter dnat to ${rule.internalIP}:${
+                        # Clients connect from the trusted networks
+                        map (iface:
+                          "iifname ${iface} ip daddr ${cfg.staticWanIP} ${rule.protocol} dport ${toString rule.externalPort} counter dnat to ${rule.internalIP}:${
                             toString (if rule.internalPort != null then rule.internalPort else rule.externalPort)
                           }"
-                        ) filteredInterfaces
+                        ) trustedInterfaceNames
                       else
                         []
-                    ) (lib.lists.filter (rule: rule != null) getAllPortForwardingRules))
+                    ) cfg.portForwarding)
                   )
                 )}
               }
@@ -365,7 +345,7 @@ in
                 type nat hook postrouting priority filter; policy accept;
 
                 # Masquerade outgoing WAN traffic
-                oifname "${locationCfg.wanInterface}" ${lib.strings.optionalString (locationCfg.routedSubnets != [ ]) "ip saddr != { ${lib.strings.concatStringsSep ", " locationCfg.routedSubnets} } "}masquerade
+                oifname "${cfg.wanInterface}" ${lib.strings.optionalString (cfg.routedSubnets != [ ]) "ip saddr != { ${lib.strings.concatStringsSep ", " cfg.routedSubnets} } "}masquerade
 
                 # Extra NAT rules
                 ${cfg.extraNatRules}
@@ -383,9 +363,9 @@ in
       # interface appears (in initrd too, since stage 2 .link files are bundled
       # into systemd stage 1's initramfs). Needed for tang/clevis unlock against
       # an upstream that expects a stable MAC.
-      systemd.network.links."10-${uplinkInterface}" = lib.mkIf (config.custom.tang.enable && locationCfg.wanMacAddress != null) {
+      systemd.network.links."10-${uplinkInterface}" = lib.mkIf (config.custom.tang.enable && cfg.wanMacAddress != null) {
         matchConfig.OriginalName = uplinkInterface;
-        linkConfig.MACAddress = locationCfg.wanMacAddress;
+        linkConfig.MACAddress = cfg.wanMacAddress;
       };
 
       # The router resolves through its configured nameservers. Ignoring the
@@ -394,13 +374,11 @@ in
       systemd.network.networks = lib.mkIf config.networking.useNetworkd ({
         "40-${uplinkInterface}".dhcpV4Config.UseDNS = false;
       } //
-      # VLAN parents carry no addresses and never leave the configuring state,
-      # which holds network-online.target until wait-online times out.
-      lib.attrsets.listToAttrs (map
-        (iface: lib.attrsets.nameValuePair "40-${iface}" {
-          linkConfig.RequiredForOnline = "no";
-        })
-        (lib.lists.unique (lib.attrsets.mapAttrsToList (name: netCfg: netCfg.interface) vlanNetworks))));
+      # The VLANs' parent carries no addresses and never leaves the configuring
+      # state, which holds network-online.target until wait-online times out.
+      {
+        "40-${cfg.interface}".linkConfig.RequiredForOnline = "no";
+      });
 
       custom.impermanence.extraDirs = lib.mkIf (config.custom.impermanence.enable && dhcpNetworks != { }) [
         "/var/lib/private/kea"
@@ -413,7 +391,7 @@ in
         settings = {
           # Configure interfaces for DHCP
           interfaces-config = {
-            interfaces = lib.attrsets.mapAttrsToList getInterfaceName dhcpNetworks;
+            interfaces = lib.attrsets.attrNames dhcpNetworks;
           };
 
           lease-database = {
@@ -459,7 +437,7 @@ in
               # Create a list of names with their index
               networksWithIndex = lib.lists.imap0
                 (idx: name: { inherit idx name; })
-                (lib.attrsets.attrNames locationCfg.networks);
+                (lib.attrsets.attrNames networks);
 
               # Convert to an attrset for easy lookup
               indexByName = lib.attrsets.listToAttrs
@@ -469,23 +447,23 @@ in
               (name: netCfg: {
                 # Use the index of the network in the list + 1 as the subnet ID
                 id = 1 + (indexByName.${name} or 0);
-                subnet = netCfg.subnet;
-                interface = getInterfaceName name netCfg;
+                subnet = netCfg.ipv4;
+                interface = name;
 
                 # Configure DHCP pools
                 pools = [{
-                  pool = "${netCfg.dhcpPool.start} - ${netCfg.dhcpPool.end}";
+                  pool = "${netCfg.pool.start} - ${netCfg.pool.end}";
                 }];
 
                 # Configure DHCP options
                 option-data = [
                   {
                     name = "routers";
-                    data = getGateway netCfg;
+                    data = netCfg.gateway;
                   }
                   {
                     name = "broadcast-address";
-                    data = getBroadcast netCfg;
+                    data = ip.broadcast netCfg.ipv4;
                   }
                   {
                     name = "domain-name-servers";
@@ -497,27 +475,7 @@ in
                   data = lib.strings.concatStringsSep ", " netCfg.ntpServers;
                 });
 
-                # Configure DHCP reservations from devices
-                reservations = lib.attrsets.mapAttrsToList
-                  (id: reservation:
-                    let
-                      # Get the first 3 octets from the subnet
-                      subnetBase = lib.strings.splitString "/" netCfg.subnet;
-                      subnetParts = lib.strings.splitString "." (lib.lists.elemAt subnetBase 0);
-                      subnetPrefix = lib.strings.concatStringsSep "." (lib.lists.take 3 subnetParts);
-                      # Create IP address by combining subnet prefix with ID
-                      idNum = if builtins.isString id then lib.strings.toInt id else id;
-                      ipAddress = "${subnetPrefix}.${toString idNum}";
-                    in
-                    {
-                      ip-address = ipAddress;
-                      hw-address = reservation.hwAddress;
-                      hostname = reservation.hostname;
-                    }
-                  )
-                  (lib.attrsets.filterAttrs
-                    (id: reservation: reservation.dhcpReservation && reservation.hwAddress != null)
-                    (netCfg.devices or { }));
+                reservations = reservations name;
               })
               dhcpNetworks;
         };
