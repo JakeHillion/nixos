@@ -17,7 +17,7 @@ net.lan = { ipv4 = "10.64.50.20", address = "static" }
 mac = "e8:ff:1e:d9:73:5a"
 net.lan.ipv4 = "10.64.50.21"
 net.iot = { ipv4 = "10.239.19.11", tagged = true }
-net.dmz = { tagged = true }
+net.dmz = { tagged = true, address = "none" }
 
 ["theon.storage"]
 mac = "00:1e:06:49:06:1e"

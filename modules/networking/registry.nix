@@ -133,9 +133,9 @@ in
                 };
 
                 address = lib.mkOption {
-                  type = lib.types.enum [ "dhcp" "static" ];
+                  type = lib.types.enum [ "dhcp" "static" "none" ];
                   default = "dhcp";
-                  description = "How the interface gets its address on the network: from DHCP, or configured statically on the device.";
+                  description = "How the interface gets its address on the network: from DHCP, configured statically on the device, or not at all.";
                 };
 
                 tagged = lib.mkOption {
