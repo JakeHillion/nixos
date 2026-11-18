@@ -1,4 +1,37 @@
 {
+  "desk-switch": {
+    "controller": "https://unifi.hillion.co.uk",
+    "mac": "94:2a:6f:4e:22:d4",
+    "ports": {
+      "1": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "2": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "3": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "4": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "5": {
+        "description": null,
+        "native": 1,
+        "tagged": "all"
+      }
+    },
+    "site": "Home",
+    "user": "nix-admin"
+  },
   "es-16-xg": {
     "address": "10.64.50.2",
     "gateway": "10.64.50.1",
