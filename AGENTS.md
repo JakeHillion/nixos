@@ -82,7 +82,7 @@ Key design decisions:
 - A router routes every network that names it as `router`
 - Each network is a VLAN on the router's `interface`, named after the network
 - Gateway addresses are always the first address of each prefix (e.g., 10.0.0.1 for 10.0.0.0/24), exposed as `config.custom.network.networks.<name>.gateway`
-- DHCP is configured automatically for networks with a `pool`, with a reservation for every device registered on the network
+- DHCP is configured automatically for networks with a `pool`, with a reservation for every device registered on the network. Each needs a `subnetId` in the router's settings for it, which Kea stores leases under and so must never change
 - Router firewall (nftables) is configured from the per-network settings in `custom.networking.router.networks`
 
 Read `modules/networking/registry.nix` and `modules/networking/router.nix` directly when making changes — they contain the full schema with all available options (DNS servers, NTP servers, WAN MAC/IP, port forwarding with protocol/loopback/internalPort, etc.).
