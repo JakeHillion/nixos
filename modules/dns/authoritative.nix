@@ -1,10 +1,15 @@
-{ lib, ... }:
+{ config, lib, ... }:
 
 # The fleet's authoritative name-to-address map. It depends on nothing NixOS
 # provides, so castaways evaluate it too: the Nebula topology is derived from
 # its `neb` subtree.
 
+let
+  inherit (config.custom.network) devices;
+in
 {
+  imports = [ ../networking/registry.nix ];
+
   options.custom.dns.authoritative = {
     ipv4 = lib.mkOption {
       description = "authoritative ipv4 mappings";
@@ -78,8 +83,8 @@
           };
           home = {
             iot = {
-              slzb-06mu = "10.239.19.15";
-              stinger = "10.239.19.8";
+              slzb-06mu = devices.slzb-06mu.net.iot.ipv4;
+              stinger = devices."stinger.pop".net.iot.ipv4;
             };
           };
         };
