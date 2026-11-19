@@ -62,6 +62,9 @@ in
       home.file.".claude/skills/jj/SKILL.md".source = ./jj-skill/SKILL.md;
       home.file.".claude/skills/commit/SKILL.md".source = ./commit-skill/SKILL.md;
       home.file.".claude/skills/github-fetch/SKILL.md".source = ./github-fetch-skill/SKILL.md;
+      home.file.".claude/skills/megamerge/SKILL.md".source = ./megamerge-skill/SKILL.md;
+      home.file.".claude/skills/megamerge-sync/SKILL.md".source = ./megamerge-sync-skill/SKILL.md;
+      home.file.".claude/skills/megamerge-place/SKILL.md".source = ./megamerge-place-skill/SKILL.md;
 
       # Deploy settings with hooks configuration
       home.file.".claude/settings.json".text = builtins.toJSON claudeSettings;
