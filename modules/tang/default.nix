@@ -5,6 +5,7 @@ let
 
   fqdn = config.networking.fqdn;
   domain = config.ogygia.domain;
+  network = config.custom.network;
 
   group = lib.lists.findSingle
     (g: lib.lists.elem fqdn g.clients)
@@ -57,20 +58,20 @@ in
         servers = {
           "cyclone.gw.${domain}" = {
             thp = "L-njyA01teJse7gxbkBJMc6DuLKrwlvqfrbvKj528m4";
-            lan = "http://10.64.50.1:7654";
+            lan = "http://${network.networks.lan.gateway}:7654";
             wan = "http://51.241.193.85:7654";
           };
           "warlock.cx.${domain}" = {
             thp = "m4sWMYoNuEv1Z5PuWeZ3tUkfFSJCyaeL4WxYWQY6piU";
-            lan = "http://10.64.50.21:7654";
+            lan = "http://${network.devices."warlock.cx".net.lan.ipv4}:7654";
           };
           "stinger.pop.${domain}" = {
             thp = "mk6z2KAxuW1zee0S7D7qOFchgyiyei9XvJaF9pJkqK0";
-            lan = "http://10.64.50.29:7654";
+            lan = "http://${network.devices."stinger.pop".net.lan.ipv4}:7654";
           };
           "phoenix.st.${domain}" = {
             thp = "d35Oie9rV4o26XOenz-ZThhw8nfT3cgVCaXSSAMnQlY";
-            lan = "http://10.64.50.27:7654";
+            lan = "http://${network.devices."phoenix.st".net.lan.ipv4}:7654";
           };
           "boron.cx.${domain}" = {
             thp = "UzoraC1HFiCmhtz6f43N-6sqY77YDHXNi7Eow9RA9D0";
@@ -106,7 +107,7 @@ in
               "warlock.cx.${domain}"
               "wolfman.io.${domain}"
             ];
-            sources = [ "10.64.50.0/24" ];
+            sources = [ network.networks.lan.ipv4 ];
           };
 
           internet = {
