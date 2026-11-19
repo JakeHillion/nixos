@@ -112,7 +112,7 @@ in
 
     awtrixHost = lib.mkOption {
       type = lib.types.str;
-      default = "10.239.19.13";
+      default = config.custom.network.devices.awtrix.net.iot.ipv4;
       description = "Hostname or IP of the AWTRIX device.";
     };
 
