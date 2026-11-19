@@ -19,9 +19,12 @@
         "tagged": []
       },
       "12": {
-        "description": null,
-        "native": 6,
-        "tagged": []
+        "description": "Test",
+        "native": null,
+        "tagged": [
+          2,
+          3
+        ]
       },
       "13": {
         "description": null,
