@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 
 let
-  wan = config.custom.networking.topology.home.wanInterface;
+  wan = config.custom.networking.router.wanInterface;
 in
 {
   imports = [
@@ -54,9 +54,93 @@ in
     };
     systemd.network.networks."40-enp3s0".dhcpV4Config.RouteMetric = 8192;
 
-    ## Use the network topology abstraction
+    ## Route the home networks
     custom.networking.router = {
       auto = true;
+      interface = "enp1s0f0";
+
+      wanInterface = "olilo";
+      uplinkInterface = "enp3s0";
+      staticWanIP = "51.241.193.85";
+      routedSubnets = [ "51.194.133.160/29" ];
+
+      networks = {
+        lan = {
+          dnsServers = [ "10.64.50.1" ];
+          ntpServers = [ "10.64.50.1" ];
+        };
+        iot.ntpServers = [ "10.239.19.1" ];
+        cameras = {
+          internetAccess = false; # Cameras don't need internet access
+          trustedNetwork = false; # Don't allow camera network to access router
+        };
+        dmz = {
+          internetAccess = false;
+          trustedNetwork = false;
+        };
+        openclaw.trustedNetwork = false;
+      };
+
+      portForwarding = [
+        {
+          description = "SSH";
+          externalPort = 22;
+          internalIP = "10.64.50.1";
+          protocol = "tcp";
+        }
+        {
+          description = "WireGuard";
+          externalPort = 51820;
+          internalIP = "10.64.50.1";
+          protocol = "udp";
+        }
+        {
+          description = "HTTP";
+          externalPort = 80;
+          internalIP = "10.64.50.1";
+          protocol = "tcp";
+        }
+        {
+          description = "HTTPS";
+          externalPort = 443;
+          internalIP = "10.64.50.1";
+          protocol = "tcp";
+        }
+        {
+          description = "HTTPS";
+          externalPort = 443;
+          internalIP = "10.64.50.1";
+          protocol = "udp";
+        }
+        {
+          description = "Tang";
+          externalPort = 7654;
+          internalIP = "10.64.50.1";
+          protocol = "tcp";
+        }
+        {
+          description = "DNS (TCP)";
+          externalPort = 53;
+          internalIP = "10.64.50.1";
+          protocol = "tcp";
+          loopbackEnabled = false;
+        }
+        {
+          description = "DNS (UDP)";
+          externalPort = 53;
+          internalIP = "10.64.50.1";
+          protocol = "udp";
+          loopbackEnabled = false;
+        }
+        {
+          description = "Nebula Lighthouse";
+          externalPort = 4242;
+          internalIP = "10.64.50.1";
+          protocol = "udp";
+          loopbackEnabled = true;
+        }
+      ];
+
       extraForwardRules = ''
         # WireGuard VPN forwarding rules
         iifname "wg0" oifname "${wan}" accept comment "WireGuard to WAN"

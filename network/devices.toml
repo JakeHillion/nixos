@@ -1,0 +1,105 @@
+[es-16-xg]
+mac = "18:e8:29:26:fe:a9"
+net.lan.ipv4 = "10.64.50.2"
+
+[es-48-500w]
+mac = "74:ac:b9:a0:e1:3b"
+net.lan.ipv4 = "10.64.50.3"
+
+["rooster.cx"]
+mac = "90:e2:ba:d4:84:24"
+net.lan.ipv4 = "10.64.50.20"
+
+["warlock.cx"]
+mac = "e8:ff:1e:d9:73:5a"
+net.lan.ipv4 = "10.64.50.21"
+net.iot.ipv4 = "10.239.19.11"
+
+["theon.storage"]
+mac = "00:1e:06:49:06:1e"
+net.lan.ipv4 = "10.64.50.22"
+
+[apc-ap7921]
+mac = "00:c0:b7:6b:f4:34"
+net.lan.ipv4 = "10.64.50.24"
+
+["phoenix.st"]
+mac = "f8:f2:1e:1e:b5:74"
+net.lan.ipv4 = "10.64.50.27"
+
+["merlin.rig"]
+mac = "b0:41:6f:13:20:14"
+net.lan.ipv4 = "10.64.50.28"
+
+["stinger.pop"]
+mac = "7c:83:34:be:30:dd"
+net.lan.ipv4 = "10.64.50.29"
+net.iot.ipv4 = "10.239.19.8"
+
+["maverick.cx"]
+mac = "38:05:25:34:02:37"
+net.lan.ipv4 = "10.64.50.30"
+
+["darkstar.skunk"]
+mac = "6c:cf:39:00:b1:30"
+net.lan.ipv4 = "10.64.50.31"
+
+[bedroom-everything-presence-one]
+mac = "40:22:d8:e0:1d:50"
+net.iot.ipv4 = "10.239.19.2"
+
+[living-room-everything-presence-one]
+mac = "40:22:d8:e0:0f:78"
+net.iot.ipv4 = "10.239.19.3"
+
+[hallway-wall-tablet]
+mac = "8c:51:09:20:53:8d"
+net.iot.ipv4 = "10.239.19.4"
+
+[hammer]
+mac = "48:da:35:6f:f2:4b"
+net.iot.ipv4 = "10.239.19.6"
+
+[charlie]
+mac = "48:da:35:6f:83:b8"
+net.iot.ipv4 = "10.239.19.7"
+
+[phoenix-kvm]
+mac = "48:da:35:6f:d5:e5"
+net.iot.ipv4 = "10.239.19.9"
+
+[living-room-onju-voice-a1cbf4]
+mac = "30:ed:a0:a1:cb:f4"
+net.iot.ipv4 = "10.239.19.10"
+
+[argus]
+mac = "48:da:35:6f:0f:a8"
+net.iot.ipv4 = "10.239.19.12"
+
+[awtrix]
+mac = "8c:4f:00:09:cb:34"
+net.iot.ipv4 = "10.239.19.13"
+
+[fph-sat1-lr]
+mac = "3c:0f:02:c2:fd:90"
+net.iot.ipv4 = "10.239.19.14"
+
+[slzb-06mu]
+mac = "52:78:7d:d7:1a:5c"
+net.iot.ipv4 = "10.239.19.15"
+
+[bedroom-portal]
+mac = "a4:0e:2b:52:ec:e0"
+net.iot.ipv4 = "10.239.19.16"
+
+[3dprinter]
+mac = "e8:06:90:9f:ae:a4"
+net.iot.ipv4 = "10.239.19.17"
+
+[desk-portal]
+mac = "a4:0e:2b:35:02:35"
+net.iot.ipv4 = "10.239.19.18"
+
+["fanboy.cx"]
+mac = "78:55:36:00:0d:ed"
+net.openclaw.ipv4 = "10.116.242.2"

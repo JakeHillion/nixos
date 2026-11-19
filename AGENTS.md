@@ -33,7 +33,8 @@ cat closure.nar.zst | ssh boron.cx.neb.jakehillion.me sh -c 'unzstd | sudo nix-s
 - `/hosts/` - Host-specific configurations (18 hosts, each in `<fqdn>/default.nix`)
 - `/castaways/` - Fleet members with no NixOS configuration, each in `<fqdn>/default.nix` (see [Adding a New Castaway](#adding-a-new-castaway))
 - `/modules/` - Reusable NixOS modules (networking, services, www, etc.)
-  - `/modules/networking/` - Network topology, router, and DHCP configuration
+  - `/modules/networking/` - Network registry schema, router, and DHCP configuration
+- `/network/` - Network registry data (see [Network Registry and Router Configuration](#network-registry-and-router-configuration))
 - `/models/` - Hardware configuration templates (8 models for different hardware)
 - `/lib/` - Shared Nix utilities (`mkSystem.nix` for host composition, `mkCastaway.nix` for castaways)
 - `/pkgs/` - Custom package definitions
@@ -51,30 +52,38 @@ The `custom.ogygia.enable` option (enabled by default in `modules/defaults.nix`)
 
 ## Key Modules and Abstractions
 
-### Network Topology and Router Configuration
+### Network Registry and Router Configuration
 
-The network configuration is abstracted in:
-- `modules/networking/topology.nix` - Defines network layout and properties
-- `modules/networking/router.nix` - Implements router functionality
+The home networks are described in two layers:
+
+- `/network/` - The network registry: TOML data holding the facts that more than one machine has to agree on.
+  - `networks.toml` - Network segments by name: VLAN ID, IPv4 prefix, the device that routes it, and the DHCP pool.
+  - `devices.toml` - Network interfaces by device name: MAC address and the address on each network the interface is on. Fleet hosts are named by their FQDN without the fleet domain (e.g. `stinger.pop`).
+- `modules/networking/registry.nix` - The registry's schema. It loads the TOML into the read-only `config.custom.network.{networks,devices}` options, which every host can read.
+- `modules/networking/router.nix` - Implements router functionality for the networks the registry assigns to the host.
+
+Anything that is one machine's behaviour (firewall policy, WAN, DHCP options) is not registry data. It stays in that machine's Nix.
 
 To configure a new router:
 
-1. Add the host entry to the corresponding location in `modules/networking/topology.nix`
+1. Name the host as the `router` of its networks in `network/networks.toml`
 2. Enable the router module in the host configuration:
    ```nix
    custom.networking.router = {
      auto = true;
+     interface = "enp1s0f0";
+     wanInterface = "enp2s0";
    };
    ```
 
 Key design decisions:
-- One router per location (defined as `routerDevice` at location level)
-- Gateway addresses are always .1 in each subnet (e.g., 10.0.0.1 for 10.0.0.0/24)
-- DHCP is configured automatically for networks with `dhcpEnabled = true`
-- Router firewall (nftables) is configured based on the topology
-- Port forwarding rules can reference devices by FQDN instead of IP address (resolved from the `devices` attribute in each network)
+- A router routes every network that names it as `router`
+- Each network is a VLAN on the router's `interface`, named after the network
+- Gateway addresses are always the first address of each prefix (e.g., 10.0.0.1 for 10.0.0.0/24), exposed as `config.custom.network.networks.<name>.gateway`
+- DHCP is configured automatically for networks with a `pool`, with a reservation for every device registered on the network
+- Router firewall (nftables) is configured from the per-network settings in `custom.networking.router.networks`
 
-Read `modules/networking/topology.nix` and `modules/networking/router.nix` directly when making changes — they contain the full schema with all available options (DNS servers, NTP servers, VLANs, WAN MAC/IP, port forwarding with protocol/loopback/internalPort, etc.).
+Read `modules/networking/registry.nix` and `modules/networking/router.nix` directly when making changes — they contain the full schema with all available options (DNS servers, NTP servers, WAN MAC/IP, port forwarding with protocol/loopback/internalPort, etc.).
 
 ### DNS Configuration
 
