@@ -1,0 +1,336 @@
+{
+  "initrdNetworkd": {
+    "10-enp2s0.link": "[Match]\nOriginalName=enp2s0\n\n[Link]\nMACAddress=b4:fb:e4:b0:90:3c\n\n",
+    "40-enp2s0.network": "[Match]\nName=enp2s0\n\n[Network]\nDHCP=yes\nIPv6PrivacyExtensions=kernel\n\n"
+  },
+  "kea": {
+    "client-classes": [
+      {
+        "name": "APC",
+        "option-data": [
+          {
+            "always-send": true,
+            "name": "vendor-encapsulated-options"
+          },
+          {
+            "code": 1,
+            "data": "1APC",
+            "name": "cookie",
+            "space": "vendor-encapsulated-options-space"
+          }
+        ],
+        "test": "option[vendor-class-identifier].text == 'APC'"
+      }
+    ],
+    "interfaces-config": {
+      "interfaces": [
+        "cameras",
+        "iot",
+        "lan",
+        "openclaw"
+      ]
+    },
+    "lease-database": {
+      "name": "/var/lib/kea/dhcp4.leases",
+      "persist": true,
+      "type": "memfile"
+    },
+    "option-def": [
+      {
+        "array": false,
+        "code": 1,
+        "name": "cookie",
+        "space": "vendor-encapsulated-options-space",
+        "type": "string"
+      }
+    ],
+    "subnet4": [
+      {
+        "id": 1,
+        "interface": "cameras",
+        "option-data": [
+          {
+            "data": "10.133.145.1",
+            "name": "routers"
+          },
+          {
+            "data": "10.133.145.255",
+            "name": "broadcast-address"
+          },
+          {
+            "data": "1.1.1.1, 8.8.8.8",
+            "name": "domain-name-servers"
+          }
+        ],
+        "pools": [
+          {
+            "pool": "10.133.145.64 - 10.133.145.254"
+          }
+        ],
+        "reservations": [],
+        "subnet": "10.133.145.0/24"
+      },
+      {
+        "id": 3,
+        "interface": "iot",
+        "option-data": [
+          {
+            "data": "10.239.19.1",
+            "name": "routers"
+          },
+          {
+            "data": "10.239.19.255",
+            "name": "broadcast-address"
+          },
+          {
+            "data": "1.1.1.1, 8.8.8.8",
+            "name": "domain-name-servers"
+          },
+          {
+            "data": "10.239.19.1",
+            "name": "ntp-servers"
+          }
+        ],
+        "pools": [
+          {
+            "pool": "10.239.19.64 - 10.239.19.254"
+          }
+        ],
+        "reservations": [
+          {
+            "hostname": "living-room-onju-voice-a1cbf4",
+            "hw-address": "30:ed:a0:a1:cb:f4",
+            "ip-address": "10.239.19.10"
+          },
+          {
+            "hostname": "warlock",
+            "hw-address": "e8:ff:1e:d9:73:5a",
+            "ip-address": "10.239.19.11"
+          },
+          {
+            "hostname": "argus",
+            "hw-address": "48:da:35:6f:0f:a8",
+            "ip-address": "10.239.19.12"
+          },
+          {
+            "hostname": "awtrix",
+            "hw-address": "8c:4f:00:09:cb:34",
+            "ip-address": "10.239.19.13"
+          },
+          {
+            "hostname": "fph-sat1-lr",
+            "hw-address": "3c:0f:02:c2:fd:90",
+            "ip-address": "10.239.19.14"
+          },
+          {
+            "hostname": "slzb-06mu",
+            "hw-address": "52:78:7d:d7:1a:5c",
+            "ip-address": "10.239.19.15"
+          },
+          {
+            "hostname": "bedroom-portal",
+            "hw-address": "a4:0e:2b:52:ec:e0",
+            "ip-address": "10.239.19.16"
+          },
+          {
+            "hostname": "3dprinter",
+            "hw-address": "e8:06:90:9f:ae:a4",
+            "ip-address": "10.239.19.17"
+          },
+          {
+            "hostname": "desk-portal",
+            "hw-address": "a4:0e:2b:35:02:35",
+            "ip-address": "10.239.19.18"
+          },
+          {
+            "hostname": "bedroom-everything-presence-one",
+            "hw-address": "40:22:d8:e0:1d:50",
+            "ip-address": "10.239.19.2"
+          },
+          {
+            "hostname": "living-room-everything-presence-one",
+            "hw-address": "40:22:d8:e0:0f:78",
+            "ip-address": "10.239.19.3"
+          },
+          {
+            "hostname": "hallway-wall-tablet",
+            "hw-address": "8c:51:09:20:53:8d",
+            "ip-address": "10.239.19.4"
+          },
+          {
+            "hostname": "hammer",
+            "hw-address": "48:da:35:6f:f2:4b",
+            "ip-address": "10.239.19.6"
+          },
+          {
+            "hostname": "charlie",
+            "hw-address": "48:da:35:6f:83:b8",
+            "ip-address": "10.239.19.7"
+          },
+          {
+            "hostname": "stinger",
+            "hw-address": "7c:83:34:be:30:dd",
+            "ip-address": "10.239.19.8"
+          },
+          {
+            "hostname": "phoenix-kvm",
+            "hw-address": "48:da:35:6f:d5:e5",
+            "ip-address": "10.239.19.9"
+          }
+        ],
+        "subnet": "10.239.19.0/24"
+      },
+      {
+        "id": 4,
+        "interface": "lan",
+        "option-data": [
+          {
+            "data": "10.64.50.1",
+            "name": "routers"
+          },
+          {
+            "data": "10.64.50.255",
+            "name": "broadcast-address"
+          },
+          {
+            "data": "10.64.50.1",
+            "name": "domain-name-servers"
+          },
+          {
+            "data": "10.64.50.1",
+            "name": "ntp-servers"
+          }
+        ],
+        "pools": [
+          {
+            "pool": "10.64.50.64 - 10.64.50.254"
+          }
+        ],
+        "reservations": [
+          {
+            "hostname": "es-16-xg",
+            "hw-address": "18:e8:29:26:fe:a9",
+            "ip-address": "10.64.50.2"
+          },
+          {
+            "hostname": "rooster",
+            "hw-address": "90:e2:ba:d4:84:24",
+            "ip-address": "10.64.50.20"
+          },
+          {
+            "hostname": "warlock",
+            "hw-address": "e8:ff:1e:d9:73:5a",
+            "ip-address": "10.64.50.21"
+          },
+          {
+            "hostname": "theon",
+            "hw-address": "00:1e:06:49:06:1e",
+            "ip-address": "10.64.50.22"
+          },
+          {
+            "hostname": "apc-ap7921",
+            "hw-address": "00:c0:b7:6b:f4:34",
+            "ip-address": "10.64.50.24"
+          },
+          {
+            "hostname": "phoenix",
+            "hw-address": "f8:f2:1e:1e:b5:74",
+            "ip-address": "10.64.50.27"
+          },
+          {
+            "hostname": "merlin",
+            "hw-address": "b0:41:6f:13:20:14",
+            "ip-address": "10.64.50.28"
+          },
+          {
+            "hostname": "stinger",
+            "hw-address": "7c:83:34:be:30:dd",
+            "ip-address": "10.64.50.29"
+          },
+          {
+            "hostname": "es-48-500w",
+            "hw-address": "74:ac:b9:a0:e1:3b",
+            "ip-address": "10.64.50.3"
+          },
+          {
+            "hostname": "maverick",
+            "hw-address": "38:05:25:34:02:37",
+            "ip-address": "10.64.50.30"
+          },
+          {
+            "hostname": "darkstar",
+            "hw-address": "6c:cf:39:00:b1:30",
+            "ip-address": "10.64.50.31"
+          }
+        ],
+        "subnet": "10.64.50.0/24"
+      },
+      {
+        "id": 5,
+        "interface": "openclaw",
+        "option-data": [
+          {
+            "data": "10.116.242.1",
+            "name": "routers"
+          },
+          {
+            "data": "10.116.242.255",
+            "name": "broadcast-address"
+          },
+          {
+            "data": "1.1.1.1, 8.8.8.8",
+            "name": "domain-name-servers"
+          }
+        ],
+        "pools": [
+          {
+            "pool": "10.116.242.64 - 10.116.242.254"
+          }
+        ],
+        "reservations": [
+          {
+            "hostname": "fanboy",
+            "hw-address": "78:55:36:00:0d:ed",
+            "ip-address": "10.116.242.2"
+          }
+        ],
+        "subnet": "10.116.242.0/24"
+      }
+    ]
+  },
+  "networkd": {
+    "10-enp2s0.link": "[Match]\nOriginalName=enp2s0\n\n[Link]\nMACAddress=b4:fb:e4:b0:90:3c\n\n",
+    "40-cameras.netdev": "[NetDev]\nKind=vlan\nName=cameras\n\n[VLAN]\nId=3\n\n",
+    "40-cameras.network": "[Match]\nName=cameras\n\n[Network]\nDHCP=no\nIPv6PrivacyExtensions=kernel\nAddress=10.133.145.1/24\n\n",
+    "40-cellular.netdev": "[NetDev]\nKind=vlan\nName=cellular\n\n[VLAN]\nId=5\n\n",
+    "40-cellular.network": "[Match]\nName=cellular\n\n[Network]\nDHCP=no\nIPv6PrivacyExtensions=kernel\nAddress=10.69.186.2/24\n\n[Route]\nGateway=10.69.186.1\nMetric=2048\n\n",
+    "40-dmz.netdev": "[NetDev]\nKind=vlan\nName=dmz\n\n[VLAN]\nId=6\n\n",
+    "40-dmz.network": "[Match]\nName=dmz\n\n[Network]\nDHCP=no\nIPv6PrivacyExtensions=kernel\nAddress=10.214.61.1/24\nAddress=fe80::1/64\n\n[Route]\nDestination=51.194.133.160/29\n\n[Route]\nDestination=2a11:2646:14b6:2::/64\n\n",
+    "40-enp1s0f0.network": "[Match]\nName=enp1s0f0\n\n[Link]\nRequiredForOnline=no\n\n[Network]\nDHCP=no\nIPv6PrivacyExtensions=kernel\nVLAN=openclaw\nVLAN=lan\nVLAN=iot\nVLAN=dmz\nVLAN=cellular\nVLAN=cameras\n\n",
+    "40-enp2s0.network": "[Match]\nName=enp2s0\n\n[Link]\nRequiredForOnline=no\n\n[Network]\nDHCP=yes\nIPv6PrivacyExtensions=kernel\n\n[DHCPv4]\nUseDNS=false\n\n",
+    "40-enp3s0.network": "[Match]\nName=enp3s0\n\n[Network]\nDHCP=yes\nIPv6PrivacyExtensions=kernel\n\n[DHCPv4]\nRouteMetric=8192\nUseDNS=false\n\n",
+    "40-iot.netdev": "[NetDev]\nKind=vlan\nName=iot\n\n[VLAN]\nId=2\n\n",
+    "40-iot.network": "[Match]\nName=iot\n\n[Network]\nDHCP=no\nIPv6PrivacyExtensions=kernel\nAddress=10.239.19.1/24\nAddress=fd57:5aa6:c07e::1/64\n\n",
+    "40-lan.netdev": "[NetDev]\nKind=vlan\nName=lan\n\n[VLAN]\nId=1\n\n",
+    "40-lan.network": "[Match]\nName=lan\n\n[Network]\nDHCP=no\nIPv6PrivacyExtensions=kernel\nAddress=10.64.50.1/24\nAddress=2a11:2646:14b6:1::1/64\n\n",
+    "40-openclaw.netdev": "[NetDev]\nKind=vlan\nName=openclaw\n\n[VLAN]\nId=7\n\n",
+    "40-openclaw.network": "[Match]\nName=openclaw\n\n[Network]\nDHCP=no\nIPv6PrivacyExtensions=kernel\nAddress=10.116.242.1/24\n\n",
+    "40-wg0.netdev": "[NetDev]\nKind=wireguard\nName=wg0\n\n[WireGuard]\nListenPort=51820\nPrivateKey=@wireguard-wg0-private-key\nRouteTable=main\n\n[WireGuardPeer]\nAllowedIPs=10.200.0.2/32\nPublicKey=AeCCmn+x3wEGCTMBtkfe17G+nJ7enOgvbWoj+a3lZQA=\n\n[WireGuardPeer]\nAllowedIPs=10.200.0.3/32\nPublicKey=3o/j1cK0ltpEYMU7rLE7DudN+ZAwSlL8FyxAUeF58W4=\n\n",
+    "40-wg0.network": "[Match]\nName=wg0\n\n[Network]\nAddress=10.200.0.1/24\n\n",
+    "50-olilo.network": "[Match]\nName=olilo\n\n[Link]\nRequiredForOnline=no\n\n[Network]\nDHCP=ipv6\nIPv6AcceptRA=false\nKeepConfiguration=static\nLinkLocalAddressing=ipv6\n\n[Route]\nDestination=::/0\n\n[Route]\nDestination=2a11:2646:14b6::/48\nType=unreachable\n\n[DHCPv6]\nPrefixDelegationHint=2a11:2646:14b6::/48\nUseDNS=false\nWithoutRA=solicit\n\n"
+  },
+  "nftables": {
+    "ruleset": "table inet filter {\n  chain output {\n    type filter hook output priority 100; policy accept;\n  }\n\n  chain input {\n    type filter hook input priority filter; policy drop;\n\n    # Allow all loopback traffic\n    iifname \"lo\" counter accept\n\n    # Allow trusted networks to access the router\n    iifname {\n      \"lo\",\n      \"iot\",\n      \"lan\",\n      \"neb.ogygia\"\n    } counter accept\n\n    # Allow ICMP from anywhere\n    ip protocol icmp counter accept comment \"accept all ICMP types\"\n\n    # Allow established connections\n    ct state { established, related } counter accept\n\n    # Allow specific services from WAN (both router services and port forwarding)\n    meta nfproto ipv4 iifname \"olilo\" tcp dport 22 counter accept comment \"SSH\"\n    meta nfproto ipv4 iifname \"olilo\" udp dport 51820 counter accept comment \"WireGuard\"\n    meta nfproto ipv4 iifname \"olilo\" tcp dport 80 counter accept comment \"HTTP\"\n    meta nfproto ipv4 iifname \"olilo\" tcp dport 443 counter accept comment \"HTTPS\"\n    meta nfproto ipv4 iifname \"olilo\" udp dport 443 counter accept comment \"HTTPS\"\n    meta nfproto ipv4 iifname \"olilo\" tcp dport 7654 counter accept comment \"Tang\"\n    meta nfproto ipv4 iifname \"olilo\" tcp dport 53 counter accept comment \"DNS (TCP)\"\n    meta nfproto ipv4 iifname \"olilo\" udp dport 53 counter accept comment \"DNS (UDP)\"\n    meta nfproto ipv4 iifname \"olilo\" udp dport 4242 counter accept comment \"Nebula Lighthouse\"\n\n    # Extra input rules\n    # Olilo: ICMPv6 (NDP, PMTU) and DHCPv6-PD replies\nmeta nfproto ipv6 iifname \"olilo\" meta l4proto ipv6-icmp counter accept comment \"Olilo ICMPv6\"\nmeta nfproto ipv6 iifname \"olilo\" udp sport 547 udp dport 546 counter accept comment \"Olilo DHCPv6 client\"\n\n# DMZ: NDP to the router's link-local gateway\nmeta nfproto ipv6 iifname \"dmz\" meta l4proto ipv6-icmp counter accept comment \"DMZ ICMPv6\"\n\n\n    # Drop all other WAN traffic\n    iifname {\n      \"olilo\",\n      \"enp3s0\"\n    } counter drop\n  }\n\n  chain forward {\n    type filter hook forward priority filter; policy drop;\n\n    # Allow trusted LAN to WAN (internet access)\n    meta nfproto ipv4 iifname {\n      \"iot\",\n      \"lan\",\n      \"openclaw\"\n    } oifname {\n      \"olilo\"\n    } counter accept comment \"Allow trusted LAN to WAN\"\n\n    # Allow established connections back to LANs\n    meta nfproto ipv4 iifname {\n      \"olilo\"\n    } oifname {\n      \"iot\",\n      \"lan\",\n      \"openclaw\"\n    } ct state { established, related } counter accept comment \"Allow established back to LANs\"\n\n    # Port forwarding rules from all networks\n    ip daddr 10.64.50.1 tcp dport 22 counter accept comment \"SSH\"\n    ip daddr 10.64.50.1 udp dport 51820 counter accept comment \"WireGuard\"\n    ip daddr 10.64.50.1 tcp dport 80 counter accept comment \"HTTP\"\n    ip daddr 10.64.50.1 tcp dport 443 counter accept comment \"HTTPS\"\n    ip daddr 10.64.50.1 udp dport 443 counter accept comment \"HTTPS\"\n    ip daddr 10.64.50.1 tcp dport 7654 counter accept comment \"Tang\"\n    ip daddr 10.64.50.1 tcp dport 53 counter accept comment \"DNS (TCP)\"\n    ip daddr 10.64.50.1 udp dport 53 counter accept comment \"DNS (UDP)\"\n    ip daddr 10.64.50.1 udp dport 4242 counter accept comment \"Nebula Lighthouse\"\n\n    # Extra forward rules\n    # WireGuard VPN forwarding rules\niifname \"wg0\" oifname \"olilo\" accept comment \"WireGuard to WAN\"\niifname \"olilo\" oifname \"wg0\" ct state related,established accept comment \"WAN to WireGuard established\"\n\n# Allow LAN to reach fanboy Nebula port\niifname \"lan\" oifname \"openclaw\" ip daddr 10.116.242.2 udp dport 4242 counter accept comment \"LAN to fanboy Nebula\"\niifname \"openclaw\" oifname \"lan\" ct state { established, related } counter accept comment \"Established back from openclaw\"\n\n# Olilo IPv6: LAN only, stateful\nmeta nfproto ipv6 iifname \"lan\" oifname \"olilo\" counter accept comment \"LAN to Olilo IPv6\"\nmeta nfproto ipv6 iifname \"olilo\" oifname \"lan\" ct state { established, related } counter accept comment \"Olilo IPv6 to LAN established\"\n\n# DMZ: only listed services in, and out to Olilo only from public addresses\noifname \"dmz\" ip daddr 51.194.133.162 tcp dport { 25, 80, 465, 587, 993 } counter accept comment \"Mail\"\noifname \"dmz\" ip6 daddr 2a11:2646:14b6:2::1 tcp dport { 25, 80, 465, 587, 993 } counter accept comment \"Mail IPv6\"\noifname \"dmz\" meta l4proto { icmp, ipv6-icmp } counter accept comment \"ICMP to DMZ\"\noifname \"dmz\" ct state { established, related } counter accept comment \"Established to DMZ\"\n# Outbound mail goes through the relay, so direct SMTP from the DMZ is never legitimate\niifname \"dmz\" oifname \"olilo\" tcp dport 25 counter drop comment \"Direct SMTP from DMZ\"\niifname \"dmz\" oifname \"olilo\" ip saddr 51.194.133.160/29 counter accept comment \"DMZ to Olilo\"\niifname \"dmz\" oifname \"olilo\" ip6 saddr 2a11:2646:14b6:2::/64 counter accept comment \"DMZ IPv6 to Olilo\"\niifname \"dmz\" ct state { established, related } counter accept comment \"Established from DMZ\"\n\n  }\n}\n\ntable ip nat {\n  chain prerouting {\n    type nat hook prerouting priority filter; policy accept;\n\n    # Port forwarding (skip DNAT for router services)\n    \n    \n    # NAT loopback/reflection for internal clients accessing WAN IP\n    iifname iot ip daddr 51.241.193.85 tcp dport 22 counter dnat to 10.64.50.1:22\n    iifname lan ip daddr 51.241.193.85 tcp dport 22 counter dnat to 10.64.50.1:22\n    iifname iot ip daddr 51.241.193.85 udp dport 51820 counter dnat to 10.64.50.1:51820\n    iifname lan ip daddr 51.241.193.85 udp dport 51820 counter dnat to 10.64.50.1:51820\n    iifname iot ip daddr 51.241.193.85 tcp dport 80 counter dnat to 10.64.50.1:80\n    iifname lan ip daddr 51.241.193.85 tcp dport 80 counter dnat to 10.64.50.1:80\n    iifname iot ip daddr 51.241.193.85 tcp dport 443 counter dnat to 10.64.50.1:443\n    iifname lan ip daddr 51.241.193.85 tcp dport 443 counter dnat to 10.64.50.1:443\n    iifname iot ip daddr 51.241.193.85 udp dport 443 counter dnat to 10.64.50.1:443\n    iifname lan ip daddr 51.241.193.85 udp dport 443 counter dnat to 10.64.50.1:443\n    iifname iot ip daddr 51.241.193.85 tcp dport 7654 counter dnat to 10.64.50.1:7654\n    iifname lan ip daddr 51.241.193.85 tcp dport 7654 counter dnat to 10.64.50.1:7654\n    iifname iot ip daddr 51.241.193.85 udp dport 4242 counter dnat to 10.64.50.1:4242\n    iifname lan ip daddr 51.241.193.85 udp dport 4242 counter dnat to 10.64.50.1:4242\n  }\n\n  chain postrouting {\n    type nat hook postrouting priority filter; policy accept;\n\n    # Masquerade outgoing WAN traffic\n    oifname \"olilo\" ip saddr != { 51.194.133.160/29 } masquerade\n\n    # Extra NAT rules\n    # WireGuard NAT masquerading\niifname \"wg0\" oifname \"olilo\" masquerade comment \"WireGuard NAT\"\n\n  }\n}\n",
+    "tables": {
+      "dmz-antispoof": {
+        "content": "chain prerouting {\n  type filter hook prerouting priority raw; policy accept;\n  iifname != \"dmz\" ip saddr 51.194.133.160/29 counter drop comment \"Routed /29 outside the DMZ\"\n  iifname != \"dmz\" ip6 saddr 2a11:2646:14b6:2::/64 counter drop comment \"DMZ /64 outside the DMZ\"\n}\n",
+        "family": "inet"
+      },
+      "olilo-mss": {
+        "content": "chain forward {\n  type filter hook forward priority mangle; policy accept;\n  oifname \"olilo\" tcp flags syn tcp option maxseg size set rt mtu comment \"Clamp MSS to tunnel MTU\"\n  iifname \"olilo\" tcp flags syn tcp option maxseg size set rt mtu comment \"Clamp MSS to tunnel MTU\"\n}\n",
+        "family": "inet"
+      }
+    }
+  },
+  "radvd": "interface lan {\n  AdvSendAdvert on;\n  AdvManagedFlag off;\n  AdvOtherConfigFlag off;\n  prefix 2a11:2646:14b6:1::/64 {\n    AdvOnLink on;\n    AdvAutonomous on;\n    AdvRouterAddr on;\n  };\n};\ninterface iot {\n  AdvSendAdvert on;\n  AdvManagedFlag off;\n  AdvOtherConfigFlag off;\n  AdvDefaultLifetime 0;\n  prefix fd57:5aa6:c07e::/64 {\n    AdvOnLink on;\n    AdvAutonomous on;\n    AdvRouterAddr on;\n  };\n};\n"
+}
