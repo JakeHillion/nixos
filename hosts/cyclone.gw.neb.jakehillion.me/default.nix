@@ -2,6 +2,8 @@
 
 let
   wan = config.custom.networking.router.wanInterface;
+
+  inherit (config.custom.network) networks devices;
 in
 {
   imports = [
@@ -62,14 +64,14 @@ in
       wanInterface = "olilo";
       uplinkInterface = "enp3s0";
       staticWanIP = "51.241.193.85";
-      routedSubnets = [ "51.194.133.160/29" ];
+      routedSubnets = [ networks.dmz.routed4 ];
 
       networks = {
         lan = {
-          dnsServers = [ "10.64.50.1" ];
-          ntpServers = [ "10.64.50.1" ];
+          dnsServers = [ networks.lan.gateway ];
+          ntpServers = [ networks.lan.gateway ];
         };
-        iot.ntpServers = [ "10.239.19.1" ];
+        iot.ntpServers = [ networks.iot.gateway ];
         cameras = {
           internetAccess = false; # Cameras don't need internet access
           trustedNetwork = false; # Don't allow camera network to access router
@@ -85,57 +87,57 @@ in
         {
           description = "SSH";
           externalPort = 22;
-          internalIP = "10.64.50.1";
+          internalIP = networks.lan.gateway;
           protocol = "tcp";
         }
         {
           description = "WireGuard";
           externalPort = 51820;
-          internalIP = "10.64.50.1";
+          internalIP = networks.lan.gateway;
           protocol = "udp";
         }
         {
           description = "HTTP";
           externalPort = 80;
-          internalIP = "10.64.50.1";
+          internalIP = networks.lan.gateway;
           protocol = "tcp";
         }
         {
           description = "HTTPS";
           externalPort = 443;
-          internalIP = "10.64.50.1";
+          internalIP = networks.lan.gateway;
           protocol = "tcp";
         }
         {
           description = "HTTPS";
           externalPort = 443;
-          internalIP = "10.64.50.1";
+          internalIP = networks.lan.gateway;
           protocol = "udp";
         }
         {
           description = "Tang";
           externalPort = 7654;
-          internalIP = "10.64.50.1";
+          internalIP = networks.lan.gateway;
           protocol = "tcp";
         }
         {
           description = "DNS (TCP)";
           externalPort = 53;
-          internalIP = "10.64.50.1";
+          internalIP = networks.lan.gateway;
           protocol = "tcp";
           loopbackEnabled = false;
         }
         {
           description = "DNS (UDP)";
           externalPort = 53;
-          internalIP = "10.64.50.1";
+          internalIP = networks.lan.gateway;
           protocol = "udp";
           loopbackEnabled = false;
         }
         {
           description = "Nebula Lighthouse";
           externalPort = 4242;
-          internalIP = "10.64.50.1";
+          internalIP = networks.lan.gateway;
           protocol = "udp";
           loopbackEnabled = true;
         }
@@ -147,7 +149,7 @@ in
         iifname "${wan}" oifname "wg0" ct state related,established accept comment "WAN to WireGuard established"
 
         # Allow LAN to reach fanboy Nebula port
-        iifname "lan" oifname "openclaw" ip daddr 10.116.242.2 udp dport 4242 counter accept comment "LAN to fanboy Nebula"
+        iifname "lan" oifname "openclaw" ip daddr ${devices."fanboy.cx".net.openclaw.ipv4} udp dport 4242 counter accept comment "LAN to fanboy Nebula"
         iifname "openclaw" oifname "lan" ct state { established, related } counter accept comment "Established back from openclaw"
 
         # Olilo IPv6: LAN only, stateful
@@ -155,13 +157,13 @@ in
         meta nfproto ipv6 iifname "olilo" oifname "lan" ct state { established, related } counter accept comment "Olilo IPv6 to LAN established"
 
         # DMZ: only listed services in, and out to Olilo only from public addresses
-        oifname "dmz" ip daddr 51.194.133.162 tcp dport { 25, 80, 465, 587, 993 } counter accept comment "Mail"
+        oifname "dmz" ip daddr ${devices.mx.net.dmz.ipv4} tcp dport { 25, 80, 465, 587, 993 } counter accept comment "Mail"
         oifname "dmz" ip6 daddr 2a11:2646:14b6:2::1 tcp dport { 25, 80, 465, 587, 993 } counter accept comment "Mail IPv6"
         oifname "dmz" meta l4proto { icmp, ipv6-icmp } counter accept comment "ICMP to DMZ"
         oifname "dmz" ct state { established, related } counter accept comment "Established to DMZ"
         # Outbound mail goes through the relay, so direct SMTP from the DMZ is never legitimate
         iifname "dmz" oifname "${wan}" tcp dport 25 counter drop comment "Direct SMTP from DMZ"
-        iifname "dmz" oifname "${wan}" ip saddr 51.194.133.160/29 counter accept comment "DMZ to Olilo"
+        iifname "dmz" oifname "${wan}" ip saddr ${networks.dmz.routed4} counter accept comment "DMZ to Olilo"
         iifname "dmz" oifname "${wan}" ip6 saddr 2a11:2646:14b6:2::/64 counter accept comment "DMZ IPv6 to Olilo"
         iifname "dmz" ct state { established, related } counter accept comment "Established from DMZ"
       '';
@@ -219,7 +221,7 @@ in
       prefixLength = 64;
     }];
     systemd.network.networks."40-dmz".routes = [
-      { Destination = "51.194.133.160/29"; }
+      { Destination = networks.dmz.routed4; }
       { Destination = "2a11:2646:14b6:2::/64"; }
     ];
 
@@ -229,7 +231,7 @@ in
       content = ''
         chain prerouting {
           type filter hook prerouting priority raw; policy accept;
-          iifname != "dmz" ip saddr 51.194.133.160/29 counter drop comment "Routed /29 outside the DMZ"
+          iifname != "dmz" ip saddr ${networks.dmz.routed4} counter drop comment "Routed /29 outside the DMZ"
           iifname != "dmz" ip6 saddr 2a11:2646:14b6:2::/64 counter drop comment "DMZ /64 outside the DMZ"
         }
       '';
@@ -276,15 +278,15 @@ in
     services.chrony = {
       enable = true;
       servers = [
-        "10.239.19.5"
+        devices.fc-ntp-mini.net.iot.ipv4
         "pool.ntp.org"
       ];
       extraConfig = ''
         # Allow clients from local networks
-        allow 10.64.50.0/24
-        allow 10.239.19.0/24
-        allow 10.133.145.0/24
-        allow 10.116.242.0/24
+        allow ${networks.lan.ipv4}
+        allow ${networks.iot.ipv4}
+        allow ${networks.cameras.ipv4}
+        allow ${networks.openclaw.ipv4}
       '';
     };
 
@@ -330,7 +332,7 @@ in
 
     ## Knot DNS - public listen address
     services.knot.settings.server.listen = [
-      "51.241.193.85@53"
+      "${config.custom.networking.router.staticWanIP}@53"
     ];
 
     ## Unbound: forwarding resolver for LAN clients. Forwards everything to
@@ -342,11 +344,11 @@ in
       resolveLocalQueries = false;
       settings = {
         server = {
-          interface = [ "127.0.0.1" "::1" "10.64.50.1" ];
+          interface = [ "127.0.0.1" "::1" networks.lan.gateway ];
           access-control = [
             "127.0.0.0/8 allow"
             "::1 allow"
-            "10.64.50.0/24 allow"
+            "${networks.lan.ipv4} allow"
           ];
           # Bind the LAN address even if it isn't up yet at start.
           ip-freebind = true;
@@ -394,16 +396,16 @@ in
       enable = true;
       virtualHosts = {
         "argus.kvm.${config.ogygia.domain}".extraConfig = ''
-          reverse_proxy http://10.239.19.12
+          reverse_proxy http://${devices.argus.net.iot.ipv4}
         '';
         "hammer.kvm.${config.ogygia.domain}".extraConfig = ''
-          reverse_proxy http://10.239.19.6
+          reverse_proxy http://${devices.hammer.net.iot.ipv4}
         '';
         "charlie.kvm.${config.ogygia.domain}".extraConfig = ''
-          reverse_proxy http://10.239.19.7
+          reverse_proxy http://${devices.charlie.net.iot.ipv4}
         '';
         "kvm.phoenix.st.${config.ogygia.domain}".extraConfig = ''
-          reverse_proxy http://10.239.19.9
+          reverse_proxy http://${devices.phoenix-kvm.net.iot.ipv4}
         '';
       };
     };

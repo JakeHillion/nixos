@@ -14,9 +14,10 @@ let
       (netName: membership:
         let
           network = cfg.networks.${netName} or (throw "network/devices.toml: ${name} is on ${netName}, which is not in network/networks.toml");
+          prefixes = [ network.ipv4 ] ++ lib.lists.optional (network.routed4 != null) network.routed4;
         in
-        if ip.contains network.ipv4 membership.ipv4 then membership
-        else throw "network/devices.toml: ${name} has ${membership.ipv4} on ${netName}, which is outside ${network.ipv4}")
+        if lib.lists.any (prefix: ip.contains prefix membership.ipv4) prefixes then membership
+        else throw "network/devices.toml: ${name} has ${membership.ipv4} on ${netName}, which is outside ${lib.strings.concatStringsSep " and " prefixes}")
       device.net;
   };
 in
@@ -35,6 +36,12 @@ in
           ipv4 = lib.mkOption {
             type = lib.types.str;
             description = "IPv4 prefix of the network, in CIDR notation.";
+          };
+
+          routed4 = lib.mkOption {
+            type = lib.types.nullOr lib.types.str;
+            default = null;
+            description = "Public IPv4 prefix the ISP routes to the router, whose addresses are on-link on the network.";
           };
 
           router = lib.mkOption {
@@ -78,8 +85,9 @@ in
       type = lib.types.attrsOf (lib.types.submodule {
         options = {
           mac = lib.mkOption {
-            type = lib.types.str;
-            description = "MAC address of the interface.";
+            type = lib.types.nullOr lib.types.str;
+            default = null;
+            description = "MAC address of the interface. Without one the device gets no DHCP reservation.";
           };
 
           net = lib.mkOption {
