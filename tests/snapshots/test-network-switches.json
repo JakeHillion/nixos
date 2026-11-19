@@ -1,0 +1,283 @@
+{
+  "es-48-500w": {
+    "address": "10.64.50.3",
+    "gateway": "10.64.50.1",
+    "ports": {
+      "1": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "10": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "11": {
+        "description": null,
+        "native": 6,
+        "tagged": []
+      },
+      "12": {
+        "description": null,
+        "native": 6,
+        "tagged": []
+      },
+      "13": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "14": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "15": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "16": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "17": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "18": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "19": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "2": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "20": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "21": {
+        "description": "stinger.pop",
+        "native": 1,
+        "tagged": [
+          2
+        ]
+      },
+      "22": {
+        "description": "warlock.cx",
+        "native": 1,
+        "tagged": [
+          2,
+          6
+        ]
+      },
+      "23": {
+        "description": "apc-ap7921",
+        "native": 1,
+        "tagged": []
+      },
+      "24": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "25": {
+        "description": "argus",
+        "native": 2,
+        "tagged": []
+      },
+      "26": {
+        "description": "hammer",
+        "native": 2,
+        "tagged": []
+      },
+      "27": {
+        "description": "hallway-wall-tablet",
+        "native": 2,
+        "tagged": []
+      },
+      "28": {
+        "description": "slzb-06mu",
+        "native": 2,
+        "tagged": []
+      },
+      "29": {
+        "description": null,
+        "native": 2,
+        "tagged": []
+      },
+      "3": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "30": {
+        "description": "charlie",
+        "native": 2,
+        "tagged": []
+      },
+      "31": {
+        "description": null,
+        "native": 2,
+        "tagged": []
+      },
+      "32": {
+        "description": null,
+        "native": 2,
+        "tagged": []
+      },
+      "33": {
+        "description": null,
+        "native": 2,
+        "tagged": []
+      },
+      "34": {
+        "description": null,
+        "native": 2,
+        "tagged": []
+      },
+      "35": {
+        "description": null,
+        "native": 2,
+        "tagged": []
+      },
+      "36": {
+        "description": null,
+        "native": 2,
+        "tagged": []
+      },
+      "37": {
+        "description": "TV Switch",
+        "native": 1,
+        "tagged": "all"
+      },
+      "38": {
+        "description": "Desk Switch",
+        "native": 1,
+        "tagged": "all"
+      },
+      "39": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "4": {
+        "description": "fanboy.cx",
+        "native": 7,
+        "tagged": []
+      },
+      "40": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "41": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "42": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "43": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "44": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "45": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "46": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "47": {
+        "description": null,
+        "native": 5,
+        "tagged": []
+      },
+      "48": {
+        "description": "4G Router",
+        "native": 5,
+        "tagged": []
+      },
+      "49": {
+        "description": "Uplink",
+        "native": null,
+        "tagged": "all"
+      },
+      "5": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "50": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "51": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "52": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "6": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "7": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "8": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      },
+      "9": {
+        "description": null,
+        "native": 1,
+        "tagged": []
+      }
+    },
+    "user": "admin",
+    "vlans": {
+      "1": "lan",
+      "2": "iot",
+      "3": "cameras",
+      "4": "mtu9000",
+      "5": "cellular",
+      "6": "dmz",
+      "7": "openclaw"
+    }
+  }
+}

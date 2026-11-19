@@ -240,7 +240,7 @@ in
     ## Cellular VLAN on SFP+ port: the tunnel's backup underlay. The high
     ## metric default only carries cyclone's own traffic when nothing else can.
     networking.vlans.cellular = {
-      id = 5;
+      id = networks.cellular.vlan;
       interface = "enp1s0f0";
     };
     networking.interfaces.cellular = {
