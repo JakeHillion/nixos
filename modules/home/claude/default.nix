@@ -58,8 +58,9 @@ in
     };
 
     home-manager.users.${user} = {
+      home.file.".claude/CLAUDE.md".source = ./global-instructions.md;
+
       # Deploy skills
-      home.file.".claude/skills/jj/SKILL.md".source = ./jj-skill/SKILL.md;
       home.file.".claude/skills/commit/SKILL.md".source = ./commit-skill/SKILL.md;
       home.file.".claude/skills/github-fetch/SKILL.md".source = ./github-fetch-skill/SKILL.md;
       home.file.".claude/skills/megamerge/SKILL.md".source = ./megamerge-skill/SKILL.md;
