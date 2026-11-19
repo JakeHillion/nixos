@@ -121,7 +121,7 @@ in
       enable = true;
 
       virtualHosts."hearthd.iot.home.jakehillion.me" = {
-        listenAddresses = [ "10.239.19.8" ];
+        listenAddresses = [ config.custom.network.self.net.iot.ipv4 ];
         extraConfig = ''
           tls {
             dns jakehillion {
@@ -224,7 +224,7 @@ in
 
         integrations.apc.pdus.rack = {
           model = "apc_ap7921";
-          host = "10.64.50.24";
+          host = config.custom.network.devices.apc-ap7921.net.lan.ipv4;
           outlets."3".switchable = false;
           outlets."5".enabled = false;
           outlets."8".enabled = false;
