@@ -1,5 +1,6 @@
 [es-16-xg]
 mac = "18:e8:29:26:fe:a9"
+kind = "edgeswitch"
 net.lan.ipv4 = "10.64.50.2"
 
 [es-48-500w]
@@ -28,6 +29,7 @@ net.lan.ipv4 = "10.64.50.24"
 ["phoenix.st"]
 mac = "f8:f2:1e:1e:b5:74"
 net.lan.ipv4 = "10.64.50.27"
+net.cameras = { tagged = true }
 
 ["merlin.rig"]
 mac = "b0:41:6f:13:20:14"

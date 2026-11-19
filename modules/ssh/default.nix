@@ -53,6 +53,7 @@ in
       "restic.${config.ogygia.domain}".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE9AAAAIBPQcp9MzabvwbViNmILVNfipMUnwV+5okRfhOuV7+Mt";
 
       # Network devices
+      ${config.custom.network.devices.es-16-xg.net.lan.ipv4}.publicKey = "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBN8FlrBGFXrPBmP0Tty9hhKzNYJNKek9wcNyjZZ1hkmHI747FJdBJmcf+yW9q/dnJ+AA0mfHQrEFl0qwc+w/Ko8=";
       ${config.custom.network.devices.es-48-500w.net.lan.ipv4}.publicKey = "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBGm4OeCoCYbpE/2oU9teWKpQsK17aCQM9mJ7esFNfPndjpRrb9yfszqY0QfEXo5xagbfRGYfk2OzpL1tlJZzqRA=";
     } // builtins.mapAttrs (_: key: { publicKey = key; }) hostKeys.byFqdn;
     programs.ssh.knownHostsFiles = [ ./github_known_hosts ];

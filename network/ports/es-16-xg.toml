@@ -1,0 +1,11 @@
+1 = { description = "cyclone.gw", tagged = "all" }
+2-6 = { native = "lan" }
+7 = "maverick.cx"
+8 = { native = "lan" }
+9 = "rooster.cx"
+10 = { native = "lan" }
+11 = "phoenix.st"
+12 = { description = "es-48-500", tagged = "all" }
+13-14 = { native = "lan" }
+15 = { description = "U7-Pro XGS", native = "lan", tagged = "all" }
+16 = { description = "Desk 10Gbps", native = "lan" }

@@ -1,9 +1,6 @@
 1-3 = { native = "lan" }
 4 = "fanboy.cx"
-5-10 = { native = "lan" }
-11 = { native = "dmz" }
-12 = { description = "Test", tagged = [ "iot", "cameras" ] }
-13-20 = { native = "lan" }
+5-20 = { native = "lan" }
 21 = "stinger.pop"
 22 = "warlock.cx"
 23 = "apc-ap7921"
