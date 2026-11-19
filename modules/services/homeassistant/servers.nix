@@ -30,7 +30,7 @@ let
     };
     darkstar_skunk = {
       name = "Darkstar Skunk";
-      ip = "10.64.50.31";
+      ip = config.custom.network.devices."darkstar.skunk".net.lan.ipv4;
       outlet = 6;
     };
     maverick_cx = {
@@ -88,8 +88,8 @@ in
     {
       name = "merlin.rig.${config.ogygia.domain}";
       platform = "wake_on_lan";
-      mac = "b0:41:6f:13:20:14";
-      host = "10.64.50.28";
+      mac = config.custom.network.devices."merlin.rig".mac;
+      host = config.custom.network.devices."merlin.rig".net.lan.ipv4;
     }
   ];
 

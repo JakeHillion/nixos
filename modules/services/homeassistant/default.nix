@@ -9,12 +9,21 @@ let
     in
     if builtins.isList authDns then builtins.head authDns else authDns;
 
+  iotAddress = device: config.custom.network.devices.${device}.net.iot.ipv4;
+
   # IoT clients permitted to reach the Home Assistant vhost.
-  hassAllowedClients = [
-    "10.239.19.4" # hallway-wall-tablet
-    "10.239.19.14" # fph-sat1-lr
-    "10.239.19.16" # bedroom-portal
-    "10.239.19.18" # desk-portal
+  hassAllowedClients = map iotAddress [
+    "hallway-wall-tablet"
+    "fph-sat1-lr"
+    "bedroom-portal"
+    "desk-portal"
+  ];
+
+  # Kiosks that Home Assistant signs in without a login.
+  kiosks = map iotAddress [
+    "hallway-wall-tablet"
+    "bedroom-portal"
+    "desk-portal"
   ];
 in
 {
@@ -115,7 +124,7 @@ in
 
         virtualHosts = {
           "homeassistant.iot.home.jakehillion.me" = {
-            listenAddresses = [ "10.239.19.8" ];
+            listenAddresses = [ config.custom.network.self.net.iot.ipv4 ];
             extraConfig = ''
               tls {
                 dns jakehillion {
@@ -228,16 +237,8 @@ in
                 { type = "homeassistant"; }
                 {
                   type = "trusted_networks";
-                  trusted_networks = [
-                    "10.239.19.4/32"
-                    "10.239.19.16/32"
-                    "10.239.19.18/32"
-                  ];
-                  trusted_users = {
-                    "10.239.19.4" = "fb4979873ecb480d9e3bb336250fa344";
-                    "10.239.19.16" = "fb4979873ecb480d9e3bb336250fa344";
-                    "10.239.19.18" = "fb4979873ecb480d9e3bb336250fa344";
-                  };
+                  trusted_networks = map (address: "${address}/32") kiosks;
+                  trusted_users = lib.genAttrs kiosks (_: "fb4979873ecb480d9e3bb336250fa344");
                   allow_bypass_login = true;
                 }
               ];
