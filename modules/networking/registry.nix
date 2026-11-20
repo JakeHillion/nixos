@@ -115,6 +115,12 @@ in
             description = "For a managed switch, how it is configured. Its port table is the file named after it in network/ports.";
           };
 
+          mtu = lib.mkOption {
+            type = lib.types.nullOr lib.types.int;
+            default = null;
+            description = "MTU of the interface.";
+          };
+
           net = lib.mkOption {
             default = { };
             description = "Networks the interface is on, by network name.";
@@ -124,6 +130,12 @@ in
                   type = lib.types.nullOr lib.types.str;
                   default = null;
                   description = "IPv4 address of the interface on the network.";
+                };
+
+                address = lib.mkOption {
+                  type = lib.types.enum [ "dhcp" "static" ];
+                  default = "dhcp";
+                  description = "How the interface gets its address on the network: from DHCP, or configured statically on the device.";
                 };
 
                 tagged = lib.mkOption {
