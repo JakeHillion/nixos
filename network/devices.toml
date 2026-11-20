@@ -121,3 +121,7 @@ net.dmz.ipv4 = "51.194.133.162"
 [desk-switch]
 mac = "94:2a:6f:4e:22:d4"
 kind = "unifi"
+
+[tv-switch]
+mac = "d8:b3:70:fc:a6:1e"
+kind = "unifi"
