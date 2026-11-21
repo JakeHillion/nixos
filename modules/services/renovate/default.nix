@@ -3,8 +3,19 @@
 let
   cfg = config.custom.services.renovate;
 
+  giteaUrl = "https://gitea.hillion.co.uk";
   gitAuthorName = "Renovate Bot";
   gitAuthorEmail = "renovate-bot@noreply.gitea.hillion.co.uk";
+
+  # curl leaves credentials out of the effective URL, which git takes for a
+  # redirect to a URL without Renovate's token, so git needs another way to get
+  # it for the requests that follow.
+  credentialHelper = pkgs.writeShellScript "renovate-git-credential" ''
+    set -euo pipefail
+    [[ "$1" == "get" ]] || exit 0
+    . /run/credentials/renovate.service/environment
+    printf 'username=%s\npassword=x-oauth-basic\n' "$RENOVATE_TOKEN"
+  '';
 
   # Git wrapper that adds change-id headers to commits using jj
   gitWrapper = pkgs.writeShellScriptBin "git" ''
@@ -19,7 +30,7 @@ let
     }
 
     # Always run the real git command first
-    "$REAL_GIT" "$@"
+    "$REAL_GIT" -c "credential.${giteaUrl}.helper=${credentialHelper}" "$@"
 
     # Find the git subcommand (skip options that come before it)
     # e.g., "git -C /path commit -m msg" -> subcommand is "commit"
@@ -60,7 +71,7 @@ let
 
   configFile = pkgs.writeText "renovate-config.js" ''
     module.exports = {
-        "endpoint": "https://gitea.hillion.co.uk/api/v1",
+        "endpoint": "${giteaUrl}/api/v1",
         "gitAuthor": "${gitAuthorName} <${gitAuthorEmail}>",
         "platform": "gitea",
         "onboardingConfigFileName": "renovate.json",
@@ -103,6 +114,7 @@ in
         WorkingDirectory = "%C/renovate";
 
         EnvironmentFile = config.age.secrets."renovate/environment".path;
+        LoadCredential = "environment:${config.age.secrets."renovate/environment".path}";
         ExecStart = "${pkgs.renovate}/bin/renovate";
       };
 
