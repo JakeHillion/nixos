@@ -57,6 +57,7 @@
     networking.wireless = {
       enable = true;
       secretsFile = config.age.secrets."wifi".path;
+      userControlled = true;
 
       networks = {
         "Hillion WPA3 Network".pskRaw = "ext:HILLION_WPA3_NETWORK_PSK";
