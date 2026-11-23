@@ -243,11 +243,20 @@
                 }).config.system.build.toplevel
               )
               (nixpkgs.lib.filterAttrs (_: nixos: nixos.pkgs.system == system) self.nixosConfigurations);
+            installerIso = (nixpkgs.lib.nixosSystem {
+              modules = [
+                ./installer
+                { nixpkgs.hostPlatform = system; }
+              ];
+            }).config.system.build.isoImage;
           in
           {
             checks = {
               opencode-plugin = pkgs.opencode-plugin;
+              installer-iso = installerIso;
             } // nixosMachines;
+
+            packages.installer-iso = installerIso;
           }
         )))
       (flake-utils.lib.eachSystem [ "x86_64-linux" ] (
