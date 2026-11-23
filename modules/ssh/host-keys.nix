@@ -31,7 +31,6 @@ rec {
             bob = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBZHzsley+mbIio2UHmmraS0lHnYTwAKb3aOCfi/veoZ root@bob";
           };
           pop = {
-            goose = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID7Gsjw7wULQtPy6/0BYyXsjWcIYB/tZvht3sC4kaOs5 root@goose";
             li = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHQWgcDFL9UZBDKHPiEGepT1Qsc4gz3Pee0/XVHJ6V6u root@li";
             slider = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFABZxZAYPVqQ4+ZShrOvPopUrWHrnj47BnFJJwjdpwD root@slider";
             stinger = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID28NGGSaK1OtpQkQnYqSZWSahX25uboiHwhsYQoKKbL root@stinger";
