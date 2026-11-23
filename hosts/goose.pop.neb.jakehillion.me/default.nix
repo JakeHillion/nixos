@@ -21,7 +21,14 @@
     custom.defaults = true;
     custom.impermanence.enable = true;
 
-    ogygia.nebula.enable = lib.mkForce false;
+    ogygia.nebula = {
+      groups = [ "legacy-full-access" ];
+      pubKey = ''
+        -----BEGIN NEBULA X25519 PUBLIC KEY-----
+        XjVuyz994GFiByBziMhPQN+cW7/NqlNpGZN55MkcMSc=
+        -----END NEBULA X25519 PUBLIC KEY-----
+      '';
+    };
 
     custom.tang = {
       enable = true;
