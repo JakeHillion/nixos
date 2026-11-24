@@ -3,8 +3,6 @@
 let
   cfg = config.custom.services.foldingathome;
 
-  tariffCode = "E-1R-${cfg.octopus.productCode}-${cfg.octopus.region}";
-
   # fah-client ships "paused": true in the default resource group
   # (src/resources/group.json) and registers no option to change it, so a fresh
   # client sits idle until something tells it to fold. GPUs are held back the
@@ -126,59 +124,77 @@ let
     '';
   };
 
-  priceGate = pkgs.writeShellApplication {
-    name = "foldingathome-price-gate";
-    runtimeInputs = with pkgs; [ curl jq coreutils gawk systemd ];
+  scheduled = "/run/systemd/shutdown/scheduled";
+
+  # Home Assistant keeps a poweroff scheduled half an hour out for as long as
+  # it wants heat, so a host it loses track of turns itself off. Cancelling
+  # the poweroff hands the host back.
+  fold = pkgs.writeShellApplication {
+    name = "fold";
     text = ''
-      set -euo pipefail
-      : "''${RUNTIME_DIRECTORY:?}"
-
-      API_BASE="https://api.octopus.energy/v1/products/${cfg.octopus.productCode}/electricity-tariffs/${tariffCode}/standard-unit-rates"
-      THRESHOLD=${lib.escapeShellArg (toString cfg.maxPriceIncVat)}
-      RATES_FILE="$RUNTIME_DIRECTORY/rates.json"
-
-      NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-      # Half-hourly slots, so an hour either side always brackets the current one.
-      PERIOD_FROM=$(date -u -d '1 hour ago' +%Y-%m-%dT%H:%M:%SZ)
-      PERIOD_TO=$(date -u -d '1 hour' +%Y-%m-%dT%H:%M:%SZ)
-
-      RATE=""
-      for attempt in 1 2 3; do
-        if curl -sSf -o "$RATES_FILE" "$API_BASE/?period_from=$PERIOD_FROM&period_to=$PERIOD_TO"; then
-          RATE=$(jq -r --arg now "$NOW" '
-            .results[]
-            | select(.valid_from <= $now and (.valid_to == null or .valid_to > $now))
-            | .value_inc_vat
-          ' "$RATES_FILE" | head -n1)
-          if [ -n "$RATE" ] && [ "$RATE" != "null" ]; then
-            break
+      case "''${SSH_ORIGINAL_COMMAND:-}" in
+        fold-schedule-poweroff)
+          /run/wrappers/bin/sudo ${shutdown} +30
+          [ -e ${scheduled} ]
+          ;;
+        fold-poweroff-status)
+          if [ -e ${scheduled} ]; then
+            echo scheduled
+          else
+            echo none
           fi
-          RATE=""
-        fi
-        echo "attempt $attempt: no usable rate for $NOW"
-        sleep 10
-      done
-
-      if [ -z "$RATE" ]; then
-        # Fail closed: without a price we assume electricity is worth paying for.
-        echo "could not determine the current unit rate, stopping folding"
-        systemctl stop foldingathome.service
-        exit 1
-      fi
-
-      if awk -v rate="$RATE" -v threshold="$THRESHOLD" 'BEGIN { exit !(rate < threshold) }'; then
-        echo "current rate ''${RATE}p/kWh is below ''${THRESHOLD}p/kWh, folding"
-        systemctl start foldingathome.service
-      else
-        echo "current rate ''${RATE}p/kWh is not below ''${THRESHOLD}p/kWh, not folding"
-        systemctl stop foldingathome.service
-      fi
+          ;;
+        *)
+          echo "unknown command: ''${SSH_ORIGINAL_COMMAND:-}" >&2
+          exit 1
+          ;;
+      esac
     '';
   };
+
+  shutdown = "${config.systemd.package}/bin/shutdown";
+
+  gate = pkgs.writeShellApplication {
+    name = "foldingathome-gate";
+    runtimeInputs = with pkgs; [ curl jq systemd ];
+    text = ''
+      URL="http://${config.custom.locations.locations.services.homeassistant}:8123/api/states/binary_sensor.fold_wanted"
+      TOKEN_FILE=${lib.escapeShellArg config.age.secrets."foldingathome/homeassistant-token".path}
+
+      STATE=""
+      for attempt in 1 2 3; do
+        if STATE=$(curl -sSf --max-time 10 -H @- "$URL" < <(printf 'Authorization: Bearer %s\n' "$(cat "$TOKEN_FILE")") | jq -r .state); then
+          break
+        fi
+        STATE=""
+        echo "attempt $attempt: could not read binary_sensor.fold_wanted"
+        sleep 5
+      done
+
+      case "$STATE" in
+        on)
+          echo "fold_wanted is on, folding"
+          systemctl start foldingathome.service
+          ;;
+        off)
+          echo "fold_wanted is off, not folding"
+          systemctl stop foldingathome.service
+          ;;
+        *)
+          # Fail closed: without an answer, assume heat isn't wanted.
+          echo "fold_wanted is ''${STATE:-unknown}, stopping folding"
+          systemctl stop foldingathome.service
+          exit 1
+          ;;
+      esac
+    '';
+  };
+
+  homeAssistantKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILkF8H7Vyf5/YQlU2ukCUIGe7rPjM45z7OtWtAUbzWG4 hass@stinger";
 in
 {
   options.custom.services.foldingathome = {
-    enable = lib.mkEnableOption "Folding@home, gated on the current electricity price";
+    enable = lib.mkEnableOption "Folding@home, run while Home Assistant wants heat";
 
     user = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
@@ -190,29 +206,6 @@ in
       type = lib.types.int;
       default = 236565;
       description = "Team credited with the completed work units. Defaults to the NixOS team.";
-    };
-
-    maxPriceIncVat = lib.mkOption {
-      type = lib.types.number;
-      default = 0;
-      description = ''
-        Fold only while the current unit rate in p/kWh including VAT is
-        strictly below this. The default of 0 folds on negative rates only.
-      '';
-    };
-
-    octopus = {
-      productCode = lib.mkOption {
-        type = lib.types.str;
-        default = "AGILE-24-10-01";
-        description = "Octopus Energy product code to read unit rates from.";
-      };
-
-      region = lib.mkOption {
-        type = lib.types.str;
-        default = "C";
-        description = "Octopus Energy distribution region letter.";
-      };
     };
 
     gpu.enable = lib.mkOption {
@@ -259,7 +252,7 @@ in
     };
 
     systemd.services.foldingathome = {
-      # Started and stopped by the price gate rather than at boot.
+      # Started and stopped by the gate rather than at boot.
       wantedBy = lib.mkForce [ ];
       serviceConfig = {
         DynamicUser = lib.mkForce false;
@@ -269,34 +262,47 @@ in
       };
     };
 
-    systemd.services.foldingathome-price-gate = {
-      description = "Start or stop Folding@home based on the current electricity price";
+    users.users.fold = {
+      isSystemUser = true;
+      group = "fold";
+      # sshd runs the forced command through the login shell.
+      useDefaultShell = true;
+      openssh.authorizedKeys.keys = [ ''command="${lib.getExe fold}",restrict ${homeAssistantKey}'' ];
+    };
+    users.groups.fold = { };
+
+    security.sudo.extraRules = [{
+      users = [ "fold" ];
+      commands = [{
+        command = "${shutdown} +30";
+        options = [ "NOPASSWD" ];
+      }];
+    }];
+
+    age.secrets."foldingathome/homeassistant-token".rekeyFile = ./homeassistant-token.age;
+
+    systemd.services.foldingathome-gate = {
+      description = "Start or stop Folding@home as Home Assistant wants heat";
       after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
 
       serviceConfig = {
         Type = "oneshot";
-        RuntimeDirectory = "foldingathome-price-gate";
-        RuntimeDirectoryMode = "0700";
-        ExecStart = lib.getExe priceGate;
+        ExecStart = lib.getExe gate;
         ProtectHome = true;
         ProtectSystem = "strict";
       };
     };
 
-    systemd.timers.foldingathome-price-gate = {
+    systemd.timers.foldingathome-gate = {
       wantedBy = [ "timers.target" ];
       timerConfig = {
-        # Agile rates change on the half hour.
-        OnCalendar = "*:00/30:20";
-        OnBootSec = "2m";
-        AccuracySec = "1s";
-        Unit = "foldingathome-price-gate.service";
+        OnCalendar = "minutely";
+        OnBootSec = "1m";
+        Unit = "foldingathome-gate.service";
       };
     };
 
-    # Work unit progress is checkpointed here, so a reboot or a price swing
-    # doesn't throw away partial work.
     custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/lib/foldingathome" ];
   };
 }
