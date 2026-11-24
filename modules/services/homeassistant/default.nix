@@ -46,6 +46,10 @@ in
 
     custom.impermanence.extraDirs = lib.mkIf config.custom.impermanence.enable [ "/var/lib/private/matter-server" ];
 
+    # Shell commands reach the Folding@home hosts over SSH, as the fold user
+    # with the key in ~hass/.ssh.
+    systemd.services.home-assistant.path = [ pkgs.openssh ];
+
     # matter-server binds /etc/resolv.conf read-only and refuses to start if the
     # file is absent. On an impermanent /etc it is written by resolvconf during
     # boot, which the upstream ordering (network-online.target only) does not
