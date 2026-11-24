@@ -93,6 +93,11 @@ in
     }
   ];
 
+  shell_command = {
+    fold_arm = "ssh -o BatchMode=yes -o ConnectTimeout=10 fold@{{ host }} fold-schedule-poweroff";
+    fold_status = "ssh -o BatchMode=yes -o ConnectTimeout=10 fold@{{ host }} fold-poweroff-status";
+  };
+
   input_boolean = {
     merlin_boot_windows = {
       name = "Boot Merlin to Windows next startup";
