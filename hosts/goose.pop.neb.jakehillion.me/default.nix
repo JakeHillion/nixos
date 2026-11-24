@@ -21,6 +21,8 @@
     custom.defaults = true;
     custom.impermanence.enable = true;
 
+    ogygia.updated.settings.activate.allow_reboot = true;
+
     ogygia.nebula = {
       groups = [ "legacy-full-access" ];
       pubKey = ''
