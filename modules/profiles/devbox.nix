@@ -26,8 +26,6 @@ in
 
     custom.home.claude.enable = true;
 
-    custom.services.protonmail-bridge.enable = true;
-
     custom.home.nix-trusted-settings = {
       enable = true;
       substituters = [
