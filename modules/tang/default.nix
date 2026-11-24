@@ -120,6 +120,7 @@ in
             clients = [
               "boron.cx.${domain}"
               "cyclone.gw.${domain}"
+              "goose.pop.${domain}"
               "iceman.cx.${domain}"
               "slider.pop.${domain}"
               "viper.pop.${domain}"
@@ -129,6 +130,7 @@ in
               "138.201.252.214/32" # boron
               "140.238.103.110/32" # slider
               "185.240.111.53/32" # cyclone
+              "80.229.251.26/32" # goose
             ];
           };
         };
