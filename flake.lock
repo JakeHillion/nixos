@@ -862,11 +862,11 @@
         "treefmt-nix": "treefmt-nix_6"
       },
       "locked": {
-        "lastModified": 1794684315,
-        "narHash": "sha256-ofvcrFLCxAOCG0NJYhxKxbM3Wih0OrwAKTLWzVuJLQ0=",
+        "lastModified": 1795553490,
+        "narHash": "sha256-ZdZD6i6VQQ8VsxC4lSryDC9SUbx5iRZSi1VLWbBxsXc=",
         "owner": "JakeHillion",
         "repo": "hearthd",
-        "rev": "b9795fa70c8e50be80a589dc239de7d8d35b269c",
+        "rev": "cf340578f79ed9d5569eade5c43361cfe0f4bdd0",
         "type": "github"
       },
       "original": {
