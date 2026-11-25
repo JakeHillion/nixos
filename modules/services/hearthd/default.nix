@@ -10,7 +10,7 @@ let
   # aliases.toml holds the [aliases] for nodes whose integration key is a
   # device address (Zigbee IEEE addresses and the like). hearthd merges it with
   # the public aliases in services.hearthd.config below.
-  rekeySecrets = [ "ecoflow.toml" "aliases.toml" "apc.toml.agent" ];
+  rekeySecrets = [ "ecoflow.toml" "aliases.toml" "apc.toml.agent" ]; # "anker_solix.toml"
 
   acmeApiHost =
     let
@@ -32,6 +32,27 @@ let
       })
       (lib.filterAttrs (file: type: type == "regular" && lib.hasSuffix ".json" file)
         (builtins.readDir dir));
+
+  # # Standard mode passes the grid through and charges the battery;
+  # # self-consumption carries the load from the battery, down to its reserve.
+  # s2000Schedule = pkgs.writeShellApplication {
+  # name = "hearthd-s2000-schedule";
+  # runtimeInputs = with pkgs; [ coreutils curl ];
+  # text = ''
+  # case "$(TZ=Europe/London date +%-H)" in
+  # 4 | 5 | 6 | 13 | 14 | 15 | 22 | 23)
+  # echo "charging: standard mode"
+  # mode=0
+  # ;;
+  # *)
+  # echo "discharging: self-consumption mode"
+  # mode=2
+  # ;;
+  # esac
+
+  # curl -sSf --max-time 60 -H 'Content-Type: application/json' -d '{"endpoint":7,"command":{"cluster":"ModeSelect","command":{"ChangeToMode":{"new_mode":'"$mode"'}}}}' http://127.0.0.1:8565/v1/nodes/s2000/command
+  # '';
+  # };
 
   # Portal dashboard server: serves /state and /template/<hash> for Portals,
   # pulling live light state from the colocated hearthd. Exposed on the IoT
@@ -168,6 +189,49 @@ in
       };
     };
 
+    # systemd.services.hearthd-s2000-schedule = {
+    # description = "Set the S2000's mode for the time of day";
+    # after = [ "hearthd.service" ];
+    # # hearthd only has the node while its Bluetooth link is up, so keep
+    # # trying until it takes.
+    # startLimitIntervalSec = 0;
+    # serviceConfig = {
+    # Type = "oneshot";
+    # ExecStart = lib.getExe s2000Schedule;
+    # Restart = "on-failure";
+    # RestartSec = 30;
+    # DynamicUser = true;
+    # ProtectSystem = "strict";
+    # ProtectHome = true;
+    # PrivateTmp = true;
+    # NoNewPrivileges = true;
+    # RestrictAddressFamilies = [ "AF_INET" "AF_INET6" ];
+    # };
+    # };
+
+    # # Discharging starts on the hour, and the mode is set again at boot.
+    # systemd.timers.hearthd-s2000-schedule = {
+    # wantedBy = [ "timers.target" ];
+    # timerConfig = {
+    # OnBootSec = "1m";
+    # OnCalendar = [ "07:00 Europe/London" "16:00 Europe/London" "00:00 Europe/London" ];
+    # AccuracySec = "1s";
+    # };
+    # };
+
+    # # Charging starts 5 to 15 minutes into each window, to spread the load on
+    # # the grid.
+    # systemd.timers.hearthd-s2000-charge = {
+    # wantedBy = [ "timers.target" ];
+    # timerConfig = {
+    # OnCalendar = [ "04:05 Europe/London" "13:05 Europe/London" "22:05 Europe/London" ];
+    # RandomizedDelaySec = "10m";
+    # Unit = "hearthd-s2000-schedule.service";
+    # };
+    # };
+
+    environment.systemPackages = [ config.services.hearthd.package ];
+
     services.hearthd = {
       enable = true;
 
@@ -216,6 +280,11 @@ in
         integrations.metno = {
           locations = [ "home" ];
         };
+
+        # integrations.anker_solix.devices.s2000 = {
+        # model = "s2000";
+        # adapter = "hci0";
+        # };
 
         integrations.snapcast = {
           host = "::1";
