@@ -148,6 +148,7 @@ in
         BindReadOnlyPaths = [ "${fuzzData}:${home}/fuzzing" ];
         ReadOnlyPaths = [ fuzzData ] ++ lib.optional config.custom.impermanence.enable
           "${config.custom.impermanence.base}/system${fuzzData}";
+        UnsetEnvironment = [ "SSH_AUTH_SOCK" "GH_TOKEN" "GITHUB_TOKEN" ];
         NoNewPrivileges = true;
         Restart = "always";
         RestartSec = "30s";
