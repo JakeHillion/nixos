@@ -20,7 +20,10 @@
     };
 
     custom.tang.enable = true;
-    custom.impermanence.cache.enable = true;
+    custom.impermanence = {
+      cache.enable = true;
+      userExtraFiles.jake = [ ".ssh/id_ecdsa" ];
+    };
 
     custom.services.llm_proxy.enable = true;
 
