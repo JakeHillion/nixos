@@ -25,6 +25,27 @@
         "cargo"
       ],
       "rangeStrategy": "replace"
+    },
+    {
+      "matchManagers": [
+        "gomod"
+      ],
+      "matchFileNames": [
+        "pkgs/caddy-dns-jakehillion/go.mod"
+      ],
+      "automerge": true,
+      "postUpdateOptions": [
+        "gomodTidy"
+      ],
+      "postUpgradeTasks": {
+        "commands": [
+          "renovate-update-vendor-hash go pkgs/caddy-dns-jakehillion"
+        ],
+        "fileFilters": [
+          "pkgs/vendor-hashes.json"
+        ],
+        "executionMode": "branch"
+      }
     }
   ],
   "extends": [
