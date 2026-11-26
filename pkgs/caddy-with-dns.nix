@@ -13,7 +13,7 @@ buildGoModule {
   pname = "caddy-with-dns";
   inherit version src;
 
-  vendorHash = "sha256-QxR/GZotZb3VDcLyokrYT6HGvVD9aoJP0/rlXfyuVrM=";
+  vendorHash = (lib.importJSON ./vendor-hashes.json)."pkgs/caddy-dns-jakehillion";
 
   subPackages = [ "cmd/caddy" ];
 

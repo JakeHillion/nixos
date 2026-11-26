@@ -69,6 +69,57 @@ let
     jj metaedit --update-change-id @-
   '';
 
+  # Repositories run this as a post-upgrade task, so it takes nothing from them
+  # but Go module directories: it reads their Go files and never evaluates or
+  # builds the repository's Nix. It hashes the vendor directory the way
+  # buildGoModule does, into pkgs/vendor-hashes.json keyed by directory.
+  updateVendorHash = pkgs.writeShellApplication {
+    name = "renovate-update-vendor-hash";
+    runtimeInputs = with pkgs; [ coreutils go jq config.nix.package ];
+    text = ''
+      usage() {
+        echo "usage: renovate-update-vendor-hash go <module directory>..." >&2
+        exit 1
+      }
+      [ "''${1-}" = go ] || usage
+      shift
+      [ $# -gt 0 ] || usage
+
+      root=$(pwd -P)
+      hashes=pkgs/vendor-hashes.json
+      tmp=$(mktemp -d)
+      trap 'chmod -R u+w "$tmp"; rm -rf "$tmp"' EXIT
+
+      export GOTOOLCHAIN=local GO111MODULE=on GOFLAGS=-modcacherw
+      export GOPATH="$tmp/gopath" GOCACHE="$tmp/gocache"
+
+      json=$(cat "$hashes")
+      for dir in "$@"; do
+        real=$(realpath -e -- "$dir")
+        case "$real" in
+          "$root"/*) ;;
+          *)
+            echo "renovate-update-vendor-hash: $dir is outside the repository" >&2
+            exit 1
+            ;;
+        esac
+        if [ ! -f "$real/go.mod" ]; then
+          echo "renovate-update-vendor-hash: $dir has no go.mod" >&2
+          exit 1
+        fi
+        key=''${real#"$root"/}
+
+        work=$(mktemp -d -p "$tmp")
+        cp -rP "$real/." "$work"
+        rm -rf "$work/vendor"
+        (cd "$work" && go mod vendor)
+        hash=$(nix --extra-experimental-features nix-command hash path --algo sha256 "$work/vendor")
+        json=$(jq --arg key "$key" --arg hash "$hash" '.[$key] = $hash' <<<"$json")
+      done
+      jq --sort-keys . <<<"$json" >"$hashes"
+    '';
+  };
+
   configFile = pkgs.writeText "renovate-config.js" ''
     module.exports = {
         "endpoint": "${giteaUrl}/api/v1",
@@ -77,6 +128,8 @@ let
         "onboardingConfigFileName": "renovate.json",
         "autodiscover": true,
         "optimizeForDisabled": true,
+        "allowedCommands": ["^renovate-update-vendor-hash( |$)"],
+        "customEnvVariables": { "GOTOOLCHAIN": "local" },
         "extends": [
           "config:recommended",
           "helpers:pinGitHubActionDigests"
@@ -104,6 +157,8 @@ in
         cargo
         go
         nodejs
+
+        updateVendorHash
       ];
 
       serviceConfig = {

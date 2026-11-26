@@ -2,7 +2,7 @@
 let
   # Centralized configuration
   realName = "Jake Hillion";
-  primaryAccount = "jakehillion";
+  primaryAccount = "personal";
 
   # Mail directory - use persistent location if impermanence is enabled
   mailDir =
@@ -71,8 +71,9 @@ in
   };
 
   config = lib.mkIf config.custom.home.neomutt.enable {
-    age.secrets."mail/password" = {
-      rekeyFile = ./mail-password.age;
+    # Configure agenix secret for SMTP password
+    age.secrets.smtp-password = {
+      file = ../../secrets/home/smtp-password.age;
       mode = "400";
       owner = config.custom.user;
     };
@@ -85,25 +86,29 @@ in
     home-manager.users.jake = {
       accounts.email = {
         maildirBasePath = maildirBasePath;
-        accounts.${primaryAccount} = {
+        accounts.personal = {
           realName = realName;
           address = "jake@hillion.co.uk";
-          userName = "jake@jakehillion.me";
+          userName = "jake@hillion.co.uk";
           primary = true;
 
           imap = {
-            host = "mx.jakehillion.me";
-            port = 993;
-            tls.enable = true;
+            host = "127.0.0.1";
+            port = config.custom.services.protonmail-bridge.imapPort;
+            tls.enable = false;
           };
 
           smtp = {
-            host = "mx.jakehillion.me";
-            port = 465;
-            tls.enable = true;
+            host = "smtp-auth.mythic-beasts.com";
+            port = 587;
+            tls = {
+              enable = true;
+              useStartTls = true;
+            };
           };
 
-          passwordCommand = "cat ${config.age.secrets."mail/password".path}";
+          # SMTP password for sending mail
+          passwordCommand = "cat ${config.age.secrets.smtp-password.path}";
 
           offlineimap = {
             enable = true;
@@ -112,12 +117,14 @@ in
               autorefresh = "1";
             };
             extraConfig.remote = {
+              remotepasseval = "get_password_personal()";
+              folderfilter = "lambda f: f != 'All Mail'";
               createfolders = "False";
             };
           };
 
           maildir = {
-            path = primaryAccount;
+            path = "personal";
           };
 
           folders = {
@@ -130,7 +137,7 @@ in
           neomutt = {
             enable = true;
             extraConfig = ''
-              mailboxes `${pkgs.findutils}/bin/find ${maildirBasePath}/${primaryAccount} -maxdepth 1 -type d ! -name ".*" ! -name "${primaryAccount}" -exec basename {} \; | sed 's/^/+/' | tr '\n' ' '`
+              mailboxes `${pkgs.findutils}/bin/find ${maildirBasePath}/personal -maxdepth 1 -type d ! -name ".*" ! -name "personal" -exec basename {} \; | sed 's/^/+/' | tr '\n' ' '`
             '';
           };
         };
@@ -138,6 +145,13 @@ in
 
       programs.offlineimap = {
         enable = true;
+        pythonFile = ''
+          import subprocess
+          
+          def get_password_personal():
+              path = "${if config.custom.impermanence.enable then "${config.custom.impermanence.base}/users/jake/.config/protonmail-bridge/bridge-password" else "~/.config/protonmail-bridge/bridge-password"}"
+              return subprocess.check_output(f"${pkgs.coreutils}/bin/cat {path}", shell=True).decode().strip()
+        '';
         extraConfig.general = {
           metadata = if config.custom.impermanence.enable then "${config.custom.impermanence.base}/users/jake/.local/share/offlineimap" else "~/.local/share/offlineimap";
         };
@@ -171,8 +185,8 @@ in
 
         settings = {
           # SMTP settings
-          smtp_url = "smtps://jake@jakehillion.me@mx.jakehillion.me:465/";
-          smtp_pass = "`cat ${config.age.secrets."mail/password".path}`";
+          smtp_url = "smtps://jake@hillion.co.uk@smtp-auth.mythic-beasts.com:587/";
+          smtp_pass = "`cat ${config.age.secrets.smtp-password.path}`";
 
           # Folder names
           spoolfile = "+INBOX";

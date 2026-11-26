@@ -20,6 +20,7 @@
     ./hearthd
     ./homeassistant
     ./homebox.nix
+    ./protonmail-bridge.nix
     ./immich.nix
     ./immich-dropbox-importer
     ./jellyfin.nix
