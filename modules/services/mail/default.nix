@@ -222,6 +222,21 @@ in
             after = [ "acme-${hostname}.service" ];
           };
 
+          # Marketing keeps two years of mail, by when it was received.
+          # mailbox_autoexpunge counts from when mail was saved to the
+          # mailbox, which for imported mail is the day it was imported.
+          systemd.services.expunge-marketing = {
+            after = [ "dovecot.service" ];
+            serviceConfig = {
+              Type = "oneshot";
+              ExecStart = "${config.services.dovecot2.package}/bin/doveadm expunge -A mailbox Marketing BEFORE 730d";
+            };
+          };
+          systemd.timers.expunge-marketing = {
+            wantedBy = [ "timers.target" ];
+            timerConfig.OnCalendar = "daily";
+          };
+
           environment.systemPackages = [ config.services.dovecot2.package.passthru.dovecot_pigeonhole ];
 
           services.dovecot2 = {
