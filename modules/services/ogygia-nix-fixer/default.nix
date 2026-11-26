@@ -83,10 +83,8 @@ let
     name = "${user}-jj";
     runtimeInputs = [ pkgs.unstable.jujutsu pkgs.git pkgs.openssh ];
     text = ''
-      # The fixer's repository is read-only to us. JJ_CONFIG is cleared so jj
-      # doesn't try to write a config ID into it.
       fixer_jj() {
-        JJ_CONFIG=''' jj -R ${repo} --ignore-working-copy "$@"
+        jj -R ${repo} --ignore-working-copy "$@"
       }
 
       if [ "''${1-}" != git ] || [ "''${2-}" != push ]; then
@@ -193,6 +191,10 @@ in
         ln -sfn ${../../home/pi/agents/worker.md} ${home}/.pi/agent/agents/worker.md
         if [ ! -d ${repo}/.jj ]; then
           jj git clone --colocate https://github.com/ogygia-nix/ogygia-nix.git ${repo}
+        fi
+        # jj creates this 0600, and the group can't open the repository without it.
+        if [ -e ${repo}/.jj/repo/config-id ]; then
+          chmod g+r ${repo}/.jj/repo/config-id
         fi
       '';
       script = ''
