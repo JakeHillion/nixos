@@ -60,23 +60,10 @@
     networking = {
       useNetworkd = true;
       useDHCP = false;
-
-      defaultGateway = {
-        address = "10.64.50.1";
-        interface = "enp5s0f1np1";
-      };
-
-      interfaces = {
-        enp5s0f1np1 = {
-          ipv4 = {
-            addresses = [{
-              address = "10.64.50.30";
-              prefixLength = 24;
-            }];
-          };
-          mtu = 9000;
-        };
-      };
+    };
+    custom.networking.host = {
+      enable = true;
+      interface = "enp5s0f1np1";
     };
     services.resolved.enable = false;
   };

@@ -43,7 +43,8 @@ net.iot = { ipv4 = "10.239.19.8", tagged = true }
 
 ["maverick.cx"]
 mac = "38:05:25:34:02:37"
-net.lan.ipv4 = "10.64.50.30"
+mtu = 9000
+net.lan = { ipv4 = "10.64.50.30", address = "static" }
 
 ["darkstar.skunk"]
 mac = "6c:cf:39:00:b1:30"
