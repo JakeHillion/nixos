@@ -101,15 +101,6 @@ in
   # Renovate secrets
   "modules/services/renovate/environment.age".publicKeys = jake_users ++ [ neb.cx.boron ];
 
-  # Home configuration secrets
-  "secrets/home/smtp-password.age".publicKeys = jake_users ++ [
-    neb.cx.boron
-    neb.cx.maverick
-    neb.cx.rooster
-    neb.lt.bob
-    neb.rig.merlin
-  ];
-
   # Offline YouTube secrets
   "modules/services/offline-youtube/playlist.env.age".publicKeys = [ neb.st.phoenix ];
 
