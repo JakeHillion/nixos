@@ -68,11 +68,16 @@ in
 
       networks = {
         lan = {
+          subnetId = 4;
           dnsServers = [ networks.lan.gateway ];
           ntpServers = [ networks.lan.gateway ];
         };
-        iot.ntpServers = [ networks.iot.gateway ];
+        iot = {
+          subnetId = 3;
+          ntpServers = [ networks.iot.gateway ];
+        };
         cameras = {
+          subnetId = 1;
           internetAccess = false; # Cameras don't need internet access
           trustedNetwork = false; # Don't allow camera network to access router
         };
@@ -80,7 +85,10 @@ in
           internetAccess = false;
           trustedNetwork = false;
         };
-        openclaw.trustedNetwork = false;
+        openclaw = {
+          subnetId = 5;
+          trustedNetwork = false;
+        };
       };
 
       portForwarding = [

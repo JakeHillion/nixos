@@ -22,6 +22,11 @@ in
     networks = lib.mkOption {
       type = lib.types.attrsOf (lib.types.submodule {
         options = {
+          subnetId = lib.mkOption {
+            type = lib.types.ints.positive;
+            description = "ID of this network's DHCP subnet. Leases are stored under it, so it must never change.";
+          };
+
           dnsServers = lib.mkOption {
             type = lib.types.listOf lib.types.str;
             default = [ ];
@@ -435,20 +440,9 @@ in
 
           # Configure DHCP subnets
           subnet4 =
-            let
-              # Create a list of names with their index
-              networksWithIndex = lib.lists.imap0
-                (idx: name: { inherit idx name; })
-                (lib.attrsets.attrNames networks);
-
-              # Convert to an attrset for easy lookup
-              indexByName = lib.attrsets.listToAttrs
-                (map (x: lib.attrsets.nameValuePair x.name x.idx) networksWithIndex);
-            in
             lib.attrsets.mapAttrsToList
               (name: netCfg: {
-                # Use the index of the network in the list + 1 as the subnet ID
-                id = 1 + (indexByName.${name} or 0);
+                id = netCfg.subnetId;
                 subnet = netCfg.ipv4;
                 interface = name;
 
