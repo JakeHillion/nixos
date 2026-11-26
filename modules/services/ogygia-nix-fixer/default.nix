@@ -83,9 +83,11 @@ let
     name = "${user}-jj";
     runtimeInputs = [ pkgs.unstable.jujutsu pkgs.git pkgs.openssh ];
     text = ''
-      fixer_jj() {
-        jj -R ${repo} --ignore-working-copy "$@"
-      }
+      # jj creates its own files 0600, so only the fixer can read its repository.
+      fixer_jj() (
+        cd ${repo}
+        ${config.security.wrapperDir}/sudo -u ${user} -H ${lib.getExe pkgs.unstable.jujutsu} --ignore-working-copy "$@"
+      )
 
       if [ "''${1-}" != git ] || [ "''${2-}" != push ]; then
         fixer_jj "$@"
@@ -191,10 +193,6 @@ in
         ln -sfn ${../../home/pi/agents/worker.md} ${home}/.pi/agent/agents/worker.md
         if [ ! -d ${repo}/.jj ]; then
           jj git clone --colocate https://github.com/ogygia-nix/ogygia-nix.git ${repo}
-        fi
-        # jj creates this 0600, and the group can't open the repository without it.
-        if [ -e ${repo}/.jj/repo/config-id ]; then
-          chmod g+r ${repo}/.jj/repo/config-id
         fi
       '';
       script = ''
